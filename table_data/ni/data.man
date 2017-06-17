@@ -1,0 +1,19 @@
+08
+Parameter  Unit     Comment
+01         [-]      sndvls,
+00         [-]      sndvlt,
+01         [-]      entrop,
+00         [-]      hcapap,
+01         [-]      hcapav,
+00         [-]      enthal,
+00         [-]      frener calculation identifier: 1 - ok; 0 - no
+
+28         [-]      ni02m1.eos
+1.000E-06  [kK]     initial temperature
+1.000E+02  [kK]     final temperature
+2.000E+00  [-]      initial compression ratio
+1.000E-09  [-]      final compression ratio
+256        [-]      number of points in temperature scale
+335        [-]      number of points in volume scale
+01         [-]      metastable state identifier: 1 - ok; 0 - no
+01         [-]      last material (1) or you want one more (0)

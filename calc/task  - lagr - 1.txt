@@ -1,0 +1,26 @@
+EOSType = ideal
+Method = lagrange
+HydroStage = 1
+HeatStage = 0
+ExchangeStage = 0
+IonizationStage = 0
+
+source = Al
+tauPulse = 100.0e-15
+fluence = 980.0 
+deltaSkin = 15.0e-9
+
+courant = 0.02
+viscosity = 1
+
+maxTime = 2.0e-12
+
+nZones = 1
+
+l = 200.0e-9
+nSize = 801
+ro = 2700.0
+ti = 3000.0
+te = 3000.0
+v = 0.0
+exp = 0.0

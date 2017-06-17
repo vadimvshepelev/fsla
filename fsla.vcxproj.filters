@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="_matrix4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="_vector4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CTestToro.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eos.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eosAnalytic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eosAnalyticAu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eosAnalyticFe.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eosAnalyticNi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eosAnalyticTa.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eosFigures.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eosIdeal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eosTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eosTable_scale.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eosTable_table.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eosTableAu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eosTableFe.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eosTableFeAlpha.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eosTableNi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eosTableTa.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="matterState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="method.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="methodEuler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="methodEuler2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="solver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stageExchange.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stageHeat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stageHydro.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="task.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="_matrix4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="_vector4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CTestToro.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="defines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eos.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eosAnalytic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eosAnalyticAu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eosAnalyticFe.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eosAnalyticNi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eosAnalyticTa.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eosFigures.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eosIdeal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eosIdealElectron.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eosTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eosTable_scale.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eosTable_table.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eosTableAu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eosTableFe.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eosTableFeAlpha.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eosTableNi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eosTableTa.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eosTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="matterState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="method.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="methodEuler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="methodEuler2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="node.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="solver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="task.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,33 @@
+EOSType = MieGruneisenRu
+Method = lagrange
+HydroStage = 1
+HeatStage = 1
+ExchangeStage = 1
+
+source = default
+tauPulse = 100.0e-15
+fluence = 1000.0
+deltaSkin = 3.5e-9
+
+courant = 0.9
+viscosity = 1
+
+maxTime = 40.e-12
+
+nZones = 2
+
+l = 50.0e-9
+nSize = 200
+ro = 12410.0
+ti = 300.0
+te = 300.0
+v = 0.0
+exp = 0.0
+
+l = 230.e-9
+nSize = 200
+ro = 2700.0
+ti = 300.0
+te = 300.0
+v = 0.0
+exp = 0.0

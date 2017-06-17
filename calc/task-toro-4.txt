@@ -1,0 +1,31 @@
+EOSType = ideal
+Method = euler
+HydroStage = 1
+HeatStage = 0
+ExchangeStage = 0
+
+source = no
+tauPulse = 100.0e-15
+fluence = 0.0 
+deltaSkin = 1.0
+
+courant = .5
+viscosity = 0
+
+maxTime = 0.035
+
+nZones = 2
+
+l = .4
+nSize = 40
+ro = 1.
+v = -19.59745
+p = 460.894 
+exp = 0.
+
+l = .6
+nSize = 60
+ro = 1.
+v = -19.59745
+p = 46.0950
+exp = 0.

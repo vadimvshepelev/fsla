@@ -1,0 +1,199 @@
+#ifndef _SOLVER_H_
+#define _SOLVER_H_
+
+#include "task.h"
+#include <complex>
+
+using namespace std;
+
+// User-defined data-type for structure of Riemann problem solution
+enum RPSolutionType {SWRW, RWSW, SWSW, RWRW, VacRW, RWVac, RWVacRW};
+
+// Structure for the Riemann problem solution vector of primitive variables -- (roL, roR, v ,p)
+struct RPSolutionPrimitive {
+	double roL;
+	double roR;
+	double v;
+	double p;
+	RPSolutionType type;
+};
+
+struct CVectorPrimitive {
+	double ro;
+	double v;
+	double p;
+};
+
+
+class CSolver
+{
+public:
+	CSolver();
+	// Функции, отвечающие за весь расчет:
+	void go(char* fName);
+	void goAuSpall(char *fName);
+	void goEuler(char* fName);
+	void goGlass(char* fName);
+	void goEulerMovingMesh(char* fName);
+	// Функция, выполняющая тест для линейного уравнения теплопроводности
+	void testHeatStage(char* inputFileName, char* outputFileName);
+	// Функция, выполняющая тест для линейной системы уравнений обмена
+	void testExchangeStage(char* inputFileName, char* outputFileName);
+	int getSpallFlag(void) {return spallFlag; }
+	void setSpallCellNum(int i) { spallFlag = 1; spallCellNum = i; }
+	// Функция для тестирования табличных уравнений состояния по контрольным точкам c выводом на экран
+	// Можно использовать многократно, надо только параметры подставить
+	void testEOSControlNumbers(double _ro, double _ti, double _te);
+
+	CVectorPrimitive calcRPAnalyticalSolution(double roL, double vL, double pL, double roR, double vR, double pR, double x, double t);
+	RPSolutionPrimitive solveRP(double roL, double vL, double pL, double roR, double vR, double pR);
+	double fL(double p, double roL, double vL, double pL);
+	double dfLdp(double p, double roL, double vL, double pL);
+	double fR(double p, double roR, double vR, double pR);
+	double dfRdp(double p, double roR, double vR, double pR);
+
+	double calcProblemL1NormRo(void);
+	double calcProblemL2NormRo(void);
+	void modifyConvIntegral(double tCalc, double tau);
+
+	double getdx();
+
+	// Переменные для хранения начальных данных для задачи Римана
+	double _roL, _uL, _pL, _roR, _uR, _pR, _x0, _t;
+
+	// Переменные для расчета "большого" контурного интеграла для определения порядка сходимости
+	// (интеграл от плотности по контуру (x0,t0) -> (xMax,t0) -> (xMax,tMax) -> (x0,tMax) )
+	unsigned int _iMin, _iMax;
+	double _tMin, _tMax, _rouMinCur, _rouMinPrev, _rouMaxCur, _rouMaxPrev, convIntegral;
+
+
+private:
+
+	double getEntropy(double ro, double ti, double te);
+
+	double	calcTimeStep(double t);
+	double  calcTimeStepEuler(double t);
+
+	void	calcHydroStage(double t, double tau);
+	void	calcHydroStageGlass(double t, double tau);
+	void	calcHydroStageDebugging(double t, double tau);
+	void	calcHydroStageSpallation(double t, double tau);
+	void	calcHeatStage(double t, double tau);
+	void	calcHeatStageGlass(double t, double tau);
+	void	calcHeatStageSpallation(double t, double tau);
+	void    calcHeatStage5LayersSi(double t, double tau);
+	void	calcExchangeStage(double tau);
+	void	calcExchangeStageGlass(double tau);
+	void    calcExchangeStage5LayersSi(double tau);
+
+	void	calcHydroStageNoElectron(double t, double tau);
+	void	calcHydroStageGushchin(double t, double tau);
+	void	calcHydroStageGushchinMovingGrid(double t, double tau);
+	void    calcHydroStageGushchinIdealSimple(double t, double tau);
+	void    calcHydroStageSimpleCIR(double t, double tau);
+	void	calcHydroStageGodunov(double t, double tau);
+	void	calcHydroStageGodunovMovingMesh(double t, double tau);
+	void	calcHydroStageMccormack(double t, double tau);
+	void	calcHydroStageMHM(double t, double tau);
+	void    calcHydroStageRoe(double t, double tau);
+	void    calcHydroStageGPS(double t, double tau);
+	void    calcHydroStageG2(double t, double tau);
+	void	calcHydroStageENO3G(double t, double tau);
+	void	calcHydroStageLaxFriedrichs(double t, double tau);
+
+	// Limiters
+	Vector4 calcMinmodSlope(Vector4 deltaMinus, Vector4 deltaplus);
+	Vector4 calcSuperBEESlope(double omega, Vector4 deltaMinus, Vector4 deltaPlus);
+	Vector4 calcVanAlbadaSlope(double omega, Vector4 deltaMinus, Vector4 deltaPlus);
+	Vector4 calcVanLeerSlope(double omega, Vector4 deltaMinus, Vector4 deltaPlus);
+
+	
+	// Потоки
+	// Расчет точного значения потока F = ( ro*v, p+ro*v*v, v*(p+ro*E) )T
+	Vector4	calcF(double ro, double v, double p, double e);
+	Vector4 calcPhysicalFlux(double ro, double rou, double roE);
+	Vector4 calcGodunovFlux(double roL, double rouL, double roEL, double roR, double rouR, double roER);
+	Vector4 calcRoeFlux(double roL, double rouL, double roEL, double roR, double rouR, double roER);
+	Vector4 calcGPSFlux(double roL, double rouL, double roEL, double roR, double rouR, double roER);
+
+
+	void	solveRiemann();
+
+	void	solveHelmholtz(void);
+	void	testSolveHelmholtz(void);
+
+	void	sweep(double *u, double *A, double *B, double *C, double *F, int size);
+
+	void    sweepComplex(complex<double>* u, complex<double>* A, complex<double>* B, complex<double>* C,
+		                 complex<double>* F, int size);
+
+	// Функции, решающие нелинейные уравнения (pi, ei) и (pe, ee) 
+	// для схемы Самарского
+
+	double	solveti(double tau, int i, double ro_temp, double dv_temp);
+	double  solvete(double t, double tau, int i, double ro_temp, double dv_temp, double ti_temp);
+	double  solveteSource(double t, double tau, int i, double ro_temp, double dv_temp, double ti_temp);
+	double  solveteConservative(double t, double tau, int i, double ro_temp, double dv_temp, double ti_temp);
+
+	bool	handleKeys(double t);
+
+	void	sweepTe(MatterState& ms_temp, MatterState& ms_temp_temp, 
+					double *A, double *B, double *C, double *F,
+					double *alpha, double *beta, int size);
+
+	double	compTe();
+	double	compTi();
+	double	compTe(MatterState &ms1, MatterState &ms2);
+	double	compTi(MatterState &ms1, MatterState &ms2);
+	double  compE(MatterState &ms1, MatterState &ms2);
+	double  compEi(MatterState &ms1, MatterState &ms2);
+
+	void	dumpToFile(double t);
+	void    dumpToFileTestRP(double t, int num);
+	void	dumpFlowToFile(double t);
+	void	dumpToFileEuler(double t);
+
+	void	setzKur(double _cur);
+	double  getzKur(void);
+	
+	// Функции для сохранения и загрузки всех массивов
+
+	void	saveSolution(const char* fName, double t);
+	double  loadSolution(char* fName);
+
+	void	getEulerAnalyticApproximation(int i, double t, double *p_an, double *v_an, double *ro_an);
+	void	getEulerAnalyticApproximationGrid(int i, double x, double t, double *p_an, double *v_an, double *ro_an);
+	void	getLagrangeAnalyticApproximation(int i, double t, double *p_an, double *v_an, double *ro_an);
+
+	int getSpallCellNum(void) {return spallCellNum;}
+
+
+	// Служебная функция для инициализации двух переменных 
+	// солвера уже после загрузки задачи.
+
+	void initVars(void);
+
+	CTask task;
+	MatterState ms, ms_temp, ms_temp_temp, ms_prev;
+	double	zKur;
+	double  epsE;
+	unsigned int maxIt;
+	double tauPulse;
+	double fluence;
+	double deltaSkin;
+	double x_pulse_min;
+	unsigned int i_pulse_min;
+	double tInit;
+
+	int iWeak;
+	int spallFlag;
+	int spallCellNum;
+
+	// Переменная для отслеживания границы
+	double xVacBound;
+
+	
+};
+
+
+#endif

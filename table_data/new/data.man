@@ -1,0 +1,19 @@
+08
+Parameter  Unit     Comment
+01         [-]      sndvls,
+00         [-]      sndvlt,
+00         [-]      entrop,
+00         [-]      hcapap,
+01         [-]      hcapav,
+00         [-]      enthal,
+00         [-]      frener calculation identifier: 1 - ok; 0 - no
+
+13         [-]      al02f.eos
+1.000E-06  [kK]     initial temperature
+1.000E+02  [kK]     final temperature
+1.8028771E-001  [-]      initial volume
+1.8435000E+003  [-]      final volume
+256        [-]      number of points in temperature scale
+400        [-]      number of points in volume scale
+01         [-]      metastable state identifier: 1 - ok; 0 - no
+01         [-]      last material (1) or you want one more (0)

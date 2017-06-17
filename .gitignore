@@ -1,0 +1,8 @@
+*.dat
+debug/*
+ipch/*
+Release/*
+calc/output/*
+*.sdf
+*.suo
+

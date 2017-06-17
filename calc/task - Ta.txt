@@ -1,0 +1,28 @@
+EOSType = table
+	TableDir = ta
+	TableFlag = extended
+Method = lagrange
+HydroStage = 0
+HeatStage = 1
+ExchangeStage = 1
+IonizationStage = 0
+
+source = Al
+tauPulse = 100.0e-15
+fluence = 2000.0
+deltaSkin = 15.0e-9
+
+courant = 0.02
+viscosity = 1
+
+maxTime = 7.0e-12
+
+nZones = 1
+
+l = 250.0e-9
+nSize = 251
+ro = 16654.0
+ti = 300.0
+te = 300.0
+v = 0.0
+exp = 0.0

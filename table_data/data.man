@@ -1,0 +1,19 @@
+Parameter  Unit     Comment
+00                  number of material used
+0.293E+00  10**3[K] initial temperature(energy, pressure)
+0.100E+03  10**3[K] final temperature(...)
+0.184E+00  [cc/g]   initial volume
+0.184E+04  [cc/g]   final volume
+256        [-]      number of points in temperature scale
+256        [-]      number of points in volume scale
++1         [-]      temp. scale identifier -> -1 - read from file, 0 - linear
++1         [-]      scale, 1 - logar. scale; -2 - adoptating scale
+00         [-]      output identifier, 0 - formatted, 1 - unformatted
++0         [-]      regime identifier: E(P,V) -1; P(V,T) 0; P(V,E) +1
+01         [-]      sndvls,
+01         [-]      sndvlt,
+01         [-]      entrop,
+01         [-]      hcapap,
+01         [-]      hcapav,
+00         [-]      enthal,
+00         [-]      frener calculation identifier: 1 - ok; 0 - no

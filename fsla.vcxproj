@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{E378EF5E-7DB5-4FAE-8A9C-F4EADB9F2FFA}</ProjectGuid>
+    <RootNamespace>fsla</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="CTestToro.cpp" />
+    <ClCompile Include="eos.cpp" />
+    <ClCompile Include="eosAnalytic.cpp" />
+    <ClCompile Include="eosAnalyticAu.cpp" />
+    <ClCompile Include="eosAnalyticFe.cpp" />
+    <ClCompile Include="eosAnalyticNi.cpp" />
+    <ClCompile Include="eosAnalyticTa.cpp" />
+    <ClCompile Include="eosFigures.cpp" />
+    <ClCompile Include="eosIdeal.cpp" />
+    <ClCompile Include="eosTable.cpp" />
+    <ClCompile Include="eosTableAu.cpp" />
+    <ClCompile Include="eosTableFe.cpp" />
+    <ClCompile Include="eosTableFeAlpha.cpp" />
+    <ClCompile Include="eosTableNi.cpp" />
+    <ClCompile Include="eosTableTa.cpp" />
+    <ClCompile Include="eosTable_scale.cpp" />
+    <ClCompile Include="eosTable_table.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="matterState.cpp" />
+    <ClCompile Include="method.cpp" />
+    <ClCompile Include="methodEuler.cpp" />
+    <ClCompile Include="methodEuler2D.cpp" />
+    <ClCompile Include="solver.cpp" />
+    <ClCompile Include="stageExchange.cpp" />
+    <ClCompile Include="stageHeat.cpp" />
+    <ClCompile Include="stageHydro.cpp" />
+    <ClCompile Include="task.cpp" />
+    <ClCompile Include="_matrix4.cpp" />
+    <ClCompile Include="_vector4.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CTestToro.h" />
+    <ClInclude Include="defines.h" />
+    <ClInclude Include="eos.h" />
+    <ClInclude Include="eosAnalytic.h" />
+    <ClInclude Include="eosAnalyticAu.h" />
+    <ClInclude Include="eosAnalyticFe.h" />
+    <ClInclude Include="eosAnalyticNi.h" />
+    <ClInclude Include="eosAnalyticTa.h" />
+    <ClInclude Include="eosFigures.h" />
+    <ClInclude Include="eosIdeal.h" />
+    <ClInclude Include="eosIdealElectron.h" />
+    <ClInclude Include="eosTable.h" />
+    <ClInclude Include="eosTableAu.h" />
+    <ClInclude Include="eosTableFe.h" />
+    <ClInclude Include="eosTableFeAlpha.h" />
+    <ClInclude Include="eosTableNi.h" />
+    <ClInclude Include="eosTableTa.h" />
+    <ClInclude Include="eosTable_scale.h" />
+    <ClInclude Include="eosTable_table.h" />
+    <ClInclude Include="eosTest.h" />
+    <ClInclude Include="matterState.h" />
+    <ClInclude Include="method.h" />
+    <ClInclude Include="methodEuler.h" />
+    <ClInclude Include="methodEuler2D.h" />
+    <ClInclude Include="node.h" />
+    <ClInclude Include="solver.h" />
+    <ClInclude Include="task.h" />
+    <ClInclude Include="_matrix4.h" />
+    <ClInclude Include="_vector4.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

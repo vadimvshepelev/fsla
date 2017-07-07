@@ -82,6 +82,7 @@
     <ClCompile Include="eosTableTa.cpp" />
     <ClCompile Include="eosTable_scale.cpp" />
     <ClCompile Include="eosTable_table.cpp" />
+    <ClCompile Include="eos\EOSBin.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="matterState.cpp" />
     <ClCompile Include="method.cpp" />
@@ -116,6 +117,7 @@
     <ClInclude Include="eosTable_scale.h" />
     <ClInclude Include="eosTable_table.h" />
     <ClInclude Include="eosTest.h" />
+    <ClInclude Include="eos\EOSBin.h" />
     <ClInclude Include="matterState.h" />
     <ClInclude Include="method.h" />
     <ClInclude Include="methodEuler.h" />

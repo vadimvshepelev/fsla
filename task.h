@@ -68,7 +68,7 @@ struct Zone
       EOSType = ideal не имеют смысла.
 */
 
-enum TaskType { undef, RuGlass };
+enum TaskType { undef, RuGlass, LH1D };
 
 class CTask {
 public:

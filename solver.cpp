@@ -57,7 +57,7 @@ void CSolver::goEuler(char* fName) {
 
 
 
-
+/*
 	string _fName = string(OUTPUT_FOLDER) + "\\" + "test-reconstruction.dat";
 	ofstream ofs; ofs.open(_fName, ios::out);
 	ofs << "TITLE = \"ENO-3 reconstruction test, f(x) = x^2\"" << endl;
@@ -68,7 +68,7 @@ void CSolver::goEuler(char* fName) {
 	}
 
 	ofs.close();
-
+	*/
 
 
 
@@ -116,7 +116,7 @@ void CSolver::goEuler(char* fName) {
 		if(t+tau >tMax) tau = tMax-t;
 		if(counter <=4) tau *=.2;
 		cout << counter << ": " << "t=" << t+tau <<  " tau=" << tau << " courant=" << getzKur() << endl;
-		//if(task.getHydroStage()) calcHydroStageGodunov(t, tau);
+		if(task.getHydroStage()) calcHydroStageGodunov(t, tau);
 		//if(task.getHydroStage()) calcHydroStageRoe(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageGPS(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageLaxFriedrichs(t, tau);	
@@ -124,7 +124,7 @@ void CSolver::goEuler(char* fName) {
 		//if(task.getHydroStage()) calcHydroStageMHM(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageGushchinIdealSimple(t, tau);
 		//if(task.getHydroStage()) calcHydroStageG2(t, tau);	
-		if(task.getHydroStage()) calcHydroStageENO3G(t, tau);		
+		//if(task.getHydroStage()) calcHydroStageENO3G(t, tau);		
 
 
 		/////
@@ -661,8 +661,8 @@ void CSolver::goAuSpall(char *fName) {
 }
 
 void CSolver::goGlass(char* fName) {
-	// Загрузка входного файла, инициализация объекта task типа CTask
-	task.type = TaskType::RuGlass; // Пока не навел порядок в инфраструктуре, проставляю этот флаг руками
+	// Загрузка входного файла, инициализация объекта task типа CTask	
+	// task.type = TaskType::RuGlass; // Пока не навел порядок в инфраструктуре, проставляю этот флаг руками
 	task.load(fName);
 	// Наполнение объектов ms, ms_temp данными на по начальным и граничным условиям из task
 	ms.initData(&task);

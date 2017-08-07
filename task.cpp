@@ -147,13 +147,17 @@ void CTask::load(char* fName) {
 	printf("EOS: %s\n", eos_type);
 	// parse Method
 	const char *method = readStringParam(f, "Method");
-	if(!strcmp(method, "lagrange")) {
+	if(!strcmp(method, "samarskii")) {
 		methodFlag = 0;
 		printf("Method: Samarskii scheme, lagrangian variables\n");
-	} else if(!strcmp(method, "euler"))	{
+	} else if(!strcmp(method, "bgk"))	{
 		mtd = new CMethodEuler(eos);
 		methodFlag = 1;
 		printf("Method: Belotserkovskii-Gushchin-Konshin scheme, eulerian variables\n");
+	} else if(!strcmp(method, "godunov"))	{
+		mtd = new CMethodEuler(eos);
+		methodFlag = 1;
+		printf("Method: Godunov 1st-order scheme, eulerian variables\n");
 	} else {
 		printf("Unknown Method: %s\n", method);
 		exit(1);
@@ -162,102 +166,101 @@ void CTask::load(char* fName) {
 	// parse Stages
 
 	bHydroStage		 = readIntParam(f, "HydroStage")		? true : false;
-	bHeatStage		 = readIntParam(f, "HeatStage")		    ? true : false;
-	bExchangeStage	 = readIntParam(f, "ExchangeStage")	    ? true : false;
-	// parse Source and Viscosity
-	const char *sourceParam = readStringParam(f, "source");
-	if(!strcmp(sourceParam, "no")) 	{	
-		sourceFlag = 0;
-		printf("Source type: none\n");
-	} else if(!strcmp(sourceParam, "default")) {	
-		sourceFlag = 1;
-		printf("Source type: vacuum-metal-vacuum\n");
-	} else if(!strcmp(sourceParam, "Al_glass")) {	
-		sourceFlag = 2;
-		printf("Source type: glass-metal-vacuum\n");
-		eosGlass = new EOSPyrexGlass();
-	} else if(!strcmp(sourceParam, "Al_glass_sq")) {	
-		sourceFlag = 3;
-		printf("Source type: Aluminium on the glass (square pulse)\n");
-	} else if(!strcmp(sourceParam, "5_layers_Si")) {
-		sourceFlag = 4;
-		cout << "Source type: 5-layer Si source" << endl;
+	if(methodFlag != 1)	{ 
+		bHeatStage		 = readIntParam(f, "HeatStage")		    ? true : false;
+		bExchangeStage	 = readIntParam(f, "ExchangeStage")	    ? true : false;
 	} else {
-		printf("Unknown Source type: %s\n", sourceParam);
-		exit(1);
+
 	}
 
-	tauPulse = readFloatParam(f, "tauPulse");
-	if (tauPulse>0)
-		printf("Laser pulse duration: %e seconds\n", tauPulse);
-	else 
-	{
-		printf("Incorrect \"tauPulse\" parameter (must be positive): %e\n", tauPulse);
-		exit(1);
+	// parse Source and Viscosity
+	if (methodFlag != 1) {
+		const char *sourceParam = readStringParam(f, "source");
+		if(!strcmp(sourceParam, "no")) 	{	
+			sourceFlag = 0;
+			printf("Source type: none\n");
+		} else if(!strcmp(sourceParam, "default")) {	
+			sourceFlag = 1;
+			printf("Source type: vacuum-metal-vacuum\n");
+		} else if(!strcmp(sourceParam, "Al_glass")) {	
+			sourceFlag = 2;
+			printf("Source type: glass-metal-vacuum\n");
+			eosGlass = new EOSPyrexGlass();
+		} else if(!strcmp(sourceParam, "Al_glass_sq")) {	
+			sourceFlag = 3;
+			printf("Source type: Aluminium on the glass (square pulse)\n");	
+		} else if(!strcmp(sourceParam, "5_layers_Si")) {
+			sourceFlag = 4;
+			cout << "Source type: 5-layer Si source" << endl;
+		} else {
+			printf("Unknown Source type: %s\n", sourceParam);
+			exit(1);
+		}
+	} else {
+		sourceFlag = 0;
 	}
 
-	fluence = readFloatParam(f, "fluence");
-	if (fluence>=0)
-		printf("Fluence: %f J/m^2\n", fluence);
-	else 
-	{
-		printf("Incorrect \"fluence\" parameter (must be positive): %f\n", fluence);
-		exit(1);
+	if(methodFlag != 1)	{
+		tauPulse = readFloatParam(f, "tauPulse");
+		if (tauPulse>0)
+			printf("Laser pulse duration: %e seconds\n", tauPulse);
+		else {
+			printf("Incorrect \"tauPulse\" parameter (must be positive): %e\n", tauPulse);
+			exit(1);
+		}
+		fluence = readFloatParam(f, "fluence");
+		if (fluence>=0)
+			printf("Fluence: %f J/m^2\n", fluence);
+		else {
+			printf("Incorrect \"fluence\" parameter (must be positive): %f\n", fluence);
+			exit(1);
+		}
+		deltaSkin = readFloatParam(f, "deltaSkin");
+		if (deltaSkin>0)
+			printf("Diameter of skin-layer: %e m\n", deltaSkin);
+		else {
+			printf("Incorrect \"deltaSkin\" parameter (must be positive): %f\n", deltaSkin);
+			exit(1);
+		}
+	} else {
+		tauPulse = 0.; fluence = 0.; deltaSkin = 0.;
 	}
-
-	deltaSkin = readFloatParam(f, "deltaSkin");
-	if (deltaSkin>0)
-		printf("Diameter of skin-layer: %e m\n", deltaSkin);
-	else 
-	{
-		printf("Incorrect \"deltaSkin\" parameter (must be positive): %f\n", deltaSkin);
-		exit(1);
-	}
-
 	courant = readFloatParam(f, "courant");
 	if (courant>0)
 		printf("Courant number: %e\n", courant);
-	else 
-	{
+	else {
 		printf("Incorrect courant parameter (must be positive): %e\n", courant);
 		exit(1);
 	}
-
-	viscFlag = readIntParam(f, "viscosity");
-	if (viscFlag==0)
-		printf("Artifficial viscosity: off\n");
-	else if (viscFlag==1)
-		printf("Artifficial viscosity: on\n");
-	else 
-	{
-		printf("Unknown Viscosity parameter (must be 0 or 1): %d\n", viscFlag);
-		exit(1);
+	if(methodFlag != 1)	{
+		viscFlag = readIntParam(f, "viscosity");
+		if (viscFlag==0)
+			printf("Artifficial viscosity: off\n");
+		else if (viscFlag==1)
+			printf("Artifficial viscosity: on\n");
+		else {
+			printf("Unknown Viscosity parameter (must be 0 or 1): %d\n", viscFlag);
+			exit(1);
+		}
+	} else {
+		viscFlag = 0;
 	}
-
 	maxTime = readFloatParam(f, "maxTime");
 	if (maxTime>0)
 		printf("Calculating up to t: %e seconds\n", maxTime);
-	else 
-	{
+	else {
 		printf("Incorrect maxTime parameter (must be positive): %e\n", maxTime);
 		exit(1);
 	}
-
-
-	// parse nZones
-
-	nZones = readIntParam(f, "nZones");
 	
-	if(nZones<=0)
-	{
+	// parse nZones
+	nZones = readIntParam(f, "nZones");	
+	if(nZones<=0) {
 		printf("Invalid number of zones (nZones): %d\n", nZones);
 		exit(1);
 	}
-
 	zones = new Zone[nZones];
-
-	if(!zones)
-	{
+	if(!zones) {
 		printf("Can't allocate zones. nZones = %d\n", nZones);
 		exit(1);
 	}
@@ -276,8 +279,8 @@ void CTask::load(char* fName) {
 			zones[j].ti = readFloatParam(f, "ti");
 			zones[j].te = readFloatParam(f, "te");
 			zones[j].v  = readFloatParam(f,	"v");
-		}
-		zones[j].expProperty = readFloatParam(f, "exp");
+			zones[j].expProperty = readFloatParam(f, "exp");
+		}		
 		printf("Zone %d loaded!\n", j);
 		totalSize += zones[j].n;
 	}

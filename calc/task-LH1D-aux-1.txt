@@ -1,0 +1,17 @@
+EOSType = ideal
+Method = godunov
+courant = 0.5
+maxTime = 4.e-12
+nZones = 2
+
+l = 50.e-9
+nSize = 200
+ro = 2300.
+v = 0.
+p = 100.e9 
+
+l = 50.e-9
+nSize = 200
+ro = 19300.
+v = 0.
+p = 1000.e9

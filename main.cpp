@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 	//s->goEuler("task-toro-1.txt"); // для Эйлеровых задач
 	//s->goEulerMovingMesh("task.txt"); // для Эйлеровых задач c движущейся сеткой
 	s->goEuler("task-LH1D.txt"); // Задача LH (стекло-золото-вакуум), одномерное приближение
-
+	//s->goEuler("task-LH1D-aux-1.txt"); // Задача LH (стекло-золото-вакуум), левый разрыв стекло-золото
 	delete s;
 
 	// Uncomment for Euler problems

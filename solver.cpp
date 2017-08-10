@@ -131,7 +131,7 @@ void CSolver::goEuler(char* fName) {
 		//dumpToFileTestRP(t+tau, 0);
 		/////
 		//dumpToFileEuler(t+tau);
-		dumpToFileTestRP(t, 100);		
+		//dumpToFileTestRP(t, 100);		
 		if(handleKeys(t)) break;
 		modifyConvIntegral(t+tau/2, tau);
 		// Regular file output
@@ -3247,7 +3247,7 @@ void CSolver::calcHydroStageGodunov(double t, double tau)
 		n.W_temp = n.W - tau/h*(Fp-Fm);
 	}
 	// Тест решения
-	CVectorPrimitive Um, Up;
+/*	CVectorPrimitive Um, Up;
 	double Em=0., Ep=0.;
 	double L0=0., R0=0., L1 = 0., L2=0., L3=0., R1 = 0., R2=0., R3=0.;
 	double eps = 1.e-2;
@@ -3272,7 +3272,7 @@ void CSolver::calcHydroStageGodunov(double t, double tau)
 		if(fabs((L2-R2)/0.5/(L2+R2))>eps && L2 != 0. && R2 != 0. && fabs(L2-R2)>epsAbs)
 			cout << "calcHydroStageGodunov() test not passed: mesh conversion law #2 not satisfied in node " << i << endl;
 	}
-	//
+	// */
 	for(i=0; i<nSize; i++) 
 	{
 		Node& n=ms[i];

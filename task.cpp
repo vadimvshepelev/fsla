@@ -164,13 +164,14 @@ void CTask::load(char* fName) {
 	}
 
 	// parse Stages
-
-	bHydroStage		 = readIntParam(f, "HydroStage")		? true : false;
-	if(methodFlag != 1)	{ 
+		if(methodFlag != 1)	{ 
+		bHydroStage		 = readIntParam(f, "HydroStage")		? true : false;
 		bHeatStage		 = readIntParam(f, "HeatStage")		    ? true : false;
 		bExchangeStage	 = readIntParam(f, "ExchangeStage")	    ? true : false;
 	} else {
-
+		bHydroStage		 = true;
+		bHeatStage		 = false;
+		bExchangeStage   = false;
 	}
 
 	// parse Source and Viscosity

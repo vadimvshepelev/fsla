@@ -1,24 +1,23 @@
 EOSType = ideal
 Method = godunov
-HydroStage = 1
 courant = 0.4
 maxTime = 40.e-12
 nZones = 3
 
 l = 3000.e-9
-nSize = 300
+nSize = 3000
 ro = 2300.
 v = 0.
-p = 260200000000.
+p = 100000000000.
 
 l = 50.e-9
-nSize = 50
+nSize = 500
 ro = 19300.
 v = 0.
-p = 260200000000.
+p = 1000000000000.
 
 l = 1000.e-9
-nSize = 100
+nSize = 1000
 ro = 200.
 v = 0.
-p = 260200000000.
+p = 100000000000.

@@ -5,19 +5,19 @@ maxTime = 40.e-12
 nZones = 3
 
 l = 3000.e-9
-nSize = 12000
+nSize = 300
 ro = 2300.
 v = 0.
 p = 100.e9
 
 l = 50.e-9
-nSize = 200
+nSize = 5
 ro = 19300.
 v = 0.
 p = 1000.e9
 
 l = 1000.e-9
-nSize = 4000
+nSize = 100
 ro = 200.
 v = 0.
 p = 100.e9

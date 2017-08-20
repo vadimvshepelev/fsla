@@ -1,5 +1,5 @@
 EOSType = MieGruneisenRu
-Method = lagrange
+Method = samarskii
 HydroStage = 1
 HeatStage = 1
 ExchangeStage = 1

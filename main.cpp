@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 	// Uncomment for metal problems
 	CSolver *s = new CSolver;
 	//s->goGlass("task-Ru-glass-1000.txt");
-	s->goGlass("task-Ru-glass-optic-1000.txt");
+	//s->goGlass("task-Ru-glass-optic-1000.txt");
 	//s->goGlass("task-Ru-glass-optic-2000.txt");
 	//s->goGlass("task-Ru-glass-optic-3000.txt");
 	//s->goGlass("task - Ni.txt");
@@ -55,6 +55,7 @@ int main(int argc, char *argv[])
 	//s->goEulerMovingMesh("task.txt"); // для Эйлеровых задач c движущейся сеткой
 	//s->goEuler("task-LH1D.txt"); // Задача LH (стекло-золото-вакуум), одномерное приближение
 	//s->goEuler("task-LH1D-aux-1.txt"); // Задача LH (стекло-золото-вакуум), левый разрыв стекло-золото
+	s->goEuler("task-eosbin-test-1.txt"); // Первый тест Глайстера по двучленному уравнению состояния
 	delete s;
 
 	// Uncomment for Euler problems

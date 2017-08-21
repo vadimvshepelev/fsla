@@ -13,6 +13,8 @@
 #include "eosTableFe.h"
 #include "eosTableFeAlpha.h"
 #include "eosTableAu.h"
+#include "eos\\EOSBin.h"
+
 
 #include "methodEuler.h"
 #include "methodEuler2D.h"
@@ -54,8 +56,7 @@ CTask::CTask()
 
 
 
-CTask::~CTask()
-{
+CTask::~CTask() {
 	clear();
 }
 
@@ -78,66 +79,50 @@ void CTask::load(char* fName) {
 	// parse EOSType
 	const char *eos_type = readStringParam(f, "EOSType");
 	
-	if     (!strcmp(eos_type, "table"))
-	{
+	if (!strcmp(eos_type, "table")) {
 		const char* tableDir  = readStringParam(f, "TableDir");
-		
-		// Вопрос -- почему, если эту строчку поставить сразу после следующей:
-		// "const char* tableFlag = readStringParam(f, "TableFlag");", то
-		// tableDir становится равным tableFlag и равным "normal" ???
-		//
-		// 13.01.2012: Сдается мне, он почему-то пишет в одну область памяти эти значения. Пичалька.
-		// Тут, короче, какой-то баг, непонятка. Можно у Руди спросить.
-
 		strcpy(EOSDirName, tableDir);
-		
-		//////////////////////////////////////////////////////////////////////
-
 		const char* tableFlag = readStringParam(f, "TableFlag");
-
 		if(!strcmp(tableFlag, "normal")) EOSFlag = 0;
 		else if(!strcmp(tableFlag, "extended")) EOSFlag = 1;
-		else
-		{
+		else {
 			printf("Unknown TableFlag parameter: %s\n", tableFlag);
 			exit(1);	
-		}
-	
-		//////////////// Очень стремное условие -- проверка по каталогу. Переписать.
+		}	
 		if(!strcmp(EOSDirName, "ni")) {
 			eos	= new EOSTableNi(EOSDirName, EOSFlag, 8900.);
 		} 
 		else if(!strcmp(EOSDirName, "au")) {
 			eos	= new EOSTableAu(EOSDirName, EOSFlag, 19301.);
 		}
-
-
-
 /*		else if(!strcmp(EOSDir, "ta"))
 		{
 			eos	= new EOSTableTa(EOSDir, EOSFlag, 16654.);
 		}*/
-		else if(!strcmp(EOSDirName, "fe"))
-		{
+		else if(!strcmp(EOSDirName, "fe")) {
 			eos	= new EOSTableFe(EOSDirName, EOSFlag, 7874.);
 		}
-		else if(!strcmp(EOSDirName, "fe_comb"))
-		{
+		else if(!strcmp(EOSDirName, "fe_comb")) {
 			eos	= new EOSTableFe(EOSDirName, EOSFlag, 7874.);
 		}
-		else if(!strcmp(EOSDirName, "fe_alpha"))
-		{
+		else if(!strcmp(EOSDirName, "fe_alpha")) {
 			eos	= new EOSTableFeAlpha(EOSDirName, EOSFlag, 7874.);
-		}
-		else
-		{	
+		} else {	
 			eos	= new EOSTable(EOSDirName, EOSFlag, 2700.);
-		}
-		////////////////////////////////////////////////////////////////////////////
-	} else if(!strcmp(eos_type, "analytic"))	eos = new EOSAnalytic();
-	else if(!strcmp(eos_type, "ideal"))		eos = new EOSIdeal(1.4);
-	else if(!strcmp(eos_type, "test"))		eos = new EOSTest();
-	else if(!strcmp(eos_type, "MieGruneisenRu")) {
+		}		
+	} else if(!strcmp(eos_type, "analytic"))	
+		eos = new EOSAnalytic();
+	else if(!strcmp(eos_type, "ideal"))		
+		eos = new EOSIdeal(1.4);
+	else if(!strcmp(eos_type, "test"))		
+		eos = new EOSTest();
+	else if(!strcmp(eos_type, "bin")) {
+		const double gamma = readFloatParam(f, "gamma");
+		const double ro0 = readFloatParam(f, "ro0");
+		const double c0 = readFloatParam(f, "c0");		
+		eos = 0;
+		eosBin = new EOSBin(gamma, ro0, c0);
+	} else if(!strcmp(eos_type, "MieGruneisenRu")) {
 		eos = new EOSMieGruneisenRu();
 		eosGlass = new EOSTable("new", 1, 2700.);
 	} else {

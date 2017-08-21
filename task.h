@@ -8,6 +8,7 @@
 #include "method.h"
 #include "eos.h"
 #include "CTestToro.h"
+#include "eos\\EOSBin.h"
 //#include "eosTableFeAlpha.h"
 
 /* Структура, обозначающая зону. Вычислительная область -- набор зон. */
@@ -122,6 +123,7 @@ private:
 	bool	bExchangeStage;		// Расчитывать электронно-ионный обмен?
 	EOS		*eos;				// Уравнение состояния
 	EOS		*eosGlass;			// Уравнение состояния стекла	
+	EOSBin  *eosBin;			// Указатель на двучленное УРС, если понадобится
 	int		sourceFlag;			// Источник энергии в расчетной области (0 - нет, 1 - алюминий, 2 - алюминий на стекле).
 	double  tauPulse;			// Длительность вспышки
 	double  fluence;			// Флюенс -- энергия, поглощенная единицей поверхности

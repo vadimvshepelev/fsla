@@ -1,0 +1,24 @@
+EOSType = bin
+gamma = 1.6666667
+ro0 = 1.
+ñ0 = 1.
+Method = euler
+
+courant = .9
+
+maxTime = 0.2
+
+nZones = 2
+
+l = .5
+nSize = 50
+ro = 2.15
+v = 0.
+p = 1.87 
+
+l = .5
+nSize = 50
+ro = 1.
+v = -1.
+p = 0.
+ 

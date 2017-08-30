@@ -108,6 +108,9 @@
     <ClCompile Include="eos\EOSBin.cpp">
       <Filter>EOSBin</Filter>
     </ClCompile>
+    <ClCompile Include="solvers\godunov-EOSBin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="_matrix4.h">

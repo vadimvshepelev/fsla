@@ -1,7 +1,7 @@
 EOSType = ideal
 Method = godunov
 courant = 0.4
-maxTime = 40.e-12
+maxTime = 100.e-12
 nZones = 3
 
 l = 3000.e-9

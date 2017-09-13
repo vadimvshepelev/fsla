@@ -15,8 +15,6 @@ public:
 	double getp(double ro, double e);
 	double gete(double ro, double p);
     double getC(double ro, double e);	
-	double getT(double ro, double e);	
-    double getcv(double ro, double ti);
 };
 
 

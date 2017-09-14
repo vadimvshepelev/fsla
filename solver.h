@@ -7,14 +7,12 @@
 using namespace std;
 
 // User-defined data-type for structure of Riemann problem solution
-enum RPSolutionType {SWRW, RWSW, SWSW, RWRW, VacRW, RWVac, RWVacRW};
+enum RPSolutionType {SWRW, RWSW, SWSW, RWRW, VacRW, RWVac, RWVacRW, undef};
 
 // Structure for the Riemann problem solution vector of primitive variables -- (roL, roR, v ,p)
 struct RPSolutionPrimitive {
-	double roL;
-	double roR;
-	double v;
-	double p;
+	RPSolutionPrimitive() : roL(0.), roR(0.), v(0.), p(0.), type(RPSolutionType::undef) {}
+	double roL, roR, v, p;
 	RPSolutionType type;
 };
 
@@ -51,6 +49,13 @@ public:
 	double dfLdp(double p, double roL, double vL, double pL);
 	double fR(double p, double roR, double vR, double pR);
 	double dfRdp(double p, double roR, double vR, double pR);
+
+	CVectorPrimitive calcRPAnalyticalSolutionEOSBin(double roL, double vL, double pL, double roR, double vR, double pR, double x, double t);
+	RPSolutionPrimitive solveRPEOSBin(double roL, double vL, double pL, double roR, double vR, double pR);
+	double fLEOSBin(double p, double roL, double vL, double pL);
+	double dfLdpEOSBin(double p, double roL, double vL, double pL);
+	double fREOSBin(double p, double roR, double vR, double pR);
+	double dfRdpEOSBin(double p, double roR, double vR, double pR);
 
 	double calcProblemL1NormRo(void);
 	double calcProblemL2NormRo(void);
@@ -93,6 +98,7 @@ private:
 	void    calcHydroStageSimpleCIR(double t, double tau);
 	void	calcHydroStageGodunov(double t, double tau);
 	void	calcHydroStageGodunovMovingMesh(double t, double tau);
+	void	calcHydroStageGodunovEOSBin(double t, double tau);
 	void	calcHydroStageMccormack(double t, double tau);
 	void	calcHydroStageMHM(double t, double tau);
 	void    calcHydroStageRoe(double t, double tau);
@@ -116,6 +122,8 @@ private:
 	Vector4 calcRoeFlux(double roL, double rouL, double roEL, double roR, double rouR, double roER);
 	Vector4 calcGPSFlux(double roL, double rouL, double roEL, double roR, double rouR, double roER);
 
+	// Для двучленного УРС
+	Vector4 calcGodunovFluxEOSBin(double roL, double rouL, double roEL, double roR, double rouR, double roER);
 
 	void	solveRiemann();
 

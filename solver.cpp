@@ -3214,8 +3214,7 @@ void CSolver::testSolveHelmholtz(void)
 	delete []_k;
 }
 
-void CSolver::calcHydroStageGodunov(double t, double tau)
-{
+void CSolver::calcHydroStageGodunov(double t, double tau) {
 	double E = 0.;
 	Vector4 Fm = Vector4::ZERO, Fp = Vector4::ZERO;
 	int nSize = ms.getSize();

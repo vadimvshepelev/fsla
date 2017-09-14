@@ -113,6 +113,8 @@ public:
 	double		getCourant() { return courant; }
 	double		getMaxTime() { return maxTime; }
 	TaskType type;
+
+	EOSBin  *eosBin;			// Указатель на двучленное УРС, если понадобится
 private:
 	void		buildFileNames(const char *inputName);
 	const char *readStringParam(FILE *f, const char *name);
@@ -123,7 +125,6 @@ private:
 	bool	bExchangeStage;		// Расчитывать электронно-ионный обмен?
 	EOS		*eos;				// Уравнение состояния
 	EOS		*eosGlass;			// Уравнение состояния стекла	
-	EOSBin  *eosBin;			// Указатель на двучленное УРС, если понадобится
 	int		sourceFlag;			// Источник энергии в расчетной области (0 - нет, 1 - алюминий, 2 - алюминий на стекле).
 	double  tauPulse;			// Длительность вспышки
 	double  fluence;			// Флюенс -- энергия, поглощенная единицей поверхности

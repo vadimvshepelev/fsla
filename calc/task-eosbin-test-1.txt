@@ -1,13 +1,10 @@
 EOSType = bin
 gamma = 1.6666667
 ro0 = 1.
-ñ0 = 1.
-Method = euler
-
+c0 = 1.
+Method = godunov
 courant = .9
-
 maxTime = 0.2
-
 nZones = 2
 
 l = .5

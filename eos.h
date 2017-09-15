@@ -26,7 +26,7 @@ enum EOSType {none, table, analytic, ideal, test,
 			  analyticAu, tableAu, simpleAu,
 			  analyticPyrexGlass, 
 			  simpleCr, simpleSi,
-			  MieGruneisen};
+			  MieGruneisen, bin};
 
 /* 
 Класс EOS -- абстрактный базовый класс для семейства классов, 

@@ -258,9 +258,15 @@ void CTask::load(char* fName) {
 		if(methodFlag==1) {
 			zones[j].v  = readFloatParam(f,	"v");
 			double _p = readFloatParam(f, "p");
-			double _e = _p/(eos->getGamma()-1.)/zones[j].ro;
-			zones[j].ti = eos->getti(zones[j].ro, _e);
-			zones[j].te = zones[j].ti;
+			if(eos) {   
+				double _e = _p/(eos->getGamma()-1.)/zones[j].ro;
+				zones[j].ti = eos->getti(zones[j].ro, _e);
+				zones[j].te = zones[j].ti;
+			} else if (eosBin) {
+				double _e = eosBin->gete(zones[j].ro, _p);
+				zones[j].ti = 0.;
+				zones[j].te = _e;
+			}
 		} else {
 			zones[j].ti = readFloatParam(f, "ti");
 			zones[j].te = readFloatParam(f, "te");

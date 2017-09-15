@@ -116,7 +116,7 @@ void CSolver::goEuler(char* fName) {
 		if(t+tau >tMax) tau = tMax-t;
 		if(counter <=4) tau *=.2;
 		cout << counter << ": " << "t=" << t+tau <<  " tau=" << tau << " courant=" << getzKur() << endl;
-		if(task.getHydroStage()) calcHydroStageGodunov(t, tau);
+		//if(task.getHydroStage()) calcHydroStageGodunov(t, tau);
 		//if(task.getHydroStage()) calcHydroStageRoe(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageGPS(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageLaxFriedrichs(t, tau);	
@@ -125,7 +125,7 @@ void CSolver::goEuler(char* fName) {
 		//if(task.getHydroStage()) calcHydroStageGushchinIdealSimple(t, tau);
 		//if(task.getHydroStage()) calcHydroStageG2(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageENO3G(t, tau);		
-
+		if(task.getHydroStage()) calcHydroStageGodunovEOSBin(t, tau);
 
 		/////
 		//dumpToFileTestRP(t+tau, 0);
@@ -1082,14 +1082,22 @@ void CSolver::dumpToFileTestRP(double t, int num) {
 	printf("Dump matter to file: %s\n", fName.c_str());
 	EOSType EType = task.getEOS().getType();
 	FILE* f=fopen(fName.c_str(), "w");
-	if(!f)
-	{
+	if(!f) {
 		cout << "Cannot open output file. Sorry." << endl;
 		cin.get();
 		exit(1);
 	}
-	fprintf(f, "TITLE=\"Physical quantities' profiles\"\n");
-	fprintf(f, "VARIABLES=\"x\",\"ro\",\"v\",\"p\",\"e\",\"s\",\"s_an\",\"IL\",\"IR\",\"IL_an\",\"IR_an\",\"ro_an\",\"v_an\",\"p_an\",\"e_an\",\"xi\",\"T\"\n");
+	if( (EType == ideal)||(EType == test) )	{		
+		fprintf(f, "TITLE=\"Physical quantities' profiles\"\n");
+		fprintf(f, "VARIABLES=\"x\",\"ro\",\"v\",\"p\",\"e\",\"s\",\"s_an\",\"IL\",\"IR\",\"IL_an\",\"IR_an\",\"ro_an\",\"v_an\",\"p_an\",\"e_an\",\"xi\",\"T\"\n");
+	} else if (EType == EOSType::bin) {
+		fprintf(f, "TITLE=\"RP test for binary eos, t=%f\"\n", t);
+		fprintf(f, "VARIABLES=\"x\",\"ro\",\"v\",\"p\",\"e\",\"ro_an\",\"v_an\",\"p_an\",\"e_an\",\"xi\"\n");
+	} else {
+		cout << "Error CSolver::dumpToFileRP(): improper EOS type!" << endl;
+		cin.get();
+		exit(1);
+	}
 	CVectorPrimitive q;
 	EOS& eos = task.getEOS();
 	int nZones = task.getNumZones();
@@ -1108,26 +1116,27 @@ void CSolver::dumpToFileTestRP(double t, int num) {
 		 pL = eos.getpi(roL, task.getZone(0).ti);  pR = eos.getpi(roR, task.getZone(1).ti);
 	 	 x0 = task.getZone(0).l;
 	}
-	for(unsigned int i=0; i<ms.getSize(); i++)
-	{
-		Node &n = ms[i];
-		if( (EType == ideal)||(EType == test) )	{
-			double x = 0.0, xi = 0.;
-			x = 0.5 * (n.x + ms[i+1].x);
-			if(t!=0.) xi = x/t; else xi = 0.;
+	double x = 0.0, xi = 0., sAn = 0.;
+	for(int i=0; i<ms.getSize(); i++)	{
+		Node &n = ms[i];		
+		x = 0.5 * (n.x + ms[i+1].x);
+		if(t!=0.) xi = x/t; else xi = 0.;
+		if( (EType == ideal)||(EType == test) )	{		
 			q = calcRPAnalyticalSolution(roL, vL, pL, roR, vR, pR, x-x0, t);
-			if(q.ro!=0.) e = q.p/(gamma-1.)/q.ro; else e = 0.;
-			//if(ms[i].ro!=0.) s = ms[i].p/pow(ms[i].ro, gamma); else s = 0.;
-			s=getEntropy(ms[i].ro, ms[i].ti, 0.);
-			/// DEBUG ///
-			double sAn = getEntropy(q.ro, eos.getti(q.ro, q.p/(gamma-1.)/q.ro), 0.);
-			/////////////
+			if(q.ro!=0.) e = q.p/(gamma-1.)/q.ro; else e = 0.;			
+			s=getEntropy(ms[i].ro, ms[i].ti, 0.);			
+			sAn=getEntropy(q.ro, eos.getti(q.ro, q.p/(gamma-1.)/q.ro), 0.);			
 			IL = ms[i].v + 2.0*ms[i].C/(gamma-1.);
 			IR = ms[i].v - 2.0*ms[i].C/(gamma-1.);
 			IL_an = q.v + 2.0*sqrt(gamma*q.p/q.ro)/(gamma-1);
 			IR_an = q.v - 2.0*sqrt(gamma*q.p/q.ro)/(gamma-1);
 			T = eos.getti(ms[i].ro, ms[i].p/(gamma-1.)/ms[i].ro);
 			fprintf(f, "%e %f %f %f %f %e %e %f %f %f %f %f %f %f %f %f %e\n", x, n.ro, n.v, n.p, n.e, s, sAn, IL, IR, IL_an, IR_an, q.ro, q.v, q.p, e, xi, T);
+		}
+		else if (EType == EOSType::bin) {
+			q = calcRPAnalyticalSolutionEOSBin(roL, vL, pL, roR, vR, pR, x-x0, t);
+			e = task.eosBin->gete(q.ro, q.p);
+			fprintf(f, "%e %f %f %f %f %f %f %f %f %e\n", x, n.ro, n.v, n.p, n.e, q.ro, q.v, q.p, e, xi);
 		}
 	}
 	fclose(f);

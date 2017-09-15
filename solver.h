@@ -7,11 +7,11 @@
 using namespace std;
 
 // User-defined data-type for structure of Riemann problem solution
-enum RPSolutionType {SWRW, RWSW, SWSW, RWRW, VacRW, RWVac, RWVacRW, undef};
+enum RPSolutionType {SWRW, RWSW, SWSW, RWRW, VacRW, RWVac, RWVacRW, nowaves};
 
 // Structure for the Riemann problem solution vector of primitive variables -- (roL, roR, v ,p)
 struct RPSolutionPrimitive {
-	RPSolutionPrimitive() : roL(0.), roR(0.), v(0.), p(0.), type(RPSolutionType::undef) {}
+	RPSolutionPrimitive() : roL(0.), roR(0.), v(0.), p(0.), type(RPSolutionType::nowaves) {}
 	double roL, roR, v, p;
 	RPSolutionType type;
 };

@@ -1080,7 +1080,11 @@ void CSolver::dumpToFileTestRP(double t, int num) {
 	_itoa(num, strNum, 10);
 	string fName = OUTPUT_FOLDER + string("out-RP-") + strNum + ".dat";
 	printf("Dump matter to file: %s\n", fName.c_str());
-	EOSType EType = task.getEOS().getType();
+	EOSType EType = EOSType::none;
+	if(!task.eosBin)
+		EType = task.getEOS().getType();
+	else 
+		EType = EOSType::bin;
 	FILE* f=fopen(fName.c_str(), "w");
 	if(!f) {
 		cout << "Cannot open output file. Sorry." << endl;
@@ -1099,22 +1103,37 @@ void CSolver::dumpToFileTestRP(double t, int num) {
 		exit(1);
 	}
 	CVectorPrimitive q;
-	EOS& eos = task.getEOS();
+	EOS* eos = &(task.getEOS());
 	int nZones = task.getNumZones();
 	double roL = 0., vL = 0., pL = 0., roR = 0., vR = 0., pR = 0., x0 = 0., e = 0., s = 0., IL = 0., IR = 0., IL_an = 0., IR_an = 0, T= 0.;
-	double gamma = eos.getGamma();
+	double gamma = 0.; 
+	if(EType != EOSType::bin)
+		gamma = eos->getGamma();
+	else
+		gamma = task.eosBin->gamma;
 	// If left zone is vacuum zone
 	if(nZones == 1) { 
 		roL = 0.; roR = task.getZone(0).ro;
 		 vL = 0.;  vR = task.getZone(0).v;
-		 pL = 0.;  pR = eos.getpi(roR, task.getZone(0).ti);
-	 	 x0 = 0.;
+		 pL = 0.;  
+		if(EType != EOSType::bin) 
+			pR = eos->getpi(roR, task.getZone(0).ti);
+		else
+		    pR = task.eosBin->getp(roR, task.getZone(0).e);		 
+		 x0 = 0.;
 	} else {
 	// If two non-vacuum zones are present in IVP (initial value problem)
 		roL = task.getZone(0).ro;				  roR = task.getZone(1).ro;
 		 vL = task.getZone(0).v;				   vR = task.getZone(1).v;
-		 pL = eos.getpi(roL, task.getZone(0).ti);  pR = eos.getpi(roR, task.getZone(1).ti);
-	 	 x0 = task.getZone(0).l;
+		if(EType != EOSType::bin) {
+			pL = eos->getpi(roR, task.getZone(0).ti);
+			pR = eos->getpi(roR, task.getZone(1).ti);
+		}
+		else {
+		    pL = task.eosBin->getp(roR, task.getZone(0).e);				 
+			pR = task.eosBin->getp(roR, task.getZone(1).e);				 		 
+		}		
+	 	x0 = task.getZone(0).l;
 	}
 	double x = 0.0, xi = 0., sAn = 0.;
 	for(int i=0; i<ms.getSize(); i++)	{
@@ -1125,12 +1144,12 @@ void CSolver::dumpToFileTestRP(double t, int num) {
 			q = calcRPAnalyticalSolution(roL, vL, pL, roR, vR, pR, x-x0, t);
 			if(q.ro!=0.) e = q.p/(gamma-1.)/q.ro; else e = 0.;			
 			s=getEntropy(ms[i].ro, ms[i].ti, 0.);			
-			sAn=getEntropy(q.ro, eos.getti(q.ro, q.p/(gamma-1.)/q.ro), 0.);			
+			sAn=getEntropy(q.ro, eos->getti(q.ro, q.p/(gamma-1.)/q.ro), 0.);			
 			IL = ms[i].v + 2.0*ms[i].C/(gamma-1.);
 			IR = ms[i].v - 2.0*ms[i].C/(gamma-1.);
 			IL_an = q.v + 2.0*sqrt(gamma*q.p/q.ro)/(gamma-1);
 			IR_an = q.v - 2.0*sqrt(gamma*q.p/q.ro)/(gamma-1);
-			T = eos.getti(ms[i].ro, ms[i].p/(gamma-1.)/ms[i].ro);
+			T = eos->getti(ms[i].ro, ms[i].p/(gamma-1.)/ms[i].ro);
 			fprintf(f, "%e %f %f %f %f %e %e %f %f %f %f %f %f %f %f %f %e\n", x, n.ro, n.v, n.p, n.e, s, sAn, IL, IR, IL_an, IR_an, q.ro, q.v, q.p, e, xi, T);
 		}
 		else if (EType == EOSType::bin) {

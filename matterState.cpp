@@ -47,7 +47,7 @@ void MatterState::initData(CTask *task) {
 		/////////////////////////////////////
 		double xInit=nextX;
 		for(int j=0; j<zone.n; j++)	{
-			Node &n = nodes[counter];
+			Node &n = nodes[counter];			
 			n.x = nextX;
 			n.v = zone.v;
 			n.ro = zone.ro;
@@ -56,58 +56,84 @@ void MatterState::initData(CTask *task) {
 			n.te = (zone.expProperty ? 
 				    zone.te * exp(-(n.x-xInit)/ zone.expProperty) + n.ti :
 			        zone.te);
-			if( (task->getSourceFlag() == 2) && (i==0) ) {
-				n.pe = eosGlass.getpe(n.ro, n.ti, n.te);
-				n.pi = eosGlass.getpi(n.ro, n.ti);
-				n.p  = eosGlass.getp (n.ro, n.ti, n.te);
-				n.ee = eosGlass.getee(n.ro, n.ti, n.te);
-				n.ei = eosGlass.getei(n.ro, n.ti);
-				n.e  = eosGlass.gete (n.ro, n.ti, n.te);
-				n.ce = eosGlass.getce(n.ro, n.te);
-				n.ci = eosGlass.getci(n.ro, n.ti);
-				n.C  = eos.getC(n.ro, n.ti, n.te);
-				n.Alphaei     = eosGlass.getAlpha(n.ro, n.ti, n.te);
-				n.kappa = eosGlass.getkappa(n.ro, n.ti, n.te);
-			} else if(task->getSourceFlag()==4) {
-				/*if(i==0 || i==2 || i==4) {
-					n.pe = 0.;
-					n.pi = 0.;
-					n.p  = 0.;
-					n.ee = eosCr.getee(n.ro, n.ti, n.te);
-					n.ei = eosCr.getei(n.ro, n.ti);
-					n.e  = eosCr.gete (n.ro, n.ti, n.te);
-					n.ce = eosCr.getce(n.ro, n.te);
-					n.ci = eosCr.getci(n.ro, n.ti);
-					n.C  = eosCr.getC(n.ro, n.ti, n.te);
-					n.Alphaei = eosCr.getAlpha(n.ro, n.ti, n.te);
-					n.kappa   = eosCr.getkappa(n.ro, n.ti, n.te);
-				} else if(i==1 || i==3) {
-					n.pe = 0.;
-					n.pi = 0.;
-					n.p  = 0.;
-					n.ee = eosAu.getee(n.ro, n.ti, n.te);
-					n.ei = eosAu.getei(n.ro, n.ti);
-					n.e  = eosAu.gete (n.ro, n.ti, n.te);
-					n.ce = eosAu.getce(n.ro, n.te);
-					n.ci = eosAu.getci(n.ro, n.ti);
-					n.C  = eosAu.getC(n.ro, n.ti, n.te);
-					n.Alphaei = eosAu.getAlpha(n.ro, n.ti, n.te);
-					n.kappa   = eosAu.getkappa(n.ro, n.ti, n.te);
+			if(!task->eosBin) {
+				if( (task->getSourceFlag() == 2) && (i==0) ) {
+					n.pe = eosGlass.getpe(n.ro, n.ti, n.te);
+					n.pi = eosGlass.getpi(n.ro, n.ti);
+					n.p  = eosGlass.getp (n.ro, n.ti, n.te);
+					n.ee = eosGlass.getee(n.ro, n.ti, n.te);
+					n.ei = eosGlass.getei(n.ro, n.ti);
+					n.e  = eosGlass.gete (n.ro, n.ti, n.te);
+					n.ce = eosGlass.getce(n.ro, n.te);
+					n.ci = eosGlass.getci(n.ro, n.ti);
+					n.C  = eos.getC(n.ro, n.ti, n.te);
+					n.Alphaei     = eosGlass.getAlpha(n.ro, n.ti, n.te);
+					n.kappa = eosGlass.getkappa(n.ro, n.ti, n.te);
+				} else if(task->getSourceFlag()==4) {
+					/*if(i==0 || i==2 || i==4) {
+						n.pe = 0.;
+						n.pi = 0.;
+						n.p  = 0.;
+						n.ee = eosCr.getee(n.ro, n.ti, n.te);
+						n.ei = eosCr.getei(n.ro, n.ti);
+						n.e  = eosCr.gete (n.ro, n.ti, n.te);
+						n.ce = eosCr.getce(n.ro, n.te);
+						n.ci = eosCr.getci(n.ro, n.ti);
+						n.C  = eosCr.getC(n.ro, n.ti, n.te);
+						n.Alphaei = eosCr.getAlpha(n.ro, n.ti, n.te);
+						n.kappa   = eosCr.getkappa(n.ro, n.ti, n.te);
+					} else if(i==1 || i==3) {
+						n.pe = 0.;
+						n.pi = 0.;
+						n.p  = 0.;
+						n.ee = eosAu.getee(n.ro, n.ti, n.te);
+						n.ei = eosAu.getei(n.ro, n.ti);
+						n.e  = eosAu.gete (n.ro, n.ti, n.te);
+						n.ce = eosAu.getce(n.ro, n.te);
+						n.ci = eosAu.getci(n.ro, n.ti);
+						n.C  = eosAu.getC(n.ro, n.ti, n.te);
+						n.Alphaei = eosAu.getAlpha(n.ro, n.ti, n.te);
+						n.kappa   = eosAu.getkappa(n.ro, n.ti, n.te);
+					} else {
+						n.pe = 0.;
+						n.pi = 0.;
+						n.p  = 0.;
+						n.ee = eosSi.getee(n.ro, n.ti, n.te);
+						n.ei = eosSi.getei(n.ro, n.ti);
+						n.e  = eosSi.gete (n.ro, n.ti, n.te);
+						n.ce = eosSi.getce(n.ro, n.te);
+						n.ci = eosSi.getci(n.ro, n.ti);
+						n.C  = eosSi.getC(n.ro, n.ti, n.te);
+						n.Alphaei = eosSi.getAlpha(n.ro, n.ti, n.te);
+						n.kappa   = eosSi.getkappa(n.ro, n.ti, n.te);
+					}*/
+				} else if (task->type == TaskType::RuGlass) {  // Пока не навел порядок в инфраструктуре, проставляю этот флаг руками в CSolver::goGlass()			        
+					if(i==0) {
+						n.pe = eos.getpe(n.ro, n.ti, n.te);
+						n.pi = eos.getpi(n.ro, n.ti);
+						n.p  = eos.getp (n.ro, n.ti, n.te);
+						n.ee = eos.getee(n.ro, n.ti, n.te);
+						n.ei = eos.getei(n.ro, n.ti);
+						n.e  = eos.gete (n.ro, n.ti, n.te);
+						n.ce = eos.getce(n.ro, n.te);
+						n.ci = eos.getci(n.ro, n.ti);
+						n.C  = eos.getC(n.ro, n.ti, n.te);
+						n.Alphaei     = eos.getAlpha(n.ro, n.ti, n.te);
+						n.kappa = eos.getkappa(n.ro, n.ti, n.te);
+					} else {
+						n.pe = eosGlass.getpe(n.ro, n.ti, n.te);
+						n.pi = eosGlass.getpi(n.ro, n.ti);
+						n.p  = eosGlass.getp (n.ro, n.ti, n.te);
+						n.ee = eosGlass.getee(n.ro, n.ti, n.te);
+						n.ei = eosGlass.getei(n.ro, n.ti);
+						n.e  = eosGlass.gete (n.ro, n.ti, n.te);
+						n.ce = eosGlass.getce(n.ro, n.te);
+						n.ci = eosGlass.getci(n.ro, n.ti);
+						n.C  = eos.getC(n.ro, n.ti, n.te); // сознательно eos, а не EOSGlass, xчтобы не завысить шаг по времени
+						n.Alphaei     = eosGlass.getAlpha(n.ro, n.ti, n.te);
+						n.kappa = eosGlass.getkappa(n.ro, n.ti, n.te);
+					}				
 				} else {
-					n.pe = 0.;
-					n.pi = 0.;
-					n.p  = 0.;
-					n.ee = eosSi.getee(n.ro, n.ti, n.te);
-					n.ei = eosSi.getei(n.ro, n.ti);
-					n.e  = eosSi.gete (n.ro, n.ti, n.te);
-					n.ce = eosSi.getce(n.ro, n.te);
-					n.ci = eosSi.getci(n.ro, n.ti);
-					n.C  = eosSi.getC(n.ro, n.ti, n.te);
-					n.Alphaei = eosSi.getAlpha(n.ro, n.ti, n.te);
-					n.kappa   = eosSi.getkappa(n.ro, n.ti, n.te);
-				}*/
-			} else if (task->type == TaskType::RuGlass) {  // Пока не навел порядок в инфраструктуре, проставляю этот флаг руками в CSolver::goGlass()			        
-				if(i==0) {
 					n.pe = eos.getpe(n.ro, n.ti, n.te);
 					n.pi = eos.getpi(n.ro, n.ti);
 					n.p  = eos.getp (n.ro, n.ti, n.te);
@@ -119,31 +145,19 @@ void MatterState::initData(CTask *task) {
 					n.C  = eos.getC(n.ro, n.ti, n.te);
 					n.Alphaei     = eos.getAlpha(n.ro, n.ti, n.te);
 					n.kappa = eos.getkappa(n.ro, n.ti, n.te);
-				} else {
-					n.pe = eosGlass.getpe(n.ro, n.ti, n.te);
-					n.pi = eosGlass.getpi(n.ro, n.ti);
-					n.p  = eosGlass.getp (n.ro, n.ti, n.te);
-					n.ee = eosGlass.getee(n.ro, n.ti, n.te);
-					n.ei = eosGlass.getei(n.ro, n.ti);
-					n.e  = eosGlass.gete (n.ro, n.ti, n.te);
-					n.ce = eosGlass.getce(n.ro, n.te);
-					n.ci = eosGlass.getci(n.ro, n.ti);
-					n.C  = eos.getC(n.ro, n.ti, n.te); // сознательно eos, а не EOSGlass, xчтобы не завысить шаг по времени
-					n.Alphaei     = eosGlass.getAlpha(n.ro, n.ti, n.te);
-					n.kappa = eosGlass.getkappa(n.ro, n.ti, n.te);
-				}			
-		    } else {
-				n.pe = eos.getpe(n.ro, n.ti, n.te);
-				n.pi = eos.getpi(n.ro, n.ti);
-				n.p  = eos.getp (n.ro, n.ti, n.te);
-				n.ee = eos.getee(n.ro, n.ti, n.te);
-				n.ei = eos.getei(n.ro, n.ti);
-				n.e  = eos.gete (n.ro, n.ti, n.te);
-				n.ce = eos.getce(n.ro, n.te);
-				n.ci = eos.getci(n.ro, n.ti);
-				n.C  = eos.getC(n.ro, n.ti, n.te);
-				n.Alphaei     = eos.getAlpha(n.ro, n.ti, n.te);
-				n.kappa = eos.getkappa(n.ro, n.ti, n.te);
+				}
+			} else {
+				n.ee = 0.;
+				n.ei = 0.;
+				n.e  = zone.e;
+				n.pe = 0.;
+				n.pi = 0.;
+				n.p  = task->eosBin->getp(n.ro, n.e);
+				n.ce = 0.;
+				n.ci = 0.;
+				n.C  = 0.;
+				n.Alphaei = 0.;
+				n.kappa = 0.;
 			}
 			// flow
 			double E = n.ei + 0.5*n.v*n.v;

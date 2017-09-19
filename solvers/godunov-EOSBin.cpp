@@ -296,7 +296,7 @@ Vector4 CSolver::calcGodunovFluxEOSBin(double roL, double rouL, double roEL, dou
 	double uL = rouL/roL, uR = rouR/roR;
 	double eL = roEL/roL - .5*uL*uL, eR = roER/roR - .5*uR*uR; 
 	double pL = eos.getp(roL, eL), pR = eos.getp(roR, eR);
-	CVectorPrimitive res = calcRPAnalyticalSolution(roL, uL, pL, roR, uR, pR, 0., .01);
+	CVectorPrimitive res = calcRPAnalyticalSolutionEOSBin(roL, uL, pL, roR, uR, pR, 0., .01);
 	double E = eos.gete(res.ro, res.p) + .5*res.v*res.v;
 	Vector4 FGodunov = Vector4(res.ro*res.v, res.ro*res.v*res.v + res.p, res.v*(res.ro*E+res.p), 0.);
 	return FGodunov;
@@ -317,11 +317,41 @@ void CSolver::calcHydroStageGodunovEOSBin(double t, double tau) {
 	// Transmissive right boundary
 	roRB = ms[nSize-1].ro; vRB = ms[nSize-1].v; ERB = ms[nSize-1].e + .5*ms[nSize-1].v*ms[nSize-1].v;
 	for(i=0; i<ms.getSize(); i++) {
-		Node &n = ms[i];			
+		Node &n = ms[i];
+
+
+
+
+
+
+		
+
+
+
+
+
+		if(i==50){
+			double qq = 0.;
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		if(i==0)
 			n.F = calcGodunovFluxEOSBin(roLB, roLB*vLB, roLB*ELB, n.W[0], n.W[1], n.W[2]);
 		else
-			n.F = calcGodunovFluxEOSBin(ms[i-1].W[0], ms[i-1].W[1], ms[i-1].W[2], n.W[0], n.W[1], n.W[2]);		
+			n.F = calcGodunovFluxEOSBin(ms[i-1].W[0], ms[i-1].W[1], ms[i-1].W[2], n.W[0], n.W[1], n.W[2]);	
 	}
 	ms[nSize].F = calcGodunovFluxEOSBin(ms[nSize-1].W[0], ms[nSize-1].W[1], ms[nSize-1].W[2], roRB, roRB*vRB, roRB*ERB);
 	// Main cycle

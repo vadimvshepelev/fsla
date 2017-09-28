@@ -1,0 +1,21 @@
+EOSType = bin
+gamma = 1.4
+ro0 = 0.
+c0 = 0.
+Method = godunov
+courant = .9
+maxTime = 0.15
+nZones = 2
+
+l = .5
+nSize = 50
+ro = 1.
+v = -2.
+p = .4 
+
+l = .5
+nSize = 50
+ro = 1.
+v = 2.
+p = .4
+ 

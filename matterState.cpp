@@ -160,7 +160,7 @@ void MatterState::initData(CTask *task) {
 				n.kappa = 0.;
 			}
 			// flow
-			double E = n.ei + 0.5*n.v*n.v;
+			double E = n.e + 0.5*n.v*n.v;
 			n.W = Vector4(n.ro, n.ro*n.v, n.ro*E, 0);
 			n.W_temp = Vector4::ZERO;
 			n.F = Vector4::ZERO;

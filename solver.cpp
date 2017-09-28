@@ -109,6 +109,27 @@ void CSolver::goEuler(char* fName) {
 			cout << "CSolver::go() error: Time points unordered in timesArray." << endl;
 			exit(1);
 		}
+
+
+
+
+
+	//CVectorPrimitive toro1Solution = calcRPAnalyticalSolutionEOSBin(1., 0., 1000., 1., 0., .01, .8, .012);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	// Начинаем счет
 	modifyConvIntegral(_tMin, tau);
 	for(;;)	{
@@ -116,7 +137,7 @@ void CSolver::goEuler(char* fName) {
 		if(t+tau >tMax) tau = tMax-t;
 		if(counter <=4) tau *=.2;
 		cout << counter << ": " << "t=" << t+tau <<  " tau=" << tau << " courant=" << getzKur() << endl;
-		//if(task.getHydroStage()) calcHydroStageGodunov(t, tau);
+		if(task.getHydroStage()) calcHydroStageGodunov(t, tau);
 		//if(task.getHydroStage()) calcHydroStageRoe(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageGPS(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageLaxFriedrichs(t, tau);	
@@ -125,13 +146,13 @@ void CSolver::goEuler(char* fName) {
 		//if(task.getHydroStage()) calcHydroStageGushchinIdealSimple(t, tau);
 		//if(task.getHydroStage()) calcHydroStageG2(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageENO3G(t, tau);		
-		if(task.getHydroStage()) calcHydroStageGodunovEOSBin(t, tau);
+		//if(task.getHydroStage()) calcHydroStageGodunovEOSBin(t, tau);
 
 		/////
 		//dumpToFileTestRP(t+tau, 0);
 		/////
 		//dumpToFileEuler(t+tau);
-		//dumpToFileTestRP(t, 100);		
+		dumpToFileTestRP(t, 100);		
 		if(handleKeys(t)) break;
 		modifyConvIntegral(t+tau/2, tau);
 		// Regular file output
@@ -1130,7 +1151,7 @@ void CSolver::dumpToFileTestRP(double t, int num) {
 			pR = eos->getpi(roR, task.getZone(1).ti);
 		}
 		else {
-		    pL = task.eosBin->getp(roR, task.getZone(0).e);				 
+		    pL = task.eosBin->getp(roL, task.getZone(0).e);				 
 			pR = task.eosBin->getp(roR, task.getZone(1).e);				 		 
 		}		
 	 	x0 = task.getZone(0).l;

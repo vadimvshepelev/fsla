@@ -153,6 +153,30 @@ double CSolver::dfRdpEOSBin(double p, double roR, double vR, double pR) {
 ;}
 
 CVectorPrimitive CSolver::calcRPAnalyticalSolutionEOSBin(double roL, double vL, double pL, double roR, double vR, double pR, double x, double t){
+	
+	
+	
+	
+
+
+
+	/// DEBUG
+	RPSolutionPrimitive res0 = solveRP(roL, vL, pL, roR, vR, pR);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	RPSolutionPrimitive res = solveRPEOSBin(roL, vL, pL, roR, vR, pR);
 	// V = (ro, v, p)T
 	CVectorPrimitive V;

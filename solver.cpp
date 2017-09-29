@@ -50,14 +50,7 @@ void CSolver::goEuler(char* fName) {
 	ms_temp.initData(&task);
 	const unsigned int nSize = ms.getSize();	
 	unsigned int i=0;
-
-
-
-
-
-
-
-/*
+/*  // ENO-3 testing
 	string _fName = string(OUTPUT_FOLDER) + "\\" + "test-reconstruction.dat";
 	ofstream ofs; ofs.open(_fName, ios::out);
 	ofs << "TITLE = \"ENO-3 reconstruction test, f(x) = x^2\"" << endl;
@@ -69,18 +62,6 @@ void CSolver::goEuler(char* fName) {
 
 	ofs.close();
 	*/
-
-
-
-
-
-
-
-
-
-
-
-
 	// Заполняем переменные для расчета нормы ошибки метода
 	_roL = ms[0].ro; _uL = ms[0].v; _pL = ms[0].p; _roR = ms[nSize-1].ro; _uR = ms[nSize-1].v; _pR = ms[nSize-1].p; 
 	_x0 = task.getZone(0).l; _t = task.getMaxTime();
@@ -137,7 +118,7 @@ void CSolver::goEuler(char* fName) {
 		if(t+tau >tMax) tau = tMax-t;
 		if(counter <=4) tau *=.2;
 		cout << counter << ": " << "t=" << t+tau <<  " tau=" << tau << " courant=" << getzKur() << endl;
-		if(task.getHydroStage()) calcHydroStageGodunov(t, tau);
+		//if(task.getHydroStage()) calcHydroStageGodunov(t, tau);
 		//if(task.getHydroStage()) calcHydroStageRoe(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageGPS(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageLaxFriedrichs(t, tau);	
@@ -146,15 +127,24 @@ void CSolver::goEuler(char* fName) {
 		//if(task.getHydroStage()) calcHydroStageGushchinIdealSimple(t, tau);
 		//if(task.getHydroStage()) calcHydroStageG2(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageENO3G(t, tau);		
-		//if(task.getHydroStage()) calcHydroStageGodunovEOSBin(t, tau);
-
-		/////
-		//dumpToFileTestRP(t+tau, 0);
-		/////
-		//dumpToFileEuler(t+tau);
-		dumpToFileTestRP(t, 100);		
+		if(task.getHydroStage()) calcHydroStageGodunovEOSBin(t, tau);		
 		if(handleKeys(t)) break;
 		modifyConvIntegral(t+tau/2, tau);
+
+
+
+
+
+		dumpToFileTestRP(t+tau, 100);
+		if(counter == 5) {
+			double qq = 0.;
+		}
+
+
+
+
+
+
 		// Regular file output
 		t += tau;
 		if (t>=timesArray[nTimesCounter]) {
@@ -3276,6 +3266,21 @@ void CSolver::calcHydroStageGodunov(double t, double tau) {
 	// Потоки считаем по решению задачи Римана о распаде разрыва между ячейками
 	for(i=0; i<nSize; i++) {
 		Node& n=ms[i];
+
+
+
+
+		if(i==49) {
+
+			double qq = 0.;
+
+		}
+
+
+
+
+
+
 		if(i!=0) {
 			Node& nm=ms[i-1];
 			res = calcRPAnalyticalSolution(nm.ro, nm.v, nm.p, n.ro, n.v, n.p, 0., tau);

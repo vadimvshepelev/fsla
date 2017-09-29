@@ -345,27 +345,9 @@ void CSolver::calcHydroStageGodunovEOSBin(double t, double tau) {
 
 
 
-
-
-
-		
-
-
-
-
-
-		if(i==50){
+		if(i == 55) {
 			double qq = 0.;
 		}
-
-
-
-
-
-
-
-
-
 
 
 

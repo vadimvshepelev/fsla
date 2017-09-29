@@ -1,6 +1,6 @@
 EOSType = ideal
 Method = godunov
-courant = .5
+courant = .9
 maxTime = 0.012
 
 nZones = 2

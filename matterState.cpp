@@ -155,7 +155,7 @@ void MatterState::initData(CTask *task) {
 				n.p  = task->eosBin->getp(n.ro, n.e);
 				n.ce = 0.;
 				n.ci = 0.;
-				n.C  = 0.;
+				n.C  = task->eosBin->getC(n.ro, n.e);
 				n.Alphaei = 0.;
 				n.kappa = 0.;
 			}

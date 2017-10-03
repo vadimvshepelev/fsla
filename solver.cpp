@@ -138,7 +138,7 @@ void CSolver::goEuler(char* fName) {
 
 
 		dumpToFileTestRP(t+tau, 100);
-		if(counter == 5) {
+		if(counter == 27) {
 			double qq = 0.;
 		}
 
@@ -3896,6 +3896,19 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 	for(i=mini; i<maxi; i++) {		
 		Vector4 diffPlus = U[i+1]-U[i], diffPlusPlus = U[i+2]-U[i+1], diffMinus = U[i]-U[i-1], diffMinusMinus = U[i-1]-U[i-2];
 		stencil0 = i; stencil1 = i; stencil2 = i;
+
+
+
+
+		if(i==32) {
+		
+			double qq = 0.;
+
+		}
+
+
+
+
 		if( fabs(diffMinus[0])<fabs(diffPlus[0]) ) {
 			stencil0 = i-1;
 			if( fabs(diffMinus[0] - diffMinusMinus[0])<fabs(diffPlus[0] - diffMinus[0]) )

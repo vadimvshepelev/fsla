@@ -161,7 +161,7 @@ CVectorPrimitive CSolver::calcRPAnalyticalSolutionEOSBin(double roL, double vL, 
 
 
 	/// DEBUG
-	RPSolutionPrimitive res0 = solveRP(roL, vL, pL, roR, vR, pR);
+	//RPSolutionPrimitive res0 = solveRP(roL, vL, pL, roR, vR, pR);
 	
 	
 	
@@ -337,7 +337,9 @@ void CSolver::calcHydroStageGodunovEOSBin(double t, double tau) {
 	double roLB=0., vLB = 0., ELB=0., roRB=0., vRB=0., ERB=0.;
 	// Задаем граничные условия
 	// Transmissive left boundary
-	roLB = ms[0].ro; vLB = ms[0].v;	ELB = ms[0].e + .5*ms[0].v*ms[0].v;
+	//roLB = ms[0].ro; vLB = ms[0].v;	ELB = ms[0].e + .5*ms[0].v*ms[0].v;
+	// Reflective left boundary
+	roLB = ms[0].ro; vLB = -ms[0].v;	ELB = ms[0].e + .5*ms[0].v*ms[0].v;
 	// Transmissive right boundary
 	roRB = ms[nSize-1].ro; vRB = ms[nSize-1].v; ERB = ms[nSize-1].e + .5*ms[nSize-1].v*ms[nSize-1].v;
 	for(i=0; i<ms.getSize(); i++) {

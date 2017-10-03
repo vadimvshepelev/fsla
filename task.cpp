@@ -143,6 +143,10 @@ void CTask::load(char* fName) {
 		mtd = new CMethodEuler(eos);
 		methodFlag = 1;
 		printf("Method: Godunov 1st-order scheme, eulerian variables\n");
+	} else if(!strcmp(method, "eno3g"))	{
+		mtd = new CMethodEuler(eos);
+		methodFlag = 1;
+		printf("Method: ENO-3 reconstruciotn, Godunov 1st-order scheme Riemann solver, eulerian variables\n");
 	} else {
 		printf("Unknown Method: %s\n", method);
 		exit(1);

@@ -127,7 +127,9 @@ void CSolver::goEuler(char* fName) {
 		//if(task.getHydroStage()) calcHydroStageGushchinIdealSimple(t, tau);
 		//if(task.getHydroStage()) calcHydroStageG2(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageENO3G(t, tau);		
-		if(task.getHydroStage()) calcHydroStageGodunovEOSBin(t, tau);		
+		//if(task.getHydroStage()) calcHydroStageGodunovEOSBin(t, tau);		
+		if(task.getHydroStage()) calcHydroStageENO3G(t, tau);		
+
 		if(handleKeys(t)) break;
 		modifyConvIntegral(t+tau/2, tau);
 

@@ -107,6 +107,8 @@ private:
 	void	calcHydroStageENO3G(double t, double tau);
 	void	calcHydroStageLaxFriedrichs(double t, double tau);
 
+	double calcInterpolationPolynomialDerivative3(double xim32, double xim12, double xip12, double xip32, double fim32, double fim12, double fip12, double fip32, double x);
+
 	// Limiters
 	Vector4 calcMinmodSlope(Vector4 deltaMinus, Vector4 deltaplus);
 	Vector4 calcSuperBEESlope(double omega, Vector4 deltaMinus, Vector4 deltaPlus);

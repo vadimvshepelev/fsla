@@ -89,6 +89,7 @@
     <ClCompile Include="methodEuler.cpp" />
     <ClCompile Include="methodEuler2D.cpp" />
     <ClCompile Include="solver.cpp" />
+    <ClCompile Include="solvers\ENO.cpp" />
     <ClCompile Include="solvers\godunov-EOSBin.cpp" />
     <ClCompile Include="stageExchange.cpp" />
     <ClCompile Include="stageHeat.cpp" />

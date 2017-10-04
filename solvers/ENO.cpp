@@ -73,7 +73,8 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 		
 			double qq = 0.;
 			double qqq = calcInterpolationPolynomialDerivative3(.3, .4, .5, .6, .3, .4, .5, .55, 2.);
-			double qqqq = 0.;
+			double qqqq = calcInterpolationPolynomialDerivative3(.3, .4, .5, .6, 0., .1, .2, .25, 2.);
+			double qqqqq = 0.;
 
 
 		}
@@ -151,14 +152,15 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 			Up[i][2] = U[i][2]*r0[0] + U[i+1][2]*r0[1] + U[i+2][2]*r0[2];
 			Um[i][2] = U[i][2]*rm1[0] + U[i+1][2]*rm1[1] + U[i+2][2]*rm1[2];
 		} */
-
-
-
-
-		double _up = 0., _um = 0.;
-		double xim12 = (double)(i-mini)*h;
 		
 
+		
+		
+		
+		double _up = 0., _um = 0., _up_formula = 0., _um_formula = 0., xim12 = (double)(i-mini)*h;
+		
+		 
+		
 
 
 
@@ -168,21 +170,16 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 		if(stencil0 == i-2) {
 			Up[i][0] =  1./3.*U[i-2][0] - 7./6.*U[i-1][0] + 11./6.*U[i][0];
 			Um[i][0] = -1./6.*U[i-2][0] + 5./6.*U[i-1][0] +  1./3.*U[i][0];
-
-
-
-
-
-
-
-
-
-			_up = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, UIntegral[i-2][0], UIntegral[i-1][0], UIntegral[i][0], UIntegral[i+1][0], xim12+h);
-			_um = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, UIntegral[i-2][0], UIntegral[i-1][0], UIntegral[i][0], UIntegral[i][0], xim12);
-
-			double qq = 0.;
-
-
+			_up_formula = Up[i][0];
+			_um_formula = Um[i][0];
+			_up = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][0]*h, (U[i-2][0]+U[i-1][0])*h, (U[i-2][0]+U[i-1][0]+U[i][0])*h, xim12+h);
+			_um = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][0]*h, (U[i-2][0]+U[i-1][0])*h, (U[i-2][0]+U[i-1][0]+U[i][0])*h, xim12);
+			if(fabs(_up-_up_formula)>1.e5)	{
+				double qqqqqq=0.;
+			}
+			if(fabs(_um-_um_formula)>1.e5)	{
+				double qqqqqq=0.;
+			}
 
 
 
@@ -192,10 +189,72 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 		} else if (stencil0 == i-1) {
 			Up[i][0] = -1./6.*U[i-1][0] + 5./6.*U[i][0] + 1./3*U[i+1][0];
 			Um[i][0] =  1./3.*U[i-1][0] + 5./6.*U[i][0] - 1./6.*U[i+1][0];
+
+
+
+
+
+
+
+
+			_up_formula = Up[i][0];
+			_um_formula = Um[i][0];
+			_up = calcInterpolationPolynomialDerivative3(xim12-h, xim12, xim12+h, xim12+2.*h, 0., U[i-1][0]*h, (U[i-1][0]+U[i][0])*h, (U[i-1][0]+U[i][0]+U[i+1][0])*h, xim12+h);
+			_um = calcInterpolationPolynomialDerivative3(xim12-h, xim12, xim12+h, xim12+2.*h, 0., U[i-1][0]*h, (U[i-1][0]+U[i][0])*h, (U[i-1][0]+U[i][0]+U[i+1][0])*h, xim12);
+			if(fabs(_up-_up_formula)>1.e5)	{
+				double qqqqqq=0.;
+			}
+			if(fabs(_um-_um_formula)>1.e5)	{
+				double qqqqqq=0.;
+			}
+
+
+
+
+
+
+
+
+
 		} else if (stencil0 == i) {
 			Up[i][0] =  1./3.*U[i][0] + 5./6.*U[i+1][0] - 1./6.*U[i+2][0];
 			Um[i][0] = 11./6.*U[i][0] - 7./6.*U[i+1][0] + 1./3.*U[i+2][0];
+		
+		
+			_up_formula = Up[i][0];
+			_um_formula = Um[i][0];
+			_up = calcInterpolationPolynomialDerivative3(xim12, xim12+h, xim12+2.*h, xim12+3.*h, 0., U[i][0]*h, (U[i][0]+U[i+1][0])*h, (U[i][0]+U[i+1][0]+U[i+2][0])*h, xim12+h);
+			_um = calcInterpolationPolynomialDerivative3(xim12, xim12+h, xim12+2.*h, xim12+3.*h, 0., U[i][0]*h, (U[i][0]+U[i+1][0])*h, (U[i][0]+U[i+1][0]+U[i+2][0])*h, xim12);
+			if(fabs(_up-_up_formula)>1.e5)	{
+				double qqqqqq=0.;
+			}
+			if(fabs(_um-_um_formula)>1.e5)	{
+				double qqqqqq=0.;
+			}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		if(stencil1 == i-2) {
 			Up[i][1] =  1./3.*U[i-2][1] - 7./6.*U[i-1][1] + 11./6.*U[i][1];
 			Um[i][1] = -1./6.*U[i-2][1] + 5./6.*U[i-1][1] +  1./3.*U[i][1];

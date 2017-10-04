@@ -1,5 +1,6 @@
 #include "..\\solver.h"
 #include <vector>
+#include <fstream>
 
 // ENO3-G - method
 // Riemann solver based on exact solution + ENO reconstruction of 3rd order
@@ -15,28 +16,15 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 	// Специальные массивы для хранения переменных и потоков, с дополнительными фиктивными ячейками
 	const unsigned int nGhostCells = 3;	
 	const unsigned int mini = nGhostCells, maxi = nGhostCells+nSize;
-	std::vector<Vector4> U, Up, Um, UIntegral;
+	std::vector<Vector4> U, Up, Um;
 	std::vector<Vector4> F;
 	for(i=0; i<nSize+nGhostCells+nGhostCells; i++) {
-		F.push_back(Vector4::ZERO); Up.push_back(Vector4::ZERO); Um.push_back(Vector4::ZERO); UIntegral.push_back(Vector4::ZERO);
+		F.push_back(Vector4::ZERO); Up.push_back(Vector4::ZERO); Um.push_back(Vector4::ZERO);
 		if(i>=nGhostCells && i<nGhostCells+nSize)
 			U.push_back(ms[i-nGhostCells].W);
 		else
 			U.push_back(Vector4::ZERO);
 	}
-
-
-
-
-
-
-	Vector4 S = Vector4::ZERO;
-	for(i=1; i<nSize+nGhostCells+nGhostCells; i++) {
-		S += U[i-1]*h; 
-		UIntegral[i]=S;
-	}
-
-
 	// Transmissive b.c.s
 	U[2] = U[mini]; U[1] = U[mini]; U[0] = U[mini];  
 	U[maxi] = U[maxi-1]; U[maxi+1] = U[maxi-1]; U[maxi+2] = U[maxi-1];
@@ -44,15 +32,16 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 	double rm1[] = {11./6., -7./6.,  1./3}, 
 		    r0[] = { 1./3.,  5./6., -1./6.},
 			r1[] = {-1./6.,  5./6.,  1./3.},
-			r2[] = { 1./3., -7./6., 11./6.}; 
+			r2[] = { 1./3., -7./6., 11./6.};
 
 
-
-
-
-
-
-	
+	ofstream ofs;
+	ofs.open("reconstruction.dat", ios::out);
+	double x_for_writing=0., step = h/20; 
+	double TV = 0.;
+	for(i=mini+1; i<maxi; i++) {		
+		TV += fabs(U[i][0]-U[i-1][0]);
+	}
 
 
 
@@ -65,11 +54,11 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 	for(i=mini; i<maxi; i++) {		
 		Vector4 diffPlus = U[i+1]-U[i], diffPlusPlus = U[i+2]-U[i+1], diffMinus = U[i]-U[i-1], diffMinusMinus = U[i-1]-U[i-2];
 		stencil0 = i; stencil1 = i; stencil2 = i;
+		double x0 = (double)(i-nGhostCells)*h;
 
 
 
-
-		if(i==32) {
+		if(i==34) {
 		
 			double qq = 0.;
 			double qqq = calcInterpolationPolynomialDerivative3(.3, .4, .5, .6, .3, .4, .5, .55, 2.);
@@ -78,36 +67,35 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 
 
 		}
+		
 
 
-
-
-		if( fabs(diffMinus[0])<fabs(diffPlus[0]) ) {
+		if( fabs(diffMinus[0])<=fabs(diffPlus[0]) ) {
 			stencil0 = i-1;
-			if( fabs(diffMinus[0] - diffMinusMinus[0])<fabs(diffPlus[0] - diffMinus[0]) )
+			if( fabs(diffMinus[0] - diffMinusMinus[0])<=fabs(diffPlus[0] - diffMinus[0]) )
 				stencil0 = i-2;		
 		} else {
-			if( fabs(diffPlusPlus[0] - diffPlus[0]) < fabs(diffPlus[0] - diffMinus[0]) )
+			if( fabs(diffPlusPlus[0] - diffPlus[0]) <= fabs(diffPlus[0] - diffMinus[0]) )
 				stencil0 = i;
 			else
 				stencil0 = i-1;
 		}
-		if( fabs(diffMinus[1])<fabs(diffPlus[1]) ) {
+		if( fabs(diffMinus[1])<=fabs(diffPlus[1]) ) {
 			stencil1 = i-1;
-			if( fabs(diffMinus[1] - diffMinusMinus[1])<fabs(diffPlus[1] - diffMinus[1]) )
+			if( fabs(diffMinus[1] - diffMinusMinus[1])<=fabs(diffPlus[1] - diffMinus[1]) )
 				stencil1 = i-2;		
 		} else {
-			if( fabs(diffPlusPlus[1] - diffPlus[1]) < fabs(diffPlus[1] - diffMinus[1]) )
+			if( fabs(diffPlusPlus[1] - diffPlus[1]) <= fabs(diffPlus[1] - diffMinus[1]) )
 				stencil1 = i;
 			else
 				stencil1 = i-1;
 		}
-		if( fabs(diffMinus[2])<fabs(diffPlus[2]) ) {
+		if( fabs(diffMinus[2])<=fabs(diffPlus[2]) ) {
 			stencil2 = i-1;
-			if( fabs(diffMinus[2] - diffMinusMinus[2])<fabs(diffPlus[2] - diffMinus[2]) )
-				stencil2 = i-2;		
+			if( fabs(diffMinus[2] - diffMinusMinus[2])<=fabs(diffPlus[2] - diffMinus[2]) )
+				stencil2 = i-2;	
 		} else {
-			if( fabs(diffPlusPlus[2] - diffPlus[2]) < fabs(diffPlus[2] - diffMinus[2]) )
+			if( fabs(diffPlusPlus[2] - diffPlus[2]) <= fabs(diffPlus[2] - diffMinus[2]) )
 				stencil2 = i;
 			else
 				stencil2 = i-1;
@@ -117,8 +105,7 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 		// TODO: Использовать "принцип отражения", как говорит А.В. Конюхов
 		// Смысл -- чтобы подойти к точке с другой стороны, мысленно переворачиваем
 		// профиль относительно границы i+1/2 -- имеем тот же набор средних, ту же задачу,
-		// но в другом направлении. Т.е. берем те же коэффициенты, но в обратном порядке.
-		// Выписать в явном виде и сделать так.
+		// но в другом направлении. 
 
 		// Поток Лакса-Фридрихса -- самый грубый и легкий в обращении, его попробовать
 
@@ -151,22 +138,25 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 		} else if (stencil2 == i) {
 			Up[i][2] = U[i][2]*r0[0] + U[i+1][2]*r0[1] + U[i+2][2]*r0[2];
 			Um[i][2] = U[i][2]*rm1[0] + U[i+1][2]*rm1[1] + U[i+2][2]*rm1[2];
-		} */
-		
+		} */		
+		if(i==34) {
+			double q = 0.;
+		}
+		for(int j=0; j<20; j++) {
+			x_for_writing = x0 + (double)(j)*step;
+			ofs << x_for_writing << " ";
+			if (stencil0 == i-2)
+				ofs << calcInterpolationPolynomialDerivative3(x0-2.*h,x0-h,x0,x0+h,0.,U[i-2][0]*h,(U[i-2][0]+U[i-1][0])*h,(U[i-2][0]+U[i-1][0]+U[i][0])*h,x_for_writing) << endl;
+			else if (stencil0 == i-1)
+				ofs << calcInterpolationPolynomialDerivative3(x0-h,x0,x0+h,x0+2.*h,0.,U[i-1][0]*h,(U[i-1][0]+U[i][0])*h,(U[i-1][0]+U[i][0]+U[i+1][0])*h,x_for_writing) << endl;
+			else if (stencil0 == i)
+				ofs << calcInterpolationPolynomialDerivative3(x0,x0+h,x0+2.*h,x0+3.*h,0.,U[i][0]*h,(U[i][0]+U[i+1][0])*h,(U[i][0]+U[i+1][0]+U[i+2][0])*h,x_for_writing) << endl;
+			else
+				exit(1);
+		}
 
-		
-		
-		
+
 		double _up = 0., _um = 0., _up_formula = 0., _um_formula = 0., xim12 = (double)(i-mini)*h;
-		
-		 
-		
-
-
-
-
-
-
 		if(stencil0 == i-2) {
 			Up[i][0] =  1./3.*U[i-2][0] - 7./6.*U[i-1][0] + 11./6.*U[i][0];
 			Um[i][0] = -1./6.*U[i-2][0] + 5./6.*U[i-1][0] +  1./3.*U[i][0];
@@ -174,139 +164,130 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 			_um_formula = Um[i][0];
 			_up = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][0]*h, (U[i-2][0]+U[i-1][0])*h, (U[i-2][0]+U[i-1][0]+U[i][0])*h, xim12+h);
 			_um = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][0]*h, (U[i-2][0]+U[i-1][0])*h, (U[i-2][0]+U[i-1][0]+U[i][0])*h, xim12);
-			if(fabs(_up-_up_formula)>1.e5)	{
+			if(fabs(_up-_up_formula)>1.e-5)	{
 				double qqqqqq=0.;
 			}
-			if(fabs(_um-_um_formula)>1.e5)	{
+			if(fabs(_um-_um_formula)>1.e-5)	{
 				double qqqqqq=0.;
-			}
-
-
-
-
-
-
+			}			
 		} else if (stencil0 == i-1) {
 			Up[i][0] = -1./6.*U[i-1][0] + 5./6.*U[i][0] + 1./3*U[i+1][0];
 			Um[i][0] =  1./3.*U[i-1][0] + 5./6.*U[i][0] - 1./6.*U[i+1][0];
-
-
-
-
-
-
-
-
 			_up_formula = Up[i][0];
 			_um_formula = Um[i][0];
 			_up = calcInterpolationPolynomialDerivative3(xim12-h, xim12, xim12+h, xim12+2.*h, 0., U[i-1][0]*h, (U[i-1][0]+U[i][0])*h, (U[i-1][0]+U[i][0]+U[i+1][0])*h, xim12+h);
 			_um = calcInterpolationPolynomialDerivative3(xim12-h, xim12, xim12+h, xim12+2.*h, 0., U[i-1][0]*h, (U[i-1][0]+U[i][0])*h, (U[i-1][0]+U[i][0]+U[i+1][0])*h, xim12);
-			if(fabs(_up-_up_formula)>1.e5)	{
+			if(fabs(_up-_up_formula)>1.e-5)	{
 				double qqqqqq=0.;
 			}
-			if(fabs(_um-_um_formula)>1.e5)	{
+			if(fabs(_um-_um_formula)>1.e-5)	{
 				double qqqqqq=0.;
 			}
-
-
-
-
-
-
-
-
-
 		} else if (stencil0 == i) {
 			Up[i][0] =  1./3.*U[i][0] + 5./6.*U[i+1][0] - 1./6.*U[i+2][0];
-			Um[i][0] = 11./6.*U[i][0] - 7./6.*U[i+1][0] + 1./3.*U[i+2][0];
-		
-		
+			Um[i][0] = 11./6.*U[i][0] - 7./6.*U[i+1][0] + 1./3.*U[i+2][0];	
+
+			double up_i_minus_2 = 1./3.*U[i-2][0] - 7./6.*U[i-1][0] + 11./6.*U[i][0];
+			double um_i_minus_2 = -1./6.*U[i-2][0] + 5./6.*U[i-1][0] +  1./3.*U[i][0];
+			double up_i_minus_1 = -1./6.*U[i-1][0] + 5./6.*U[i][0] + 1./3*U[i+1][0];
+			double um_i_minus_1 = 1./3.*U[i-1][0] + 5./6.*U[i][0] - 1./6.*U[i+1][0];
+
+
+
 			_up_formula = Up[i][0];
 			_um_formula = Um[i][0];
 			_up = calcInterpolationPolynomialDerivative3(xim12, xim12+h, xim12+2.*h, xim12+3.*h, 0., U[i][0]*h, (U[i][0]+U[i+1][0])*h, (U[i][0]+U[i+1][0]+U[i+2][0])*h, xim12+h);
 			_um = calcInterpolationPolynomialDerivative3(xim12, xim12+h, xim12+2.*h, xim12+3.*h, 0., U[i][0]*h, (U[i][0]+U[i+1][0])*h, (U[i][0]+U[i+1][0]+U[i+2][0])*h, xim12);
-			if(fabs(_up-_up_formula)>1.e5)	{
+			if(fabs(_up-_up_formula)>1.e-5)	{
 				double qqqqqq=0.;
 			}
-			if(fabs(_um-_um_formula)>1.e5)	{
+			if(fabs(_um-_um_formula)>1.e-5)	{
 				double qqqqqq=0.;
-			}		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+			}				
 		}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 		if(stencil1 == i-2) {
 			Up[i][1] =  1./3.*U[i-2][1] - 7./6.*U[i-1][1] + 11./6.*U[i][1];
 			Um[i][1] = -1./6.*U[i-2][1] + 5./6.*U[i-1][1] +  1./3.*U[i][1];
+			_up_formula = Up[i][1];
+			_um_formula = Um[i][1];
+			_up = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][1]*h, (U[i-2][1]+U[i-1][1])*h, (U[i-2][1]+U[i-1][1]+U[i][1])*h, xim12+h);
+			_um = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][1]*h, (U[i-2][1]+U[i-1][1])*h, (U[i-2][1]+U[i-1][1]+U[i][1])*h, xim12);
+			if(fabs(_up-_up_formula)>1.e-5)	{
+				double qqqqqq=0.;
+			}
+			if(fabs(_um-_um_formula)>1.e-5)	{
+				double qqqqqq=0.;
+			}
 		} else if (stencil1 == i-1) {
 			Up[i][1] = -1./6.*U[i-1][1] + 5./6.*U[i][1] + 1./3.*U[i+1][1];
 			Um[i][1] =  1./3.*U[i-1][1] + 5./6.*U[i][1] - 1./6.*U[i+1][1];
+			_up_formula = Up[i][1];
+			_um_formula = Um[i][1];
+			_up = calcInterpolationPolynomialDerivative3(xim12-h, xim12, xim12+h, xim12+2.*h, 0., U[i-1][1]*h, (U[i-1][1]+U[i][1])*h, (U[i-1][1]+U[i][1]+U[i+1][1])*h, xim12+h);
+			_um = calcInterpolationPolynomialDerivative3(xim12-h, xim12, xim12+h, xim12+2.*h, 0., U[i-1][1]*h, (U[i-1][1]+U[i][1])*h, (U[i-1][1]+U[i][1]+U[i+1][1])*h, xim12);
+			if(fabs(_up-_up_formula)>1.e-5)	{
+				double qqqqqq=0.;
+			}
+			if(fabs(_um-_um_formula)>1.e-5)	{
+				double qqqqqq=0.;
+			}
 		} else if (stencil1 == i) {
 			Up[i][1] =  1./3.*U[i][1] + 5./6.*U[i+1][1] - 1./6.*U[i+2][1];
 			Um[i][1] = 11./6.*U[i][1] - 7./6.*U[i+1][1] + 1./3.*U[i+2][1];
+			_up_formula = Up[i][1];
+			_um_formula = Um[i][1];
+			_up = calcInterpolationPolynomialDerivative3(xim12, xim12+h, xim12+2.*h, xim12+3.*h, 0., U[i][1]*h, (U[i][1]+U[i+1][1])*h, (U[i][1]+U[i+1][1]+U[i+2][1])*h, xim12+h);
+			_um = calcInterpolationPolynomialDerivative3(xim12, xim12+h, xim12+2.*h, xim12+3.*h, 0., U[i][1]*h, (U[i][1]+U[i+1][1])*h, (U[i][1]+U[i+1][1]+U[i+2][1])*h, xim12);
+			if(fabs(_up-_up_formula)>1.e-5)	{
+				double qqqqqq=0.;
+			}
+			if(fabs(_um-_um_formula)>1.e-5)	{
+				double qqqqqq=0.;
+			}		
 		}
 		if(stencil2 == i-2) {
 			Up[i][2] =  1./3.*U[i-2][2] - 7./6.*U[i-1][2] + 11./6.*U[i][2];
 			Um[i][2] = -1./6.*U[i-2][2] + 5./6.*U[i-1][2] +  1./3.*U[i][2];
+			_up_formula = Up[i][2];
+			_um_formula = Um[i][2];
+			_up = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][2]*h, (U[i-2][2]+U[i-1][2])*h, (U[i-2][2]+U[i-1][2]+U[i][2])*h, xim12+h);
+			_um = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][2]*h, (U[i-2][2]+U[i-1][2])*h, (U[i-2][2]+U[i-1][2]+U[i][2])*h, xim12);
+			if(fabs(_up-_up_formula)>1.e-5)	{
+				double qqqqqq=0.;
+			}
+			if(fabs(_um-_um_formula)>1.e-5)	{
+				double qqqqqq=0.;
+			}
 		} else if (stencil2 == i-1) {
 			Up[i][2] = -1./6.*U[i-1][2] + 5./6.*U[i][2] + 1./3.*U[i+1][2];
 			Um[i][2] =  1./3.*U[i-1][2] + 5./6.*U[i][2] - 1./6.*U[i+1][2];
+			_up_formula = Up[i][2];
+			_um_formula = Um[i][2];
+			_up = calcInterpolationPolynomialDerivative3(xim12-h, xim12, xim12+h, xim12+2.*h, 0., U[i-1][2]*h, (U[i-1][2]+U[i][2])*h, (U[i-1][2]+U[i][2]+U[i+1][2])*h, xim12+h);
+			_um = calcInterpolationPolynomialDerivative3(xim12-h, xim12, xim12+h, xim12+2.*h, 0., U[i-1][2]*h, (U[i-1][2]+U[i][2])*h, (U[i-1][2]+U[i][2]+U[i+1][2])*h, xim12);
+			if(fabs(_up-_up_formula)>1.e-5)	{
+				double qqqqqq=0.;
+			}
+			if(fabs(_um-_um_formula)>1.e-5)	{
+				double qqqqqq=0.;
+			}
 		} else if (stencil2 == i) {
 			Up[i][2] =  1./3.*U[i][2] + 5./6.*U[i+1][2] - 1./6.*U[i+2][2];
 			Um[i][2] = 11./6.*U[i][2] - 7./6.*U[i+1][2] + 1./3.*U[i+2][2];
+			_up_formula = Up[i][2];
+			_um_formula = Um[i][2];
+			_up = calcInterpolationPolynomialDerivative3(xim12, xim12+h, xim12+2.*h, xim12+3.*h, 0., U[i][2]*h, (U[i][2]+U[i+1][2])*h, (U[i][2]+U[i+1][2]+U[i+2][2])*h, xim12+h);
+			_um = calcInterpolationPolynomialDerivative3(xim12, xim12+h, xim12+2.*h, xim12+3.*h, 0., U[i][2]*h, (U[i][2]+U[i+1][2])*h, (U[i][2]+U[i+1][2]+U[i+2][2])*h, xim12);
+			if(fabs(_up-_up_formula)>1.e-5)	{
+				double qqqqqq=0.;
+			}
+			if(fabs(_um-_um_formula)>1.e-5)	{
+				double qqqqqq=0.;
+			}		
 		}
-
-		
-
-
-
-
-		// DEBUG: sign property
-		if( (Up[i][0] - Um[i][0])*(U[i+1][0]-U[i][0]) < 0 )		{
-
-			double gg = 0.;
-		}	
-
-
-
-
-		
-
-
-
-
 	}
 	// Boundary nodes U+[0] and U-[nSize]
 	Up[mini-1] = Up[mini]; Um[maxi] = Um[maxi-1];
-
-
-
-
-
-
-
-
-
 	/////
 /*	string _fName = string(OUTPUT_FOLDER) + "\\" + "test-reconstruction-2.dat";
 	ofstream ofs; ofs.open(_fName, ios::out);
@@ -380,6 +361,27 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 		*/
 
 	}
+
+
+
+
+
+
+		
+	
+
+
+
+
+
+
+
+
+
+
+
+
+	ofs.close();
 	// Main cycle
 	for(i=0; i<nSize; i++) {				
 		ms[i].W_temp = ms[i].W - tau/h*(ms[i+1].F-ms[i].F);     //(F[nGhostCells+i+1]-F[nGhostCells+i]);
@@ -398,6 +400,15 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 		n.p  = eos.getpi(n.ro, n.ti);
 		n.C  = eos.getC(n.ro, n.ti, n.te);
 	}
+
+
+	TV = 0.;
+	for(i=1; i<nSize; i++) {		
+		TV += fabs(ms[i].ro-ms[i-1].ro);
+	}
+
+
+
 	cout << " done!" << endl;
 }
 

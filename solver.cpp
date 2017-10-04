@@ -138,9 +138,11 @@ void CSolver::goEuler(char* fName) {
 
 
 		dumpToFileTestRP(t+tau, 100);
-		if(counter == 27) {
+		if(counter == 26) {
 			double qq = 0.;
 		}
+
+
 
 
 

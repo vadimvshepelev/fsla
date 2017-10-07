@@ -6,7 +6,8 @@
 RPSolutionPrimitive CSolver::solveRPEOSBin(double roL, double vL, double pL, double roR, double vR, double pR) {
 	// Решаем нелинейное уравнение относительно давления методом касательных Ньютона
 	RPSolutionPrimitive res; 
-	const double TOL = 1.e-6, gamma = task.eosBin->gamma, ro0 = task.eosBin->ro0, c0 = task.eosBin->c0, p0 = 1./gamma*ro0*ro0*c0;
+	EOSBin* eos = task.eosBin;
+	const double TOL = 1.e-6, gamma = eos->gamma, ro0 = eos->ro0, c0 = eos->c0, p0 = 1./gamma*ro0*ro0*c0;
 	int itCounter = 0;
 	double p = 0., pPrev = 0., cL = 0., cR = 0.;
 	if(roL!=0.) cL = sqrt(gamma*(pL+p0)/roL);
@@ -92,22 +93,24 @@ RPSolutionPrimitive CSolver::solveRPEOSBin(double roL, double vL, double pL, dou
 
 
 double CSolver::fLEOSBin(double p, double roL, double vL, double pL) {
-	const double gamma = task.eosBin->gamma;
+	EOSBin* eos = task.eosBin;
+	const double gamma = eos->gamma, ro0 = eos->ro0, c0 = eos->c0, p0 = 1./gamma*ro0*ro0*c0;
 	double f = 0.;
 	if(p>pL) {
 		double AL = 2./(gamma+1)/roL;
-		double BL = (gamma-1.)/(gamma+1.)*pL;
-		f = (p-pL) * sqrt(AL/(p+BL));
+		double BL = (gamma-1.)/(gamma+1.)*(pL+p0);
+		f = (p-pL) * sqrt(AL/(p+p0+BL));
 		return f;
 	} else {
-		double cL = sqrt(gamma*pL/roL);
-		f = 2.*cL/(gamma-1.) * ( (pow(p/pL, (gamma-1.)/2./gamma)) - 1. );
+		double cL = sqrt(gamma*(pL+p0)/roL);
+		f = 2.*cL/(gamma-1.) * ( (pow((p+p0)/(pL+p0), (gamma-1.)/2./gamma)) - 1. );
 		return f;	
 	}
 }
 
 double CSolver::dfLdpEOSBin(double p, double roL, double vL, double pL) {
-    const double gamma = task.eosBin->gamma, ro0 = task.eosBin->ro0, c0 = task.eosBin->c0, p0 = 1./gamma*ro0*ro0*c0;
+    EOSBin* eos = task.eosBin;
+	const double gamma = eos->gamma, ro0 = eos->ro0, c0 = eos->c0, p0 = 1./gamma*ro0*ro0*c0;
 	double dfdp = 0.;
 	if (p>pL) {
 		double AL = 2./(gamma+1)/roL;

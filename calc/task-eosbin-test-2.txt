@@ -3,13 +3,13 @@ gamma = 1.6666667
 ro0 = 1.
 c0 = 1.
 Method = godunov
-courant = .4
-maxTime = 0.344
+courant = .9
+maxTime = 0.295
 nZones = 1
 
 l = 1.
 nSize = 100
 ro = 1.
 v = -1.
-p = 0.
+p = .224
  

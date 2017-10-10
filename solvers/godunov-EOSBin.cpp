@@ -58,8 +58,9 @@ RPSolutionPrimitive CSolver::solveRPEOSBin(double roL, double vL, double pL, dou
 		pPrev = p;
 		p = pPrev - (fLEOSBin(pPrev, roL, vL, pL) + fREOSBin(pPrev, roR, vR, pR) + vR - vL )/
 			        (dfLdpEOSBin(pPrev, roL, vL, pL) + dfRdpEOSBin(pPrev, roR, vR, pR)); 
-		if (p<=0.)
-			p = TOL;
+		// Отрицательные давления все же допускаются в случае с двучленным УРС!
+		/*if (p<=0.)
+			p = TOL;*/
 		itCounter++;
 	} while (fabs(2*(p-pPrev)/(p+pPrev))>TOL);
 	res.p   = p;
@@ -120,7 +121,7 @@ double CSolver::dfLdpEOSBin(double p, double roL, double vL, double pL) {
 	}
 	else {
 		double cL = sqrt(gamma*(pL+p0)/roL);
-		dfdp = cL/pL/gamma*pow((p+p0)/(pL+p0), -(gamma+1)/2./gamma); 
+		dfdp = cL/(pL+p0)/gamma*pow((p+p0)/(pL+p0), -(gamma+1)/2./gamma); 
 		return dfdp;
 	} 
 }
@@ -281,7 +282,7 @@ CVectorPrimitive CSolver::calcRPAnalyticalSolutionEOSBin(double roL, double vL, 
 			} else {
 				V.ro = roL*pow(2./(gamma+1.)+(gamma-1.)/(gamma+1.)/cL*(vL-xi), 2./(gamma-1.));
 				V.v  = 2./(gamma+1)*(cL + (gamma-1.)/2.*vL + xi);
-				V.p  = (pL+p0)*pow(2./(gamma+1.)+(gamma-1.)/(gamma+1.)/cL*(vL-xi), 2.*gamma/(gamma-1.));
+				V.p  = (pL+p0)*pow(2./(gamma+1.)+(gamma-1.)/(gamma+1.)/cL*(vL-xi), 2.*gamma/(gamma-1.)) - p0;
 			}
 		} 
 	//Пусть точка справа от контактного разрыва (xiContact = res.v)
@@ -311,7 +312,7 @@ CVectorPrimitive CSolver::calcRPAnalyticalSolutionEOSBin(double roL, double vL, 
 			} else {
 				V.ro = roR*pow(2./(gamma+1.) - (gamma-1.)/(gamma+1.)/cR*(vR-xi), 2./(gamma-1.));
 				V.v  = 2./(gamma+1)*(-cR + (gamma-1.)/2.*vR + xi);
-				V.p  = (pR+p0)*pow(2./(gamma+1.) - (gamma-1.)/(gamma+1.)/cR*(vR-xi), 2.*gamma/(gamma-1.));
+				V.p  = (pR+p0)*pow(2./(gamma+1.) - (gamma-1.)/(gamma+1.)/cR*(vR-xi), 2.*gamma/(gamma-1.)) - p0;
 			}
 		}
 	}
@@ -323,7 +324,23 @@ Vector4 CSolver::calcGodunovFluxEOSBin(double roL, double rouL, double roEL, dou
 	double uL = rouL/roL, uR = rouR/roR;
 	double eL = roEL/roL - .5*uL*uL, eR = roER/roR - .5*uR*uR; 
 	double pL = eos.getp(roL, eL), pR = eos.getp(roR, eR);
-	CVectorPrimitive res = calcRPAnalyticalSolutionEOSBin(roL, uL, pL, roR, uR, pR, 0., .01);
+	//CVectorPrimitive res = calcRPAnalyticalSolutionEOSBin(roL, uL, pL, roR, uR, pR, 0., .01);
+	
+	
+	
+	
+	
+	
+	
+	CVectorPrimitive res = calcRPAnalyticalSolutionEOSBin(1., .75, 1., .125, 0., .1, -.1, .2);
+	
+	
+	
+	
+	
+	
+	
+	
 	double E = eos.gete(res.ro, res.p) + .5*res.v*res.v;
 	Vector4 FGodunov = Vector4(res.ro*res.v, res.ro*res.v*res.v + res.p, res.v*(res.ro*E+res.p), 0.);
 	return FGodunov;
@@ -340,9 +357,9 @@ void CSolver::calcHydroStageGodunovEOSBin(double t, double tau) {
 	double roLB=0., vLB = 0., ELB=0., roRB=0., vRB=0., ERB=0.;
 	// Задаем граничные условия
 	// Transmissive left boundary
-	//roLB = ms[0].ro; vLB = ms[0].v;	ELB = ms[0].e + .5*ms[0].v*ms[0].v;
+	roLB = ms[0].ro; vLB = ms[0].v;	ELB = ms[0].e + .5*ms[0].v*ms[0].v;
 	// Reflective left boundary
-	roLB = ms[0].ro; vLB = -ms[0].v;	ELB = ms[0].e + .5*ms[0].v*ms[0].v;
+	//roLB = ms[0].ro; vLB = -ms[0].v;	ELB = ms[0].e + .5*ms[0].v*ms[0].v;
 	// Transmissive right boundary
 	roRB = ms[nSize-1].ro; vRB = ms[nSize-1].v; ERB = ms[nSize-1].e + .5*ms[nSize-1].v*ms[nSize-1].v;
 	for(i=0; i<ms.getSize(); i++) {

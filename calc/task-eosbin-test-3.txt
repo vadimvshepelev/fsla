@@ -4,12 +4,12 @@ ro0 = 1.
 c0 = 1.
 Method = godunov
 courant = .4
-maxTime = 0.344
+maxTime = 0.130
 nZones = 1
 
 l = 1.
 nSize = 100
 ro = 1.
 v = -1.
-p = 0.
+p = 3.303
  

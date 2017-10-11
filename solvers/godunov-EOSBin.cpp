@@ -282,6 +282,15 @@ CVectorPrimitive CSolver::calcRPAnalyticalSolutionEOSBin(double roL, double vL, 
 			} else {
 				V.ro = roL*pow(2./(gamma+1.)+(gamma-1.)/(gamma+1.)/cL*(vL-xi), 2./(gamma-1.));
 				V.v  = 2./(gamma+1)*(cL + (gamma-1.)/2.*vL + xi);
+
+
+
+				double c = 2./(gamma+1.) * (cL + (gamma-1.)/2.*(vL-xi));
+
+
+
+
+
 				V.p  = (pL+p0)*pow(2./(gamma+1.)+(gamma-1.)/(gamma+1.)/cL*(vL-xi), 2.*gamma/(gamma-1.)) - p0;
 			}
 		} 
@@ -332,7 +341,7 @@ Vector4 CSolver::calcGodunovFluxEOSBin(double roL, double rouL, double roEL, dou
 	
 	
 	
-	CVectorPrimitive res = calcRPAnalyticalSolutionEOSBin(1., .75, 1., .125, 0., .1, -.1, .2);
+	CVectorPrimitive res = calcRPAnalyticalSolutionEOSBin(1., -2., .4, 1., 2., .4, 0., .2);
 	
 	
 	

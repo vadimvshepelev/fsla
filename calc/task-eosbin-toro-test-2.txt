@@ -1,7 +1,7 @@
 EOSType = bin
 gamma = 1.4
-ro0 = 0.
-c0 = 0.
+ro0 = 1.
+c0 = 1.
 Method = godunov
 courant = .9
 maxTime = 0.15

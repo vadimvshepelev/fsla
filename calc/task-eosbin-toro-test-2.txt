@@ -1,20 +1,20 @@
 EOSType = bin
 gamma = 1.4
-ro0 = 1.
-c0 = 1.
+ro0 = 2.
+c0 = 2.
 Method = godunov
 courant = .9
 maxTime = 0.15
 nZones = 2
 
 l = .5
-nSize = 50
+nSize = 500
 ro = 1.
 v = -2.
 p = .4 
 
 l = .5
-nSize = 50
+nSize = 500
 ro = 1.
 v = 2.
 p = .4

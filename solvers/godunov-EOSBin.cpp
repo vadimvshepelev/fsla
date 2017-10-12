@@ -61,6 +61,12 @@ RPSolutionPrimitive CSolver::solveRPEOSBin(double roL, double vL, double pL, dou
 		// Отрицательные давления все же допускаются в случае с двучленным УРС!
 		/*if (p<=0.)
 			p = TOL;*/
+		// Но если p+p0 < 0., это уже что-то неверное
+		if (p+p0 <= 0.) {
+			cout << "CSolver::SolveRPEOSBin error: sufficiently negative pressure occured!" << endl;
+			exit(1);
+		}			
+
 		itCounter++;
 	} while (fabs(2*(p-pPrev)/(p+pPrev))>TOL);
 	res.p   = p;
@@ -333,7 +339,7 @@ Vector4 CSolver::calcGodunovFluxEOSBin(double roL, double rouL, double roEL, dou
 	double uL = rouL/roL, uR = rouR/roR;
 	double eL = roEL/roL - .5*uL*uL, eR = roER/roR - .5*uR*uR; 
 	double pL = eos.getp(roL, eL), pR = eos.getp(roR, eR);
-	//CVectorPrimitive res = calcRPAnalyticalSolutionEOSBin(roL, uL, pL, roR, uR, pR, 0., .01);
+	CVectorPrimitive res = calcRPAnalyticalSolutionEOSBin(roL, uL, pL, roR, uR, pR, 0., .01);
 	
 	
 	
@@ -341,7 +347,7 @@ Vector4 CSolver::calcGodunovFluxEOSBin(double roL, double rouL, double roEL, dou
 	
 	
 	
-	CVectorPrimitive res = calcRPAnalyticalSolutionEOSBin(1., -2., .4, 1., 2., .4, 0., .2);
+	//CVectorPrimitive res = calcRPAnalyticalSolutionEOSBin(1., -2., .4, 1., 2., .4, 0., .2);
 	
 	
 	

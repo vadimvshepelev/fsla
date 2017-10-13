@@ -114,6 +114,12 @@
     <ClCompile Include="solvers\ENO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="solvers\hllc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="solvers\HLL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="_matrix4.h">

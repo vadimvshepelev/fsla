@@ -392,11 +392,14 @@ void CSolver::calcHydroStageGodunovEOSBin(double t, double tau) {
 
 
 		if(i==0)
-			n.F = calcGodunovFluxEOSBin(roLB, roLB*vLB, roLB*ELB, n.W[0], n.W[1], n.W[2]);
+			//n.F = calcGodunovFluxEOSBin(roLB, roLB*vLB, roLB*ELB, n.W[0], n.W[1], n.W[2]);
+			n.F = calcHLLFluxEOSBin(roLB, roLB*vLB, roLB*ELB, n.W[0], n.W[1], n.W[2]);
 		else
-			n.F = calcGodunovFluxEOSBin(ms[i-1].W[0], ms[i-1].W[1], ms[i-1].W[2], n.W[0], n.W[1], n.W[2]);	
+			//n.F = calcGodunovFluxEOSBin(ms[i-1].W[0], ms[i-1].W[1], ms[i-1].W[2], n.W[0], n.W[1], n.W[2]);	
+			n.F = calcHLLFluxEOSBin(ms[i-1].W[0], ms[i-1].W[1], ms[i-1].W[2], n.W[0], n.W[1], n.W[2]);	
 	}
-	ms[nSize].F = calcGodunovFluxEOSBin(ms[nSize-1].W[0], ms[nSize-1].W[1], ms[nSize-1].W[2], roRB, roRB*vRB, roRB*ERB);
+	//ms[nSize].F = calcGodunovFluxEOSBin(ms[nSize-1].W[0], ms[nSize-1].W[1], ms[nSize-1].W[2], roRB, roRB*vRB, roRB*ERB);
+	ms[nSize].F = calcHLLFluxEOSBin(ms[nSize-1].W[0], ms[nSize-1].W[1], ms[nSize-1].W[2], roRB, roRB*vRB, roRB*ERB);
 	// Main cycle
 	for(i=0; i<nSize; i++) {				
 		ms[i].W_temp = ms[i].W - tau/h*(ms[i+1].F-ms[i].F);

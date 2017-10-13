@@ -120,9 +120,13 @@ private:
 	// Расчет точного значения потока F = ( ro*v, p+ro*v*v, v*(p+ro*E) )T
 	Vector4	calcF(double ro, double v, double p, double e);
 	Vector4 calcPhysicalFlux(double ro, double rou, double roE);
+	Vector4 calcPhysicalFluxEOSBin(double ro, double rou, double roE);
 	Vector4 calcGodunovFlux(double roL, double rouL, double roEL, double roR, double rouR, double roER);
 	Vector4 calcRoeFlux(double roL, double rouL, double roEL, double roR, double rouR, double roER);
 	Vector4 calcGPSFlux(double roL, double rouL, double roEL, double roR, double rouR, double roER);
+	Vector4 calcHLLCFluxEOSBin(double roL, double rouL, double roEL, double roR, double rouR, double roER);
+	Vector4 calcHLLFluxEOSBin(double roL, double rouL, double roEL, double roR, double rouR, double roER);
+
 
 	// Для двучленного УРС
 	Vector4 calcGodunovFluxEOSBin(double roL, double rouL, double roEL, double roR, double rouR, double roER);

@@ -3994,6 +3994,17 @@ Vector4 CSolver::calcPhysicalFlux(double ro, double rou, double roE) {
 	return Vector4(rou, p + ro*u*u, u*(p + roE), 0.);
 }
 
+Vector4 CSolver::calcPhysicalFluxEOSBin(double ro, double rou, double roE) {
+	if (ro==0) return Vector4::ZERO; 
+	EOSBin* eos = task.eosBin;
+	double gamma = eos->gamma;
+	double u = rou/ro;
+	double e = roE/ro-0.5*u*u;
+	double p = eos->getp(ro, e);
+	return Vector4(rou, p + ro*u*u, u*(p + roE), 0.);
+}
+
+
 void CSolver::calcHydroStageMccormack(double t, double tau) {
 	EOS &eos = task.getEOS();
 	ms_temp.initData(&task);

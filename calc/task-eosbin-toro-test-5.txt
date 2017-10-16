@@ -3,7 +3,7 @@ gamma = 1.4
 ro0 = 0.
 c0 = 0.
 Method = godunov
-courant = .9
+courant = .5
 maxTime = 0.012
 nZones = 2
 

@@ -99,9 +99,21 @@ void CSolver::goEuler(char* fName) {
 		//if(task.getHydroStage()) calcHydroStageMHM(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageGushchinIdealSimple(t, tau);
 		//if(task.getHydroStage()) calcHydroStageG2(t, tau);	
-		//if(task.getHydroStage()) calcHydroStageENO3G(t, tau);		
-		if(task.getHydroStage()) calcHydroStageGodunovEOSBin(t, tau);		
-		//if(task.getHydroStage()) calcHydroStageENO3G(t, tau);		
+		//if(task.getHydroStage()) calcHydroStageENO2G(t, tau);	
+		if(task.getHydroStage()) calcHydroStageENO3G(t, tau);	
+
+
+
+
+		if(counter == 13) {
+			double qq = 0.;
+		}
+
+
+
+
+		//if(task.getHydroStage()) calcHydroStageGodunovEOSBin(t, tau);		
+		//if(task.getHydroStage()) calcHydroStageENO2G(t, tau);		
 		if(handleKeys(t)) break;
 		modifyConvIntegral(t+tau/2, tau);
 		dumpToFileTestRP(t+tau, 100);		
@@ -757,8 +769,15 @@ void CSolver::goGlass(char* fName) {
 }
 
 double CSolver::getEntropy(double ro, double ti, double te) {
+	double ci = task.getEOS().getci(ro, ti);
+	double  p = task.getEOS().getp(ro, ti, te);
+	if(p<0) {
+		cerr << "Error: CSolver::getEntropy(): negative pressure!" << endl;
+		exit(1);
+	}
+	double ro_gamma = pow(ro, (task.getEOS()).getGamma());
 	if(ro!=0.)
-		return (task.getEOS()).getci(ro, ti)*log((task.getEOS()).getp(ro, ti, te)/pow(ro, (task.getEOS()).getGamma()));
+		return ci*log(p/ro_gamma);
 	else 
 		return 0.;
 }
@@ -3825,6 +3844,17 @@ Vector4 CSolver::calcMinmodSlope(Vector4 deltaMinus, Vector4 deltaPlus) {
 			res[i] = max(0., min(deltaMinus[i], deltaPlus[i])); 
 		else
 			res[i] = min(0., max(deltaMinus[i], deltaPlus[i])); 
+	}
+	return res;
+}
+
+Vector4 CSolver::calcMinmodSlopeModified(Vector4 deltaMinus, Vector4 deltaPlus) {
+	Vector4 res = Vector4::ZERO;
+	for(int i=0; i<3; i++) {
+		if(fabs(deltaMinus[i]) < fabs(deltaPlus[i])) 
+			res[i] = deltaMinus[i]; 
+		else 
+			res[i] = deltaPlus[i]; 
 	}
 	return res;
 }

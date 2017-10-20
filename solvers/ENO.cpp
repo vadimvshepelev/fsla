@@ -85,48 +85,48 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 
 
 
-		if(i == 34) {
+		if(i == 32) {
 
 			double q =  0.;
 
 		}
 
 
-/*
-		if(stencil0 == i-2) {
-			Up[i][0] = rm2r[0]*U[i-2][0] + rm2r[1]*U[i-1][0] + rm2r[2]*U[i][0] + rm2r[3]*U[i][0] + rm2r[4]*U[i][0];
-			Um[i][0] = rm2l[0]*U[i-2][0] + rm2l[1]*U[i-1][0] + rm2l[2]*U[i][0] + rm2l[3]*U[i][0] + rm2l[4]*U[i][0];
+
+	/*	if(stencil0 == i-2) {
+			Up[i][0] = rm2r[0]*U[i-2][0] + rm2r[1]*U[i-1][0] + rm2r[2]*U[i][0] + rm2r[3]*U[i+1][0] + rm2r[4]*U[i+2][0];
+			Um[i][0] = rm2l[0]*U[i-2][0] + rm2l[1]*U[i-1][0] + rm2l[2]*U[i][0] + rm2l[3]*U[i+1][0] + rm2l[4]*U[i+2][0];
 			_up = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][0]*h, (U[i-2][0]+U[i-1][0])*h, (U[i-2][0]+U[i-1][0]+U[i][0])*h, xim12+h);
 			_um = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][0]*h, (U[i-2][0]+U[i-1][0])*h, (U[i-2][0]+U[i-1][0]+U[i][0])*h, xim12);
 			if(fabs(_up-Up[i][0]) > 1.e-5 || fabs(_um-Um[i][0]) > 1.e-5){
 				double qqqqqq=0.;
 			}
 		} else if (stencil0 == i-1) {
-			Up[i][0] = rm1r[0]*U[i-2][0] + rm1r[1]*U[i-1][0] + rm1r[2]*U[i][0] + rm1r[3]*U[i][0] + rm1r[4]*U[i][0];
-			Um[i][0] = rm1l[0]*U[i-2][0] + rm1l[1]*U[i-1][0] + rm1l[2]*U[i][0] + rm1l[3]*U[i][0] + rm1l[4]*U[i][0];
+			Up[i][0] = rm1r[0]*U[i-2][0] + rm1r[1]*U[i-1][0] + rm1r[2]*U[i][0] + rm1r[3]*U[i+1][0] + rm1r[4]*U[i+2][0];
+			Um[i][0] = rm1l[0]*U[i-2][0] + rm1l[1]*U[i-1][0] + rm1l[2]*U[i][0] + rm1l[3]*U[i+1][0] + rm1l[4]*U[i+2][0];
 		} else if (stencil0 == i) {
-			Up[i][0] = r0r[0]*U[i-2][0] + r0r[1]*U[i-1][0] + r0r[2]*U[i][0] + r0r[3]*U[i][0] + r0r[4]*U[i][0];
-			Um[i][0] = r0l[0]*U[i-2][0] + r0l[1]*U[i-1][0] + r0l[2]*U[i][0] + r0l[3]*U[i][0] + r0l[4]*U[i][0];
+			Up[i][0] = r0r[0]*U[i-2][0] + r0r[1]*U[i-1][0] + r0r[2]*U[i][0] + r0r[3]*U[i+1][0] + r0r[4]*U[i+2][0];
+			Um[i][0] = r0l[0]*U[i-2][0] + r0l[1]*U[i-1][0] + r0l[2]*U[i][0] + r0l[3]*U[i+1][0] + r0l[4]*U[i+2][0];
 		}
 		if(stencil1 == i-2) {
-			Up[i][1] = rm2r[0]*U[i-2][1] + rm2r[1]*U[i-1][1] + rm2r[2]*U[i][1] + rm2r[3]*U[i][1] + rm2r[4]*U[i][1];
-			Um[i][1] = rm2l[0]*U[i-2][1] + rm2l[1]*U[i-1][1] + rm2l[2]*U[i][1] + rm2l[3]*U[i][1] + rm2l[4]*U[i][1];
+			Up[i][1] = rm2r[0]*U[i-2][1] + rm2r[1]*U[i-1][1] + rm2r[2]*U[i][1] + rm2r[3]*U[i+1][1] + rm2r[4]*U[i+2][1];
+			Um[i][1] = rm2l[0]*U[i-2][1] + rm2l[1]*U[i-1][1] + rm2l[2]*U[i][1] + rm2l[3]*U[i+1][1] + rm2l[4]*U[i+2][1];
 		} else if (stencil1 == i-1) {
-			Up[i][1] = rm1r[0]*U[i-2][1] + rm1r[1]*U[i-1][1] + rm1r[2]*U[i][1] + rm1r[3]*U[i][1] + rm1r[4]*U[i][1];
-			Um[i][1] = rm1l[0]*U[i-2][1] + rm1l[1]*U[i-1][1] + rm1l[2]*U[i][1] + rm1l[3]*U[i][1] + rm1l[4]*U[i][1];
+			Up[i][1] = rm1r[0]*U[i-2][1] + rm1r[1]*U[i-1][1] + rm1r[2]*U[i][1] + rm1r[3]*U[i+1][1] + rm1r[4]*U[i+2][1];
+			Um[i][1] = rm1l[0]*U[i-2][1] + rm1l[1]*U[i-1][1] + rm1l[2]*U[i][1] + rm1l[3]*U[i+1][1] + rm1l[4]*U[i+2][1];
 		} else if (stencil1 == i) {
-			Up[i][1] = r0r[0]*U[i-2][1] + r0r[1]*U[i-1][1] + r0r[2]*U[i][1] + r0r[3]*U[i][1] + r0r[4]*U[i][1];
-			Um[i][1] = r0l[0]*U[i-2][1] + r0l[1]*U[i-1][1] + r0l[2]*U[i][1] + r0l[3]*U[i][1] + r0l[4]*U[i][1];
+			Up[i][1] = r0r[0]*U[i-2][1] + r0r[1]*U[i-1][1] + r0r[2]*U[i][1] + r0r[3]*U[i+1][1] + r0r[4]*U[i+2][1];
+			Um[i][1] = r0l[0]*U[i-2][1] + r0l[1]*U[i-1][1] + r0l[2]*U[i][1] + r0l[3]*U[i+1][1] + r0l[4]*U[i+2][1];
 		}
 		if(stencil2 == i-2) {
-			Up[i][2] = rm2r[0]*U[i-2][2] + rm2r[1]*U[i-1][2] + rm2r[2]*U[i][2] + rm2r[3]*U[i][2] + rm2r[4]*U[i][2];
-			Um[i][2] = rm2l[0]*U[i-2][2] + rm2l[1]*U[i-1][2] + rm2l[2]*U[i][2] + rm2l[3]*U[i][2] + rm2l[4]*U[i][2];
+			Up[i][2] = rm2r[0]*U[i-2][2] + rm2r[1]*U[i-1][2] + rm2r[2]*U[i][2] + rm2r[3]*U[i+1][2] + rm2r[4]*U[i+2][2];
+			Um[i][2] = rm2l[0]*U[i-2][2] + rm2l[1]*U[i-1][2] + rm2l[2]*U[i][2] + rm2l[3]*U[i+1][2] + rm2l[4]*U[i+2][2];
 		} else if (stencil2 == i-1) {
-			Up[i][2] = rm1r[0]*U[i-2][2] + rm1r[1]*U[i-1][2] + rm1r[2]*U[i][2] + rm1r[3]*U[i][2] + rm1r[4]*U[i][2];
-			Um[i][2] = rm1l[0]*U[i-2][2] + rm1l[1]*U[i-1][2] + rm1l[2]*U[i][2] + rm1l[3]*U[i][2] + rm1l[4]*U[i][2];
+			Up[i][2] = rm1r[0]*U[i-2][2] + rm1r[1]*U[i-1][2] + rm1r[2]*U[i][2] + rm1r[3]*U[i+1][2] + rm1r[4]*U[i+2][2];
+			Um[i][2] = rm1l[0]*U[i-2][2] + rm1l[1]*U[i-1][2] + rm1l[2]*U[i][2] + rm1l[3]*U[i+1][2] + rm1l[4]*U[i+2][2];
 		} else if (stencil2 == i) {
-			Up[i][2] = r0r[0]*U[i-2][2] + r0r[1]*U[i-1][2] + r0r[2]*U[i][2] + r0r[3]*U[i][2] + r0r[4]*U[i][2];
-			Um[i][2] = r0l[0]*U[i-2][2] + r0l[1]*U[i-1][2] + r0l[2]*U[i][2] + r0l[3]*U[i][2] + r0l[4]*U[i][2];
+			Up[i][2] = r0r[0]*U[i-2][2] + r0r[1]*U[i-1][2] + r0r[2]*U[i][2] + r0r[3]*U[i+1][2] + r0r[4]*U[i+2][2];
+			Um[i][2] = r0l[0]*U[i-2][2] + r0l[1]*U[i-1][2] + r0l[2]*U[i][2] + r0l[3]*U[i+1][2] + r0l[4]*U[i+2][2];
 		} */
 		
 

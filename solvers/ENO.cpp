@@ -81,7 +81,7 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 		// профиль относительно границы i+1/2 -- имеем тот же набор средних, ту же задачу,
 		// но в другом направлении. 
 
-		/*double _up = 0., _um = 0., xim12 = (double)(i-mini)*h;
+		double _up = 0., _um = 0., xim12 = (double)(i-mini)*h;
 		if(stencil0 == i-2) {
 			Up[i][0] = rm2r[0]*U[i-2][0] + rm2r[1]*U[i-1][0] + rm2r[2]*U[i][0] + rm2r[3]*U[i][0] + rm2r[4]*U[i][0];
 			Um[i][0] = rm2l[0]*U[i-2][0] + rm2l[1]*U[i-1][0] + rm2l[2]*U[i][0] + rm2l[3]*U[i][0] + rm2l[4]*U[i][0];
@@ -118,8 +118,8 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 			Up[i][2] = r0r[0]*U[i-2][2] + r0r[1]*U[i-1][2] + r0r[2]*U[i][2] + r0r[3]*U[i][2] + r0r[4]*U[i][2];
 			Um[i][2] = r0l[0]*U[i-2][2] + r0l[1]*U[i-1][2] + r0l[2]*U[i][2] + r0l[3]*U[i][2] + r0l[4]*U[i][2];
 		} 
-		*/
-
+		
+/*
 		for(int j=0; j<20; j++) {
 			x_for_writing = x0 + (double)(j)*step;
 			ofs << x_for_writing << " ";
@@ -262,7 +262,7 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 			//if(fabs(_um-_um_formula)>1.e-5)	{
 			//	double qqqqqq=0.;
 			//}		
-		}
+		}*/
 	}
 	// Boundary nodes U+[0] and U-[nSize]
 	Up[mini-1] = Up[mini]; Um[maxi] = Um[maxi-1];

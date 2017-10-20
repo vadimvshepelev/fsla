@@ -82,6 +82,17 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 		// но в другом направлении. 
 
 		double _up = 0., _um = 0., xim12 = (double)(i-mini)*h;
+
+
+
+		if(i == 34) {
+
+			double q =  0.;
+
+		}
+
+
+/*
 		if(stencil0 == i-2) {
 			Up[i][0] = rm2r[0]*U[i-2][0] + rm2r[1]*U[i-1][0] + rm2r[2]*U[i][0] + rm2r[3]*U[i][0] + rm2r[4]*U[i][0];
 			Um[i][0] = rm2l[0]*U[i-2][0] + rm2l[1]*U[i-1][0] + rm2l[2]*U[i][0] + rm2l[3]*U[i][0] + rm2l[4]*U[i][0];
@@ -90,7 +101,6 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 			if(fabs(_up-Up[i][0]) > 1.e-5 || fabs(_um-Um[i][0]) > 1.e-5){
 				double qqqqqq=0.;
 			}
-
 		} else if (stencil0 == i-1) {
 			Up[i][0] = rm1r[0]*U[i-2][0] + rm1r[1]*U[i-1][0] + rm1r[2]*U[i][0] + rm1r[3]*U[i][0] + rm1r[4]*U[i][0];
 			Um[i][0] = rm1l[0]*U[i-2][0] + rm1l[1]*U[i-1][0] + rm1l[2]*U[i][0] + rm1l[3]*U[i][0] + rm1l[4]*U[i][0];
@@ -117,9 +127,9 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 		} else if (stencil2 == i) {
 			Up[i][2] = r0r[0]*U[i-2][2] + r0r[1]*U[i-1][2] + r0r[2]*U[i][2] + r0r[3]*U[i][2] + r0r[4]*U[i][2];
 			Um[i][2] = r0l[0]*U[i-2][2] + r0l[1]*U[i-1][2] + r0l[2]*U[i][2] + r0l[3]*U[i][2] + r0l[4]*U[i][2];
-		} 
+		} */
 		
-/*
+
 		for(int j=0; j<20; j++) {
 			x_for_writing = x0 + (double)(j)*step;
 			ofs << x_for_writing << " ";
@@ -134,7 +144,7 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 		}
 
 
-		double _up = 0., _um = 0., _up_formula = 0., _um_formula = 0., xim12 = (double)(i-mini)*h;
+		double _up_formula = 0., _um_formula = 0.;
 		if(stencil0 == i-2) {
 			Up[i][0] =  1./3.*U[i-2][0] - 7./6.*U[i-1][0] + 11./6.*U[i][0];
 			Um[i][0] = -1./6.*U[i-2][0] + 5./6.*U[i-1][0] +  1./3.*U[i][0];
@@ -262,7 +272,7 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 			//if(fabs(_um-_um_formula)>1.e-5)	{
 			//	double qqqqqq=0.;
 			//}		
-		}*/
+		}
 	}
 	// Boundary nodes U+[0] and U-[nSize]
 	Up[mini-1] = Up[mini]; Um[maxi] = Um[maxi-1];

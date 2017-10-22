@@ -42,8 +42,25 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 	unsigned int stencil0=0, stencil1=0, stencil2=0;
 	for(i=mini; i<maxi; i++) {		
 		Vector4 diffPlus = U[i+1]-U[i], diffPlusPlus = U[i+2]-U[i+1], diffMinus = U[i]-U[i-1], diffMinusMinus = U[i-1]-U[i-2];
+		double stencil[] = {0, 0, 0};
 		stencil0 = i; stencil1 = i; stencil2 = i;
 		double x0 = (double)(i-nGhostCells)*h;
+		for(j=0; j<2; j++) {
+			if( fabs(diffMinus[j])<=fabs(diffPlus[j]) ) {
+			stencil[j] = i-1;
+			if( fabs(diffMinus[0] - diffMinusMinus[0])<=fabs(diffPlus[0] - diffMinus[0]) )
+				stencil0 = i-2;		
+		} else {
+			if( fabs(diffPlusPlus[0] - diffPlus[0]) <= fabs(diffPlus[0] - diffMinus[0]) )
+				stencil0 = i;
+			else
+				stencil0 = i-1;
+		}
+		}
+
+
+
+
 		if( fabs(diffMinus[0])<=fabs(diffPlus[0]) ) {
 			stencil0 = i-1;
 			if( fabs(diffMinus[0] - diffMinusMinus[0])<=fabs(diffPlus[0] - diffMinus[0]) )

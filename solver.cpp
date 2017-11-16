@@ -73,6 +73,26 @@ void CSolver::goEuler(char* fName) {
 		if( dx*((double)i+0.5) >= _xMin && dx*((double)(i-1) +0.5) <= _xMin ) _iMin = i;
 		if( dx*((double)i+0.5) <= _xMax && dx*((double)(i+1) +0.5) >= _xMax ) _iMax = i;
 	}	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	double t   = 0.;
 	double tau = 0.0;
 	int	counter = 0;

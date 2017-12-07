@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 	
 	// Uncomment for metal problems
 	CSolver *s = new CSolver;
-	//s->goGlass("task-Ru-glass-1000.txt");
+	s->goGlass("task-Ru-glass.txt");
 	//s->goGlass("task-Ru-glass-optic-1000.txt");
 	//s->goGlass("task-Ru-glass-optic-2000.txt");
 	//s->goGlass("task-Ru-glass-optic-3000.txt");
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 	//s->goEuler("task-LH1D.txt");          // Задача LH (стекло-золото-вакуум), одномерное приближение
     //s->goEuler("task-LH1D-p=123GPA.txt"); // Задача LH (стекло-золото-вакуум), одномерное приближение, с более мелкой ступенькой
 	
-	s->goEuler("task-eosbin-test-2.txt"); // Тест на двучленное УРС от Паши
+	//s->goEuler("task-eosbin-test-2.txt"); // Тест на двучленное УРС от Паши
 	//s->goEuler("task-eosbin-toro-test-5.txt"); // Тест на двучленное УРС (при нулевых параметрах должно работать как идеальное)
 
 	//s->goEuler("task-LH1D-aux-1.txt"); // Задача LH (стекло-золото-вакуум), левый разрыв стекло-золото

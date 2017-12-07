@@ -236,28 +236,9 @@ public:
 	double  getnuWR(double ro, double ti, double te, double b);
 	double getEntropy(double ro, double ti, double te);
 	double getGamma(void);
-/*	double getdpdro  (double ro, double ti, double te);
-	double getdpdroe (double ro, double ti, double te);
-	double getdpdroei(double ro, double ti, double te); 
-	double getdpdt   (double ro, double ti, double te);
-	double getdedt   (double ro, double ti, double te); */
-//	double getdpdro_rov_roE(double ro, double ti, double te, double v);
-//	double getdpdrov_ro_roE(double ro, double ti, double te, double v);
-//	double getdpdroE_ro_rov(double ro, double ti, double te, double v);
 protected:
 	double solve_ti(double ro, double ei, double low_border, double high_border);
 	double solve_te(double ro, double ti, double ee, double low_border, double high_border);
-	// Auxilary partial derivatives
-///////////////////////////
-////////// сахрэ кхьмее !!!
-///////////////////////////
-//	double dpde(double ro, double ti, double te);
-//	double dpdei(double ro, double ti, double te);
-//	double dpdti(double ro, double ti, double te);
-//	double dedti(double ro, double ti, double te);
-//	double deidti(double ro, double ti, double te);
-//	double dpdte(double ro, double ti, double te);
-//	double dedte(double ro, double ti, double te);
 };
 
 

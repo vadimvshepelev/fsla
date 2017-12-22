@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 	
 	// Uncomment for metal problems
 	CSolver *s = new CSolver;
-	s->goGlass("task-Ru-glass.txt");
+	// s->goGlass("task-Ru-glass.txt");
 	//s->goGlass("task-Ru-glass-optic-1000.txt");
 	//s->goGlass("task-Ru-glass-optic-2000.txt");
 	//s->goGlass("task-Ru-glass-optic-3000.txt");
@@ -61,12 +61,11 @@ int main(int argc, char *argv[])
 
 	//s->goEuler("task-LH1D-aux-1.txt"); // Задача LH (стекло-золото-вакуум), левый разрыв стекло-золото
 	//s->goEuler("task-eosbin-test-1.txt"); // Первый тест Глайстера по двучленному уравнению состояния
-	delete s;
+	
 
 	// Uncomment for Euler problems
-/*	CSolver *s = new CSolver;
 	s->goEuler("task-toro-1.txt");
-	delete s;*/
+	delete s;
 
 	///////////////////////////////////////
 	// Uncomment for convergence rate calculation

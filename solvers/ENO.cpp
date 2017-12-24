@@ -9,8 +9,8 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 	EOS &eos = task.getEOS(); 
 	const double gamma = eos.getGamma();
 	double E=0.; 
-	unsigned int i=0, j=0;
-	const unsigned int nSize = ms.getSize();
+	int i=0, nDimCounter=0;
+	const int nSize = ms.getSize();
 	const double h=ms[1].x-ms[0].x;
 	Vector4 L = Vector4::ZERO, R = Vector4::ZERO, D = Vector4::ZERO, V = Vector4::ZERO;	
 	// Специальные массивы для хранения переменных и потоков, с дополнительными фиктивными ячейками
@@ -29,125 +29,162 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 	U[2] = U[mini]; U[1] = U[mini]; U[0] = U[mini];  
 	U[maxi] = U[maxi-1]; U[maxi+1] = U[maxi-1]; U[maxi+2] = U[maxi-1];
 	// Possible ENO-3 stencils
-	double rm2r[] = { 1./3., -7./6.,  11./6.,     0.,     0.}, 
-		   rm1r[] = {    0., -1./6.,  5./6.,   1./3.,     0.},
-			r0r[] = {    0.,     0.,  1./3.,   5./6., -1./6.},
-		   rm2l[] = {-1./6.,  5./6.,  1./3.,      0.,     0.},
-		   rm1l[] = {    0.,  1./3.,  5./6.,  -1./6.,     0.},
-		    r0l[] = {    0.,     0.,  11./6., -7./6.,  1./3.};
+	double _rm2r[] = { 1./3., -7./6.,  11./6.,     0.,     0.}, 
+		   _rm1r[] = {    0., -1./6.,  5./6.,   1./3.,     0.},
+			_r0r[] = {    0.,     0.,  1./3.,   5./6., -1./6.},
+		   _rm2l[] = {-1./6.,  5./6.,  1./3.,      0.,     0.},
+		   _rm1l[] = {    0.,  1./3.,  5./6.,  -1./6.,     0.},
+		    _r0l[] = {    0.,     0.,  11./6., -7./6.,  1./3.};
+	vector<double> rm2r(_rm2r, _rm2r + sizeof(_rm2r)/sizeof(_rm2r[0])),
+				   rm1r(_rm1r, _rm1r + sizeof(_rm1r)/sizeof(_rm1r[0])),
+				    r0r(_r0r, _r0r + sizeof(_r0r)/sizeof(_r0r[0])),
+				   rm2l(_rm2l, _rm2l + sizeof(_rm2l)/sizeof(_rm2l[0])),
+				   rm1l(_rm1l, _rm1l + sizeof(_rm1l)/sizeof(_rm1l[0])),
+				   r0l(_r0l, _r0l + sizeof(_r0l)/sizeof(_r0l[0]));
+	double  _rm1rENO2[] = {0., -1./2., 3./2.,     0., 0.},       // {0.,     3./2.,  -1./2}, 
+		    _r0rENO2[]  = {0.,     0., 1./2.,  1./2., 0.},
+			_rm1lENO2[] = {0.,  1./2., 1./2.,     0., 0.},
+			_r0lENO2[]  = {0.,     0., 3./2., -1./2., 0.};
+	vector<double> rm1rENO2(_rm1rENO2, _rm1rENO2 + sizeof(_rm1rENO2)/sizeof(_rm1rENO2[0])),
+				   r0rENO2(_r0rENO2, _r0rENO2 + sizeof(_r0rENO2)/sizeof(_r0rENO2[0])),
+				   rm1lENO2(_rm1lENO2, _rm1lENO2 + sizeof(_rm1lENO2)/sizeof(_rm1lENO2[0])),
+				   r0lENO2(_r0lENO2, _r0lENO2 + sizeof(_r0lENO2)/sizeof(_r0lENO2[0]));
+
+	vector<double> deltarm2rENO3(5), deltarm1rENO3(5), deltar0rENO3(5), deltarm2lENO3(5), deltarm1lENO3(5), deltar0lENO3(5);
+    for(int j=0; j<5; j++) {
+		deltarm2rENO3[j] = rm2r[j] - rm1rENO2[j],
+		deltarm1rENO3[j] = rm1r[j] - rm1rENO2[j],
+		deltar0rENO3[j]  = r0r[j] - r0rENO2[j],
+		deltarm2lENO3[j] = rm2l[j] - rm1lENO2[j],
+		deltarm1lENO3[j] = rm1l[j] - rm1lENO2[j],
+		deltar0lENO3[j]  = r0l[j] - r0lENO2[j];
+	}
+	// Just switching from ENO2 to ENO3 and back inside the code
+	double flag = 0.;
 	ofstream ofs;
 	ofs.open("reconstruction.dat", ios::out);
 	double x_for_writing=0., step = h/20; 
+
+
+	int nimin2Counter = 0, nimin1Counter = 0, niCounter = 0;
+
+
+
+
 	// ENO 3rd order reconstruction
-	unsigned int stencil0=0, stencil1=0, stencil2=0;
 	for(i=mini; i<maxi; i++) {		
-		Vector4 diffPlus = U[i+1]-U[i], diffPlusPlus = U[i+2]-U[i+1], diffMinus = U[i]-U[i-1], diffMinusMinus = U[i-1]-U[i-2];
-		double stencil[] = {0, 0, 0};
-		stencil0 = i; stencil1 = i; stencil2 = i;
-		double x0 = (double)(i-nGhostCells)*h;
-		for(j=0; j<2; j++) {
-			if( fabs(diffMinus[j])<=fabs(diffPlus[j]) ) {
-			stencil[j] = i-1;
-			if( fabs(diffMinus[0] - diffMinusMinus[0])<=fabs(diffPlus[0] - diffMinus[0]) )
-				stencil0 = i-2;		
-		} else {
-			if( fabs(diffPlusPlus[0] - diffPlus[0]) <= fabs(diffPlus[0] - diffMinus[0]) )
-				stencil0 = i;
-			else
-				stencil0 = i-1;
-		}
-		}
-
-
-
-
-		if( fabs(diffMinus[0])<=fabs(diffPlus[0]) ) {
-			stencil0 = i-1;
-			if( fabs(diffMinus[0] - diffMinusMinus[0])<=fabs(diffPlus[0] - diffMinus[0]) )
-				stencil0 = i-2;		
-		} else {
-			if( fabs(diffPlusPlus[0] - diffPlus[0]) <= fabs(diffPlus[0] - diffMinus[0]) )
-				stencil0 = i;
-			else
-				stencil0 = i-1;
-		}
-		if( fabs(diffMinus[1])<=fabs(diffPlus[1]) ) {
-			stencil1 = i-1;
-			if( fabs(diffMinus[1] - diffMinusMinus[1])<=fabs(diffPlus[1] - diffMinus[1]) )
-				stencil1 = i-2;		
-		} else {
-			if( fabs(diffPlusPlus[1] - diffPlus[1]) <= fabs(diffPlus[1] - diffMinus[1]) )
-				stencil1 = i;
-			else
-				stencil1 = i-1;
-		}
-		if( fabs(diffMinus[2])<=fabs(diffPlus[2]) ) {
-			stencil2 = i-1;
-			if( fabs(diffMinus[2] - diffMinusMinus[2])<=fabs(diffPlus[2] - diffMinus[2]) )
-				stencil2 = i-2;	
-		} else {
-			if( fabs(diffPlusPlus[2] - diffPlus[2]) <= fabs(diffPlus[2] - diffMinus[2]) )
-				stencil2 = i;
-			else
-				stencil2 = i-1;
-		}
-		// Interface values
-
-		// TODO: Использовать "принцип отражения", как говорит А.В. Конюхов
-		// Смысл -- чтобы подойти к точке с другой стороны, мысленно переворачиваем
-		// профиль относительно границы i+1/2 -- имеем тот же набор средних, ту же задачу,
-		// но в другом направлении. 
-
-		double _up = 0., _um = 0., xim12 = (double)(i-mini)*h;
-
-
-
-		if(i == 32) {
-
-			double q =  0.;
-
-		}
-
-
-
-	/*	if(stencil0 == i-2) {
-			Up[i][0] = rm2r[0]*U[i-2][0] + rm2r[1]*U[i-1][0] + rm2r[2]*U[i][0] + rm2r[3]*U[i+1][0] + rm2r[4]*U[i+2][0];
-			Um[i][0] = rm2l[0]*U[i-2][0] + rm2l[1]*U[i-1][0] + rm2l[2]*U[i][0] + rm2l[3]*U[i+1][0] + rm2l[4]*U[i+2][0];
-			_up = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][0]*h, (U[i-2][0]+U[i-1][0])*h, (U[i-2][0]+U[i-1][0]+U[i][0])*h, xim12+h);
-			_um = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][0]*h, (U[i-2][0]+U[i-1][0])*h, (U[i-2][0]+U[i-1][0]+U[i][0])*h, xim12);
-			if(fabs(_up-Up[i][0]) > 1.e-5 || fabs(_um-Um[i][0]) > 1.e-5){
-				double qqqqqq=0.;
-			}
-		} else if (stencil0 == i-1) {
-			Up[i][0] = rm1r[0]*U[i-2][0] + rm1r[1]*U[i-1][0] + rm1r[2]*U[i][0] + rm1r[3]*U[i+1][0] + rm1r[4]*U[i+2][0];
-			Um[i][0] = rm1l[0]*U[i-2][0] + rm1l[1]*U[i-1][0] + rm1l[2]*U[i][0] + rm1l[3]*U[i+1][0] + rm1l[4]*U[i+2][0];
-		} else if (stencil0 == i) {
-			Up[i][0] = r0r[0]*U[i-2][0] + r0r[1]*U[i-1][0] + r0r[2]*U[i][0] + r0r[3]*U[i+1][0] + r0r[4]*U[i+2][0];
-			Um[i][0] = r0l[0]*U[i-2][0] + r0l[1]*U[i-1][0] + r0l[2]*U[i][0] + r0l[3]*U[i+1][0] + r0l[4]*U[i+2][0];
-		}
-		if(stencil1 == i-2) {
-			Up[i][1] = rm2r[0]*U[i-2][1] + rm2r[1]*U[i-1][1] + rm2r[2]*U[i][1] + rm2r[3]*U[i+1][1] + rm2r[4]*U[i+2][1];
-			Um[i][1] = rm2l[0]*U[i-2][1] + rm2l[1]*U[i-1][1] + rm2l[2]*U[i][1] + rm2l[3]*U[i+1][1] + rm2l[4]*U[i+2][1];
-		} else if (stencil1 == i-1) {
-			Up[i][1] = rm1r[0]*U[i-2][1] + rm1r[1]*U[i-1][1] + rm1r[2]*U[i][1] + rm1r[3]*U[i+1][1] + rm1r[4]*U[i+2][1];
-			Um[i][1] = rm1l[0]*U[i-2][1] + rm1l[1]*U[i-1][1] + rm1l[2]*U[i][1] + rm1l[3]*U[i+1][1] + rm1l[4]*U[i+2][1];
-		} else if (stencil1 == i) {
-			Up[i][1] = r0r[0]*U[i-2][1] + r0r[1]*U[i-1][1] + r0r[2]*U[i][1] + r0r[3]*U[i+1][1] + r0r[4]*U[i+2][1];
-			Um[i][1] = r0l[0]*U[i-2][1] + r0l[1]*U[i-1][1] + r0l[2]*U[i][1] + r0l[3]*U[i+1][1] + r0l[4]*U[i+2][1];
-		}
-		if(stencil2 == i-2) {
-			Up[i][2] = rm2r[0]*U[i-2][2] + rm2r[1]*U[i-1][2] + rm2r[2]*U[i][2] + rm2r[3]*U[i+1][2] + rm2r[4]*U[i+2][2];
-			Um[i][2] = rm2l[0]*U[i-2][2] + rm2l[1]*U[i-1][2] + rm2l[2]*U[i][2] + rm2l[3]*U[i+1][2] + rm2l[4]*U[i+2][2];
-		} else if (stencil2 == i-1) {
-			Up[i][2] = rm1r[0]*U[i-2][2] + rm1r[1]*U[i-1][2] + rm1r[2]*U[i][2] + rm1r[3]*U[i+1][2] + rm1r[4]*U[i+2][2];
-			Um[i][2] = rm1l[0]*U[i-2][2] + rm1l[1]*U[i-1][2] + rm1l[2]*U[i][2] + rm1l[3]*U[i+1][2] + rm1l[4]*U[i+2][2];
-		} else if (stencil2 == i) {
-			Up[i][2] = r0r[0]*U[i-2][2] + r0r[1]*U[i-1][2] + r0r[2]*U[i][2] + r0r[3]*U[i+1][2] + r0r[4]*U[i+2][2];
-			Um[i][2] = r0l[0]*U[i-2][2] + r0l[1]*U[i-1][2] + r0l[2]*U[i][2] + r0l[3]*U[i+1][2] + r0l[4]*U[i+2][2];
-		} */
 		
-
-		for(int j=0; j<20; j++) {
+		
+		
+		
+		if(i==32) {
+			double qqq = 0.;
+		}
+		
+		
+		
+		
+		Vector4 diffPlus = U[i+1]-U[i], diffPlusPlus = U[i+2]-U[i+1], diffMinus = U[i]-U[i-1], diffMinusMinus = U[i-1]-U[i-2];
+		double stencil[] = {0, 0, 0};		
+		double x0 = (double)(i-nGhostCells)*h;
+		for(nDimCounter=0; nDimCounter<3; nDimCounter++) {
+			if( fabs(diffMinus[nDimCounter])<=fabs(diffPlus[nDimCounter]) ) {
+				stencil[nDimCounter] = i-1;
+				if( fabs(diffMinus[nDimCounter] - diffMinusMinus[nDimCounter])<=fabs(diffPlus[nDimCounter] - diffMinus[nDimCounter]) ) {
+					stencil[nDimCounter] = i-2;		
+					nimin2Counter++;
+				}
+			} else {
+				if( fabs(diffPlusPlus[nDimCounter] - diffPlus[nDimCounter]) <= fabs(diffPlus[nDimCounter] - diffMinus[nDimCounter]) ) {
+					stencil[nDimCounter] = i;
+					niCounter++;
+				} else {
+					stencil[nDimCounter] = i-1;
+					nimin1Counter++;
+				}
+			}
+			// Interface values
+			// TODO: Использовать "принцип отражения", как говорит А.В. Конюхов
+			// Смысл -- чтобы подойти к точке с другой стороны, мысленно переворачиваем
+			// профиль относительно границы i+1/2 -- имеем тот же набор средних, ту же задачу,
+			// но в другом направлении.
+			if(stencil[nDimCounter] == i-2) {
+				/*Up[i][nDimCounter] = rm2r[0]*U[i-2][nDimCounter] + 
+					                 rm2r[1]*U[i-1][nDimCounter] + 
+									 rm2r[2]*U[i][nDimCounter]   + 
+									 rm2r[3]*U[i+1][nDimCounter] + 
+									 rm2r[4]*U[i+2][nDimCounter];
+				Um[i][nDimCounter] = rm2l[0]*U[i-2][nDimCounter] + 
+									 rm2l[1]*U[i-1][nDimCounter] + 
+									 rm2l[2]*U[i][nDimCounter] + 
+									 rm2l[3]*U[i+1][nDimCounter] + 
+									 rm2l[4]*U[i+2][nDimCounter];
+									 
+				double  rm1rENO2[] = {0., -1./2., 3./2.,     0., 0.},       // {0.,     3./2.,  -1./2}, 
+						r0rENO2[]  = {0.,     0., 1./2.,  1./2., 0.},
+						rm1lENO2[] = {0.,  1./2., 1./2.,     0., 0.},
+						r0lENO2[]  = {0.,     0., 3./2., -1./2., 0.};
+									 */
+				Up[i][nDimCounter] = (rm1rENO2[0] + flag*deltarm2rENO3[0])*U[i-2][nDimCounter] + 
+					                 (rm1rENO2[1] + flag*deltarm2rENO3[1])*U[i-1][nDimCounter] + 
+									 (rm1rENO2[2] + flag*deltarm2rENO3[2])*U[i][nDimCounter]   + 
+									 (rm1rENO2[3] + flag*deltarm2rENO3[3])*U[i+1][nDimCounter] + 
+									 (rm1rENO2[4] + flag*deltarm2rENO3[4])*U[i+2][nDimCounter];
+				Um[i][nDimCounter] = (rm1lENO2[0] + flag*deltarm2lENO3[0])*U[i-2][nDimCounter] + 
+									 (rm1lENO2[1] + flag*deltarm2lENO3[1])*U[i-1][nDimCounter] + 
+									 (rm1lENO2[2] + flag*deltarm2lENO3[2])*U[i][nDimCounter] + 
+									 (rm1lENO2[3] + flag*deltarm2lENO3[3])*U[i+1][nDimCounter] + 
+									 (rm1lENO2[4] + flag*deltarm2lENO3[4])*U[i+2][nDimCounter];
+				//_up = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][0]*h, (U[i-2][0]+U[i-1][0])*h, (U[i-2][0]+U[i-1][0]+U[i][0])*h, xim12+h);
+				//_um = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][0]*h, (U[i-2][0]+U[i-1][0])*h, (U[i-2][0]+U[i-1][0]+U[i][0])*h, xim12);
+				//if(fabs(_up-Up[i][0]) > 1.e-5 || fabs(_um-Um[i][0]) > 1.e-5){
+				//	double qqqqqq=0.;
+				//}
+			} else if (stencil[nDimCounter] == i-1) {
+				/*Up[i][nDimCounter] = rm1r[0]*U[i-2][nDimCounter] + 
+					                 rm1r[1]*U[i-1][nDimCounter] + 
+									 rm1r[2]*U[i][nDimCounter]   + 
+									 rm1r[3]*U[i+1][nDimCounter] + 
+									 rm1r[4]*U[i+2][nDimCounter];
+				Um[i][nDimCounter] = rm1l[0]*U[i-2][nDimCounter] + 
+					                 rm1l[1]*U[i-1][nDimCounter] + 
+									 rm1l[2]*U[i][nDimCounter]   + 
+									 rm1l[3]*U[i+1][nDimCounter] + 
+									 rm1l[4]*U[i+2][nDimCounter];*/
+				Up[i][nDimCounter] = (rm1rENO2[0] + flag*deltarm1rENO3[0])*U[i-2][nDimCounter] + 
+					                 (rm1rENO2[1] + flag*deltarm1rENO3[1])*U[i-1][nDimCounter] + 
+									 (rm1rENO2[2] + flag*deltarm1rENO3[2])*U[i][nDimCounter]   + 
+									 (rm1rENO2[3] + flag*deltarm1rENO3[3])*U[i+1][nDimCounter] + 
+									 (rm1rENO2[4] + flag*deltarm1rENO3[4])*U[i+2][nDimCounter];
+				Um[i][nDimCounter] = (rm1lENO2[0] + flag*deltarm1lENO3[0])*U[i-2][nDimCounter] + 
+									 (rm1lENO2[1] + flag*deltarm1lENO3[1])*U[i-1][nDimCounter] + 
+									 (rm1lENO2[2] + flag*deltarm1lENO3[2])*U[i][nDimCounter] + 
+									 (rm1lENO2[3] + flag*deltarm1lENO3[3])*U[i+1][nDimCounter] + 
+									 (rm1lENO2[4] + flag*deltarm1lENO3[4])*U[i+2][nDimCounter];
+			} else if (stencil[nDimCounter] == i) {
+				/*Up[i][nDimCounter] = r0r[0]*U[i-2][nDimCounter] + 
+					                 r0r[1]*U[i-1][nDimCounter] + 
+									 r0r[2]*U[i][nDimCounter]   + 
+									 r0r[3]*U[i+1][nDimCounter] + 
+									 r0r[4]*U[i+2][nDimCounter];
+				Um[i][nDimCounter] = r0l[0]*U[i-2][nDimCounter] +
+									 r0l[1]*U[i-1][nDimCounter] + 
+									 r0l[2]*U[i][nDimCounter]   +
+									 r0l[3]*U[i+1][nDimCounter] + 
+									 r0l[4]*U[i+2][nDimCounter];*/
+				Up[i][nDimCounter] = (r0rENO2[0] + flag*deltar0rENO3[0])*U[i-2][nDimCounter] + 
+					                 (r0rENO2[1] + flag*deltar0rENO3[1])*U[i-1][nDimCounter] + 
+									 (r0rENO2[2] + flag*deltar0rENO3[2])*U[i][nDimCounter]   + 
+									 (r0rENO2[3] + flag*deltar0rENO3[3])*U[i+1][nDimCounter] + 
+									 (r0rENO2[4] + flag*deltar0rENO3[4])*U[i+2][nDimCounter];
+				Um[i][nDimCounter] = (r0lENO2[0] + flag*deltar0lENO3[0])*U[i-2][nDimCounter] + 
+									 (r0lENO2[1] + flag*deltar0lENO3[1])*U[i-1][nDimCounter] + 
+									 (r0lENO2[2] + flag*deltar0lENO3[2])*U[i][nDimCounter] + 
+									 (r0lENO2[3] + flag*deltar0lENO3[3])*U[i+1][nDimCounter] + 
+									 (r0lENO2[4] + flag*deltar0lENO3[4])*U[i+2][nDimCounter];
+			}
+		}
+/*		for(int j=0; j<20; j++) {
 			x_for_writing = x0 + (double)(j)*step;
 			ofs << x_for_writing << " ";
 			if (stencil0 == i-2)
@@ -159,171 +196,20 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 			else
 				exit(1);
 		}
-
-
-		double _up_formula = 0., _um_formula = 0.;
-		if(stencil0 == i-2) {
-			Up[i][0] =  1./3.*U[i-2][0] - 7./6.*U[i-1][0] + 11./6.*U[i][0];
-			Um[i][0] = -1./6.*U[i-2][0] + 5./6.*U[i-1][0] +  1./3.*U[i][0];
-			//_up_formula = Up[i][0];
-			//_um_formula = Um[i][0];
-			//_up = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][0]*h, (U[i-2][0]+U[i-1][0])*h, (U[i-2][0]+U[i-1][0]+U[i][0])*h, xim12+h);
-			//_um = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][0]*h, (U[i-2][0]+U[i-1][0])*h, (U[i-2][0]+U[i-1][0]+U[i][0])*h, xim12);
-			//if(fabs(_up-_up_formula)>1.e-5)	{
-			//	double qqqqqq=0.;
-			//}
-			//if(fabs(_um-_um_formula)>1.e-5)	{
-			//	double qqqqqq=0.;
-			//}			
-		} else if (stencil0 == i-1) {
-			Up[i][0] = -1./6.*U[i-1][0] + 5./6.*U[i][0] + 1./3*U[i+1][0];
-			Um[i][0] =  1./3.*U[i-1][0] + 5./6.*U[i][0] - 1./6.*U[i+1][0];
-			//_up_formula = Up[i][0];
-			//_um_formula = Um[i][0];
-			//_up = calcInterpolationPolynomialDerivative3(xim12-h, xim12, xim12+h, xim12+2.*h, 0., U[i-1][0]*h, (U[i-1][0]+U[i][0])*h, (U[i-1][0]+U[i][0]+U[i+1][0])*h, xim12+h);
-			//_um = calcInterpolationPolynomialDerivative3(xim12-h, xim12, xim12+h, xim12+2.*h, 0., U[i-1][0]*h, (U[i-1][0]+U[i][0])*h, (U[i-1][0]+U[i][0]+U[i+1][0])*h, xim12);
-			//if(fabs(_up-_up_formula)>1.e-5)	{
-			//	double qqqqqq=0.;
-			//}
-			//if(fabs(_um-_um_formula)>1.e-5)	{
-		    //		double qqqqqq=0.;
-			//}
-		} else if (stencil0 == i) {
-			Up[i][0] =  1./3.*U[i][0] + 5./6.*U[i+1][0] - 1./6.*U[i+2][0];
-			Um[i][0] = 11./6.*U[i][0] - 7./6.*U[i+1][0] + 1./3.*U[i+2][0];	
-
-			//double up_i_minus_2 = 1./3.*U[i-2][0] - 7./6.*U[i-1][0] + 11./6.*U[i][0];
-			//double um_i_minus_2 = -1./6.*U[i-2][0] + 5./6.*U[i-1][0] +  1./3.*U[i][0];
-			//double up_i_minus_1 = -1./6.*U[i-1][0] + 5./6.*U[i][0] + 1./3*U[i+1][0];
-			//double um_i_minus_1 = 1./3.*U[i-1][0] + 5./6.*U[i][0] - 1./6.*U[i+1][0];
-
-
-
-			//_up_formula = Up[i][0];
-			//_um_formula = Um[i][0];
-			//_up = calcInterpolationPolynomialDerivative3(xim12, xim12+h, xim12+2.*h, xim12+3.*h, 0., U[i][0]*h, (U[i][0]+U[i+1][0])*h, (U[i][0]+U[i+1][0]+U[i+2][0])*h, xim12+h);
-			//_um = calcInterpolationPolynomialDerivative3(xim12, xim12+h, xim12+2.*h, xim12+3.*h, 0., U[i][0]*h, (U[i][0]+U[i+1][0])*h, (U[i][0]+U[i+1][0]+U[i+2][0])*h, xim12);
-			//if(fabs(_up-_up_formula)>1.e-5)	{
-			//	double qqqqqq=0.;
-			//}
-			//if(fabs(_um-_um_formula)>1.e-5)	{
-			//	double qqqqqq=0.;
-			//}				
-		}
-		if(stencil1 == i-2) {
-			Up[i][1] =  1./3.*U[i-2][1] - 7./6.*U[i-1][1] + 11./6.*U[i][1];
-			Um[i][1] = -1./6.*U[i-2][1] + 5./6.*U[i-1][1] +  1./3.*U[i][1];
-			//_up_formula = Up[i][1];
-			//_um_formula = Um[i][1];
-			//_up = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][1]*h, (U[i-2][1]+U[i-1][1])*h, (U[i-2][1]+U[i-1][1]+U[i][1])*h, xim12+h);
-			//_um = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][1]*h, (U[i-2][1]+U[i-1][1])*h, (U[i-2][1]+U[i-1][1]+U[i][1])*h, xim12);
-			//if(fabs(_up-_up_formula)>1.e-5)	{
-			//	double qqqqqq=0.;
-			//}
-			//if(fabs(_um-_um_formula)>1.e-5)	{
-			//	double qqqqqq=0.;
-			//}
-		} else if (stencil1 == i-1) {
-			Up[i][1] = -1./6.*U[i-1][1] + 5./6.*U[i][1] + 1./3.*U[i+1][1];
-			Um[i][1] =  1./3.*U[i-1][1] + 5./6.*U[i][1] - 1./6.*U[i+1][1];
-			//_up_formula = Up[i][1];
-			//_um_formula = Um[i][1];
-			//_up = calcInterpolationPolynomialDerivative3(xim12-h, xim12, xim12+h, xim12+2.*h, 0., U[i-1][1]*h, (U[i-1][1]+U[i][1])*h, (U[i-1][1]+U[i][1]+U[i+1][1])*h, xim12+h);
-			//_um = calcInterpolationPolynomialDerivative3(xim12-h, xim12, xim12+h, xim12+2.*h, 0., U[i-1][1]*h, (U[i-1][1]+U[i][1])*h, (U[i-1][1]+U[i][1]+U[i+1][1])*h, xim12);
-			//if(fabs(_up-_up_formula)>1.e-5)	{
-			//	double qqqqqq=0.;
-			//}
-			//if(fabs(_um-_um_formula)>1.e-5)	{
-		    //		double qqqqqq=0.;
-			//}
-		} else if (stencil1 == i) {
-			Up[i][1] =  1./3.*U[i][1] + 5./6.*U[i+1][1] - 1./6.*U[i+2][1];
-			Um[i][1] = 11./6.*U[i][1] - 7./6.*U[i+1][1] + 1./3.*U[i+2][1];
-			//_up_formula = Up[i][1];
-			//_um_formula = Um[i][1];
-			//_up = calcInterpolationPolynomialDerivative3(xim12, xim12+h, xim12+2.*h, xim12+3.*h, 0., U[i][1]*h, (U[i][1]+U[i+1][1])*h, (U[i][1]+U[i+1][1]+U[i+2][1])*h, xim12+h);
-			//_um = calcInterpolationPolynomialDerivative3(xim12, xim12+h, xim12+2.*h, xim12+3.*h, 0., U[i][1]*h, (U[i][1]+U[i+1][1])*h, (U[i][1]+U[i+1][1]+U[i+2][1])*h, xim12);
-			//if(fabs(_up-_up_formula)>1.e-5)	{
-			//	double qqqqqq=0.;
-			//}
-			//if(fabs(_um-_um_formula)>1.e-5)	{
-		    //		double qqqqqq=0.;
-			//}		
-		}
-		if(stencil2 == i-2) {
-			Up[i][2] =  1./3.*U[i-2][2] - 7./6.*U[i-1][2] + 11./6.*U[i][2];
-			Um[i][2] = -1./6.*U[i-2][2] + 5./6.*U[i-1][2] +  1./3.*U[i][2];
-			//_up_formula = Up[i][2];
-			//_um_formula = Um[i][2];
-			//_up = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][2]*h, (U[i-2][2]+U[i-1][2])*h, (U[i-2][2]+U[i-1][2]+U[i][2])*h, xim12+h);
-			//_um = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][2]*h, (U[i-2][2]+U[i-1][2])*h, (U[i-2][2]+U[i-1][2]+U[i][2])*h, xim12);
-			//if(fabs(_up-_up_formula)>1.e-5)	{
-			//	double qqqqqq=0.;
-			//}
-			//if(fabs(_um-_um_formula)>1.e-5)	{
-			//	double qqqqqq=0.;
-			//}
-		} else if (stencil2 == i-1) {
-			Up[i][2] = -1./6.*U[i-1][2] + 5./6.*U[i][2] + 1./3.*U[i+1][2];
-			Um[i][2] =  1./3.*U[i-1][2] + 5./6.*U[i][2] - 1./6.*U[i+1][2];
-			//_up_formula = Up[i][2];
-			//_um_formula = Um[i][2];
-			//_up = calcInterpolationPolynomialDerivative3(xim12-h, xim12, xim12+h, xim12+2.*h, 0., U[i-1][2]*h, (U[i-1][2]+U[i][2])*h, (U[i-1][2]+U[i][2]+U[i+1][2])*h, xim12+h);
-			//_um = calcInterpolationPolynomialDerivative3(xim12-h, xim12, xim12+h, xim12+2.*h, 0., U[i-1][2]*h, (U[i-1][2]+U[i][2])*h, (U[i-1][2]+U[i][2]+U[i+1][2])*h, xim12);
-			//if(fabs(_up-_up_formula)>1.e-5)	{
-		    //		double qqqqqq=0.;
-			//}
-			//if(fabs(_um-_um_formula)>1.e-5)	{
-			//	double qqqqqq=0.;
-			//}
-		} else if (stencil2 == i) {
-			Up[i][2] =  1./3.*U[i][2] + 5./6.*U[i+1][2] - 1./6.*U[i+2][2];
-			Um[i][2] = 11./6.*U[i][2] - 7./6.*U[i+1][2] + 1./3.*U[i+2][2];
-			//_up_formula = Up[i][2];
-			//_um_formula = Um[i][2];
-			//_up = calcInterpolationPolynomialDerivative3(xim12, xim12+h, xim12+2.*h, xim12+3.*h, 0., U[i][2]*h, (U[i][2]+U[i+1][2])*h, (U[i][2]+U[i+1][2]+U[i+2][2])*h, xim12+h);
-			//_um = calcInterpolationPolynomialDerivative3(xim12, xim12+h, xim12+2.*h, xim12+3.*h, 0., U[i][2]*h, (U[i][2]+U[i+1][2])*h, (U[i][2]+U[i+1][2]+U[i+2][2])*h, xim12);
-			//if(fabs(_up-_up_formula)>1.e-5)	{
-			//	double qqqqqq=0.;
-			//}
-			//if(fabs(_um-_um_formula)>1.e-5)	{
-			//	double qqqqqq=0.;
-			//}		
-		}
+*/
 	}
+
+
+	cout << endl << "Debug: ENO3 reconstruction: " << nimin2Counter << " i-2-stencils, " << nimin1Counter << " i-1-stencils, " << niCounter << " i-stencils" << endl;
+
+
+
+
 	// Boundary nodes U+[0] and U-[nSize]
 	Up[mini-1] = Up[mini]; Um[maxi] = Um[maxi-1];
-	/////
-/*	string _fName = string(OUTPUT_FOLDER) + "\\" + "test-reconstruction-2.dat";
-	ofstream ofs; ofs.open(_fName, ios::out);
-	ofs << "TITLE = \"ENO-3 reconstruction test on the cells' borders, f(x) = x^2\"" << endl;
-	ofs << "VARIABLES = \"x\", \"f(x)\", \"sq(x)\"" << endl;
-	for(i=mini; i<maxi; i++) {
-		double _x = ms[i-nGhostCells].x;
-		double _x_left = _x;
-		double _x_right = ms[i-nGhostCells+1].x;
-		double _left_rec = Um[i][0];
-		double _right_rec = Up[i][0];
-		double _left_abs = _x_left*_x_left;
-		double _right_abs = _x_right*_x_right;
-			ofs << _x << " " << _left_rec << " " << _left_abs << endl;
-	}
-*/
-
-
-
-	for(i=0; i<=nSize; i++) {		
-//		F[i] = calcGodunovFlux(Up[i-1][0], Up[i-1][1], Up[i-1][2], Um[i][0], Um[i][1], Um[i][2]);	
-		
-//		ms[i].F = calcGodunovFlux(Up[i-1+nGhostCells][0], Up[i-1+nGhostCells][1], Up[i-1+nGhostCells][2], 
-//			                      Um[i+nGhostCells][0], Um[i+nGhostCells][1], Um[i+nGhostCells][2]);
-		ms[i].F = calcRoeFlux(Up[i-1+nGhostCells][0], Up[i-1+nGhostCells][1], Up[i-1+nGhostCells][2], 
-			                      Um[i+nGhostCells][0], Um[i+nGhostCells][1], Um[i+nGhostCells][2]);
-
-//		ms[i].F = calcRoeFlux(U[i-1+nGhostCells][0], U[i-1+nGhostCells][1], U[i-1+nGhostCells][2], 
-//			                      U[i+nGhostCells][0], U[i+nGhostCells][1], U[i+nGhostCells][2]);
-		
-	}
+	for(i=0; i<=nSize; i++) 		
+		ms[i].F = calcGodunovFlux(Up[i-1+nGhostCells][0], Up[i-1+nGhostCells][1], Up[i-1+nGhostCells][2], 
+			                      Um[i+nGhostCells][0], Um[i+nGhostCells][1], Um[i+nGhostCells][2]);	
 	ofs.close();
 	// Main cycle
 	for(i=0; i<nSize; i++) {				

@@ -14,8 +14,8 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 	const double h=ms[1].x-ms[0].x;
 	Vector4 L = Vector4::ZERO, R = Vector4::ZERO, D = Vector4::ZERO, V = Vector4::ZERO;	
 	// Специальные массивы для хранения переменных и потоков, с дополнительными фиктивными ячейками
-	const unsigned int nGhostCells = 3;	
-	const unsigned int mini = nGhostCells, maxi = nGhostCells+nSize;
+	const int nGhostCells = 3;	
+	const int mini = nGhostCells, maxi = nGhostCells+nSize;
 	std::vector<Vector4> U, Up, Um;
 	std::vector<Vector4> F;
 	for(i=0; i<nSize+nGhostCells+nGhostCells; i++) {
@@ -60,7 +60,7 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 		deltar0lENO3[j]  = r0l[j] - r0lENO2[j];
 	}
 	// Just switching from ENO2 to ENO3 and back inside the code
-	double flag = 0.;
+	double flag=0., flag0 = 1., flag1 = 0., flag2 = 0.;
 	ofstream ofs;
 	ofs.open("reconstruction.dat", ios::out);
 	double x_for_writing=0., step = h/20; 
@@ -71,31 +71,94 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 
 
 
+
+
+
+
+	// В итоге здесь какие-то расхождения на графиках. Сделать четко, расписать подробно, что и где вычисляем,
+	// при необходимости сделать вычисления руками в нескольких точках около вершины параболы, любая ошибка 
+	// реконструкции на этих данных должны. 
+	//
+	// Разобраться с граничными условаями, почему они так жестко срезаются в ноль? Проверить алгоритм, корректные
+	// ли значения на границах. Также есть несовпадение с точным решением (параболой) порядка процентов или десятых
+	// долей процентов. Возможно, это и есть ошибка реконструкции. 
+	//
+	// Также нет совпадения между левыми и правыми приближениями в границах ячеек, а они как раз должны
+	// быть одинаковыми, раз приближают один и тот же многочлен (параболу).
+
+
+	// Testing recinstruction procedure
+	// Let ro(x) = x^2-1.5*x. Then ENO-3 reconstruction will exactly represent the curve
+	
+	ofstream fcentres("test-ENO3-centres.dat", ios::out);
+	ofstream fborders("test-ENO3-borders.dat", ios::out);
+
+	for(i=0; i<maxi+nGhostCells; i++) {
+		double xm = (double)(i-nGhostCells)*h;
+		double xp = xm + h;
+		double x = .5*(xm + xp);
+		U[i][0] = 500.* 1./h * (xp*xp*xp/3. - 3.*xp*xp/4. - xm*xm*xm/3. + 3.*xm*xm/4.);
+		//fcentres << x  << " " << ms[i].ro << endl;
+		//fborders << xm << " " << xm*xm - 1.5*xm << endl;
+	}
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
 	// ENO 3rd order reconstruction
 	for(i=mini; i<maxi; i++) {		
 		
 		
 		
 		
-		if(i==32) {
-			double qqq = 0.;
-		}
-		
-		
+				
 		
 		
 		Vector4 diffPlus = U[i+1]-U[i], diffPlusPlus = U[i+2]-U[i+1], diffMinus = U[i]-U[i-1], diffMinusMinus = U[i-1]-U[i-2];
-		double stencil[] = {0, 0, 0};		
+		int stencil[] = {0, 0, 0};		
 		double x0 = (double)(i-nGhostCells)*h;
 		for(nDimCounter=0; nDimCounter<3; nDimCounter++) {
+
+
+
+
+
+
+
+			
+			if(i==33 && nDimCounter==1) {
+				double qqq = 0.;
+			}
+
+
+
+
+
+
+
+
+
+
+
 			if( fabs(diffMinus[nDimCounter])<=fabs(diffPlus[nDimCounter]) ) {
 				stencil[nDimCounter] = i-1;
 				if( fabs(diffMinus[nDimCounter] - diffMinusMinus[nDimCounter])<=fabs(diffPlus[nDimCounter] - diffMinus[nDimCounter]) ) {
 					stencil[nDimCounter] = i-2;		
 					nimin2Counter++;
-				}
+				} else
+					nimin1Counter++;
 			} else {
-				if( fabs(diffPlusPlus[nDimCounter] - diffPlus[nDimCounter]) <= fabs(diffPlus[nDimCounter] - diffMinus[nDimCounter]) ) {
+				if( fabs(diffPlusPlus[nDimCounter] - diffPlus[nDimCounter]) <= fabs(diffPlus[nDimCounter] - diffMinus[nDimCounter]) || flag==0.) {
 					stencil[nDimCounter] = i;
 					niCounter++;
 				} else {
@@ -125,16 +188,16 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 						rm1lENO2[] = {0.,  1./2., 1./2.,     0., 0.},
 						r0lENO2[]  = {0.,     0., 3./2., -1./2., 0.};
 									 */
-				Up[i][nDimCounter] = (rm1rENO2[0] + flag*deltarm2rENO3[0])*U[i-2][nDimCounter] + 
-					                 (rm1rENO2[1] + flag*deltarm2rENO3[1])*U[i-1][nDimCounter] + 
-									 (rm1rENO2[2] + flag*deltarm2rENO3[2])*U[i][nDimCounter]   + 
-									 (rm1rENO2[3] + flag*deltarm2rENO3[3])*U[i+1][nDimCounter] + 
-									 (rm1rENO2[4] + flag*deltarm2rENO3[4])*U[i+2][nDimCounter];
-				Um[i][nDimCounter] = (rm1lENO2[0] + flag*deltarm2lENO3[0])*U[i-2][nDimCounter] + 
-									 (rm1lENO2[1] + flag*deltarm2lENO3[1])*U[i-1][nDimCounter] + 
-									 (rm1lENO2[2] + flag*deltarm2lENO3[2])*U[i][nDimCounter] + 
-									 (rm1lENO2[3] + flag*deltarm2lENO3[3])*U[i+1][nDimCounter] + 
-									 (rm1lENO2[4] + flag*deltarm2lENO3[4])*U[i+2][nDimCounter];
+				Up[i][nDimCounter] = (rm1rENO2[0] + flag0*deltarm2rENO3[0])*U[i-2][nDimCounter] + 
+					                 (rm1rENO2[1] + flag0*deltarm2rENO3[1])*U[i-1][nDimCounter] + 
+									 (rm1rENO2[2] + flag0*deltarm2rENO3[2])*U[i][nDimCounter]   + 
+									 (rm1rENO2[3] + flag0*deltarm2rENO3[3])*U[i+1][nDimCounter] + 
+									 (rm1rENO2[4] + flag0*deltarm2rENO3[4])*U[i+2][nDimCounter];
+				Um[i][nDimCounter] = (rm1lENO2[0] + flag0*deltarm2lENO3[0])*U[i-2][nDimCounter] + 
+									 (rm1lENO2[1] + flag0*deltarm2lENO3[1])*U[i-1][nDimCounter] + 
+									 (rm1lENO2[2] + flag0*deltarm2lENO3[2])*U[i][nDimCounter] + 
+									 (rm1lENO2[3] + flag0*deltarm2lENO3[3])*U[i+1][nDimCounter] + 
+									 (rm1lENO2[4] + flag0*deltarm2lENO3[4])*U[i+2][nDimCounter];
 				//_up = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][0]*h, (U[i-2][0]+U[i-1][0])*h, (U[i-2][0]+U[i-1][0]+U[i][0])*h, xim12+h);
 				//_um = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][0]*h, (U[i-2][0]+U[i-1][0])*h, (U[i-2][0]+U[i-1][0]+U[i][0])*h, xim12);
 				//if(fabs(_up-Up[i][0]) > 1.e-5 || fabs(_um-Um[i][0]) > 1.e-5){
@@ -151,16 +214,16 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 									 rm1l[2]*U[i][nDimCounter]   + 
 									 rm1l[3]*U[i+1][nDimCounter] + 
 									 rm1l[4]*U[i+2][nDimCounter];*/
-				Up[i][nDimCounter] = (rm1rENO2[0] + flag*deltarm1rENO3[0])*U[i-2][nDimCounter] + 
-					                 (rm1rENO2[1] + flag*deltarm1rENO3[1])*U[i-1][nDimCounter] + 
-									 (rm1rENO2[2] + flag*deltarm1rENO3[2])*U[i][nDimCounter]   + 
-									 (rm1rENO2[3] + flag*deltarm1rENO3[3])*U[i+1][nDimCounter] + 
-									 (rm1rENO2[4] + flag*deltarm1rENO3[4])*U[i+2][nDimCounter];
-				Um[i][nDimCounter] = (rm1lENO2[0] + flag*deltarm1lENO3[0])*U[i-2][nDimCounter] + 
-									 (rm1lENO2[1] + flag*deltarm1lENO3[1])*U[i-1][nDimCounter] + 
-									 (rm1lENO2[2] + flag*deltarm1lENO3[2])*U[i][nDimCounter] + 
-									 (rm1lENO2[3] + flag*deltarm1lENO3[3])*U[i+1][nDimCounter] + 
-									 (rm1lENO2[4] + flag*deltarm1lENO3[4])*U[i+2][nDimCounter];
+				Up[i][nDimCounter] = (rm1rENO2[0] + flag1*deltarm1rENO3[0])*U[i-2][nDimCounter] + 
+					                 (rm1rENO2[1] + flag1*deltarm1rENO3[1])*U[i-1][nDimCounter] + 
+									 (rm1rENO2[2] + flag1*deltarm1rENO3[2])*U[i][nDimCounter]   + 
+									 (rm1rENO2[3] + flag1*deltarm1rENO3[3])*U[i+1][nDimCounter] + 
+									 (rm1rENO2[4] + flag1*deltarm1rENO3[4])*U[i+2][nDimCounter];
+				Um[i][nDimCounter] = (rm1lENO2[0] + flag1*deltarm1lENO3[0])*U[i-2][nDimCounter] + 
+									 (rm1lENO2[1] + flag1*deltarm1lENO3[1])*U[i-1][nDimCounter] + 
+									 (rm1lENO2[2] + flag1*deltarm1lENO3[2])*U[i][nDimCounter] + 
+									 (rm1lENO2[3] + flag1*deltarm1lENO3[3])*U[i+1][nDimCounter] + 
+									 (rm1lENO2[4] + flag1*deltarm1lENO3[4])*U[i+2][nDimCounter];
 			} else if (stencil[nDimCounter] == i) {
 				/*Up[i][nDimCounter] = r0r[0]*U[i-2][nDimCounter] + 
 					                 r0r[1]*U[i-1][nDimCounter] + 
@@ -172,20 +235,20 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 									 r0l[2]*U[i][nDimCounter]   +
 									 r0l[3]*U[i+1][nDimCounter] + 
 									 r0l[4]*U[i+2][nDimCounter];*/
-				Up[i][nDimCounter] = (r0rENO2[0] + flag*deltar0rENO3[0])*U[i-2][nDimCounter] + 
-					                 (r0rENO2[1] + flag*deltar0rENO3[1])*U[i-1][nDimCounter] + 
-									 (r0rENO2[2] + flag*deltar0rENO3[2])*U[i][nDimCounter]   + 
-									 (r0rENO2[3] + flag*deltar0rENO3[3])*U[i+1][nDimCounter] + 
-									 (r0rENO2[4] + flag*deltar0rENO3[4])*U[i+2][nDimCounter];
-				Um[i][nDimCounter] = (r0lENO2[0] + flag*deltar0lENO3[0])*U[i-2][nDimCounter] + 
-									 (r0lENO2[1] + flag*deltar0lENO3[1])*U[i-1][nDimCounter] + 
-									 (r0lENO2[2] + flag*deltar0lENO3[2])*U[i][nDimCounter] + 
-									 (r0lENO2[3] + flag*deltar0lENO3[3])*U[i+1][nDimCounter] + 
-									 (r0lENO2[4] + flag*deltar0lENO3[4])*U[i+2][nDimCounter];
+				Up[i][nDimCounter] = (r0rENO2[0] + flag2*deltar0rENO3[0])*U[i-2][nDimCounter] + 
+					                 (r0rENO2[1] + flag2*deltar0rENO3[1])*U[i-1][nDimCounter] + 
+									 (r0rENO2[2] + flag2*deltar0rENO3[2])*U[i][nDimCounter]   + 
+									 (r0rENO2[3] + flag2*deltar0rENO3[3])*U[i+1][nDimCounter] + 
+									 (r0rENO2[4] + flag2*deltar0rENO3[4])*U[i+2][nDimCounter];
+				Um[i][nDimCounter] = (r0lENO2[0] + flag2*deltar0lENO3[0])*U[i-2][nDimCounter] + 
+									 (r0lENO2[1] + flag2*deltar0lENO3[1])*U[i-1][nDimCounter] + 
+									 (r0lENO2[2] + flag2*deltar0lENO3[2])*U[i][nDimCounter] + 
+									 (r0lENO2[3] + flag2*deltar0lENO3[3])*U[i+1][nDimCounter] + 
+									 (r0lENO2[4] + flag2*deltar0lENO3[4])*U[i+2][nDimCounter];
 			}
 		}
 /*		for(int j=0; j<20; j++) {
-			x_for_writing = x0 + (double)(j)*step;
+			
 			ofs << x_for_writing << " ";
 			if (stencil0 == i-2)
 				ofs << calcInterpolationPolynomialDerivative3(x0-2.*h,x0-h,x0,x0+h,0.,U[i-2][0]*h,(U[i-2][0]+U[i-1][0])*h,(U[i-2][0]+U[i-1][0]+U[i][0])*h,x_for_writing) << endl;
@@ -207,9 +270,45 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 
 	// Boundary nodes U+[0] and U-[nSize]
 	Up[mini-1] = Up[mini]; Um[maxi] = Um[maxi-1];
-	for(i=0; i<=nSize; i++) 		
+
+
+
+
+
+
+
+
+
+
+	for(i=1; i<maxi+nGhostCells; i++) {
+		double xm = (double)(i-nGhostCells)*h;
+		double xp = xm + h;
+		double x = .5*(xm + xp);
+		U[i][0] = 500.*1./h * (xp*xp*xp/3. - 3.*xp*xp/4. - xm*xm*xm/3. + 3.*xm*xm/4.);
+		fcentres << x  << " " << U[i][0] << endl;
+		fborders << xm << " " << Up[i-1][0] << " " << Um[i][0] << " " << 500.*(xm*xm - 1.5*xm) << endl;
+	}
+
+
+	fcentres.close();
+	fborders.close();
+
+
+
+
+
+
+
+
+
+
+
+
+
+	for(i=0; i<=nSize; i++) {				
 		ms[i].F = calcGodunovFlux(Up[i-1+nGhostCells][0], Up[i-1+nGhostCells][1], Up[i-1+nGhostCells][2], 
 			                      Um[i+nGhostCells][0], Um[i+nGhostCells][1], Um[i+nGhostCells][2]);	
+	}
 	ofs.close();
 	// Main cycle
 	for(i=0; i<nSize; i++) {				
@@ -277,7 +376,7 @@ void CSolver::calcHydroStageENO2G(double t, double tau) {
 		// Calculate ENO-2 approximations themselves
 
 
-		if(i==32) {
+		if(i==33) {
 
 			double qq = 0.;
 
@@ -330,10 +429,23 @@ void CSolver::calcHydroStageENO2G(double t, double tau) {
 	// Calculating intercell fluxes
 	for(i=0; i<=nSize; i++) {		
 //		F[i] = calcGodunovFlux(Up[i-1][0], Up[i-1][1], Up[i-1][2], Um[i][0], Um[i][1], Um[i][2]);	
+
+
+
+
+		if(i==31) {
+
+			double qq = 0.;
+
+		}
+
+
+
+
 		
-//		ms[i].F = calcGodunovFlux(Up[i-1+nGhostCells][0], Up[i-1+nGhostCells][1], Up[i-1+nGhostCells][2], 
+		ms[i].F = calcGodunovFlux(Up[i-1+nGhostCells][0], Up[i-1+nGhostCells][1], Up[i-1+nGhostCells][2], 
 //			                      Um[i+nGhostCells][0], Um[i+nGhostCells][1], Um[i+nGhostCells][2]);
-		ms[i].F = calcRoeFlux(Up[i-1+nGhostCells][0], Up[i-1+nGhostCells][1], Up[i-1+nGhostCells][2], 
+//		ms[i].F = calcRoeFlux(Up[i-1+nGhostCells][0], Up[i-1+nGhostCells][1], Up[i-1+nGhostCells][2], 
 			                      Um[i+nGhostCells][0], Um[i+nGhostCells][1], Um[i+nGhostCells][2]);
 
 //		ms[i].F = calcRoeFlux(U[i-1+nGhostCells][0], U[i-1+nGhostCells][1], U[i-1+nGhostCells][2], 

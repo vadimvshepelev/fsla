@@ -60,20 +60,9 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 		deltar0lENO3[j]  = r0l[j] - r0lENO2[j];
 	}
 	// Just switching from ENO2 to ENO3 and back inside the code
-	double flag=0., flag0 = 1., flag1 = 0., flag2 = 0.;
-	ofstream ofs;
-	ofs.open("reconstruction.dat", ios::out);
-	double x_for_writing=0., step = h/20; 
-
-
+	double flag=1., flag0 = 1., flag1 = 1., flag2 = 1.;
 	int nimin2Counter = 0, nimin1Counter = 0, niCounter = 0;
-
-
-
-
-
-
-
+	// DEBUG
 
 	// В итоге здесь какие-то расхождения на графиках. Сделать четко, расписать подробно, что и где вычисляем,
 	// при необходимости сделать вычисления руками в нескольких точках около вершины параболы, любая ошибка 
@@ -86,70 +75,23 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 	// Также нет совпадения между левыми и правыми приближениями в границах ячеек, а они как раз должны
 	// быть одинаковыми, раз приближают один и тот же многочлен (параболу).
 
-
 	// Testing recinstruction procedure
 	// Let ro(x) = x^2-1.5*x. Then ENO-3 reconstruction will exactly represent the curve
-	
-	ofstream fcentres("test-ENO3-centres.dat", ios::out);
+/*	ofstream fcentres("test-ENO3-centres.dat", ios::out);
 	ofstream fborders("test-ENO3-borders.dat", ios::out);
-
 	for(i=0; i<maxi+nGhostCells; i++) {
 		double xm = (double)(i-nGhostCells)*h;
 		double xp = xm + h;
 		double x = .5*(xm + xp);
-		U[i][0] = 500.* 1./h * (xp*xp*xp/3. - 3.*xp*xp/4. - xm*xm*xm/3. + 3.*xm*xm/4.);
-		//fcentres << x  << " " << ms[i].ro << endl;
-		//fborders << xm << " " << xm*xm - 1.5*xm << endl;
-	}
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
+		U[i][0] = 500.* 1./h * (xp*xp*xp/3. - 3.*xp*xp/4. - xm*xm*xm/3. + 3.*xm*xm/4.);		
+	}*/
 	// ENO 3rd order reconstruction
-	for(i=mini; i<maxi; i++) {		
-		
-		
-		
-		
-				
-		
-		
+	for(i=mini; i<maxi; i++) {				
 		Vector4 diffPlus = U[i+1]-U[i], diffPlusPlus = U[i+2]-U[i+1], diffMinus = U[i]-U[i-1], diffMinusMinus = U[i-1]-U[i-2];
 		int stencil[] = {0, 0, 0};		
-		double x0 = (double)(i-nGhostCells)*h;
+		Up[i] = 0.;
+		Um[i] = 0.;
 		for(nDimCounter=0; nDimCounter<3; nDimCounter++) {
-
-
-
-
-
-
-
-			
-			if(i==33 && nDimCounter==1) {
-				double qqq = 0.;
-			}
-
-
-
-
-
-
-
-
-
-
-
 			if( fabs(diffMinus[nDimCounter])<=fabs(diffPlus[nDimCounter]) ) {
 				stencil[nDimCounter] = i-1;
 				if( fabs(diffMinus[nDimCounter] - diffMinusMinus[nDimCounter])<=fabs(diffPlus[nDimCounter] - diffMinus[nDimCounter]) ) {
@@ -171,23 +113,55 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 			// Смысл -- чтобы подойти к точке с другой стороны, мысленно переворачиваем
 			// профиль относительно границы i+1/2 -- имеем тот же набор средних, ту же задачу,
 			// но в другом направлении.
-			if(stencil[nDimCounter] == i-2) {
-				/*Up[i][nDimCounter] = rm2r[0]*U[i-2][nDimCounter] + 
-					                 rm2r[1]*U[i-1][nDimCounter] + 
-									 rm2r[2]*U[i][nDimCounter]   + 
-									 rm2r[3]*U[i+1][nDimCounter] + 
-									 rm2r[4]*U[i+2][nDimCounter];
-				Um[i][nDimCounter] = rm2l[0]*U[i-2][nDimCounter] + 
-									 rm2l[1]*U[i-1][nDimCounter] + 
-									 rm2l[2]*U[i][nDimCounter] + 
-									 rm2l[3]*U[i+1][nDimCounter] + 
-									 rm2l[4]*U[i+2][nDimCounter];
-									 
-				double  rm1rENO2[] = {0., -1./2., 3./2.,     0., 0.},       // {0.,     3./2.,  -1./2}, 
-						r0rENO2[]  = {0.,     0., 1./2.,  1./2., 0.},
-						rm1lENO2[] = {0.,  1./2., 1./2.,     0., 0.},
-						r0lENO2[]  = {0.,     0., 3./2., -1./2., 0.};
-									 */
+			for(int r=0; r<nGhostCells+2; r++) 
+				switch(i - stencil[nDimCounter]) {
+				case 2:
+					Up[i][nDimCounter] += (rm1rENO2[r] + flag0*deltarm2rENO3[r])*U[i-2+r][nDimCounter];
+					Um[i][nDimCounter] += (rm1lENO2[r] + flag0*deltarm2lENO3[r])*U[i-2+r][nDimCounter];
+					break;
+				case 1:
+					Up[i][nDimCounter] += (rm1rENO2[r] + flag1*deltarm1rENO3[r])*U[i-2+r][nDimCounter];
+					Um[i][nDimCounter] += (rm1lENO2[r] + flag1*deltarm1lENO3[r])*U[i-2+r][nDimCounter];
+					break;
+				case 0:
+					Up[i][nDimCounter] = (r0rENO2[r] + flag2*deltar0rENO3[r])*U[i-2+r][nDimCounter];
+					Um[i][nDimCounter] = (r0lENO2[r] + flag2*deltar0lENO3[0])*U[i-2+r][nDimCounter];
+					break;
+				default:
+					cerr << "CSolver::calcHydroStageENO3G() reports error: unknown ENO stencil type!" << endl; 
+					exit(1);
+				}
+
+
+
+
+
+
+			if(i==33 && nDimCounter==0) {
+
+
+
+				double _Up_test = (rm1rENO2[0] + flag0*deltarm2rENO3[0])*U[i-2][nDimCounter] + 
+					              (rm1rENO2[1] + flag0*deltarm2rENO3[1])*U[i-1][nDimCounter] + 
+								  (rm1rENO2[2] + flag0*deltarm2rENO3[2])*U[i][nDimCounter]   + 
+								  (rm1rENO2[3] + flag0*deltarm2rENO3[3])*U[i+1][nDimCounter] + 
+								  (rm1rENO2[4] + flag0*deltarm2rENO3[4])*U[i+2][nDimCounter];
+
+
+				double s0 = (rm1rENO2[0] + flag0*deltarm2rENO3[0])*U[i-2][nDimCounter],
+					   s1 = (rm1rENO2[1] + flag0*deltarm2rENO3[1])*U[i-1][nDimCounter],
+					   s2 = (rm1rENO2[2] + flag0*deltarm2rENO3[2])*U[i][nDimCounter],
+					   s3 = (rm1rENO2[3] + flag0*deltarm2rENO3[3])*U[i+1][nDimCounter],
+					   s4 = (rm1rENO2[4] + flag0*deltarm2rENO3[4])*U[i+2][nDimCounter];
+
+				double qq = 0.;
+
+			}
+
+
+
+
+			/*if(stencil[nDimCounter] == i-2) {				
 				Up[i][nDimCounter] = (rm1rENO2[0] + flag0*deltarm2rENO3[0])*U[i-2][nDimCounter] + 
 					                 (rm1rENO2[1] + flag0*deltarm2rENO3[1])*U[i-1][nDimCounter] + 
 									 (rm1rENO2[2] + flag0*deltarm2rENO3[2])*U[i][nDimCounter]   + 
@@ -197,23 +171,8 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 									 (rm1lENO2[1] + flag0*deltarm2lENO3[1])*U[i-1][nDimCounter] + 
 									 (rm1lENO2[2] + flag0*deltarm2lENO3[2])*U[i][nDimCounter] + 
 									 (rm1lENO2[3] + flag0*deltarm2lENO3[3])*U[i+1][nDimCounter] + 
-									 (rm1lENO2[4] + flag0*deltarm2lENO3[4])*U[i+2][nDimCounter];
-				//_up = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][0]*h, (U[i-2][0]+U[i-1][0])*h, (U[i-2][0]+U[i-1][0]+U[i][0])*h, xim12+h);
-				//_um = calcInterpolationPolynomialDerivative3(xim12-2.*h, xim12-h, xim12, xim12+h, 0., U[i-2][0]*h, (U[i-2][0]+U[i-1][0])*h, (U[i-2][0]+U[i-1][0]+U[i][0])*h, xim12);
-				//if(fabs(_up-Up[i][0]) > 1.e-5 || fabs(_um-Um[i][0]) > 1.e-5){
-				//	double qqqqqq=0.;
-				//}
+									 (rm1lENO2[4] + flag0*deltarm2lENO3[4])*U[i+2][nDimCounter];				
 			} else if (stencil[nDimCounter] == i-1) {
-				/*Up[i][nDimCounter] = rm1r[0]*U[i-2][nDimCounter] + 
-					                 rm1r[1]*U[i-1][nDimCounter] + 
-									 rm1r[2]*U[i][nDimCounter]   + 
-									 rm1r[3]*U[i+1][nDimCounter] + 
-									 rm1r[4]*U[i+2][nDimCounter];
-				Um[i][nDimCounter] = rm1l[0]*U[i-2][nDimCounter] + 
-					                 rm1l[1]*U[i-1][nDimCounter] + 
-									 rm1l[2]*U[i][nDimCounter]   + 
-									 rm1l[3]*U[i+1][nDimCounter] + 
-									 rm1l[4]*U[i+2][nDimCounter];*/
 				Up[i][nDimCounter] = (rm1rENO2[0] + flag1*deltarm1rENO3[0])*U[i-2][nDimCounter] + 
 					                 (rm1rENO2[1] + flag1*deltarm1rENO3[1])*U[i-1][nDimCounter] + 
 									 (rm1rENO2[2] + flag1*deltarm1rENO3[2])*U[i][nDimCounter]   + 
@@ -224,17 +183,7 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 									 (rm1lENO2[2] + flag1*deltarm1lENO3[2])*U[i][nDimCounter] + 
 									 (rm1lENO2[3] + flag1*deltarm1lENO3[3])*U[i+1][nDimCounter] + 
 									 (rm1lENO2[4] + flag1*deltarm1lENO3[4])*U[i+2][nDimCounter];
-			} else if (stencil[nDimCounter] == i) {
-				/*Up[i][nDimCounter] = r0r[0]*U[i-2][nDimCounter] + 
-					                 r0r[1]*U[i-1][nDimCounter] + 
-									 r0r[2]*U[i][nDimCounter]   + 
-									 r0r[3]*U[i+1][nDimCounter] + 
-									 r0r[4]*U[i+2][nDimCounter];
-				Um[i][nDimCounter] = r0l[0]*U[i-2][nDimCounter] +
-									 r0l[1]*U[i-1][nDimCounter] + 
-									 r0l[2]*U[i][nDimCounter]   +
-									 r0l[3]*U[i+1][nDimCounter] + 
-									 r0l[4]*U[i+2][nDimCounter];*/
+			} else if (stencil[nDimCounter] == i) {				
 				Up[i][nDimCounter] = (r0rENO2[0] + flag2*deltar0rENO3[0])*U[i-2][nDimCounter] + 
 					                 (r0rENO2[1] + flag2*deltar0rENO3[1])*U[i-1][nDimCounter] + 
 									 (r0rENO2[2] + flag2*deltar0rENO3[2])*U[i][nDimCounter]   + 
@@ -245,42 +194,13 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 									 (r0lENO2[2] + flag2*deltar0lENO3[2])*U[i][nDimCounter] + 
 									 (r0lENO2[3] + flag2*deltar0lENO3[3])*U[i+1][nDimCounter] + 
 									 (r0lENO2[4] + flag2*deltar0lENO3[4])*U[i+2][nDimCounter];
-			}
+			}*/
 		}
-/*		for(int j=0; j<20; j++) {
-			
-			ofs << x_for_writing << " ";
-			if (stencil0 == i-2)
-				ofs << calcInterpolationPolynomialDerivative3(x0-2.*h,x0-h,x0,x0+h,0.,U[i-2][0]*h,(U[i-2][0]+U[i-1][0])*h,(U[i-2][0]+U[i-1][0]+U[i][0])*h,x_for_writing) << endl;
-			else if (stencil0 == i-1)
-				ofs << calcInterpolationPolynomialDerivative3(x0-h,x0,x0+h,x0+2.*h,0.,U[i-1][0]*h,(U[i-1][0]+U[i][0])*h,(U[i-1][0]+U[i][0]+U[i+1][0])*h,x_for_writing) << endl;
-			else if (stencil0 == i)
-				ofs << calcInterpolationPolynomialDerivative3(x0,x0+h,x0+2.*h,x0+3.*h,0.,U[i][0]*h,(U[i][0]+U[i+1][0])*h,(U[i][0]+U[i+1][0]+U[i+2][0])*h,x_for_writing) << endl;
-			else
-				exit(1);
-		}
-*/
 	}
-
-
 	cout << endl << "Debug: ENO3 reconstruction: " << nimin2Counter << " i-2-stencils, " << nimin1Counter << " i-1-stencils, " << niCounter << " i-stencils" << endl;
-
-
-
-
 	// Boundary nodes U+[0] and U-[nSize]
 	Up[mini-1] = Up[mini]; Um[maxi] = Um[maxi-1];
-
-
-
-
-
-
-
-
-
-
-	for(i=1; i<maxi+nGhostCells; i++) {
+/*	for(i=1; i<maxi+nGhostCells; i++) {
 		double xm = (double)(i-nGhostCells)*h;
 		double xp = xm + h;
 		double x = .5*(xm + xp);
@@ -288,28 +208,23 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 		fcentres << x  << " " << U[i][0] << endl;
 		fborders << xm << " " << Up[i-1][0] << " " << Um[i][0] << " " << 500.*(xm*xm - 1.5*xm) << endl;
 	}
-
-
 	fcentres.close();
-	fborders.close();
+	fborders.close();*/
+ 	for(i=0; i<=nSize; i++) {	
 
 
 
 
+		if(i==31) {
+			double qq = 0.;
+		}
 
 
 
 
-
-
-
-
-
-	for(i=0; i<=nSize; i++) {				
 		ms[i].F = calcGodunovFlux(Up[i-1+nGhostCells][0], Up[i-1+nGhostCells][1], Up[i-1+nGhostCells][2], 
 			                      Um[i+nGhostCells][0], Um[i+nGhostCells][1], Um[i+nGhostCells][2]);	
 	}
-	ofs.close();
 	// Main cycle
 	for(i=0; i<nSize; i++) {				
 		ms[i].W_temp = ms[i].W - tau/h*(ms[i+1].F-ms[i].F);     //(F[nGhostCells+i+1]-F[nGhostCells+i]);

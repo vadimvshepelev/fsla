@@ -59,6 +59,17 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 		deltarm1lENO3[j] = rm1l[j] - rm1lENO2[j],
 		deltar0lENO3[j]  = r0l[j] - r0lENO2[j];
 	}
+	//Special arrays for finite differences for the density
+	vector<double> diff1(nSize+nGhostCells+nGhostCells), diff2(nSize+nGhostCells+nGhostCells);
+	for(i=mini; i<maxi; i++) 
+		diff1[i]=U[i+1][0]-U[i][0];
+	diff1[maxi]=0.;
+	for(i=mini; i<maxi; i++) 
+		diff2[i]=diff1[i+1]-diff1[i];
+	diff2[maxi]=0.;
+	
+
+
 	// Just switching from ENO2 to ENO3 and back inside the code
 	double flag=1., flag0 = 1., flag1 = 1., flag2 = 1.;
 	int nimin2Counter = 0, nimin1Counter = 0, niCounter = 0;

@@ -172,7 +172,7 @@ void CTask::load(char* fName) {
 		} else if(!strcmp(sourceParam, "default")) {	
 			sourceFlag = 1;
 			printf("Source type: vacuum-metal-vacuum\n");
-		} else if(!strcmp(sourceParam, "Al_glass")) {	
+		} else if(!strcmp(sourceParam, "glass-metal")) {	
 			sourceFlag = 2;
 			printf("Source type: glass-metal-vacuum\n");
 			eosGlass = new EOSPyrexGlass();

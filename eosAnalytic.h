@@ -6,10 +6,8 @@
 
 // Аналитическое уравнение состояния для газообразного алюминия
 
-class EOSAnalytic : public EOS
-{
+class EOSAnalytic : public EOS {
 public:
-
 	EOSAnalytic();
 
 	EOSType getType() { return analytic; }

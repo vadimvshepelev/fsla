@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
 	//s->goGlass("task-Ru-glass-optic-1000.txt");
 	//s->goGlass("task-Ru-glass-optic-2000.txt");
 	//s->goGlass("task-Ru-glass-optic-3000.txt");
+	s->goGlass("task-Fe-glass.txt");
 	//s->goGlass("task - Ni.txt");
 	//s->goGlass("task.txt"); // для железа и вообще
 	//s->go("task-5Si.txt");
@@ -64,8 +65,8 @@ int main(int argc, char *argv[])
 	
 
 	// Uncomment for Euler problems
-	s->goEuler("task-toro-1.txt");
-	delete s;
+	//s->goEuler("task-toro-1.txt");
+	//delete s;
 
 	///////////////////////////////////////
 	// Uncomment for convergence rate calculation

@@ -101,6 +101,19 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 		int stencil[] = {0, 0, 0};		
 		Up[i] = 0.;
 		Um[i] = 0.;
+
+
+
+
+		if(i==3+32) {
+
+			double qq = 0;
+		}
+
+
+
+
+
 		for(nDimCounter=0; nDimCounter<3; nDimCounter++) {
 			if( fabs(diffMinus[nDimCounter])<=fabs(diffPlus[nDimCounter]) ) {
 				stencil[nDimCounter] = i-1;

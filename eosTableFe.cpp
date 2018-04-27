@@ -193,7 +193,7 @@ EOSTableFe::EOSTableFe(char* dirName, int EOSFlag, double _ro0)
 		v_scale.create(nVScale, tableVmin, tableVmax, 1.0e-3);
 		t_scale.create(nTScale, tableTmin, tableTmax, 1.0);
 		
-		entropy_table.create("entrop.tab", dirName, 1.0, &v_scale, &t_scale, EOSFlag);				
+	//	entropy_table.create("entrop.tab", dirName, 1.0, &v_scale, &t_scale, EOSFlag);				
 	}
 	else if (EOSFlag == 1)
 	{

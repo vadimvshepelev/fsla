@@ -125,7 +125,7 @@ void CSolver::goEuler(char* fName) {
 
 
 
-		if(counter == 13) {
+		if(counter == 26) {
 			double qq = 0.;
 		}
 
@@ -724,6 +724,14 @@ void CSolver::goGlass(char* fName) {
 			if(task.getHydroStage())	calcHydroStageGlass(t, tau);
 			if(task.getHeatStage())		calcHeatStageGlass(t, tau);
 			if(task.getExchangeStage()) calcExchangeStageGlass(tau);
+
+
+
+
+			dumpToFile(t);
+
+
+
 		}
 		if(handleKeys(t)) break;
 		double xMeltL=1.0e-6;

@@ -717,21 +717,17 @@ void CSolver::goGlass(char* fName) {
 		eInit+=ms[i2].e*ms[0].dm;
 	}  
 	dumpToFile(t);
+	int itNumHydro = 0, itNumHeat = 0, itNumExchg = 0;
 	for(;;)	{
+		ostringstream oss;
+		cout.flush();
 		if(task.getMethodFlag() == 0) {
-			tau = calcTimeStep(t);
-			cout << counter << ": " << "t=" << t <<  " tau=" << tau << " courant=" << getzKur() << endl;
-			if(task.getHydroStage())	calcHydroStageGlass(t, tau);
-			if(task.getHeatStage())		calcHeatStageGlass(t, tau);
-			if(task.getExchangeStage()) calcExchangeStageGlass(tau);
-
-
-
-
-			dumpToFile(t);
-
-
-
+			tau = calcTimeStep(t);			
+			oss << counter << ": " << "t=" << setprecision(2) << t*1.e12 <<  "ps tau=" << tau*1.e12 << "ps CFL=" << getzKur() << " ";
+			if(task.getHydroStage()) { itNumHydro = calcHydroStageGlass(t, tau); oss << "Hydro:" << itNumHydro << " "; }
+			if(task.getHeatStage()) { itNumHeat = calcHeatStageGlass(t, tau); oss << "Heat:" << itNumHeat << " "; }
+			if(task.getExchangeStage()) { itNumExchg = calcExchangeStageGlass(tau); oss << "Exchg:" << itNumExchg << " "; }
+			oss << "(iters)";
 		}
 		if(handleKeys(t)) break;
 		double xMeltL=1.0e-6;
@@ -749,18 +745,17 @@ void CSolver::goGlass(char* fName) {
 				xMeltR = ms[i].x;			
 		}
 		//Energy conservation
-		double eInner=0.0, eKinetic=0.0, eFull=0.0, deltae=0.0;
-		for(unsigned int i1=0; i1<ms.getSize(); i1++) {
-			/*eInner+=ms[i1].e*ms[0].dm;
-			eKinetic+=ms[0].dm*ms[i1].v*ms[i1].v/2.0;*/
+	/*	double eInner=0.0, eKinetic=0.0, eFull=0.0, deltae=0.0;
+		for(unsigned int i1=0; i1<ms.getSize(); i1++) {		
 			eInner += (ms[i1+1].x-ms[i1].x)*ms[i1].ro*ms[i1].e;
 			eKinetic += 0.5 * ms[i1].ro*ms[i1].v*ms[i1].v;
 			eFull=eInner+eKinetic;
 			deltae=eFull-eInit;
 		}
+	
 		cout << "Energy is: inner " << eInner << " kinetic " << eKinetic << " full " << eFull << endl;
 		cout << "de = " << deltae << endl;
-
+		*/
 	/*	if(counter%10 == 0) {   
 			if ((task.getSourceFlag()==1)||(task.getSourceFlag()==2)||(task.getSourceFlag()==3)) {
 				f=fopen(rEdgeFileName, "a+");
@@ -786,12 +781,13 @@ void CSolver::goGlass(char* fName) {
 			timesCounter++;
 			if(timesCounter==nTimes)
 				break;
-		}
+		}		
 		if( t>= task.getMaxTime()) {
 			break;
 		}
 		t += tau;
 		counter++;
+		cout << oss.str() << endl; 		
 	} 
 	cout << endl << "Calculation finished!" << endl;
 }
@@ -1849,7 +1845,7 @@ void CSolver::calcHydroStage(double t, double tau) {
 }
 
 
-void CSolver::calcHydroStageGlass(double t, double tau) {	
+int CSolver::calcHydroStageGlass(double t, double tau) {	
 	unsigned int i=0, counter=0;
 	unsigned int itNumFull=0, itNumIon=0;
 	double e_prev=0.0, ei_prev=0.0;
@@ -1864,6 +1860,7 @@ void CSolver::calcHydroStageGlass(double t, double tau) {
 	ms_prev.initData(&task);
 	EOS &eos = task.getEOS();
 	EOS &eosGlass = task.getEOSGlass();
+	int flag = task.getSourceFlag();
 	unsigned int nSize = ms.getSize();
 	unsigned int nBound = task.getZone(0).n;
 	double h = ms[0].dm;
@@ -1875,7 +1872,7 @@ void CSolver::calcHydroStageGlass(double t, double tau) {
 	if(task.getViscFlag()) {
 		for(i=1; i<nSize-1; i++) {
 			double dv = ms[i+1].v - ms[i].v;
-			 Q =6000.0*ms[i].ro*dv*dv; // Al
+			 Q =8000.0*ms[i].ro*dv*dv; // Al
 			if (dv < 0) {
 				g[i] += Q;
 			}
@@ -1895,6 +1892,7 @@ void CSolver::calcHydroStageGlass(double t, double tau) {
 	i=nSize;
 	ms_temp[i].x  = ms[i].x;
 	ms_temp[i].v  = ms[i].v;
+	//cout << "Hydro:";
 	do {
 		itCounter++;	
 	/*	
@@ -1956,12 +1954,18 @@ void CSolver::calcHydroStageGlass(double t, double tau) {
 			ms_temp[i].e  = ms_temp[i].ei + ms_temp[i].ee;		
 		}
 		for(i=0; i<nSize; i++)	{	
-			if(i<nBound) 
+			if(flag == 2) {
+				if(i >= nBound) 
+				    ms_temp[i].ti = eos.getti(ms_temp[i].ro, ms_temp[i].ei);
+				else
+				    ms_temp[i].ti = eosGlass.getti(ms_temp[i].ro, ms_temp[i].ei);
+			} else if(i<nBound) 
 				ms_temp[i].ti = eos.getti(ms_temp[i].ro, ms_temp[i].ei);
 			else
 				ms_temp[i].ti = eosGlass.getti(ms_temp[i].ro, ms_temp[i].ei);
 			if(ms_temp[i].ti == -1.) {
-				cout << "CSolver::calcHydroStageGlass() error: no ti equation root on the interval in node " << i << "." << endl 
+				cout << "CSolver::calcHydroStageGlass() error: no ti equation root" << endl << "on the interval in node " << i << ":" << endl
+					 << "x = " << ms[i].x << endl 
 					 << "ro = " << ms[i].ro << endl 
 					 << "ti = " << ms[i].ti << endl
 					 << "te = " << ms[i].te << endl
@@ -1975,7 +1979,12 @@ void CSolver::calcHydroStageGlass(double t, double tau) {
 				cin.get();
 				exit(1);
 			}
-			if(i<nBound) 
+			if(flag == 2) {
+				if(i >= nBound) 
+					ms_temp[i].te = eos.gette(ms_temp[i].ro, ms_temp[i].ti, ms_temp[i].ee);			
+				else
+					ms_temp[i].te = eosGlass.gette(ms_temp[i].ro, ms_temp[i].ti, ms_temp[i].ee);
+			} else if(i<nBound) 
 				ms_temp[i].te = eos.gette(ms_temp[i].ro, ms_temp[i].ti, ms_temp[i].ee);			
 			else
 				ms_temp[i].te = eosGlass.gette(ms_temp[i].ro, ms_temp[i].ti, ms_temp[i].ee);
@@ -1996,7 +2005,15 @@ void CSolver::calcHydroStageGlass(double t, double tau) {
 			}
 		}
 		for(i=0; i<nSize; i++) 	{			
-			if(i<nBound) {
+			if(flag == 2) {
+				if(i >= nBound) {
+					ms_temp[i].pi = eos.getpi(ms_temp[i].ro, ms_temp[i].ti);
+					ms_temp[i].pe = eos.getpe(ms_temp[i].ro, ms_temp[i].ti, ms_temp[i].te);
+				} else {
+					ms_temp[i].pi = eosGlass.getpi(ms_temp[i].ro, ms_temp[i].ti);
+					ms_temp[i].pe = eosGlass.getpe(ms_temp[i].ro, ms_temp[i].ti, ms_temp[i].te);
+				}
+			} else if(i<nBound) {
 				ms_temp[i].pi = eos.getpi(ms_temp[i].ro, ms_temp[i].ti);
 				ms_temp[i].pe = eos.getpe(ms_temp[i].ro, ms_temp[i].ti, ms_temp[i].te);
 			} else {
@@ -2007,7 +2024,7 @@ void CSolver::calcHydroStageGlass(double t, double tau) {
 		}		
 	} 	
 	while (compTi(ms_temp, ms_prev) > 0.01);
-	printf("calcHydroStageGlass() complete: %d iterations\n", itCounter);
+	//cout << itCounter << "it ";
 	for(i=0; i<nSize; i++) {
 		 ms[i].x = ms_temp[i].x;
 		 ms[i].v = ms_temp[i].v;
@@ -2020,7 +2037,19 @@ void CSolver::calcHydroStageGlass(double t, double tau) {
 		ms[i].pe = ms_temp[i].pe;
 		ms[i].te = ms_temp[i].te;
 		ms[i].ti = ms_temp[i].ti;
-		if(i<nBound) {
+		if(flag == 2) {
+				if(i >= nBound) {
+					ms[i].C     = eos.getC(ms[i].ro, ms[i].ti, ms[i].te);
+					ms[i].Alphaei	    = eos.getAlpha(ms[i].ro, ms[i].ti, ms[i].te);
+					ms[i].kappa = eos.getkappa(ms[i].ro, ms[i].ti, ms[i].te);
+					ms[i].ce    = eos.getce(ms[i].ro, ms[i].te);
+				} else {
+					ms[i].C     = eos.getC(ms[i].ro, ms[i].ti, ms[i].te); // 'eos', а не 'eosGlass' сознательно, чтобы не уменьшить шаг по времени случайно
+					ms[i].Alphaei	    = eosGlass.getAlpha(ms[i].ro, ms[i].ti, ms[i].te);
+					ms[i].kappa = eosGlass.getkappa(ms[i].ro, ms[i].ti, ms[i].te);
+					ms[i].ce    = eosGlass.getce(ms[i].ro, ms[i].te);
+				}
+		} else if(i<nBound) {
 			ms[i].C     = eos.getC(ms[i].ro, ms[i].ti, ms[i].te);
 			ms[i].Alphaei	    = eos.getAlpha(ms[i].ro, ms[i].ti, ms[i].te);
 			ms[i].kappa = eos.getkappa(ms[i].ro, ms[i].ti, ms[i].te);
@@ -2035,6 +2064,7 @@ void CSolver::calcHydroStageGlass(double t, double tau) {
 	ms[nSize].x = ms_temp[nSize].x;
 	ms[nSize].v = ms_temp[nSize].v;	
 	delete[] g;
+	return itCounter;
 }
 
 

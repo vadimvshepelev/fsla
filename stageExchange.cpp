@@ -91,7 +91,7 @@ void CSolver::calcExchangeStage(double tau)
 	}
 }
 
-void CSolver::calcExchangeStageGlass(double tau) {
+int CSolver::calcExchangeStageGlass(double tau) {
 	unsigned int i=0, itNum = 0;
 	const unsigned int nBound = task.getZone(0).n;
 	const double eps = 0.01;
@@ -104,6 +104,10 @@ void CSolver::calcExchangeStageGlass(double tau) {
 		ms_temp[i].te = ms[i].te;
 		ms_temp[i].ti = ms[i].ti;
 	}
+	int iInit = 0;
+	if(task.getSourceFlag() == 2) 
+		iInit = nBound;
+	//cout << "Exchg:";
 	for(;;) {
 		for(i=0; i<ms.getSize(); i++) {
 			Node &n = ms[i];
@@ -112,7 +116,17 @@ void CSolver::calcExchangeStageGlass(double tau) {
 			ms_temp[i].ti = (tau * n.Alphaei*n.te + (tau * n.Alphaei/n.ce - 1.0)*n.ci*n.ti) / 
 				            (tau * n.Alphaei*(1.0 + n.ci/n.ce) - n.ci);
 			ms_temp[i].te = n.te + n.ci/n.ce*n.ti - n.ci/n.ce * ms_temp[i].ti;
-			if(i<nBound) {
+			if(task.getSourceFlag() == 2) {
+				if(i>=nBound) {
+					n.ce = eos.getce(n.ro, ms_temp[i].te);
+					n.ci = eos.getci(n.ro, ms_temp[i].ti);
+					n.Alphaei  = eos.getAlpha(n.ro, ms_temp[i].ti, ms_temp[i].te);
+				} else {
+					n.ce = eosGlass.getce(n.ro, ms_temp[i].te);
+					n.ci = eosGlass.getci(n.ro, ms_temp[i].ti);
+					n.Alphaei  = eosGlass.getAlpha(n.ro, ms_temp[i].ti, ms_temp[i].te);
+				}
+			} else if(i<nBound) {
 				n.ce = eos.getce(n.ro, ms_temp[i].te);
 				n.ci = eos.getci(n.ro, ms_temp[i].ti);
 				n.Alphaei  = eos.getAlpha(n.ro, ms_temp[i].ti, ms_temp[i].te);
@@ -133,13 +147,36 @@ void CSolver::calcExchangeStageGlass(double tau) {
 			exit(1);
 		}
 	}
-	cout << "calcExchangeStageGlass() complete: " << itNum+1 <<
-		    " iterations of Ti, Te" << endl;
+	//cout << itNum+1 << "it";
 	for(i=0; i<ms.getSize(); i++) {
 		Node &n = ms[i];
 		n.te = ms_temp[i].te;
 		n.ti = ms_temp[i].ti;
-		if(i<nBound) {
+		if(task.getSourceFlag() == 2) {
+			if(i>=nBound) {
+				n.pe = eos.getpe(n.ro, n.ti, n.te);
+				n.pi = eos.getpi(n.ro, n.ti);
+				n.p  = n.pe + n.pi;
+				n.ee = eos.getee(n.ro, n.ti, n.te);
+				n.ei = eos.getei(n.ro, n.ti);
+				n.e  = n.ee + n.ei;
+				n.ci    = eos.getci(n.ro, n.ti);
+				n.C     = eos.getC(n.ro, n.ti, n.te);
+				n.ce    = eos.getce(n.ro, n.te);
+				n.kappa = eos.getkappa(n.ro, n.ti, n.te);
+			} else {
+				n.pe = eosGlass.getpe(n.ro, n.ti, n.te);
+				n.pi = eosGlass.getpi(n.ro, n.ti);
+				n.p  = n.pe + n.pi;
+				n.ee = eosGlass.getee(n.ro, n.ti, n.te);
+				n.ei = eosGlass.getei(n.ro, n.ti);
+				n.e  = n.ee + n.ei;
+				n.ci    = eosGlass.getci(n.ro, n.ti);
+				n.C     = eos.getC(n.ro, n.ti, n.te);
+				n.ce    = eosGlass.getce(n.ro, n.te);	
+				n.kappa = eosGlass.getkappa(n.ro, n.ti, n.te);
+			}
+		} else if(i<nBound) {
 			n.pe = eos.getpe(n.ro, n.ti, n.te);
 			n.pi = eos.getpi(n.ro, n.ti);
 			n.p  = n.pe + n.pi;
@@ -163,6 +200,7 @@ void CSolver::calcExchangeStageGlass(double tau) {
 			n.kappa = eosGlass.getkappa(n.ro, n.ti, n.te);
 		}		
 	}
+	return itNum+1;
 }
 
 void CSolver::calcExchangeStage5LayersSi(double tau) {

@@ -352,7 +352,7 @@ void CSolver::calcHeatStage5LayersSi(double t, double tau) {
 }
 
 
-void CSolver::calcHeatStageGlass(double t, double tau) {
+int CSolver::calcHeatStageGlass(double t, double tau) {
 	unsigned int i=0;
 	unsigned int itNum = 0;
 	const double eps = 0.01;
@@ -384,6 +384,8 @@ void CSolver::calcHeatStageGlass(double t, double tau) {
 
 	double *alpha = new double[size];
 	double *beta  = new double[size];
+
+	//cout << "Heat:";
 	for(;;)
 	{
 		// Присваиваем значения коэффициентам 
@@ -456,9 +458,17 @@ void CSolver::calcHeatStageGlass(double t, double tau) {
 
 		sweepTe(ms_temp, ms_temp_temp, A, B, C, F, alpha, beta, size);
 
-		for(i=0; i<size; i++){
+		for(i=0; i<size; i++) {
 			Node &n = ms[i];
-			if(i<nBound) {
+			if ( task.getSourceFlag() == 2 ) {
+				if(i>=nBound) {
+					n.ce    = eos.getce   (n.ro, ms_temp[i].te);
+					n.kappa = eos.getkappa(n.ro, n.ti, ms_temp[i].te);
+				} else {
+					n.ce    = eosGlass.getce   (n.ro, ms_temp[i].te);
+					n.kappa = eosGlass.getkappa(n.ro, n.ti, ms_temp[i].te);
+				}
+			} else if(i<nBound) {
 				n.ce    = eos.getce   (n.ro, ms_temp[i].te);
 				n.kappa = eos.getkappa(n.ro, n.ti, ms_temp[i].te);
 			} else {
@@ -483,11 +493,28 @@ void CSolver::calcHeatStageGlass(double t, double tau) {
 		setzKur(1.01*_Kur);
 	}
 */
-	printf("calcHeatStageGlass() complete: %d iterations of Te\n", itNum+1);
+	//printf("calcHeatStageGlass() complete: %d iterations of Te\n", itNum+1);
+//	cout << itNum+1 << "it ";
 	for(i=0; i<size; i++)	{
 		Node &n = ms[i];
 		n.te    = ms_temp[i].te;
-		if(i<nBound) {
+		if ( task.getSourceFlag() == 2 ) {
+				if(i>=nBound) {
+					n.kappa = eos.getkappa(n.ro ,n.ti, n.te);
+					n.Alphaei = eos.getAlpha(n.ro, n.ti, n.te);
+					n.C = eos.getC(n.ro, n.ti, n.te);
+					n.ce	= eos.getce(n.ro, n.te); 
+					n.pe = eos.getpe(n.ro, n.ti, n.te);
+					n.ee = eos.getee(n.ro, n.ti, n.te);
+				} else {
+					n.kappa = eosGlass.getkappa(n.ro ,n.ti, n.te);
+					n.Alphaei = eosGlass.getAlpha(n.ro, n.ti, n.te);
+					n.C = eos.getC(n.ro, n.ti, n.te);
+					n.ce	= eosGlass.getce(n.ro, n.te); 
+					n.pe = eosGlass.getpe(n.ro, n.ti, n.te);
+					n.ee = eosGlass.getee(n.ro, n.ti, n.te);
+				}
+		} else if(i<nBound) {
 			n.kappa = eos.getkappa(n.ro ,n.ti, n.te);
 			n.Alphaei = eos.getAlpha(n.ro, n.ti, n.te);
 			n.C = eos.getC(n.ro, n.ti, n.te);
@@ -506,6 +533,7 @@ void CSolver::calcHeatStageGlass(double t, double tau) {
 		n.e  = n.ei + n.ee;
 	}
 	delete[] A; delete[] B; delete[] C; delete[] F; delete[] alpha; delete[] beta;
+	return itNum+1;
 }
 
 void CSolver::calcHeatStageSpallation(double t, double tau)

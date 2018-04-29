@@ -80,15 +80,15 @@ private:
 	double  calcTimeStepEuler(double t);
 
 	void	calcHydroStage(double t, double tau);
-	void	calcHydroStageGlass(double t, double tau);
+	int	calcHydroStageGlass(double t, double tau);
 	void	calcHydroStageDebugging(double t, double tau);
 	void	calcHydroStageSpallation(double t, double tau);
 	void	calcHeatStage(double t, double tau);
-	void	calcHeatStageGlass(double t, double tau);
+	int	calcHeatStageGlass(double t, double tau);
 	void	calcHeatStageSpallation(double t, double tau);
 	void    calcHeatStage5LayersSi(double t, double tau);
 	void	calcExchangeStage(double tau);
-	void	calcExchangeStageGlass(double tau);
+	int	calcExchangeStageGlass(double tau);
 	void    calcExchangeStage5LayersSi(double tau);
 
 	void	calcHydroStageNoElectron(double t, double tau);

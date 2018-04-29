@@ -1,5 +1,5 @@
 EOSType = table
-TableDir = fe_comb
+TableDir = fe
 TableFlag = extended
 Method = samarskii
 HydroStage = 1
@@ -8,9 +8,9 @@ ExchangeStage = 1
 source = glass-metal
 tauPulse = 480.0e-15
 fluence = 4000.0
-deltaSkin = 1.
+deltaSkin = 12.e-9
 
-courant = 0.1
+courant = 0.05
 viscosity = 1
 
 maxTime = 50.e-12

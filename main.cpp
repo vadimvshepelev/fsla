@@ -47,7 +47,10 @@ int main(int argc, char *argv[])
 	//s->goGlass("task-Ru-glass-optic-1000.txt");
 	//s->goGlass("task-Ru-glass-optic-2000.txt");
 	//s->goGlass("task-Ru-glass-optic-3000.txt");
-	s->goGlass("task-Fe-glass.txt");
+	//s->goGlass("task-Fe-glass.txt");
+
+	s->goGlass("task-Au-water.txt");
+
 	//s->goGlass("task - Ni.txt");
 	//s->goGlass("task.txt"); // для железа и вообще
 	//s->go("task-5Si.txt");

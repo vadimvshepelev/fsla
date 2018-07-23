@@ -671,14 +671,16 @@ void CSolver::goGlass(char* fName) {
 	ms.initData(&task);
 	ms_temp.initData(&task);
 	initVars();
-	double t   = -5*tauPulse;
+	double t   = -3*tauPulse;
 	double tau = 0.0;
 	int	counter = 0;
 	unsigned int i=0;
-	double timesArray[] = {      0.,   1.e-13,   3.e-13,   5.e-13,   1.e-12,   2.e-12,   3.e-12,    4.e-12,  5.e-12,    6.e-12,  
+	/*double timesArray[] = {      0.,   1.e-13,   3.e-13,   5.e-13,   1.e-12,   2.e-12,   3.e-12,    4.e-12,  5.e-12,    6.e-12,  
 		                    10.e-12,  20.e-12,  30.e-12,  40.e-12,  50.e-12,  60.e-12,  70.e-12,  80.1e-12, 90.2e-12, 100.e-12, 
 							110.e-12, 120.e-12, 130.e-12, 140.e-12, 150.e-12 };
-	int nTimes = 25;
+	int nTimes = 25;*/
+	double timesArray[] = {0., 50.e-12, 100.e-12, 200.e-12, 500.e-12,   5.e-9,   50.e-9,   500.e-9};
+	int nTimes = 5;	
 	int timesCounter = 0;
 	// Протестируем последовательность, на строгое возрастание (выход за границу мы не контролируем)
 	for(int i = 0; i<nTimes-1; i++)
@@ -723,7 +725,7 @@ void CSolver::goGlass(char* fName) {
 		cout.flush();
 		if(task.getMethodFlag() == 0) {
 			tau = calcTimeStep(t);			
-			oss << counter << ": " << "t=" << setprecision(2) << t*1.e12 <<  "ps tau=" << tau*1.e12 << "ps CFL=" << getzKur() << " ";
+			oss << counter << ": " << "t=" << setprecision(6) << t*1.e12 <<  "ps tau=" << tau*1.e12 << "ps CFL=" << getzKur() << " ";
 			if(task.getHydroStage()) { itNumHydro = calcHydroStageGlass(t, tau); oss << "Hydro:" << itNumHydro << " "; }
 			if(task.getHeatStage()) { itNumHeat = calcHeatStageGlass(t, tau); oss << "Heat:" << itNumHeat << " "; }
 			if(task.getExchangeStage()) { itNumExchg = calcExchangeStageGlass(tau); oss << "Exchg:" << itNumExchg << " "; }

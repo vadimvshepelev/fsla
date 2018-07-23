@@ -1,0 +1,26 @@
+EOSType = table
+TableDir = au
+TableFlag = extended
+Method = samarskii
+HydroStage = 1
+HeatStage = 1
+ExchangeStage = 1
+source = default
+tauPulse = 50.0e-12
+fluence = 4000.0
+deltaSkin = 15.e-9
+
+courant = 0.05
+viscosity = 1
+
+maxTime = 500.e-9
+
+nZones = 1
+
+l = 1.0e-6
+nSize = 1000
+ro = 19320.0
+ti = 300.0
+te = 300.0
+v = 0.0
+exp = 0.0

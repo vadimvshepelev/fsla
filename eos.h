@@ -26,6 +26,7 @@ enum EOSType {none, table, analytic, ideal, test,
 			  analyticAu, tableAu, simpleAu,
 			  analyticPyrexGlass, 
 			  simpleCr, simpleSi,
+			  simpleWater,
 			  MieGruneisen, bin};
 
 /* 

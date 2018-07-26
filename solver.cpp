@@ -679,8 +679,10 @@ void CSolver::goGlass(char* fName) {
 		                    10.e-12,  20.e-12,  30.e-12,  40.e-12,  50.e-12,  60.e-12,  70.e-12,  80.1e-12, 90.2e-12, 100.e-12, 
 							110.e-12, 120.e-12, 130.e-12, 140.e-12, 150.e-12 };
 	int nTimes = 25;*/
-	double timesArray[] = {0., 50.e-12, 100.e-12, 200.e-12, 500.e-12,   5.e-9,   50.e-9,   500.e-9};
-	int nTimes = 5;	
+	double timesArray[] = {0.,        2.e-12,  5.e-12,   10.e-12,   15.e-12, 16.e-12, 17.e-12,  18.e-12,  19.e-12,  20.e-12, 
+		                   21.e-12,  22.e-12, 23.e-12, 23.87e-12, 23.88e-12, 25.e-12,  30.e-12, 50.e-12, 100.e-12, 200.e-12, 
+						   500.e-12,   5.e-9,  50.e-9,   500.e-9};
+	int nTimes = 24;	
 	int timesCounter = 0;
 	// Протестируем последовательность, на строгое возрастание (выход за границу мы не контролируем)
 	for(int i = 0; i<nTimes-1; i++)
@@ -809,9 +811,9 @@ double CSolver::getEntropy(double ro, double ti, double te) {
 }
 
 double CSolver::calcTimeStep(double t) {
-	if( task.getSourceFlag()==2 && (t<5.0e-12)) {
+	if( task.getSourceFlag()==2 && (tauPulse<1.e-12) && (t<5.0e-12)) {
 		return 1.0e-15;
-	} else if( task.getSourceFlag()==1 && (t<5.0e-12)) {
+	} else if( task.getSourceFlag()==1 && (tauPulse<1.e-12) && (t<5.0e-12)) {
 		if(task.type!=TaskType::RuGlass) 
 		  return 1.0e-15;
 		else

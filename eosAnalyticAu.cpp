@@ -109,11 +109,11 @@ double EOSAnalyticAu::solve_ti(double ro, double ei, double low_border, double h
 		if(low_dei * high_dei > 0) {
 			printf("\nsolve_ti: Error in initial data -- no equation root on the interval\n");
 			printf("ro=%e, ei=%e, F(a)=%e, F(b)=%e\n", ro, ei, low_dei, high_dei);
-			exit(1);
+			return -1.;
 		}
 		if(ti_dei * low_dei > 0)
 			low_border  += (high_border-low_border)/2.0;
-		else
+		else  
 			high_border -= (high_border-low_border)/2.0;
 	}
 }

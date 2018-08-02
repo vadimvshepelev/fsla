@@ -60,11 +60,12 @@ protected:
 	double dedte(double ro, double ti, double te);
 };
 
+
 class EOSPyrexGlass: public EOS {
 	double  getnuWR(double ro, double ti, double te, double b) {return 0.;}
 public:
 	EOSPyrexGlass() {}
-	EOSType getType() { return analyticPyrexGlass; }
+	EOSType getType() { return EOSType::analyticPyrexGlass; }
 	double    getpi(double ro, double ti);
 	double    getpe(double ro, double ti, double te) {return 0.;}
 	double    getei(double ro, double ti);
@@ -98,6 +99,47 @@ protected:
 	double dpdte(double ro, double ti, double te) {return 0.;}
 	double dedte(double ro, double ti, double te) {return 0.;}*/
 };
+
+
+class EOSSimpleWater: public EOS {
+	double  getnuWR(double ro, double ti, double te, double b) {return 0.;}
+public:
+	EOSSimpleWater() {}
+	EOSType getType() { return EOSType::simpleWater; }
+	double    getpi(double ro, double ti);
+	double    getpe(double ro, double ti, double te) {return 0.;}
+	double    getei(double ro, double ti);
+	double    getee(double ro, double ti, double te) {return 0.;}
+	double    getti(double ro, double ei);
+	double    gette(double ro, double ti, double ee) {return 0.;}
+	double     getC(double ro, double ti, double te) {return 0.;}
+	double    getci(double ro, double ti);
+	double    getce(double ro, double te) {return 1.;}
+	double getkappa(double ro, double ti, double te) {return 0.;}
+	double getAlpha(double ro, double ti, double te) {return 0.;}
+	double getphase(double ro, double ti) {return 0.;}
+	double   getmix(double ro, double ti) {return 0.;}
+	double getEntropy(double ro, double ti, double te) {return 0.;}
+	double getGamma(void) {return 0.;}
+/*	double getdpdro  (double ro, double ti, double te) {return 0.;}
+	double getdpdroe (double ro, double ti, double te) {return 0.;}
+	double getdpdroei(double ro, double ti, double te) {return 0.;}
+	double getdpdt   (double ro, double ti, double te) {return 0.;}
+	double getdedt   (double ro, double ti, double te) {return 0.;}
+*/
+protected:
+	double __ee(double ro, double teta) {return 0.;}
+	double __pe(double ro, double teta) {return 0.;}
+	double solve_ti(double ro, double ei, double low_border, double high_border);
+/*	double dpde(double ro, double ti, double te) {return 0.;}
+	double dpdei(double ro, double ti, double te) {return 0.;}
+	double dpdti(double ro, double ti, double te) {return 0.;}
+	double dedti(double ro, double ti, double te) {return 0.;}
+	double deidti(double ro, double ti, double te) {return 0.;}
+	double dpdte(double ro, double ti, double te) {return 0.;}
+	double dedte(double ro, double ti, double te) {return 0.;}*/
+};
+
 
 class EOSSimpleCr : public EOSAnalytic {
 public:

@@ -175,7 +175,8 @@ void CTask::load(char* fName) {
 		} else if(!strcmp(sourceParam, "glass-metal")) {	
 			sourceFlag = 2;
 			printf("Source type: glass-metal-vacuum\n");
-			eosGlass = new EOSPyrexGlass();
+			//eosGlass = new EOSPyrexGlass();
+			eosGlass = new EOSSimpleWater();
 		} else if(!strcmp(sourceParam, "Al_glass_sq")) {	
 			sourceFlag = 3;
 			printf("Source type: Aluminium on the glass (square pulse)\n");	
@@ -277,7 +278,7 @@ void CTask::load(char* fName) {
 			zones[j].ti = readFloatParam(f, "ti");
 			zones[j].te = readFloatParam(f, "te");
 			zones[j].v  = readFloatParam(f,	"v");
-			zones[j].expProperty = readFloatParam(f, "exp");
+			//zones[j].expProperty = readFloatParam(f, "exp");
 		}		
 		printf("Zone %d loaded!\n", j);
 		totalSize += zones[j].n;

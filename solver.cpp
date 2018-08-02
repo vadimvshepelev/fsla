@@ -1969,6 +1969,7 @@ int CSolver::calcHydroStageGlass(double t, double tau) {
 				ms_temp[i].ti = eosGlass.getti(ms_temp[i].ro, ms_temp[i].ei);
 			if(ms_temp[i].ti == -1.) {
 				cout << "CSolver::calcHydroStageGlass() error: no ti equation root" << endl << "on the interval in node " << i << ":" << endl
+					 << "i = " << i << endl
 					 << "x = " << ms[i].x << endl 
 					 << "ro = " << ms[i].ro << endl 
 					 << "ti = " << ms[i].ti << endl

@@ -317,7 +317,6 @@ double EOSAnalytic::getdedt(double ro, double ti, double te)
 //// EOSPyrexGlass()
 /////////////////////////
 
-
 double EOSPyrexGlass::getpi(double ro, double ti) {
 	double _pi = (ro/1000. - 2.23)*(10.3 + 5.047*(ro/1000. - 3.52)*(ro/1000. - 3.52))*exp(0.13*ro/1000.) * 1.e9; // [Pa]
 	return _pi;
@@ -330,6 +329,35 @@ double EOSPyrexGlass::getei(double ro, double ti) {
 
 double EOSPyrexGlass::getti(double ro, double ei) {
 	double _ti = ei / 830.;
+	return _ti;
+}
+
+
+
+// EOSSimpleWater()
+
+double EOSSimpleWater::getpi(double ro, double ti) {
+	double _ro = ro/1000.;
+	double _pi = ( 2.25*(_ro - 1.) + 7.07*(_ro - 1.)*(_ro - 1.) + 25.08*(_ro - 1.)*(_ro - 1.)*(_ro - 1.) - 7.04*(_ro - 1.)*(_ro - 1.)*(_ro - 1.)*(_ro - 1.) ) * 1.e9; // [Pa]
+	return _pi;
+}
+
+double EOSSimpleWater::getei(double ro, double ti) {
+	double _e0 = 1000.;           // [J/kg]
+	double _ci = 4183.;           // [J/kg/K]
+	double _ei = 1000. + _ci*ti;  // [J/kg]
+	return _ei;
+}
+
+double EOSSimpleWater::getci(double ro, double ti) {
+	double _ci = 4183.;  //[J/kg/K]
+	return _ci;
+}
+
+double EOSSimpleWater::getti(double ro, double ei) {
+	double _e0 = 1000.;           // [J/kg]
+	double _ci = 4183.;           // [J/kg/K]
+	double _ti = (ei-_e0)/_ci;    // [K]
 	return _ti;
 }
 

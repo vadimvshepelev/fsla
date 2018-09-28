@@ -37,7 +37,7 @@ CTask::CTask()
 	   nZones = 0;
 	totalSize = 0;
 
-	sourceFlag = 0;
+	sourceFlag = SourceType::SrcNone;
 	  viscFlag = 0;
 	methodFlag = 0;
 
@@ -167,28 +167,28 @@ void CTask::load(char* fName) {
 	if (methodFlag != 1) {
 		const char *sourceParam = readStringParam(f, "source");
 		if(!strcmp(sourceParam, "no")) 	{	
-			sourceFlag = 0;
+			sourceFlag = SrcNone;
 			printf("Source type: none\n");
 		} else if(!strcmp(sourceParam, "default")) {	
-			sourceFlag = 1;
+			sourceFlag = SourceType::SrcMetal;
 			printf("Source type: vacuum-metal-vacuum\n");
 		} else if(!strcmp(sourceParam, "glass-metal")) {	
-			sourceFlag = 2;
+			sourceFlag = SourceType::SrcGlass;
 			printf("Source type: glass-metal-vacuum\n");
 			//eosGlass = new EOSPyrexGlass();
 			eosGlass = new EOSSimpleWater();
 		} else if(!strcmp(sourceParam, "Al_glass_sq")) {	
-			sourceFlag = 3;
+			sourceFlag = SourceType::SrcSq;
 			printf("Source type: Aluminium on the glass (square pulse)\n");	
 		} else if(!strcmp(sourceParam, "5_layers_Si")) {
-			sourceFlag = 4;
+			sourceFlag = SourceType::Src5Layers;
 			cout << "Source type: 5-layer Si source" << endl;
 		} else {
 			printf("Unknown Source type: %s\n", sourceParam);
 			exit(1);
 		}
 	} else {
-		sourceFlag = 0;
+		sourceFlag = SourceType::SrcNone;
 	}
 
 	if(methodFlag != 1)	{

@@ -536,6 +536,115 @@ int CSolver::calcHeatStageGlass(double t, double tau) {
 	return itNum+1;
 }
 
+int CSolver::calcIonicHeatStageGlass(double t, double tau) {
+	unsigned int i=0;
+	unsigned int itNum = 0;
+	const double eps = 0.01;
+	double kappa_plus=0., kappa_minus=0.;
+	double ro_plus=0., ro_minus=0.;
+	unsigned int size = ms.getSize();
+	EOS &eos = task.getEOS();
+	EOS &eosGlass = task.getEOSGlass();
+	unsigned int nBound = task.getZone(0).n;
+	MatterState ms_temp, ms_temp_temp;
+	ms_temp.initData(&task);
+	ms_temp_temp.initData(&task);
+	// Для поглощения
+	const unsigned int N = task.getZone(0).n;
+	const double L = task.getZone(0).l;
+	double dx = L/N;
+	double _x = 0.;
+	for(i=0; i<size; i++) {
+		     ms_temp[i].ti = ms[i].ti;
+		ms_temp_temp[i].ti = ms[i].ti;
+	}
+	// Столбцы коэффициентов системы. Система имеет вид:
+	// A...-C...+B...=-F
+	double* A  = new double[size]; double* B  = new double[size]; 	double* C  = new double[size]; 	double* F  = new double[size];
+	double *alpha = new double[size]; double *beta  = new double[size];	
+	if(task.getSourceFlag() != SourceType::SrcGlass) 	{
+				cerr << "CSolver::calcIonicHeatStage() reports error: only glass problems can have ionc heat stage now." << endl;
+				exit(1);
+			} 
+	for(;;)
+	{
+		// Присваиваем значения коэффициентам 
+		// (решается уравнение теплопроводности с помощью неявной схемы)
+		/////////////////////////////////////////////////////////////////////////////////////////
+		// !!! DEBUG
+		// Пусть в стекле в kappa лежит у нас значение ионной теплопроводности, а не электронной
+		// //////////////////////////////////////////////////////////////////////////////////////
+		for(i=0; i<size; i++) {
+			if(i==0) {
+				kappa_minus = ms[i].kappa;
+				   ro_minus = ms[i].ro;
+			}
+			else {				
+				kappa_minus = (ms[i].kappa + ms[i-1].kappa) / 2.0;
+				   ro_minus = (ms[i].ro    + ms[i-1].ro   ) / 2.0;
+			} 			
+			if(i==size-1) {
+
+				kappa_plus  = ms[i].kappa;
+				   ro_plus  = ms[i].ro;
+			} else {
+				kappa_plus  = (ms[i].kappa + ms[i+1].kappa) / 2.0;
+				   ro_plus  = (ms[i].ro    + ms[i+1].ro   ) / 2.0;
+			}
+			A[i] = tau * kappa_minus / (ms[i].dm*ms[i].dm) * ms[i].ro * ro_minus;
+			B[i] = tau * kappa_plus  / (ms[i].dm*ms[i].dm) * ms[i].ro * ro_plus;
+			C[i] = ms[i].ci + A[i] + B[i];				
+			F[i] = ms[i].ci * ms[i].ti;
+		}	
+		sweepTi(ms_temp, ms_temp_temp, A, B, C, F, alpha, beta, size);
+		for(i=0; i<size; i++) {
+			Node &n = ms[i];
+			if(i>=nBound) {
+				n.ci    = eos.getci(n.ro, ms_temp[i].ti);
+				n.kappa = eos.getkappa(n.ro, ms_temp[i].ti, n.te);
+			} else {
+				n.ci    = eosGlass.getci   (n.ro, ms_temp[i].ti);
+				n.kappa = eosGlass.getkappa(n.ro, ms_temp[i].ti, n.te);				
+			}
+		}
+		if(compTi(ms_temp, ms_temp_temp) < eps) break;
+		itNum++;
+		if(itNum == maxIt) {
+			cerr << "CSolver::calcIonicHeatStage() reports error: too many iterations for convergence." << endl;
+			cerr << "Divergence=" << compTi() << ", iteration number " << itNum << endl;			
+			exit(1);
+		}		
+	}
+	for(i=0; i<size; i++) {
+		Node &n = ms[i];
+		n.ti = ms_temp[i].ti;
+		if(i>=nBound) {
+			n.kappa = eos.getkappa(n.ro ,n.ti, n.te);
+			n.Alphaei = eos.getAlpha(n.ro, n.ti, n.te);
+			n.C = eos.getC(n.ro, n.ti, n.te);
+			n.ci	= eos.getci(n.ro, n.ti); 
+			n.pi = eos.getpi(n.ro, n.ti);
+			n.pe = eos.getpe(n.ro, n.ti, n.te);
+			n.ei = eos.getei(n.ro, n.ti);
+			n.ee = eos.getee(n.ro, n.ti, n.te);
+		} else {
+			n.kappa = eosGlass.getkappa(n.ro ,n.ti, n.te);
+			n.Alphaei = eosGlass.getAlpha(n.ro, n.ti, n.te);
+			n.C = eos.getC(n.ro, n.ti, n.te);
+			n.ci	= eosGlass.getci(n.ro, n.ti); 
+			n.pi = eosGlass.getpi(n.ro, n.ti);
+			n.pe = eosGlass.getpe(n.ro, n.ti, n.te);
+			n.ei = eosGlass.getei(n.ro, n.ti);
+			n.ee = eosGlass.getee(n.ro, n.ti, n.te);
+		}		
+		n.p  = n.pi + n.pe;
+		n.e  = n.ei + n.ee;
+	}
+	////////////////////////////////////////////////////////////////////////////////////////
+	delete[] A; delete[] B; delete[] C; delete[] F; delete[] alpha; delete[] beta;
+	return itNum+1;
+}
+
 void CSolver::calcHeatStageSpallation(double t, double tau)
 {
 	unsigned int i = 0, itNum = 0, iSpall = getSpallCellNum(), size = ms.getSize();
@@ -780,102 +889,33 @@ void CSolver::sweepTe(MatterState& ms_temp, MatterState& ms_temp_temp, double *A
 }
 
 
-
-//////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////
-/////////////// ТРЭШОХРАНИЛИЩЕ. BEWARE. //////////////////
-//////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////
-
-/*
-//////////////////////////////////////////////
-///////// TEST SECTION /////////////////////
-	
-	double dtdt_an=0.0, dtdt_num=0.0;
-	double ddtddx_an=0.0, ddtddx_num=0;
-
-	double xx_derivative=0;
-
-	i=40;
-
-	dtdt_an=ce[nSize/2]*ti[i]*(-1.0/2.0/t+
-		    (x[i]-x[nSize/2])*(x[i]-x[nSize/2])/4.0/kappa[nSize/2]/t/t);
-	dtdt_num=ce[nSize/2]*(te_temp[i]-te[i])/tau;
-
-	printf("First test:\n");
-	printf("Time derivatives: an=%e, num=%e\n", dtdt_an, dtdt_num);
-
-	ddtddx_an=ti[i]*(-1.0/2.0/t+
-	(x[i]-x[nSize/2])*(x[i]-x[nSize/2])/4.0/kappa[nSize/2]/t/t);
+void CSolver::sweepTi(MatterState& ms_temp, MatterState& ms_temp_temp, 
+					  double *A, double *B, double *C, double *F,
+					  double *alpha, double *beta, int size) {
+	int i = 0;
+	double tiL=0.0, tiR=0.0, alphaR=0.0, betaR=0.0;
+	// Граничные условия
+	double  AL = 0.0, BL = 1.0, CL = 1.0, FL = 0.0,
+			AR = 1.0, BR = 0.0, CR = 1.0, FR = 0.0;
+	// Прямая прогонка
+		alpha[0] = BL/CL;
+		 beta[0] = FL/CL;
 		
-		
-	kappa_plus=0.5*(kappa[i]+kappa[i+1]);
-	kappa_minus=0.5*(kappa[i-1]+kappa[i]);
-
-	ro_plus=0.5*(ro[i]+ro[i+1]);
-	ro_minus=0.5*(ro[i-1]+ro[i]);
-	ddtddx_num =(ro[i]/dm[i]/dm[i]/ce[i]) * ( (kappa_plus)/(ro_plus)*
-								(te_temp[i+1]-te_temp[i]) ) +
-				(ro[i]/dm[i]/dm[i]/ce[i]) * ( (kappa_minus)/(ro_minus)*
-								(te_temp[i]-te_temp[i-1]) );
-	
-	printf("Coordinate derivatives: an=%e, num=%e\n", ddtddx_an, ddtddx_num);
-
-	printf("Second test:\n");
-
-	double left=0.0, right=0.0;
-	
-	left=(tAn(x[i]-x[nSize/2], t+tau) - te[i])/tau;
-	right=(tAn(x[i+1]-x[nSize/2], t+tau) +
-		   tAn(x[i-1]-x[nSize/2], t+tau) -
-	   2.0*tAn(x[i]-x[nSize/2], t+tau))/ro[i]/ro[i]/dm[i]/dm[i];
-
-	printf("Analytic: left=%e, right=%e\n", left, right);
-*/
-
-
-/*
-int CheckHeatStage(void)
-{
-	double _left=0.0, _right1=0.0, _right2=0.0;
-	double kappa_plus=0.0, kappa_minus=0.0, ro_plus=0.0, ro_minus=0.0;
-	int i=0;
-
-	for(i=2; i<nSize-2; i++)
-	{
-		kappa_plus=0.5*(kappa[i]+kappa[i+1]);
-		kappa_minus=0.5*(kappa[i-1]+kappa[i]);
-
-		ro_plus=0.5*(ro[i]+ro[i+1]);
-		ro_minus=0.5*(ro[i-1]+ro[i]);
-
-		_left=(te_temp[i]-te[i]);
-		
-	
-		_right1=(tau/ro[i]/dm[i]/dm[i]/ce[i]) * ( (kappa_plus)/(ro_plus)*
-								(te_temp[i+1]-te_temp[i]) );
-		_right2=(tau/ro[i]/dm[i]/dm[i]/ce[i]) * ( (kappa_minus)/(ro_minus)*
-								(te_temp[i]-te_temp[i-1]) );
-
-
-		if( fabs(_left-_right1+_right2)>eps )
-			return i;
-
+	for(i=0; i<i_pulse_min; i++) {
+		alpha[i+1] = B[i] / (C[i]-A[i]*alpha[i]);
+		 beta[i+1] = (A[i]*beta[i]+F[i]) / (C[i]-A[i]*alpha[i]);
 	}
-
-	return -1;
+	alphaR = B[size-1] / (C[size-1]-A[size-1]*alpha[size-1]);
+	 betaR = (A[size-1]*beta[size-1]+F[size-1]) / 
+		     (C[size-1]-A[size-1]*alpha[size-1]);	
+	// Обратная прогонка
+	tiR = (AR/CR*betaR + FR/CR) / (1.0 - AR/CR*alphaR);	
+	i = i_pulse_min-1;
+	ms_temp_temp[i].ti = ms_temp[i].ti;
+	     ms_temp[i].ti = alphaR * tiR + betaR;
+	for(i=i_pulse_min-2; i>=0; i--) {
+		ms_temp_temp[i].ti = ms_temp[i].ti;
+		     ms_temp[i].ti = alpha[i+1] * ms_temp[i+1].ti + beta[i+1];
+	}
+	tiL = alpha[0] * ms_temp[0].te + beta[0];
 }
-*/
-
-/*
-double tAn(double _x, double _t)
-{
-	//double tt=4.0e-15/4.0/1.0;
-	//double F=1.0/(1.0/sqrt(3.14159*tt));
-	//
-	//_A_coeff=F/sqrt(3.14159*_t);
-	//_B_coeff=4.0*1.0*_t;
-	
-	return _A_coeff/sqrt(_t)*exp(-_x*_x/_B_coeff/t);
-}
-*/

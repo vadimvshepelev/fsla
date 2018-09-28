@@ -72,10 +72,12 @@ struct Zone
 
 enum TaskType { undef, RuGlass, LH1D };
 
+enum SourceType { SrcNone, SrcGlass, SrcMetal, SrcSq, Src5Layers };
+
 class CTask {
 public:
 	CTask();
-	CTask(TaskType _type, bool _bHydroStage, bool _bHeatStage, bool _bExchangeStage, EOS* _eos, EOS* _eosGlass, int _sourceFlag,
+	CTask(TaskType _type, bool _bHydroStage, bool _bHeatStage, bool _bExchangeStage, EOS* _eos, EOS* _eosGlass, SourceType _sourceFlag,
 		  double _tauPulse, double _fluence, double _deltaSkin, Zone* _zones, unsigned int _nZones, double _maxTime, CMethod* _mtd,
 		  int _viscFlag, double _courant, unsigned int _totalSize, int _EOSFlag, int _methodFlag) :
 		  type(_type), 
@@ -105,7 +107,7 @@ public:
 	char	   *getInputFilename() { return inputFileName; }
 	const char *getFlowFilename() { return flowFileName; }
 	char	   *getTaskName() { return taskName; }	
-	int			getSourceFlag() { return sourceFlag; }
+	SourceType	getSourceFlag() { return sourceFlag; }
 	int			getViscFlag() { return viscFlag; }	
 	int			getMethodFlag() { return methodFlag; }	
 	double		getTauPulse() { return tauPulse;}
@@ -126,7 +128,7 @@ private:
 	bool	bExchangeStage;		// Расчитывать электронно-ионный обмен?
 	EOS		*eos;				// Уравнение состояния
 	EOS		*eosGlass;			// Уравнение состояния стекла	
-	int		sourceFlag;			// Источник энергии в расчетной области (0 - нет, 1 - алюминий, 2 - алюминий на стекле).
+	SourceType sourceFlag;			// Источник энергии в расчетной области 
 	double  tauPulse;			// Длительность вспышки
 	double  fluence;			// Флюенс -- энергия, поглощенная единицей поверхности
 	double  deltaSkin;			// Толщина скин-слоя

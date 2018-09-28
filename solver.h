@@ -87,6 +87,9 @@ private:
 	int	calcHeatStageGlass(double t, double tau);
 	void	calcHeatStageSpallation(double t, double tau);
 	void    calcHeatStage5LayersSi(double t, double tau);
+
+	int calcIonicHeatStageGlass(double t, double tau);
+
 	void	calcExchangeStage(double tau);
 	int	calcExchangeStageGlass(double tau);
 	void    calcExchangeStage5LayersSi(double tau);
@@ -155,6 +158,9 @@ private:
 	bool	handleKeys(double t);
 
 	void	sweepTe(MatterState& ms_temp, MatterState& ms_temp_temp, 
+					double *A, double *B, double *C, double *F,
+					double *alpha, double *beta, int size);
+	void	sweepTi(MatterState& ms_temp, MatterState& ms_temp_temp, 
 					double *A, double *B, double *C, double *F,
 					double *alpha, double *beta, int size);
 

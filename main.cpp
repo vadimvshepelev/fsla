@@ -72,7 +72,9 @@ int main(int argc, char *argv[])
 
 	// Uncomment for Euler problems
 	//s->goEuler("task-toro-1.txt");
-	//delete s;
+
+
+	delete s;
 
 	///////////////////////////////////////
 	// Uncomment for convergence rate calculation

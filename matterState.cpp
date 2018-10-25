@@ -13,21 +13,18 @@
 
 using namespace std;
 
-MatterState::MatterState()
-{
+CField::CField() {
 	nodes = 0;
 	nSize = 0;
-	bEdgeMode = false;
 }
 
 
-MatterState::~MatterState()
-{
+CField::~CField() {
 	clearData();
 }
 
 
-void MatterState::initData(CTask *task) {
+void CField::initData(CTask *task) {
 	clearData();
 	nSize = task->getTotalSize();
 	nodes = new Node[nSize+1];
@@ -203,14 +200,14 @@ void MatterState::initData(CTask *task) {
 }
 
 
-void MatterState::clearData()
+void CField::clearData()
 {
 	delete[] nodes;
 	nodes = 0;
 	nSize = 0;
 }
 
-double MatterState::loadData(string fName, unsigned int nCut) {
+double CField::loadData(string fName, unsigned int nCut) {
 	string buf = string("");
 	string fullName = string(OUTPUT_FOLDER) + fName;
 	ifstream fInput;
@@ -293,7 +290,7 @@ double MatterState::loadData(string fName, unsigned int nCut) {
 
 
 
-void MatterState::setEdge(Node &n, double x, double dm)
+void CField::setEdge(Node &n, double x, double dm)
 {
 	n.x  = x;
 	n.v  = 0;
@@ -334,7 +331,7 @@ void MatterState::setEdge(Node &n, double x, double dm)
 }
 
 
-void MatterState::setEdgeTransparent()
+void CField::setEdgeTransparent()
 {
 	left_edge.x   = nodes[0].x - (nodes[1].x - nodes[0].x);
 /*	left_edge.ro  = 0.; 

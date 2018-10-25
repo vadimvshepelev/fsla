@@ -12,12 +12,12 @@ public:
 	CMethodEuler(EOS *_eos) : CMethod(_eos) { gamma = 1.4; }
 	~CMethodEuler();
 
-	void	matter2Flow(MatterState &ms);
-	void	advanceFlow(MatterState &ms, double tau);
-    void	advanceFlowVacuum(MatterState &ms, double tau);
-	void	flow2Matter(MatterState &ms, double tau);
-	void    flow2MatterVacuum(MatterState &ms, MatterState &ms_temp, double t, double tau);
-	void	createGrid(MatterState &ms);
+	void	matter2Flow(CField &ms);
+	void	advanceFlow(CField &ms, double tau);
+    void	advanceFlowVacuum(CField &ms, double tau);
+	void	flow2Matter(CField &ms, double tau);
+	void    flow2MatterVacuum(CField &ms, CField &ms_temp, double t, double tau);
+	void	createGrid(CField &ms);
 	void	deleteGrid();
 	Matrix4 getOmega(Node &n);
 	Matrix4 getOmegaInv(Node &n);

@@ -157,19 +157,19 @@ private:
 
 	bool	handleKeys(double t);
 
-	void	sweepTe(MatterState& ms_temp, MatterState& ms_temp_temp, 
+	void	sweepTe(CField& ms_temp, CField& ms_temp_temp, 
 					double *A, double *B, double *C, double *F,
 					double *alpha, double *beta, int size);
-	void	sweepTi(MatterState& ms_temp, MatterState& ms_temp_temp, 
+	void	sweepTi(CField& ms_temp, CField& ms_temp_temp, 
 					double *A, double *B, double *C, double *F,
 					double *alpha, double *beta, int size);
 
 	double	compTe();
 	double	compTi();
-	double	compTe(MatterState &ms1, MatterState &ms2);
-	double	compTi(MatterState &ms1, MatterState &ms2);
-	double  compE(MatterState &ms1, MatterState &ms2);
-	double  compEi(MatterState &ms1, MatterState &ms2);
+	double	compTe(CField &ms1, CField &ms2);
+	double	compTi(CField &ms1, CField &ms2);
+	double  compE(CField &ms1, CField &ms2);
+	double  compEi(CField &ms1, CField &ms2);
 
 	void	dumpToFile(double t);
 	void    dumpToFileTestRP(double t, int num);
@@ -197,7 +197,7 @@ private:
 	void initVars(void);
 
 	CTask task;
-	MatterState ms, ms_temp, ms_temp_temp, ms_prev;
+	CField ms, ms_temp, ms_temp_temp, ms_prev;
 	double	zKur;
 	double  epsE;
 	unsigned int maxIt;

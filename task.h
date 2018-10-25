@@ -9,6 +9,8 @@
 #include "eos.h"
 #include "CTestToro.h"
 #include "eos\\EOSBin.h"
+#include "matterState.h"
+
 //#include "eosTableFeAlpha.h"
 
 /* Структура, обозначающая зону. Вычислительная область -- набор зон. */

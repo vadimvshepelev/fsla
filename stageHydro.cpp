@@ -58,7 +58,7 @@ void CSolver::calcHydroStageGushchin(double t, double tau) {
 void CSolver::calcHydroStageSimpleCIR(double t, double tau){
 	int i=0;
 	double p_plus = 0., p_minus = 0.;
-	MatterState ms_temp;
+	CField ms_temp;
     ms_temp.initData(&task);
 	EOS &eos = task.getEOS();
 	int nSize = ms.getSize();

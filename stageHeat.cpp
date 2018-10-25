@@ -14,7 +14,7 @@ void CSolver::calcHeatStage(double t, double tau)
 
 	EOS &eos = task.getEOS();
 
-	MatterState ms_temp, ms_temp_temp;
+	CField ms_temp, ms_temp_temp;
 	ms_temp.initData(&task);
 	ms_temp_temp.initData(&task);
 	for(i=0; i<size; i++)
@@ -362,7 +362,7 @@ int CSolver::calcHeatStageGlass(double t, double tau) {
 	EOS &eos = task.getEOS();
 	EOS &eosGlass = task.getEOSGlass();
 	unsigned int nBound = task.getZone(0).n;
-	MatterState ms_temp, ms_temp_temp;
+	CField ms_temp, ms_temp_temp;
 	ms_temp.initData(&task);
 	ms_temp_temp.initData(&task);
 	// Для поглощения
@@ -546,7 +546,7 @@ int CSolver::calcIonicHeatStageGlass(double t, double tau) {
 	EOS &eos = task.getEOS();
 	EOS &eosGlass = task.getEOSGlass();
 	unsigned int nBound = task.getZone(0).n;
-	MatterState ms_temp, ms_temp_temp;
+	CField ms_temp, ms_temp_temp;
 	ms_temp.initData(&task);
 	ms_temp_temp.initData(&task);
 	// Для поглощения
@@ -650,7 +650,7 @@ void CSolver::calcHeatStageSpallation(double t, double tau)
 	unsigned int i = 0, itNum = 0, iSpall = getSpallCellNum(), size = ms.getSize();
 	double eps = 0.01, kappa_plus = 0., kappa_minus = 0., ro_plus=0., ro_minus=0.;
 	EOS &eos = task.getEOS();
-	MatterState ms_temp, ms_temp_temp;
+	CField ms_temp, ms_temp_temp;
 	ms_temp.initData(&task);
 	ms_temp_temp.initData(&task);
 	for(i=0; i<size; i++) {
@@ -808,7 +808,7 @@ void CSolver::calcHeatStageSpallation(double t, double tau)
 
 // Решение системы линейных уравнений с трехдиагональной матрицей методом прогонки.
 
-void CSolver::sweepTe(MatterState& ms_temp, MatterState& ms_temp_temp, double *A, double *B, double *C, double *F,
+void CSolver::sweepTe(CField& ms_temp, CField& ms_temp_temp, double *A, double *B, double *C, double *F,
 					  double *alpha, double *beta, int size) {
 	int i = 0;
 //	int iMin = 0;
@@ -889,7 +889,7 @@ void CSolver::sweepTe(MatterState& ms_temp, MatterState& ms_temp_temp, double *A
 }
 
 
-void CSolver::sweepTi(MatterState& ms_temp, MatterState& ms_temp_temp, 
+void CSolver::sweepTi(CField& ms_temp, CField& ms_temp_temp, 
 					  double *A, double *B, double *C, double *F,
 					  double *alpha, double *beta, int size) {
 	int i = 0;

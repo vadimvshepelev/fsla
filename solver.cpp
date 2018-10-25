@@ -909,7 +909,7 @@ double CSolver::compTi()
 	return rValue1;
 }
 
-double CSolver::compTi(MatterState &ms1, MatterState &ms2)
+double CSolver::compTi(CField &ms1, CField &ms2)
 {
 	double rValue1 = fabs(ms1[0].ti - ms2[0].ti);
 	double rValue2 = 0;
@@ -922,7 +922,7 @@ double CSolver::compTi(MatterState &ms1, MatterState &ms2)
 }
 
 
-double CSolver::compTe(MatterState &ms1, MatterState &ms2)
+double CSolver::compTe(CField &ms1, CField &ms2)
 {
 	double rValue1 = fabs(ms1[0].te - ms2[0].te);
 	double rValue2;
@@ -938,7 +938,7 @@ double CSolver::compTe(MatterState &ms1, MatterState &ms2)
 	return rValue1;
 }
 
-double CSolver::compE(MatterState &ms1, MatterState &ms2)
+double CSolver::compE(CField &ms1, CField &ms2)
 {
 	Node* n1=ms1.getnodes();
 	Node* n2=ms2.getnodes();
@@ -958,7 +958,7 @@ double CSolver::compE(MatterState &ms1, MatterState &ms2)
 	return rValue1;
 }
 
-double CSolver::compEi(MatterState &ms1, MatterState &ms2)
+double CSolver::compEi(CField &ms1, CField &ms2)
 {
 	double rValue1 = fabs(ms1[0].ei - ms2[0].ei);
 	double rValue2;
@@ -1549,8 +1549,8 @@ void CSolver::calcHydroStage(double t, double tau) {
 		   p_next_minus = 0.0,	
 		   p_plus       = 0.0,
 		   p_minus      = 0.0;
-	MatterState ms_temp;
-	MatterState ms_prev;
+	CField ms_temp;
+	CField ms_prev;
     ms_temp.initData(&task);
 	ms_prev.initData(&task);
 	EOS &eos = task.getEOS();
@@ -1858,8 +1858,8 @@ int CSolver::calcHydroStageGlass(double t, double tau) {
 		   p_next_minus = 0.0,	
 		   p_plus       = 0.0,
 		   p_minus      = 0.0;
-	MatterState ms_temp;
-	MatterState ms_prev;
+	CField ms_temp;
+	CField ms_prev;
     ms_temp.initData(&task);
 	ms_prev.initData(&task);
 	EOS &eos = task.getEOS();
@@ -2079,7 +2079,7 @@ void CSolver::calcHydroStageSpallation(double t, double tau)
 	int i=0; int counter=0; int itCounter = 0; int iSpall = getSpallCellNum();
 	double Q=0., dv=0.;
 	double p_next_plus = 0.0, p_next_minus = 0.0, p_plus = 0.0, p_minus = 0.0;
-	MatterState ms_temp, ms_prev;
+	CField ms_temp, ms_prev;
     ms_temp.initData(&task); ms_prev.initData(&task);
 	EOS &eos = task.getEOS(); int nSize = ms.getSize(); double h = ms[0].dm;
 	///// Artificial viscosity
@@ -2255,8 +2255,8 @@ void CSolver::calcHydroStageNoElectron(double t, double tau)
 		   p_plus       = 0.0,
 		   p_minus      = 0.0;
 
-	MatterState ms_temp;
-	MatterState ms_prev;
+	CField ms_temp;
+	CField ms_prev;
 
     ms_temp.initData(&task);
 	ms_prev.initData(&task);

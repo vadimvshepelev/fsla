@@ -14,7 +14,7 @@ void CSolver::calcExchangeStage(double tau)
 	double eps = 0.01;
 	
 	EOS &eos = task.getEOS();
-	MatterState ms_temp, ms_temp_temp;
+	CField ms_temp, ms_temp_temp;
 	ms_temp.initData(&task);
 	ms_temp_temp.initData(&task);
 
@@ -97,7 +97,7 @@ int CSolver::calcExchangeStageGlass(double tau) {
 	const double eps = 0.01;
 	EOS &eos = task.getEOS();
 	EOS &eosGlass = task.getEOSGlass();
-	MatterState ms_temp, ms_temp_temp;
+	CField ms_temp, ms_temp_temp;
 	ms_temp.initData(&task);
 	ms_temp_temp.initData(&task);
 	for(i=0; i<ms.getSize(); i++) {

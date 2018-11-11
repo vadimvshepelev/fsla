@@ -18,8 +18,8 @@ public:
 
 	void	initData(CTask *task);
 	void	clearData();
-	double	loadData(string fName, unsigned int nCut);
-	unsigned int getSize() { return nSize; }
+	double	loadData(string fName, int nCut);
+	int getSize() { return nSize; }
 	void	setSize(int nSizeNew) { nSize = nSizeNew; }
 
 	void	setEdgeMode(bool edge_m) { bEdgeMode = edge_m; }
@@ -45,7 +45,7 @@ private:
 	void	setEdge(Node &n, double x, double dm);
 
 	Node	*nodes;		// Указатель на массив узлов сетки
-	unsigned int nSize;		// Размер массива
+	int nSize;		// Размер массива
 
 	Node	left_edge;	// Левые граничные условия
 	Node	right_edge;	// Правые граничные условия

@@ -53,7 +53,7 @@ double EOSTable::getei(double ro, double ti)
 	return ei;
 }
 
-double EOSTable::getEntropy(double ro, double ti, double te)
+double EOSTable::getEntropy(double ro, double ti)
 {
 	double s  = entropy_table.interpolate(ro, ti);
 	return s;
@@ -380,13 +380,11 @@ EOSTable::EOSTable()
 	MIN_RO = 1.0/tableVmax * 1.0e3;
 }
 
-EOSTable::EOSTable(char* dirName, int EOSFlag, double _ro0)
-{
+EOSTable::EOSTable(string dirName, int EOSFlag, double _ro0) {
 	char buf[256];
-
 	char filename[_MAX_PATH];
 	strcpy(filename, TABLE_FOLDER);
-	strcat(filename, dirName);
+	strcat(filename, dirName.c_str());
 	strcat(filename, "/");
 	strcat(filename, "data.man");
 

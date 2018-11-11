@@ -32,7 +32,7 @@ double EOSTableNi::getei(double ro, double ti)
 	return ei;
 }
 
-double EOSTableNi::getEntropy(double ro, double ti, double te)
+double EOSTableNi::getEntropy(double ro, double ti)
 {
 	double s  = entropy_table.interpolate(ro, ti);
 	return s;
@@ -66,13 +66,13 @@ double EOSTableNi::getmix(double ro, double ti)
 	return mix;
 }
 
-EOSTableNi::EOSTableNi(char* dirName, int EOSFlag, double _ro0)
+EOSTableNi::EOSTableNi(string dirName, int EOSFlag, double _ro0)
 {
 	char buf[256];
 
 	char filename[_MAX_PATH];
 	strcpy(filename, TABLE_FOLDER);
-	strcat(filename, dirName);
+	strcat(filename, dirName.c_str());
 	strcat(filename, "/");
 	strcat(filename, "data.man");
 

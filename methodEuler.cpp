@@ -5,7 +5,7 @@
 void CMethodEuler::createGrid(CField &ms){
 	vGrid = new double[ms.getSize()+1];
 	X     = new double[ms.getSize()+1];
-	for(unsigned int i=0; i<=ms.getSize(); i++){
+	for(int i=0; i<=ms.getSize(); i++){
 		    X[i] = ms[i].x;
 		vGrid[i] = 0.;
 	}
@@ -22,7 +22,7 @@ CMethodEuler::~CMethodEuler(){
 
 void CMethodEuler::matter2Flow(CField &ms) {
 	double E=0.;
-	for(unsigned int i=0; i<ms.getSize(); i++) {
+	for(int i=0; i<ms.getSize(); i++) {
 		Node &n = ms[i];
 		E = n.e + 0.5*n.v*n.v;
 		n.W = Vector4(n.ro, n.ro*n.v, n.ro*E, 0);
@@ -35,7 +35,7 @@ void CMethodEuler::advanceFlow(CField &ms, double tau) {
 	Vector4 Fp, Fm;
 	Vector4 L;
 	Node	nav;
-	unsigned int i=0, j=0;
+	int i=0, j=0;
 	////////////////////DEBUG////////////////
     // Граничные условия уже заданы в функции CSolver::initVars() в самом конце с помощью функции setEdge().
 	// Пока еще не разобрались, где лучше ставить граничные условия. Пусть будет тут.
@@ -81,7 +81,7 @@ void CMethodEuler::advanceFlowVacuum(CField &ms, double tau) {
 	Vector4 Fp, Fm;
 	Vector4 L;
 	Node	nav;
-	unsigned int i=0, j=0, nSize=ms.getSize(); //N это количество узлов сетки (и количество промежутков плюс один)
+	int i=0, j=0, nSize=ms.getSize(); //N это количество узлов сетки (и количество промежутков плюс один)
 	///DEBUG/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	//		(Дальше план такой
 	//		+ 1. Делаем сетку новых сеточных скоростей. Координаты в конце каждого этапа сдвигаем на vGrid*tau.
@@ -165,7 +165,7 @@ void CMethodEuler::advanceFlowVacuum(CField &ms, double tau) {
 void CMethodEuler::flow2Matter(CField &ms, double tau)
 {
 	double E=0.;
-	for(unsigned int i=0; i<ms.getSize(); i++)
+	for(int i=0; i<ms.getSize(); i++)
 	{
 		Node &n = ms[i];
 		n.ro = n.W[0];
@@ -183,7 +183,7 @@ void CMethodEuler::flow2Matter(CField &ms, double tau)
 void CMethodEuler::flow2MatterVacuum(CField &ms, CField &ms_temp, double t, double tau)
 {
 	double E=0.;
-	for(unsigned int i=0; i<ms.getSize(); i++) {
+	for(int i=0; i<ms.getSize(); i++) {
 		Node &n = ms[i];
 		n.ro = n.W[0];
 		n.v  = (n.ro!=0.0) ? n.W[1] / n.ro : 0.0;
@@ -199,9 +199,9 @@ void CMethodEuler::flow2MatterVacuum(CField &ms, CField &ms_temp, double t, doub
 	///////////////////////    DEBUG ///////////////////////////////////////////////////////////////////////////////////////////////
 	int nSize = ms.getSize();
 	// Задаем скорости сетки на этапе. Условия: 1. Сетка всегда равномерная. 2. Скорость левого конца равна скорости v[0].
-	for(unsigned int i=0; i < ms.getSize(); i++)
+	for(int i=0; i < ms.getSize(); i++)
 	{
-		unsigned int j = nSize - 1 - i;
+		int j = nSize - 1 - i;
 		//DEBUG//
 		//Исправление номер один: скорость вычисляем из волны разрежения (вопрос -- всей волны или между последней ячейкой и вакуумом?) 
 		//double _v0 = ms[0].v;
@@ -218,7 +218,7 @@ void CMethodEuler::flow2MatterVacuum(CField &ms, CField &ms_temp, double t, doub
 	double v0 = vGrid[0], v1=vGrid[1], v2=vGrid[2];
 	// Сдвигаем сетку
 	X[0] = ms[0].x + ms[0].v*tau;
-	for(unsigned int i=1; i<ms.getSize(); i++){
+	for(int i=1; i<ms.getSize(); i++){
 		//X[i] = ms[i].x + vGrid[i]*tau;
 		X[i] = ms[0].x + (ms[nSize].x - ms[0].x)/(nSize) * i;
 	}
@@ -251,7 +251,7 @@ void CMethodEuler::flow2MatterVacuum(CField &ms, CField &ms_temp, double t, doub
 	// В общем, если применить этот код, волна расползается по ширине примерно в два раза. Наверно, он лишний.
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	for(unsigned int i=0; i<ms.getSize(); i++){
+	for(int i=0; i<ms.getSize(); i++){
 		ms[i].x  = X[i];
 				Node &n = ms[i];
 				updateNode(n);

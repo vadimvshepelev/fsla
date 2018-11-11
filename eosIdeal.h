@@ -37,7 +37,7 @@ public:
 	double getphase(double ro, double ti);
 	double   getmix(double ro, double ti);
 
-	double getEntropy(double ro, double ti, double te);
+	double getEntropy(double ro, double ti);
 	double getGamma(void);
 
 	double getdpdro  (double ro, double ti, double te);

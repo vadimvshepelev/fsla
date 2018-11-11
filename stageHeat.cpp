@@ -1,19 +1,11 @@
 
 #include "solver.h"
 
-void CSolver::calcHeatStage(double t, double tau)
-{
-	unsigned int i;
-	unsigned int itNum = 0;
-	const double eps = 0.01;
-
-	double kappa_plus, kappa_minus;
-	double ro_plus, ro_minus;
-
-	unsigned int size = ms.getSize();
-
+void CSolver::calcHeatStage(double t, double tau) {
+	int i = 0, itNum = 0, size = ms.getSize();;
+	const double eps = 0.01; 
+	double kappa_plus = 0., kappa_minus = 0., ro_plus = 0., ro_minus = 0.;
 	EOS &eos = task.getEOS();
-
 	CField ms_temp, ms_temp_temp;
 	ms_temp.initData(&task);
 	ms_temp_temp.initData(&task);
@@ -353,20 +345,20 @@ void CSolver::calcHeatStage5LayersSi(double t, double tau) {
 
 
 int CSolver::calcHeatStageGlass(double t, double tau) {
-	unsigned int i=0;
-	unsigned int itNum = 0;
+	int i=0;
+	int itNum = 0;
 	const double eps = 0.01;
 	double kappa_plus=0., kappa_minus=0.;
 	double ro_plus=0., ro_minus=0.;
-	unsigned int size = ms.getSize();
+	int size = ms.getSize();
 	EOS &eos = task.getEOS();
 	EOS &eosGlass = task.getEOSGlass();
-	unsigned int nBound = task.getZone(0).n;
+	int nBound = task.getZone(0).n;
 	CField ms_temp, ms_temp_temp;
 	ms_temp.initData(&task);
 	ms_temp_temp.initData(&task);
 	// Для поглощения
-	const unsigned int N = task.getZone(0).n;
+	const int N = task.getZone(0).n;
 	const double L = task.getZone(0).l;
 	double dx = L/N;
 	double _x = 0.;
@@ -645,9 +637,8 @@ int CSolver::calcIonicHeatStageGlass(double t, double tau) {
 	return itNum+1;
 }
 
-void CSolver::calcHeatStageSpallation(double t, double tau)
-{
-	unsigned int i = 0, itNum = 0, iSpall = getSpallCellNum(), size = ms.getSize();
+void CSolver::calcHeatStageSpallation(double t, double tau) {
+	int i = 0, itNum = 0, iSpall = getSpallCellNum(), size = ms.getSize();
 	double eps = 0.01, kappa_plus = 0., kappa_minus = 0., ro_plus=0., ro_minus=0.;
 	EOS &eos = task.getEOS();
 	CField ms_temp, ms_temp_temp;

@@ -25,7 +25,7 @@ class EOSTable : public EOSAnalytic
 {
 public:
 	EOSTable();
-	EOSTable(char *dirName, int EOSFlag, double _ro0);
+	EOSTable(string dirName, int EOSFlag, double _ro0);
 
 	EOSType getType() { return table; }
 
@@ -39,7 +39,7 @@ public:
 	double     getnuWR(double ro, double ti, double te, double b, double Z=3.0);
 	complex<double> geteps(double ro, double ti, double te, double Z=3.0);
 
-	double getEntropy(double ro, double ti, double te);
+	double getEntropy(double ro, double ti);
 
 	double getdpdro  (double ro, double ti, double te);
 	double getdpdt   (double ro, double ti, double te);

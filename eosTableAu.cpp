@@ -24,7 +24,7 @@ double EOSTableAu::getci(double ro, double ti) { return ci_table.interpolate(ro,
 double EOSTableAu::getphase(double ro, double ti) { return phase_table.interpolate(ro, ti); } 
 double EOSTableAu::getmix(double ro, double ti) { return mix_table.interpolate(ro, ti); }
 double EOSTableAu::getC(double ro, double ti, double te) { return C_table.interpolate(ro, ti); }   // [m/s]
-double EOSTableAu::getEntropy(double ro, double ti, double te) { return entropy_table.interpolate(ro, ti); }
+double EOSTableAu::getEntropy(double ro, double ti) { return entropy_table.interpolate(ro, ti); }
 
 // Обратная функция (температура)
 
@@ -69,11 +69,11 @@ double getnuWR(double ro, double ti, double te, double b, double Z) {return 1.;}
 
 // Служебное
 
-EOSTableAu::EOSTableAu(char* dirName, int EOSFlag, double _ro0) {
+EOSTableAu::EOSTableAu(string dirName, int EOSFlag, double _ro0) {
 	char buf[256];
 	char filename[_MAX_PATH];
 	strcpy(filename, TABLE_FOLDER);
-	strcat(filename, dirName);
+	strcat(filename, dirName.c_str());
 	strcat(filename, "/");
 	strcat(filename, "data.man");
 	FILE* f=fopen(filename, "r");

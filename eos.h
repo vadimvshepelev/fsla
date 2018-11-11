@@ -78,7 +78,7 @@ public:
 	virtual double getAlpha(double ro, double ti, double te)=0;
 	virtual double getkappa(double ro, double ti, double te)=0;
 
-	//virtual double getEntropy(double ro, double ti, double te)=0;
+	virtual double getEntropy(double ro, double T)=0;
 
 	virtual double getGamma(void)=0;
 

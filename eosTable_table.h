@@ -13,7 +13,7 @@ public:
 	EOSTTable();
 	~EOSTTable();
 
-	void	create(char *fName, char* dirName, double scaler, EOSTScale *_v_scale, EOSTScale *_t_scale, int EOSFlag);
+	void	create(char *fName, string dirName, double scaler, EOSTScale *_v_scale, EOSTScale *_t_scale, int EOSFlag);
 	void	clear();
 	double	interpolate(double ro, double ti);
 

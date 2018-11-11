@@ -10,7 +10,7 @@ class EOSTableFeAlpha : public EOSAnalyticFe
 {
 public:
 	EOSTableFeAlpha();
-	EOSTableFeAlpha(char *dirName, int EOSFlag, double _ro0);
+	EOSTableFeAlpha(string dirName, int EOSFlag, double _ro0);
 
 	EOSType getType() { return tableFeAlpha; }
 
@@ -27,7 +27,7 @@ public:
 
 	double     getnuWR(double ro, double ti, double te, double b, double Z);
 
-	double getEntropy(double ro, double ti, double te);
+	double getEntropy(double ro, double ti);
 
 	////DEBUG//////////////
 	

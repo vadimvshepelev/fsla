@@ -25,26 +25,10 @@
 
 using namespace std;
 
-CSolver::CSolver() {
-	maxIt = 40;
-	epsE  = 0.1;
-	zKur  =  0.0;
-	tauPulse = 0.0;
-	fluence  = 0.0;
-	deltaSkin = 0.0;
-	x_pulse_min = 0.0;
-	i_pulse_min = 0;
-	tInit = 0.0;
-	iWeak = -1;
-	spallFlag = 0;
-	spallCellNum = -1;
-	xVacBound = 0.;
-}
-
 void CSolver::goEuler(char* fName) {
 	// Загрузка входного файла, инициализация объекта task типа CTask
 	task.load(fName);
-	zKur = task.getCourant();
+	CFL = task.getCFL();
 	// Наполнение объектов ms, ms_temp данными на по начальным и граничным условиям из task
 	ms.initData(&task);
 	ms_temp.initData(&task);
@@ -62,37 +46,6 @@ void CSolver::goEuler(char* fName) {
 
 	ofs.close();
 	*/
-	// Заполняем переменные для расчета нормы ошибки метода
-	_roL = ms[0].ro; _uL = ms[0].v; _pL = ms[0].p; _roR = ms[nSize-1].ro; _uR = ms[nSize-1].v; _pR = ms[nSize-1].p; 
-	_x0 = task.getZone(0).l; _t = task.getMaxTime();
-	// Заполняем переменные для расчета интеграла для сходимости
-	_tMin = 0.; _tMax = task.getMaxTime(); convIntegral = 0.;
-	double _xMin = .1, _xMax = .5;
-	double dx = getdx();
-	for(i=0; i<nSize; i++) {
-		if( dx*((double)i+0.5) >= _xMin && dx*((double)(i-1) +0.5) <= _xMin ) _iMin = i;
-		if( dx*((double)i+0.5) <= _xMax && dx*((double)(i+1) +0.5) >= _xMax ) _iMax = i;
-	}	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	double t   = 0.;
 	double tau = 0.0;
 	int	counter = 0;
@@ -104,13 +57,11 @@ void CSolver::goEuler(char* fName) {
 	for(i=0; i<nTimes; i++) {
 		timesArray[i] = (tMax-tInit)/(nTimes-1)*i;
 	}
-	// Начинаем счет
-	modifyConvIntegral(_tMin, tau);
 	for(;;)	{
 		tau = calcTimeStepEuler(t);
 		if(t+tau >tMax) tau = tMax-t;
 		if(counter <=4) tau *=.2;
-		cout << counter << ": " << "t=" << t+tau <<  " tau=" << tau << " CFL=" << getzKur() << endl;
+		cout << counter << ": " << "t=" << t+tau <<  " tau=" << tau << " CFL=" << getCFL() << endl;
 		if(task.getHydroStage()) calcHydroStageGodunov(t, tau);
 		//if(task.getHydroStage()) calcHydroStageRoe(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageGPS(t, tau);	
@@ -135,7 +86,6 @@ void CSolver::goEuler(char* fName) {
 		//if(task.getHydroStage()) calcHydroStageGodunovEOSBin(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageENO2G(t, tau);		
 		if(handleKeys(t)) break;
-		modifyConvIntegral(t+tau/2, tau);
 		//dumpToFileTestRP(t+tau, 100);		
 		// Regular file output
 		t += tau;
@@ -149,11 +99,6 @@ void CSolver::goEuler(char* fName) {
 		}		
 		counter++;
 	} 
-	modifyConvIntegral(_tMax, tau);
-	cout << endl << "Calculation finished!" << endl;
-	cout << "L1 norm: " << calcProblemL1NormRo() << endl;
-	cout << "L2 norm: " << calcProblemL2NormRo() << endl;
-	cout << "Conversion integral: " << convIntegral << endl;
 	// Удаляем динамический массив времен выдачи
 	delete[] timesArray;
 }
@@ -191,7 +136,7 @@ void CSolver::goEulerMovingMesh(char* fName) {
 		tau = calcTimeStepEuler(t);
 		
 		//if(counter <=4) tau *=.2;
-		cout << counter << ": " << "t=" << t <<  " tau=" << tau << " courant=" << getzKur() << endl;
+		cout << counter << ": " << "t=" << t <<  " tau=" << tau << " courant=" << getCFL() << endl;
 		//if(task.getHydroStage()) calcHydroStageGodunov(t, tau);
 		
 		if(task.getHydroStage()) calcHydroStageGodunovMovingMesh(t, tau)/*calcHydroStageGodunov(t, tau)*/;
@@ -287,7 +232,7 @@ void CSolver::go(char* fName) {
 	{
 		strcpy(rEdgeFileName, OUTPUT_FOLDER);
 		strcat(rEdgeFileName, "right_");
-		strcat(rEdgeFileName, task.getTaskName());
+		strcat(rEdgeFileName, task.getTaskName().c_str());
 		strcat(rEdgeFileName, ".dat");
 
 		f=fopen(rEdgeFileName, "w");
@@ -303,11 +248,11 @@ void CSolver::go(char* fName) {
 	if(task.getSourceFlag() == 1) {
 		strcpy(pointFileName, OUTPUT_FOLDER);
 		strcat(pointFileName, "point_");
-		strcat(pointFileName, task.getTaskName());
+		strcat(pointFileName, task.getTaskName().c_str());
 		strcat(pointFileName, ".dat");
 		strcpy(weakTrackFileName, OUTPUT_FOLDER);
 		strcat(weakTrackFileName, "weakTrack_");
-		strcat(weakTrackFileName, task.getTaskName());
+		strcat(weakTrackFileName, task.getTaskName().c_str());
 		strcat(weakTrackFileName, ".dat");
 		f1=fopen(pointFileName, "w");
 		fprintf(f1, "TITLE=\"Points trajectory\"\n");
@@ -325,7 +270,7 @@ void CSolver::go(char* fName) {
 	int psCounter=0;  // Every single picosecond it makes a record in trajectory point-file
 	int shotsCounter=0; // Every some picoseconds it makes dumpToFile() 
 	double eInit=0.0;
-	for(unsigned int i2=0; i2<ms.getSize(); i2++)
+	for(int i2=0; i2<ms.getSize(); i2++)
 	{
 		eInit+=ms[i2].e*ms[0].dm;
 	}
@@ -342,7 +287,7 @@ void CSolver::go(char* fName) {
 			// Если лагранжев метод
 				tau = calcTimeStep(t);
 				if (t + tau > task.getMaxTime()) tau = task.getMaxTime() - t;
-				cout << counter << ": " << "t=" << t <<  " tau=" << tau << " courant=" << getzKur() << endl;
+				cout << counter << ": " << "t=" << t <<  " tau=" << tau << " courant=" << getCFL() << endl;
 				if(task.getHydroStage()) calcHydroStage(t, tau);
 				if(task.getHeatStage()) calcHeatStage5LayersSi(t, tau);
 				//dumpToFile(t+tau);
@@ -353,7 +298,7 @@ void CSolver::go(char* fName) {
 			tau = calcTimeStepEuler(t);
 			if(counter <=4) tau *=.2;
 			if(counter == 0) tau = 0.00093109101124281841;
-			cout << counter << ": " << "t=" << t <<  " tau=" << tau << " courant=" << getzKur() << endl;
+			cout << counter << ": " << "t=" << t <<  " tau=" << tau << " courant=" << getCFL() << endl;
 			//if(task.getHydroStage()) calcHydroStageGodunovMovingGrid(t, tau);
 			if(task.getHydroStage()) calcHydroStageGodunov(t, tau);
 			//dumpToFileTestRP(t+tau, counter);
@@ -375,14 +320,14 @@ void CSolver::go(char* fName) {
 		if(handleKeys(t)) break;
 	    // Melting fronts tracking
 		if (task.getSourceFlag() != 4) {
-			for(unsigned int i=0; i<ms.getSize(); i++) {
+			for(int i=0; i<ms.getSize(); i++) {
 				if( (task.getEOS().getphase(ms[i].ro, ms[i].ti) > 1.0)&&
 				(task.getEOS().getphase(ms[i].ro, ms[i].ti) < 3.0) ) {
 					xMeltL = ms[i].x;			
 					break;
 				}
 			}
-			for(unsigned int i=0; i<ms.getSize(); i++) {
+			for(int i=0; i<ms.getSize(); i++) {
 				if( (task.getEOS().getphase(ms[i].ro, ms[i].ti) > 1.0)&&
 				(task.getEOS().getphase(ms[i].ro, ms[i].ti) < 3.0) )
 					xMeltR = ms[i].x;			
@@ -390,7 +335,7 @@ void CSolver::go(char* fName) {
 		}
 		//Energy conservation
 		double eInner=0.0, eKinetic=0.0, eFull=0.0, deltae=0.0;
-		for(unsigned int i1=0; i1<ms.getSize(); i1++) {
+		for(int i1=0; i1<ms.getSize(); i1++) {
 			/*eInner+=ms[i1].e*ms[0].dm;
 			eKinetic+=ms[0].dm*ms[i1].v*ms[i1].v/2.0;*/
 			eInner += (ms[i1+1].x-ms[i1].x)*ms[i1].ro*ms[i1].e;
@@ -538,9 +483,9 @@ void CSolver::goAuSpall(char *fName) {
 	ms.initData(&task);
 	ms_temp.initData(&task);
 	initVars();
-	unsigned int nSize = ms.getSize();
+	int nSize = ms.getSize();
 	double t = -3.*task.getTauPulse(), tau = 0.;
-	unsigned int i=0, counter = 0;
+	int i = 0, counter = 0;
 	dumpToFileTestRP(t, counter);
 	/*double timesArray[] = {      .0,   1.e-13,   3.e-13,   5.e-13,   1.e-12,  2.e-12,   3.e-12,   4.e-12,   5.e-12,   6.e-12,
 		                     7.e-12,  10.e-12,  20.e-12,  30.e-12,  40.e-12,  50.e-12,  60.e-12,  70.e-12,  80.e-12,  90.e-12,
@@ -564,7 +509,7 @@ void CSolver::goAuSpall(char *fName) {
 	FILE* f=0;
 	strcpy(rEdgeFileName, OUTPUT_FOLDER);
 	strcat(rEdgeFileName, "right_");
-	strcat(rEdgeFileName, task.getTaskName());
+	strcat(rEdgeFileName, task.getTaskName().c_str());
 	strcat(rEdgeFileName, ".dat");
 	f=fopen(rEdgeFileName, "w");
 	fprintf(f, "TITLE=\"Right edge trajectory\"\n");
@@ -579,7 +524,7 @@ void CSolver::goAuSpall(char *fName) {
 	fT.close();
 	// Calculating total inner energy for testing
 	double eInit=0.0;
-	for(unsigned int i2=0; i2<ms.getSize(); i2++) {
+	for(int i2=0; i2<ms.getSize(); i2++) {
 		eInit+=ms[i2].e*ms[0].dm;
 	}
 	// Number of a cell and moment of time in which spallation takes place
@@ -590,7 +535,7 @@ void CSolver::goAuSpall(char *fName) {
 		// Заметки на полях. При первой же генеральной уборке кода. Cписок вот тут в комментариях: CSolver::solveti()
 		// Вот этот фрагмент кода включаем, если считаем лагранжевым методом.
 		tau = calcTimeStep(t);
-		cout << counter << ": " << "t=" << t <<  " tau=" << tau << " courant=" << getzKur() << endl;
+		cout << counter << ": " << "t=" << t <<  " tau=" << tau << " courant=" << getCFL() << endl;
 		if(task.getHydroStage()) calcHydroStage(t, tau);
 		if(task.getHeatStage()) calcHeatStage(t, tau);
 		if(task.getExchangeStage()) calcExchangeStage(tau);
@@ -613,7 +558,7 @@ void CSolver::goAuSpall(char *fName) {
 		}
 		// Calculating energy for conservation test
 		double eInner=0.0, eKinetic=0.0, eFull=0.0, deltae=0.0;
-		for(unsigned int i1=0; i1<ms.getSize(); i1++) {
+		for(int i1=0; i1<ms.getSize(); i1++) {
 			/*eInner+=ms[i1].e*ms[0].dm;
 			eKinetic+=ms[0].dm*ms[i1].v*ms[i1].v/2.0;*/
 			eInner += (ms[i1+1].x-ms[i1].x)*ms[i1].ro*ms[i1].e;
@@ -674,7 +619,7 @@ void CSolver::goGlass(char* fName) {
 	double t   = -3*tauPulse;
 	double tau = 0.0;
 	int	counter = 0;
-	unsigned int i=0;
+	int i=0;
 	/*double timesArray[] = {      0.,   1.e-13,   3.e-13,   5.e-13,   1.e-12,   2.e-12,   3.e-12,    4.e-12,  5.e-12,    6.e-12,  
 		                    10.e-12,  20.e-12,  30.e-12,  40.e-12,  50.e-12,  60.e-12,  70.e-12,  80.1e-12, 90.2e-12, 100.e-12, 
 							110.e-12, 120.e-12, 130.e-12, 140.e-12, 150.e-12 };
@@ -717,7 +662,7 @@ void CSolver::goGlass(char* fName) {
 	}*/
 	int shotsCounter=0; // Every some picoseconds it makes dumpToFile() 
 	double eInit=0.0;
-	for(unsigned int i2=0; i2<ms.getSize(); i2++) 	{
+	for(int i2=0; i2<ms.getSize(); i2++) 	{
 		eInit+=ms[i2].e*ms[0].dm;
 	}  
 	dumpToFile(t);
@@ -727,7 +672,7 @@ void CSolver::goGlass(char* fName) {
 		cout.flush();
 		if(task.getMethodFlag() == 0) {
 			tau = calcTimeStep(t);			
-			oss << counter << ": " << "t=" << setprecision(6) << t*1.e12 <<  "ps tau=" << tau*1.e12 << "ps CFL=" << getzKur() << " ";
+			oss << counter << ": " << "t=" << setprecision(6) << t*1.e12 <<  "ps tau=" << tau*1.e12 << "ps CFL=" << getCFL() << " ";
 			if(task.getHydroStage()) { itNumHydro = calcHydroStageGlass(t, tau); oss << "Hydro:" << itNumHydro << " "; }
 			if(task.getHeatStage()) { itNumHeat = calcHeatStageGlass(t, tau); oss << "Heat:" << itNumHeat << " "; }
 			if(task.getExchangeStage()) { itNumExchg = calcExchangeStageGlass(tau); oss << "Exchg:" << itNumExchg << " "; }
@@ -796,6 +741,7 @@ void CSolver::goGlass(char* fName) {
 	cout << endl << "Calculation finished!" << endl;
 }
 
+/*
 double CSolver::getEntropy(double ro, double ti, double te) {
 	double ci = task.getEOS().getci(ro, ti);
 	double  p = task.getEOS().getp(ro, ti, te);
@@ -808,7 +754,7 @@ double CSolver::getEntropy(double ro, double ti, double te) {
 		return ci*log(p/ro_gamma);
 	else 
 		return 0.;
-}
+}*/
 
 double CSolver::calcTimeStep(double t) {
 	if( task.getSourceFlag()==2 && (tauPulse<1.e-12) && (t<5.0e-12)) {
@@ -821,13 +767,13 @@ double CSolver::calcTimeStep(double t) {
 	}
 	double tau_temp1 = (ms[1].x - ms[0].x) / ms[0].C;
 	double tau_temp2;
-	for(unsigned int i=1; i<ms.getSize()-1; i++)
+	for(int i=1; i<ms.getSize()-1; i++)
 	{
 		tau_temp2 = (ms[i+1].x - ms[i].x) / ms[i].C;
 		if(tau_temp1 > tau_temp2)
 			tau_temp1 = tau_temp2;
 	}
-	return zKur * tau_temp1;
+	return CFL * tau_temp1;
 }
 
 
@@ -840,7 +786,7 @@ double CSolver::calcTimeStepEuler(double t)
 
 	CMethod& method = task.getMethod();
 
-	for(unsigned int i=1; i<ms.getSize()-1; i++)
+	for(int i=1; i<ms.getSize()-1; i++)
 	{
 		//v_max = max(fabs(ms[i].v), max(fabs(ms[i].v - ms[i].C), fabs(ms[i].v + ms[i].C))); 
 		v_max = fabs(ms[i].v) + ms[i].C;   //, fabs(method.vGrid[i]) +  ms[i].C);
@@ -850,7 +796,7 @@ double CSolver::calcTimeStepEuler(double t)
 			tau_temp1 = tau_temp2;
 	}
 
-	return zKur * tau_temp1;
+	return CFL * tau_temp1;
 }
 
 
@@ -881,7 +827,7 @@ double CSolver::compTe()
 	double rValue1 = fabs(ms[0].te_temp - ms[0].te);
 	double rValue2;
 
-	for(unsigned int i=1; i<ms.getSize(); i++)
+	for(int i=1; i<ms.getSize(); i++)
 	{
 		rValue2 = fabs(ms[i].te_temp - ms[i].te);
 
@@ -898,7 +844,7 @@ double CSolver::compTi()
 	double rValue1 = fabs(ms[0].ti_temp - ms[0].ti);
 	double rValue2 = 0;
 
-	for(unsigned int i=1; i<ms.getSize(); i++)
+	for(int i=1; i<ms.getSize(); i++)
 	{
 		rValue2 = fabs(ms[i].ti_temp - ms[i].ti);
 
@@ -913,7 +859,7 @@ double CSolver::compTi(CField &ms1, CField &ms2)
 {
 	double rValue1 = fabs(ms1[0].ti - ms2[0].ti);
 	double rValue2 = 0;
-	for(unsigned int i=1; i<ms.getSize(); i++) {
+	for(int i=1; i<ms.getSize(); i++) {
 		rValue2 = fabs(ms1[i].ti - ms2[i].ti);
 		if(rValue1 < rValue2)
 			rValue1 = rValue2;
@@ -927,7 +873,7 @@ double CSolver::compTe(CField &ms1, CField &ms2)
 	double rValue1 = fabs(ms1[0].te - ms2[0].te);
 	double rValue2;
 
-	for(unsigned int i=1; i<ms.getSize(); i++)
+	for(int i=1; i<ms.getSize(); i++)
 	{
 		rValue2 = fabs(ms1[i].te - ms2[i].te);
 
@@ -947,7 +893,7 @@ double CSolver::compE(CField &ms1, CField &ms2)
 	double rValue2;
 
 
-	for(unsigned int i=1; i<ms.getSize(); i++)
+	for(int i=1; i<ms.getSize(); i++)
 	{
 		rValue2 = fabs( n1[i].e - n2[i].e);
 
@@ -963,7 +909,7 @@ double CSolver::compEi(CField &ms1, CField &ms2)
 	double rValue1 = fabs(ms1[0].ei - ms2[0].ei);
 	double rValue2;
 
-	for(unsigned int i=1; i<ms.getSize(); i++)
+	for(int i=1; i<ms.getSize(); i++)
 	{
 		rValue2 = fabs(ms1[i].ei - ms2[i].ei);
 
@@ -1044,7 +990,7 @@ void CSolver::dumpToFile(double t) {
 	} else {
 		strcat(fName, "");
 	}
-	strcat(fName, buf); strcat(fName, "."); strcat(fName, frac_buf); strcat(fName, "ps_"); strcat(fName, task.getTaskName()); strcat(fName, ".dat");
+	strcat(fName, buf); strcat(fName, "."); strcat(fName, frac_buf); strcat(fName, "ps_"); strcat(fName, task.getTaskName().c_str()); strcat(fName, ".dat");
 	printf("Dump matter to file: %s\n", fName);
 	EOSType EType = EOSType::none;
 	if(task.getSourceFlag()!=4) EOSType EType = task.getEOS().getType(); 
@@ -1068,7 +1014,7 @@ void CSolver::dumpToFile(double t) {
 	}
 	double mul_x=1.0e9, mul_p=1.0e-9, mul_e=1.0e-6, mul_v=1.0e-3;
 	double x = 0., v = 0., phase = 0.;
-	for(unsigned int i=0; i<ms.getSize(); i++) {
+	for(int i=0; i<ms.getSize(); i++) {
 		Node &n = ms[i];		
 		if( (EType == ideal)||(EType == test) ) {
 			getLagrangeAnalyticApproximation(i, t, &p_an, &v_an, &ro_an);			
@@ -1161,8 +1107,8 @@ void CSolver::dumpToFileTestRP(double t, int num) {
 		if( (EType == ideal)||(EType == test) )	{		
 			q = calcRPAnalyticalSolution(roL, vL, pL, roR, vR, pR, x-x0, t);
 			if(q.ro!=0.) e = q.p/(gamma-1.)/q.ro; else e = 0.;			
-			s=getEntropy(ms[i].ro, ms[i].ti, 0.);			
-			sAn=getEntropy(q.ro, eos->getti(q.ro, q.p/(gamma-1.)/q.ro), 0.);			
+			s=eos->getEntropy(ms[i].ro, ms[i].ti);			
+			sAn=eos->getEntropy(q.ro, eos->getti(q.ro, q.p/(gamma-1.)/q.ro));			
 			IL = ms[i].v + 2.0*ms[i].C/(gamma-1.);
 			IR = ms[i].v - 2.0*ms[i].C/(gamma-1.);
 			IL_an = q.v + 2.0*sqrt(gamma*q.p/q.ro)/(gamma-1);
@@ -1248,7 +1194,7 @@ void CSolver::dumpToFileEuler(double t)
 	strcat(fName, ".");
 	strcat(fName, frac_buf);
 	strcat(fName, "_");
-	strcat(fName, task.getTaskName());
+	strcat(fName, task.getTaskName().c_str());
 	strcat(fName, ".dat");
 	printf("Dump matter to file (euler): %s\n", fName);
 
@@ -1261,7 +1207,7 @@ void CSolver::dumpToFileEuler(double t)
 
 
 	double mul_x=1.0e9, mul_p=1.0e-9, mul_e=1.0e-6, mul_v=1.0e-3;
-	for(unsigned i=0; i<ms.getSize(); i++) {
+	for(int i=0; i<ms.getSize(); i++) {
 		Node &n = ms[i];
 	 	double x = 0.5*(n.x + ms[i+1].x);
 		double v = n.v;
@@ -1282,46 +1228,9 @@ void CSolver::dumpToFileEuler(double t)
 	fclose(f);
 }
 
+void CSolver::setCFL(double _CFL) { CFL = _CFL; }
 
-
-void CSolver::dumpFlowToFile(double t)
-{
-	double p_an, ro_an, v_an, F3_an=0;
-
-	const char *fName = task.getFlowFilename(); 
-
-	printf("Dump flow to file: %s\n", fName);
-
-	FILE *f=fopen(fName, "w");
-
-	fprintf(f, "TITLE=\"F profiles\"\n");
-	fprintf(f, "VARIABLES=\"dm\",\"x\",\"F0\",\"F1\",\"F2\",\"F3\",\"F3_an\"\n");
-
-	for(unsigned int i=0; i<ms.getSize(); i++)
-	{
-		Node &n = ms[i];
-
-		getLagrangeAnalyticApproximation(i, t, &p_an, &v_an, &ro_an/*, &F3_an*/);
-		
-		fprintf(f, "%e %e %e %e %e %e %e\n", 
-		    n.dm, n.x,
-			n.F[0], n.F[1], n.F[2], n.F[3],
-			F3_an);
-	}
-
-	fclose(f);
-}
-
-void CSolver::setzKur(double _kur)
-{
-	zKur = _kur;
-}
-
-double CSolver::getzKur(void)
-{
-	return zKur;
-}
-
+double CSolver::getCFL(void) { return CFL; }
 
 void CSolver::saveSolution(const char* fName, double t) {
 	char fullName[256];
@@ -1349,7 +1258,7 @@ double CSolver::loadSolution(char* fName)
 {
 	printf("Loading solution from file: %s\n", fName);
 	double t = 0.0; 
-	unsigned int i=0, nSize = 0;	
+	int i=0, nSize = 0;	
 	char buf[256]; 
 	buf[0] = 0;
 	strcat(buf, "calc/output/");
@@ -1500,42 +1409,29 @@ void CSolver::getEulerAnalyticApproximationGrid(int i, double x, double t, doubl
 	}
 }
 
-void CSolver::initVars(void)
-{
-	
-	zKur = task.getCourant();
-
+void CSolver::initVars(void) {	
+	CFL = task.getCFL();
 	tauPulse  = task.getTauPulse();
 	fluence   = task.getFluence();
-	deltaSkin = task.getDeltaSkin();
-
-	if((task.getSourceFlag()==0)||(task.getSourceFlag()==1))
-	{
-		x_pulse_min = 0.0;
-		i_pulse_min = 0;
-
-		tInit = 0.0;
+	deltaSkin = task.getDeltaSkin(); 
+	if((task.getSourceFlag()==0)||(task.getSourceFlag()==1)) {
+		x_pulse_min = 0.;
+		i_pulse_min = 0; 
+		tInit = 0.;
 	}
-
-	if(task.getSourceFlag()==1)
-	{
-		x_pulse_min = 0.0;
+	if(task.getSourceFlag()==1) {
+		x_pulse_min = 0.;
 		i_pulse_min = 0;
-
 		tInit = -5.0*tauPulse;
-	}
-	
-	if(task.getSourceFlag() == 2)
-	{
+	} 	
+	if(task.getSourceFlag() == 2) {
 		x_pulse_min = task.getZone(0).l;
 		i_pulse_min = task.getZone(0).n - 1;
 		tInit = -5.0*tauPulse;
 	}	
-	if(task.getSourceFlag() == 3)
-	{
+	if(task.getSourceFlag() == 3) {
 		x_pulse_min = task.getZone(0).l;
-		i_pulse_min = task.getZone(0).n - 1;
-
+		i_pulse_min = task.getZone(0).n - 1; 
 		tInit = 0.0;
 	}
 }
@@ -2242,34 +2138,19 @@ void CSolver::calcHydroStageSpallation(double t, double tau)
 	delete[] g;
 }
 
-void CSolver::calcHydroStageNoElectron(double t, double tau)
-{	
-	unsigned int i=0;
-	unsigned int counter=0;
-	unsigned int itNumFull=0, itNumIon=0;
-	
-	double e_prev=0.0, ei_prev=0.0;
-	double Alphaei=0, dv=0;
-	double p_next_plus  = 0.0,
-		   p_next_minus = 0.0,	
-		   p_plus       = 0.0,
-		   p_minus      = 0.0;
-
-	CField ms_temp;
-	CField ms_prev;
-
+void CSolver::calcHydroStageNoElectron(double t, double tau) {	
+	int i=0, counter=0, itNumFull=0, itNumIon=0;	
+	double e_prev = 0., ei_prev = 0., Alphaei = 0., dv = 0.,
+		   p_next_plus  = 0., p_next_minus = 0., p_plus = 0., p_minus = 0.;
+	CField ms_temp, ms_prev;
     ms_temp.initData(&task);
 	ms_prev.initData(&task);
-
 	EOS &eos = task.getEOS();
-	unsigned int nSize = ms.getSize();
+	int nSize = ms.getSize();
 	double h = ms[0].dm;
-
 	int itCounter = 0;
-
 	double *g = new double[nSize];
-	for(i=0; i<nSize; i++)
-	{
+	for(i=0; i<nSize; i++) {
 		g[i]=0.0;
 	}
 	
@@ -2487,74 +2368,37 @@ void CSolver::calcHydroStageNoElectron(double t, double tau)
 		}
 		
 	} 	
-	while (compTi(ms_temp, ms_prev) > 0.01);
-
+	while (compTi(ms_temp, ms_prev) > 0.01); 
 	printf("calcHydroStageNoElectron() complete: %d iterations\n",
 		    itCounter);
-
-///////////////////DEBUG!!!/////////////////////////////////
-
-	if (itCounter > 5)
-	{
-		double _Kur = getzKur();
-		setzKur(0.95*_Kur);
-	}
-
-/////////////////////////////////////////////////////////////
-
-	for(i=0; i<nSize; i++)
-	{
+	for(i=0; i<nSize; i++) 	{
 		ms_temp[i].pi = eos.getpi(ms_temp[i].ro, ms_temp[i].ti);
 		ms_temp[i].pe = eos.getpe(ms_temp[i].ro, ms_temp[i].ti, ms_temp[i].te);
 		ms_temp[i].p  = ms_temp[i].pi + ms_temp[i].pe;
 	}
-
-	/////////////////////////
-
-		Node &n_temp = ms_temp[0];
-		Node &n		 = ms[0];
-
-	////////////////////////
-
-
-	for(i=0; i<nSize; i++)
-	{
-
-		///////////////////////
-		Node &n = ms_temp[0];
-		///////////////////////
-
-
+	for(i=0; i<nSize; i++) 	{
 		 ms[i].x = ms_temp[i].x;
 		 ms[i].v = ms_temp[i].v;
 		ms[i].ro = ms_temp[i].ro;
-
 		 ms[i].e = ms_temp[i].e;
 		ms[i].ee = ms_temp[i].ee;
 		ms[i].ei = ms_temp[i].ei;
-
 		ms[i].p  = ms_temp[i].p;
 		ms[i].pi = ms_temp[i].pi;
 		ms[i].pe = ms_temp[i].pe;
-
 //		ms[i].te = ms_temp[i].te;
 		ms[i].ti = ms_temp[i].ti;
-
 		ms[i].C     = eos.getC(ms[i].ro, ms[i].ti, ms[i].te);
 		ms[i].Alphaei	    = eos.getAlpha(ms[i].ro, ms[i].ti, ms[i].te);
 		ms[i].kappa = eos.getkappa(ms[i].ro, ms[i].ti, ms[i].te);
 		ms[i].ce    = eos.getce(ms[i].ro, ms[i].te);
 	}
-
 	ms[nSize].x = ms_temp[nSize].x;
 	ms[nSize].v = ms_temp[nSize].v;	
-
 	delete[] g;
-
 }
 
-double CSolver::solveti(double tau, int i, double ro_temp, double dv_temp)
-{
+double CSolver::solveti(double tau, int i, double ro_temp, double dv_temp) {
 	double	ei_temp  = 0.0, 
 			pi_temp  = 0.0,
 			ti_temp  = 0.0,
@@ -2861,7 +2705,7 @@ void CSolver::testHeatStage(char* inputFileName, char* outputFileName)
 	double t   = 1.0e-8;
 	double tau = 1.0e-10;
 	double kappa = 0.0;
-	unsigned int i =0;
+	int i =0;
 
 	// Задаем начальное условие (п.4 требований к тесту)
 
@@ -3452,7 +3296,7 @@ void CSolver::calcHydroStageGodunovMovingMesh(double t, double tau)
 			if(res.ro!=0.) E = res.p/(gamma-1.)/res.ro + 0.5*res.v*res.v; else E=0.;
 			Fm = Vector4(res.ro*(res.v-method.vGrid[i]), res.ro*res.v*(res.v-method.vGrid[i]) + res.p, res.ro*E*(res.v-method.vGrid[i])+res.p*res.v, 0.);
 			/// DEBUG ///
-			s=getEntropy(res.ro, eos.getti(res.ro, res.p/(gamma-1.)/res.ro), 0.);
+			s=eos.getEntropy(res.ro, eos.getti(res.ro, res.p/(gamma-1.)/res.ro));
 			sFluxM = res.ro * s * (res.v-method.vGrid[i]);
 			/////////////
 		} else {
@@ -3501,19 +3345,7 @@ void CSolver::calcHydroStageGodunovMovingMesh(double t, double tau)
 			res = calcRPAnalyticalSolution(n.ro, n.v, n.p, n.ro, n.v, n.p, method.X[i+1]-ms[i+1].x, tau);
 		if(res.ro!=0.) E = res.p/(gamma-1.)/res.ro + 0.5*res.v*res.v; else E=0.;
 		Fp = Vector4(res.ro*(res.v-method.vGrid[i+1]), res.ro*res.v*(res.v-method.vGrid[i+1]) + res.p, res.ro*E*(res.v-method.vGrid[i+1])+res.p*res.v, 0.);
-		/// DEBUG ///
-		s=getEntropy(res.ro, eos.getti(res.ro, res.p/(gamma-1.)/res.ro), 0.);
-		sFluxP = res.ro * s * (res.v-method.vGrid[i+1]);
-		/////////////
-		
-		//n.W_temp = n.W - tau/h*(Fp-Fm); -- неверно
-		//n.W_temp = n.W - tau/hNew*(Fp-Fm); -- неверно
 		n.W_temp   = (h*n.W - tau*(Fp-Fm))/hNew;
-		/////////DEBUG//////
-		s = getEntropy(ms[i].ro, ms[i].ti, 0.);
-		sTemp = (h*ms[i].ro*s - tau*(sFluxP-sFluxM))/hNew/n.W_temp[0];
-		double qq = 1.;
-		////////////////////
 	}
 	// Тест решения
 /*	CVectorPrimitive Um, Up;
@@ -4058,7 +3890,7 @@ void CSolver::calcHydroStageMccormack(double t, double tau) {
 	EOS &eos = task.getEOS();
 	ms_temp.initData(&task);
 	ms_temp_temp.initData(&task);
-	double E=0.; unsigned int i=0;
+	double E=0.; int i=0;
 	double h=ms[1].x-ms[0].x;
 	Vector4 L=Vector4::ZERO, R=Vector4::ZERO, D=Vector4::ZERO, V=Vector4::ZERO;
 	double epsilon=0.01; 
@@ -4073,7 +3905,7 @@ void CSolver::calcHydroStageMccormack(double t, double tau) {
 		n_temp_temp.W = Vector4(n.ro, n.ro*n.v, n.ro*E, 0);
 	}
 	Vector4 Fp=Vector4::ZERO, Fm=Vector4::ZERO, Fp_temp=Vector4::ZERO, Fm_temp=Vector4::ZERO;
-	unsigned int nSize=ms.getSize(); //nSize это количество узлов сетки (и количество промежутков плюс один)
+	int nSize=ms.getSize(); //nSize это количество узлов сетки (и количество промежутков плюс один)
 
 	// Предиктор
 	for(i=0; i<nSize; i++) {
@@ -4243,7 +4075,7 @@ void CSolver::calcHydroStageMccormack(double t, double tau) {
 void CSolver::calcHydroStageRoe(double t, double tau) {
 	EOS &eos = task.getEOS();
 	double E=0.; 
-	unsigned int i=0, nSize = ms.getSize();
+	int i=0, nSize = ms.getSize();
 	double h=ms[1].x-ms[0].x;
 	Vector4 L = Vector4::ZERO, R = Vector4::ZERO, D = Vector4::ZERO, V = Vector4::ZERO;
 	double gamma = eos.getGamma();
@@ -4255,20 +4087,11 @@ void CSolver::calcHydroStageRoe(double t, double tau) {
 	// Transmissive right boundary
 	roRB = ms[nSize-1].ro; vRB = ms[nSize-1].v; ERB = ms[nSize-1].e + .5*ms[nSize-1].v*ms[nSize-1].v;
 	for(i=0; i<ms.getSize(); i++) {
-		Node &n = ms[i];	
-		///
-		if(i==30) {
-
-			double qq = 0.;
-
-		}
-		///
-
+		Node &n = ms[i];			
 		if(i==0)
 			n.F = calcRoeFlux(roLB, roLB*vLB, roLB*ELB, n.W[0], n.W[1], n.W[2]);
 		else
 			n.F = calcRoeFlux(ms[i-1].W[0], ms[i-1].W[1], ms[i-1].W[2], n.W[0], n.W[1], n.W[2]);
-		///
 		double qqq =0.;
 	}
 	ms[nSize].F = calcRoeFlux(ms[nSize-1].W[0], ms[nSize-1].W[1], ms[nSize-1].W[2], roRB, roRB*vRB, roRB*ERB);
@@ -4393,59 +4216,6 @@ Vector4 CSolver::calcGodunovFlux(double roL, double rouL, double roEL, double ro
 	double E = res.p/(gamma-1.)/res.ro + .5*res.v*res.v;
 	Vector4 FGodunov = Vector4(res.ro*res.v, res.ro*res.v*res.v + res.p, res.v*(res.ro*E+res.p), 0.);
 	return FGodunov;
-}
-
-
-double CSolver::calcProblemL1NormRo() {
-	int nSize = ms.getSize(), i = 0;
-	double sum = 0., error = 0.;
-	double dx = ms[1].x-ms[0].x;
-	for(i=0; i<nSize; i++) {
-		double f_calc = ms[i].ro;
-		double f_ex   = calcRPAnalyticalSolution(_roL, _uL, _pL, _roR, _uR, _pR, (.5 + i)*dx - _x0 , _t).ro; 
-		double member = fabs(f_calc-f_ex);
-		sum += member;
-	}
-	error = sum / nSize;
-	return error;
-}
-
-double CSolver::calcProblemL2NormRo() {
-	int nSize = ms.getSize(), i = 0;
-	double dx = ms[1].x-ms[0].x;
-	double sum = 0., error = 0.;
-	for(i=0; i<nSize; i++) {
-		double f_calc = ms[i].ro;
-		double f_ex   = calcRPAnalyticalSolution(_roL, _uL, _pL, _roR, _uR, _pR, (.5 + i)*dx - _x0 , _t).ro; 
-		double member = (f_calc-f_ex)*(f_calc-f_ex);
-		sum += member;		
-	}
-	error = sqrt(sum / nSize);
-	return error;
-}
-
-void CSolver::modifyConvIntegral(double tCalc, double tau) {
-	unsigned int i = 0;
-	double h = getdx();
-	if(tCalc == _tMin) {
-		_rouMinCur = ms[_iMin].ro*ms[_iMin].v;
-		_rouMaxCur = ms[_iMax].ro*ms[_iMax].v;
-		_rouMinPrev = _rouMinCur;
-		_rouMaxPrev = _rouMaxCur;
-		for(i=_iMin; i<=_iMax; i++) {
-			convIntegral -= ms[i].ro*h;			
-		}
-	} else if (tCalc == _tMax) {
-		for(i=_iMin; i<=_iMax; i++) {
-			convIntegral += ms[i].ro*h;			
-		}
-	} else {
-		_rouMinPrev = _rouMinCur;
-		_rouMaxPrev = _rouMaxCur;
-		_rouMinCur = ms[_iMin].ro*ms[_iMin].v;
-		_rouMaxCur = ms[_iMax].ro*ms[_iMax].v;
-		convIntegral += 0.5*(_rouMaxCur+_rouMaxPrev)*tau - 0.5*(_rouMinCur+_rouMinPrev)*tau;	  
-	}
 }
 
 double CSolver::getdx() {

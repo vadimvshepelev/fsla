@@ -39,8 +39,7 @@ void EOSTScale::create(int _nSize, double _minV, double _maxV, double scaler)
 		scale[i] = exp(log(minV) + log_step*i) * scaler;
 }
 
-void EOSTScale::getFromFile(char* fName, char* dirName, int _nSize, double _minV, double _maxV, double scaler)
-{
+void EOSTScale::getFromFile(char* fName, string dirName, int _nSize, double _minV, double _maxV, double scaler) {
 	clear();
 
 	nSize = _nSize;
@@ -52,7 +51,7 @@ void EOSTScale::getFromFile(char* fName, char* dirName, int _nSize, double _minV
 
 	char filename[_MAX_PATH];
 	strcpy(filename, TABLE_FOLDER);
-	strcat(filename, dirName);	
+	strcat(filename, dirName.c_str());	
 	strcat(filename, "/");
 	strcat(filename, fName);
 

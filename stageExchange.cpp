@@ -10,7 +10,7 @@ using namespace std;
 
 void CSolver::calcExchangeStage(double tau)
 {
-	unsigned int i=0, itNum = 0, iMin=0;
+	int i=0, itNum = 0, iMin=0;
 	double eps = 0.01;
 	
 	EOS &eos = task.getEOS();
@@ -92,8 +92,8 @@ void CSolver::calcExchangeStage(double tau)
 }
 
 int CSolver::calcExchangeStageGlass(double tau) {
-	unsigned int i=0, itNum = 0;
-	const unsigned int nBound = task.getZone(0).n;
+	int i=0, itNum = 0;
+	const int nBound = task.getZone(0).n;
 	const double eps = 0.01;
 	EOS &eos = task.getEOS();
 	EOS &eosGlass = task.getEOSGlass();

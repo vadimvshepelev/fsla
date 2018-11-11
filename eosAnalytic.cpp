@@ -289,9 +289,8 @@ double  EOSAnalytic::getnuWR(double ro, double ti, double te, double b)
 	return 0.0;
 }
 
-double EOSAnalytic::getEntropy(double ro, double ti, double te)
-{
-	return 0.0;
+double EOSAnalytic::getEntropy(double ro, double ti) {
+	return 0.;
 }
 
 double EOSAnalytic::getGamma(void) {

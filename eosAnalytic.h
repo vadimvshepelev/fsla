@@ -31,7 +31,7 @@ public:
 	double getphase(double ro, double ti);
 	double   getmix(double ro, double ti);
 	double  getnuWR(double ro, double ti, double te, double b);
-	double getEntropy(double ro, double ti, double te);
+	double getEntropy(double ro, double ti);
 
 	double getGamma(void);
 /*
@@ -119,7 +119,7 @@ public:
 	double getAlpha(double ro, double ti, double te) {return 0.;}
 	double getphase(double ro, double ti) {return 0.;}
 	double   getmix(double ro, double ti) {return 0.;}
-	double getEntropy(double ro, double ti, double te) {return 0.;}
+	double getEntropy(double ro, double ti) {return 0.;}
 	double getGamma(void) {return 0.;}
 /*	double getdpdro  (double ro, double ti, double te) {return 0.;}
 	double getdpdroe (double ro, double ti, double te) {return 0.;}
@@ -274,7 +274,7 @@ public:
 	double getphase(double ro, double ti);
 	double   getmix(double ro, double ti);
 	double  getnuWR(double ro, double ti, double te, double b);
-	double getEntropy(double ro, double ti, double te);
+	double getEntropy(double ro, double T);
 	double getGamma(void);
 protected:
 	double solve_ti(double ro, double ei, double low_border, double high_border);

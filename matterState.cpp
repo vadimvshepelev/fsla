@@ -207,7 +207,7 @@ void CField::clearData()
 	nSize = 0;
 }
 
-double CField::loadData(string fName, unsigned int nCut) {
+double CField::loadData(string fName, int nCut) {
 	string buf = string("");
 	string fullName = string(OUTPUT_FOLDER) + fName;
 	ifstream fInput;
@@ -216,7 +216,7 @@ double CField::loadData(string fName, unsigned int nCut) {
 		cout << "Error: cannot open data file!" << endl;
 		exit(1);
 	}
-	unsigned int i=0, j=0;
+	int i=0, j=0;
 	double _t=0.;
 	for(i=0; i<nSize; i++) {
 		if(i<nCut) {

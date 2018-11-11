@@ -50,11 +50,9 @@ void CField::initData(CTask *task) {
 			n.ro = zone.ro;
 			n.dm = n.ro * dx;
 			n.ti = zone.ti;
-			n.te = (zone.expProperty ? 
-				    zone.te * exp(-(n.x-xInit)/ zone.expProperty) + n.ti :
-			        zone.te);
+			n.te = zone.te;
 			if(!task->eosBin) {
-				if( (task->getSourceFlag() == 2) && (i==0) ) {
+				if( (task->getSourceFlag() == SourceType::SrcGlass) && (i==0) ) {
 					n.pe = eosGlass.getpe(n.ro, n.ti, n.te);
 					n.pi = eosGlass.getpi(n.ro, n.ti);
 					n.p  = eosGlass.getp (n.ro, n.ti, n.te);

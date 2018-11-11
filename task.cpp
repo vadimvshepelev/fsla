@@ -30,7 +30,7 @@ CTask::~CTask() {
 }
 
 
-void CTask::load(char* fName) {
+ void CTask::load(char* fName) {
 	clear();
 	unsigned int j = 0;
 	EOSFlag = 0;
@@ -45,7 +45,7 @@ void CTask::load(char* fName) {
 		printf("Can't open task file: %s\n", inputFileName.c_str());
 		exit(1);
 	}
-	printf("Processing task file: %s\n", inputFileName);
+	printf("Processing task file: %s\n", inputFileName.c_str());
 	// parse EOSType
 	const char *eos_type = readStringParam(f, "EOSType");
 	
@@ -187,7 +187,7 @@ void CTask::load(char* fName) {
 	} else {
 		tauPulse = 0.; fluence = 0.; deltaSkin = 0.;
 	}
-	CFL = readFloatParam(f, "courant");
+	CFL = readFloatParam(f, "CFL");
 	if (CFL > 0)
 		printf("Courant number: %e\n", CFL);
 	else {
@@ -231,7 +231,7 @@ void CTask::load(char* fName) {
 		zones[j].l  = readFloatParam(f,	"l");
 		zones[j].n  = readIntParam  (f,	"nSize");
 		zones[j].ro = readFloatParam(f, "ro");
-		if(methodFlag==1) {
+		if(methodFlag!=MethodType::samarskii) {
 			zones[j].v  = readFloatParam(f,	"v");
 			double _p = readFloatParam(f, "p");
 			if(eos) {   
@@ -249,7 +249,6 @@ void CTask::load(char* fName) {
 			zones[j].ti = readFloatParam(f, "ti");
 			zones[j].te = readFloatParam(f, "te");
 			zones[j].v  = readFloatParam(f,	"v");
-			//zones[j].expProperty = readFloatParam(f, "exp");
 		}		
 		printf("Zone %d loaded!\n", j);
 		totalSize += zones[j].n;
@@ -324,7 +323,7 @@ int CTask::readIntParam(FILE *f, const char *name)
 
 void CTask::buildFileNames(string inputName) {
 	// strcpy(inputFileName.c_str(), INPUT_FOLDER);
-	inputName += string (INPUT_FOLDER);
+	inputName = string (INPUT_FOLDER) + inputName;
 	// strcat(inputFileName.c_str(), inputName);
 	inputFileName += inputName;
 	outputFileName = string(OUTPUT_FOLDER);

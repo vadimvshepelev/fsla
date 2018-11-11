@@ -578,3 +578,5 @@ double EOSMieGruneisenRu::solve_te(double ro, double ti, double ee, double low_b
 
 
 double EOSMieGruneisenRu::getGamma(void) { return 0.; }
+
+double EOSMieGruneisenRu::getEntropy(double ro, double T) { return 0.; }

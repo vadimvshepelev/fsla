@@ -25,9 +25,7 @@ struct CVectorPrimitive {
 
 class CSolver {
 public:
-	CSolver() : task(CTask()), ms(CField()), ms_temp (CField()), ms_temp_temp(CField()), ms_prev(CField()), CFL(0.), epsE(0.), maxIt(0),
-		        tauPulse(0.), fluence(0.), deltaSkin(0.), x_pulse_min(0.), i_pulse_min(0), tInit(0.), iWeak(0), spallFlag(0), spallCellNum(0), 
-				xVacBound(0.) {}
+	CSolver();
    	// Функции, отвечающие за весь расчет:
 	void go(char* fName);
 	void goAuSpall(char *fName);

@@ -42,7 +42,8 @@ int main(int argc, char *argv[])
 //	delete s;
 	
 	// Uncomment for metal problems
-	CSolver *s = new CSolver;
+	CSolver* s = new CSolver;
+	//CSolver *s = new CSolver;
 	// s->goGlass("task-Ru-glass.txt");
 	//s->goGlass("task-Ru-glass-optic-1000.txt");
 	//s->goGlass("task-Ru-glass-optic-2000.txt");

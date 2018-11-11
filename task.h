@@ -83,10 +83,10 @@ public:
 	CTask() : type(TaskType::undef), bHydroStage(false), bHeatStage(false), bExchangeStage(false), 
 		      eos(0), eosGlass(0), sourceFlag(SourceType::SrcUndef), tauPulse(0.), fluence(0.), deltaSkin(0.), 
 			  zones(0), nZones(0), maxTime(0.), mtd(0), viscFlag(0), CFL(0.), totalSize(0), 
-			  EOSFlag(0), methodFlag(MethodType::nomtd), inputFileName(0), outputFileName(0), flowFileName(0), EOSDirName(0), taskName(0) {}
+			  EOSFlag(0), methodFlag(MethodType::nomtd) {}
 	CTask(TaskType _type, bool _bHydroStage, bool _bHeatStage, bool _bExchangeStage, EOS* _eos, EOS* _eosGlass, SourceType _sourceFlag,
-		  double _tauPulse, double _fluence, double _deltaSkin, Zone* _zones, unsigned int _nZones, double _maxTime, CMethod* _mtd,
-		  int _viscFlag, double _CFL, unsigned int _totalSize, int _EOSFlag, MethodType _methodFlag) :
+		  double _tauPulse, double _fluence, double _deltaSkin, Zone* _zones, int _nZones, double _maxTime, CMethod* _mtd,
+		  int _viscFlag, double _CFL, int _totalSize, int _EOSFlag, MethodType _methodFlag) :
 		  type(_type), 
 		  bHydroStage(_bHydroStage), bHeatStage(_bHeatStage), bExchangeStage(_bExchangeStage), 
 		  eos(_eos), eosGlass(_eosGlass),

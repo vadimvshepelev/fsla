@@ -25,6 +25,22 @@
 
 using namespace std;
 
+CSolver::CSolver() {
+	maxIt = 40;
+	epsE  = 0.1;
+	CFL  =  0.0;
+	tauPulse = 0.0;
+	fluence  = 0.0;
+	deltaSkin = 0.0;
+	x_pulse_min = 0.0;
+	i_pulse_min = 0;
+	tInit = 0.0;
+	iWeak = -1;
+	spallFlag = 0;
+	spallCellNum = -1;
+	xVacBound = 0.;
+}
+
 void CSolver::goEuler(char* fName) {
 	// Загрузка входного файла, инициализация объекта task типа CTask
 	task.load(fName);
@@ -356,7 +372,7 @@ void CSolver::go(char* fName) {
 		
 		// Regular file output
 		if (t>=timesArray[timesCounter]) {
-			if(task.getMethodFlag() == 0) {
+			if(task.getMethodFlag() == MethodType::samarskii) {
 				dumpToFile(t); 
 			} else {
 				dumpToFileEuler(t);
@@ -613,6 +629,7 @@ void CSolver::goGlass(char* fName) {
 	// task.type = TaskType::RuGlass; // Пока не навел порядок в инфраструктуре, проставляю этот флаг руками
 	task.load(fName);
 	// Наполнение объектов ms, ms_temp данными на по начальным и граничным условиям из task
+	assert(task.getMethodFlag() == MethodType::samarskii);
 	ms.initData(&task);
 	ms_temp.initData(&task);
 	initVars();
@@ -669,15 +686,12 @@ void CSolver::goGlass(char* fName) {
 	int itNumHydro = 0, itNumHeat = 0, itNumExchg = 0;
 	for(;;)	{
 		ostringstream oss;
-		cout.flush();
-		if(task.getMethodFlag() == 0) {
-			tau = calcTimeStep(t);			
-			oss << counter << ": " << "t=" << setprecision(6) << t*1.e12 <<  "ps tau=" << tau*1.e12 << "ps CFL=" << getCFL() << " ";
-			if(task.getHydroStage()) { itNumHydro = calcHydroStageGlass(t, tau); oss << "Hydro:" << itNumHydro << " "; }
-			if(task.getHeatStage()) { itNumHeat = calcHeatStageGlass(t, tau); oss << "Heat:" << itNumHeat << " "; }
-			if(task.getExchangeStage()) { itNumExchg = calcExchangeStageGlass(tau); oss << "Exchg:" << itNumExchg << " "; }
-			oss << "(iters)";
-		}
+		tau = calcTimeStep(t);			
+		oss << counter << ": " << "t=" << setprecision(6) << t*1.e12 <<  "ps tau=" << tau*1.e12 << "ps CFL=" << getCFL() << " ";
+		if(task.getHydroStage()) { itNumHydro = calcHydroStageGlass(t, tau); oss << "Hydro:" << itNumHydro << " "; }
+		if(task.getHeatStage()) { itNumHeat = calcHeatStageGlass(t, tau); oss << "Heat:" << itNumHeat << " "; }
+		if(task.getExchangeStage()) { itNumExchg = calcExchangeStageGlass(tau); oss << "Exchg:" << itNumExchg << " "; }
+		oss << "(iters)";
 		if(handleKeys(t)) break;
 		double xMeltL=1.0e-6;
 		double xMeltR=1.0e-6;
@@ -810,10 +824,10 @@ bool CSolver::handleKeys(double t)
 				return true;
 
 			case 'D':
-				if(task.getMethodFlag() == 0) {
-				dumpToFile(t);
+				if(task.getMethodFlag() == MethodType::samarskii) {
+				    dumpToFile(t);
 				} else {
-				dumpToFileEuler(t);
+					dumpToFileEuler(t);
 				}
 				break;
 		}

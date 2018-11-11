@@ -10,7 +10,7 @@ tauPulse = 50.0e-12
 fluence = 4000.0
 deltaSkin = 15.e-9
 
-courant = 0.05
+CFL = 0.05
 viscosity = 1
 
 maxTime = 500.e-9
@@ -19,7 +19,7 @@ nZones = 2
 
 l = 9.66e-6
 nSize = 500
-ro = 1000.0
+ro = 1000.1
 ti = 300.0
 te = 300.0
 v = 0.0

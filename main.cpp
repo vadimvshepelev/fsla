@@ -51,7 +51,8 @@ int main(int argc, char *argv[])
 	//s->goGlass("task-Fe-glass.txt");
 
 	//s->goGlass("task-Au-water-simple.txt");
-	s->goGlass("task-Au-water.txt");
+	//s->goGlass("task-Au-water.txt");
+	s->go("task-Au-water-vacuum.txt");
 
 
 

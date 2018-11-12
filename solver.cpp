@@ -191,185 +191,27 @@ void CSolver::go(char* fName) {
 	// Наполнение объектов ms, ms_temp данными на по начальным и граничным условиям из task
 	ms.initData(&task);
 	ms_temp.initData(&task);
-	initVars();
-	if(task.getMethodFlag() == 1)
-		(task.getMethod()).createGrid(ms);
-	double t   = 0.;
-	double tau = 0.0;
-	int	counter = 0;
-	int i=0;
-	//dumpToFileTestRP(t, counter);
-	double timesArray[] = {      .0,   1.e-13,   3.e-13,   5.e-13,   1.e-12,   2.e-12,   3.e-12,    4.e-12,    5.e-12,   6.e-12,
+	initVars();	
+	double t = 0., tau = 0.0;
+	int	counter = 0, i=0;
+	/*double timesArray[] = {      .0,   1.e-13,   3.e-13,   5.e-13,   1.e-12,   2.e-12,   3.e-12,    4.e-12,    5.e-12,   6.e-12,
 		                    10.e-12,  20.e-12,  30.e-12,  40.e-12,  50.e-12,  60.e-12,  70.e-12,  80.1e-12,  90.2e-12, 100.e-12};
-	int nTimes = 20;
-	// Constants for melting front tracking
-	double xMeltL=1.0e-6;
-	double xMeltR=1.0e-6;
-
-	//double timesArray[] = {0.2, 1., 2.};
-	///////DEBUG/////////////
-	/*string fileName = INPUT_FOLDER + string("task.txt");
-	string buf;
-	ifstream ifs(fileName.c_str());
-
-	for(i=0; i<26; i++) {
-		ifs >> buf;
-		cout << buf << endl;
-	}
-
-	ifs >> buf;
-	cout << buf << endl;
-	ifs >> buf;
-	cout << buf << endl;
-	double d=0.;
-	if(! (ifs >> d) )
-		cout << "False!" << endl;
-	else 
-		cout << d;
-	ifs.close();*/
-	////////////////////
-
-	int timesCounter = 0;
-	// Протестируем последовательность, на строгое возрастание (выход за границу мы не контролируем)
-	for(int i = 0; i<nTimes-1; i++)
-		if(timesArray[i+1] <= timesArray[i]) {
-			cout << "CSolver::go() error: Time points unordered in timesArray." << endl;
-			exit(1);
-		}
-
-	//testEOSControlNumbers(19300., 1000., 1222.2);
-
-
-	//	cout << endl << eos.getti(2700., 171202.) << endl;
-	///////////////////////////////////////////
-	char rEdgeFileName[255];
-	FILE* f=0;
-	if( (task.getSourceFlag() == 1) || (task.getSourceFlag() == 2) || (task.getSourceFlag() == 3 ))
-	{
-		strcpy(rEdgeFileName, OUTPUT_FOLDER);
-		strcat(rEdgeFileName, "right_");
-		strcat(rEdgeFileName, task.getTaskName().c_str());
-		strcat(rEdgeFileName, ".dat");
-
-		f=fopen(rEdgeFileName, "w");
-
-		fprintf(f, "TITLE=\"Right edge trajectory\"\n");
-		fprintf(f, "VARIABLES=\"t [ps]\",\"x_r [nm]\",\"v_r [m/s]\",\"xMeltL [nm]\",\"xMeltR [nm]\", \"deltae [J/m2]\" \n");
-		fclose(f);
-	}
-
-	char pointFileName[255];
-	char weakTrackFileName[255];
-	FILE* f1=0;
-	if(task.getSourceFlag() == 1) {
-		strcpy(pointFileName, OUTPUT_FOLDER);
-		strcat(pointFileName, "point_");
-		strcat(pointFileName, task.getTaskName().c_str());
-		strcat(pointFileName, ".dat");
-		strcpy(weakTrackFileName, OUTPUT_FOLDER);
-		strcat(weakTrackFileName, "weakTrack_");
-		strcat(weakTrackFileName, task.getTaskName().c_str());
-		strcat(weakTrackFileName, ".dat");
-		f1=fopen(pointFileName, "w");
-		fprintf(f1, "TITLE=\"Points trajectory\"\n");
-		fprintf(f1, "VARIABLES=\"t [ps]\",\"x[400], nm\",\"v[400], m/s\",\"x[260], nm\",\"v[260], m/s\"\n");
-		fclose(f1);
-		f1=fopen(weakTrackFileName, "w");
-		fprintf(f1, "TITLE=\"Weak place trajectory\"\n");
-		fprintf(f1, "VARIABLES=\"t [ps]\",\"x [nm]\",\"Ti [K]\",\"Te [K]\",\"Pi [GPa]\",\"Pe [GPa]\",\"P [GPa]\"\n");
-		fclose(f1);
-
-	} else {
-		pointFileName[0]='\0';
-		weakTrackFileName[0]='\0';
-	}
-	int psCounter=0;  // Every single picosecond it makes a record in trajectory point-file
-	int shotsCounter=0; // Every some picoseconds it makes dumpToFile() 
-	double eInit=0.0;
-	for(int i2=0; i2<ms.getSize(); i2++)
-	{
-		eInit+=ms[i2].e*ms[0].dm;
-	}
-	int nCut = 77;
-	double tCut = 300.e-12;
+	int nTimes = 20;*/
+	double timesArray[] = {0.,        2.e-12,  5.e-12,   10.e-12,   15.e-12, 16.e-12, 17.e-12,  18.e-12,  19.e-12,  20.e-12, 
+		                   21.e-12,  22.e-12, 23.e-12, 23.87e-12, 23.88e-12, 25.e-12,  30.e-12, 50.e-12, 100.e-12, 200.e-12, 
+						   500.e-12,   5.e-9,  50.e-9,   500.e-9};
+	int nTimes = 24, timesCounter = 0;	
 	dumpToFile(t);
+	assert(task.getMethodFlag() == MethodType::samarskii);
 	for(;;) {
-		/// DEBUG ///
-		if(counter == 358) {
-			double q = 0.;
-		}
-		/////////////
-		if(task.getMethodFlag() == 0) {
-			// Если лагранжев метод
-				tau = calcTimeStep(t);
-				if (t + tau > task.getMaxTime()) tau = task.getMaxTime() - t;
-				cout << counter << ": " << "t=" << t <<  " tau=" << tau << " courant=" << getCFL() << endl;
-				if(task.getHydroStage()) calcHydroStage(t, tau);
-				if(task.getHeatStage()) calcHeatStage5LayersSi(t, tau);
-				//dumpToFile(t+tau);
-				if(task.getExchangeStage()) calcExchangeStage5LayersSi(tau);
-				//dumpToFile(t+tau);
-			} else {
-			// А вот этот фрагмент кода включаем, когда занимаемся эйлеровым методом.
-			tau = calcTimeStepEuler(t);
-			if(counter <=4) tau *=.2;
-			if(counter == 0) tau = 0.00093109101124281841;
-			cout << counter << ": " << "t=" << t <<  " tau=" << tau << " courant=" << getCFL() << endl;
-			//if(task.getHydroStage()) calcHydroStageGodunovMovingGrid(t, tau);
-			if(task.getHydroStage()) calcHydroStageGodunov(t, tau);
-			//dumpToFileTestRP(t+tau, counter);
-			///////////
-		}
-		if( pointFileName[0] && (t*1.0e12 >= (double)(psCounter)) )	{
-			f1=fopen(pointFileName, "a+");
-			fprintf(f1, "%e %e %e %e %e \n", t*1.0e12, ms[400].x*1.0e9, ms[400].v, ms[260].x*1.0e9, ms[260].v);
-			fclose(f1);			
-			psCounter++;
-		}
-		if(weakTrackFileName[0] && t>0.e-12 && iWeak>=0)
-		{
-			f1=fopen(weakTrackFileName, "a+");
-			fprintf(f1, "%e %e %e %e %e %e %e \n", t*1.0e12, ms[iWeak].x*1.0e9, ms[iWeak].ti, ms[iWeak].te, 
-				                             ms[iWeak].pi*1.0e9, ms[iWeak].pe*1.0e9, ms[iWeak].p*1.0e9);
-			fclose(f1);	
-		}
-		if(handleKeys(t)) break;
-	    // Melting fronts tracking
-		if (task.getSourceFlag() != 4) {
-			for(int i=0; i<ms.getSize(); i++) {
-				if( (task.getEOS().getphase(ms[i].ro, ms[i].ti) > 1.0)&&
-				(task.getEOS().getphase(ms[i].ro, ms[i].ti) < 3.0) ) {
-					xMeltL = ms[i].x;			
-					break;
-				}
-			}
-			for(int i=0; i<ms.getSize(); i++) {
-				if( (task.getEOS().getphase(ms[i].ro, ms[i].ti) > 1.0)&&
-				(task.getEOS().getphase(ms[i].ro, ms[i].ti) < 3.0) )
-					xMeltR = ms[i].x;			
-			}
-		}
-		//Energy conservation
-		double eInner=0.0, eKinetic=0.0, eFull=0.0, deltae=0.0;
-		for(int i1=0; i1<ms.getSize(); i1++) {
-			/*eInner+=ms[i1].e*ms[0].dm;
-			eKinetic+=ms[0].dm*ms[i1].v*ms[i1].v/2.0;*/
-			eInner += (ms[i1+1].x-ms[i1].x)*ms[i1].ro*ms[i1].e;
-			eKinetic += 0.5 * ms[i1].ro*ms[i1].v*ms[i1].v;
-			eFull=eInner+eKinetic;
-			deltae=eFull-eInit;
-		}
-		cout << "Energy is: inner " << eInner << " kinetic " << eKinetic << " full " << eFull << endl;
-		cout << "de = " << deltae << endl;
-
-		if(counter%10 == 0) {   
-			if ((task.getSourceFlag()==1)||(task.getSourceFlag()==2)||(task.getSourceFlag()==3)) {
-				f=fopen(rEdgeFileName, "a+");
-				fprintf(f, "%e %e %e %e %e %f\n", t*1.0e12, ms[ms.getSize()].x*1.0e9, ms[ms.getSize()].v, xMeltL*1.0e9, xMeltR*1.0e9, deltae);
-				fclose(f);
-			}
-		}
-		
+		tau = calcTimeStep(t);
+		if (t + tau > task.getMaxTime()) tau = task.getMaxTime() - t;
+		cout << counter << ": " << "t=" << t <<  " tau=" << tau << " courant=" << getCFL() << endl;
+		if(task.getHydroStage()) calcHydroStage(t, tau);
+		// if(task.getHeatStage()) calcHeatStage5LayersSi(t, tau);
+		if(task.getHeatStage()) calcHeatStage(t, tau);				
+		//if(task.getExchangeStage()) calcExchangeStage5LayersSi(tau);
+		if(task.getExchangeStage()) calcExchangeStage(tau);				
 		// Regular file output
 		if (t>=timesArray[timesCounter]) {
 			if(task.getMethodFlag() == MethodType::samarskii) {

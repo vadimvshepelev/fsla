@@ -633,55 +633,12 @@ void CSolver::goGlass(char* fName) {
 	ms.initData(&task);
 	ms_temp.initData(&task);
 	initVars();
-	double t   = -3*tauPulse;
-	double tau = 0.0;
-	int	counter = 0;
-	int i=0;
-	/*double timesArray[] = {      0.,   1.e-13,   3.e-13,   5.e-13,   1.e-12,   2.e-12,   3.e-12,    4.e-12,  5.e-12,    6.e-12,  
-		                    10.e-12,  20.e-12,  30.e-12,  40.e-12,  50.e-12,  60.e-12,  70.e-12,  80.1e-12, 90.2e-12, 100.e-12, 
-							110.e-12, 120.e-12, 130.e-12, 140.e-12, 150.e-12 };
-	int nTimes = 25;*/
+	double t   = -3*tauPulse,  tau = 0.0;
+	int	counter = 0, i=0;
 	double timesArray[] = {0.,        2.e-12,  5.e-12,   10.e-12,   15.e-12, 16.e-12, 17.e-12,  18.e-12,  19.e-12,  20.e-12, 
 		                   21.e-12,  22.e-12, 23.e-12, 23.87e-12, 23.88e-12, 25.e-12,  30.e-12, 50.e-12, 100.e-12, 200.e-12, 
 						   500.e-12,   5.e-9,  50.e-9,   500.e-9};
-	int nTimes = 24;	
-	int timesCounter = 0;
-	// Протестируем последовательность, на строгое возрастание (выход за границу мы не контролируем)
-	for(int i = 0; i<nTimes-1; i++)
-		if(timesArray[i+1] <= timesArray[i]) {
-			cout << "CSolver::go() error: Time points unordered in timesArray." << endl;
-			exit(1);
-		}
- 		
-	
-	/*
-	EOSFigures ef = EOSFigures(&(task.getEOS()));
-	ef.testeEOSTe(12410., 1000., 0., 50000., 50);
-	ef.testeEOSTe(12410., 3000., 0., 50000., 50);
-	ef.testeEOSTe(12410., 10000., 0., 50000., 50);
-	*/
-
-	/*EOS* eosRu = &(task.getEOS());
-	double c1 = eosRu->getC(12410., 300., 300.);
-	double c2 = eosRu->getC(510., 300., 300.); 
-	*/
-
-
-	// Правый край
-/*	char rEdgeFileName[255];
-	FILE* f=0, *f_NA=0;
-	if( (task.getSourceFlag() == 1) || (task.getSourceFlag() == 2) || (task.getSourceFlag() == 3 )) {
-		strcpy(rEdgeFileName, OUTPUT_FOLDER); strcat(rEdgeFileName, "right_"); strcat(rEdgeFileName, task.getTaskName()); strcat(rEdgeFileName, ".dat");
-		f=fopen(rEdgeFileName, "w");
-		fprintf(f, "TITLE=\"Right edge trajectory\"\n");
-		fprintf(f, "VARIABLES=\"t [ps]\",\"x_r [nm]\",\"v_r [m/s]\",\"x_c [nm]\",\"v_c [m/s]\",\"xMeltL [nm]\",\"xMeltR [nm]\", \"deltae [J/m2]\" \n");
-		fclose(f);
-	}*/
-	int shotsCounter=0; // Every some picoseconds it makes dumpToFile() 
-	double eInit=0.0;
-	for(int i2=0; i2<ms.getSize(); i2++) 	{
-		eInit+=ms[i2].e*ms[0].dm;
-	}  
+	int nTimes = 24, timesCounter = 0;
 	dumpToFile(t);
 	int itNumHydro = 0, itNumHeat = 0, itNumExchg = 0;
 	for(;;)	{
@@ -693,61 +650,15 @@ void CSolver::goGlass(char* fName) {
 		if(task.getExchangeStage()) { itNumExchg = calcExchangeStageGlass(tau); oss << "Exchg:" << itNumExchg << " "; }
 		oss << "(iters)";
 		if(handleKeys(t)) break;
-		double xMeltL=1.0e-6;
-		double xMeltR=1.0e-6;
-		for(i=0; i<ms.getSize(); i++) {
-			if( (task.getEOS().getphase(ms[i].ro, ms[i].ti) > 1.0)&&
-			(task.getEOS().getphase(ms[i].ro, ms[i].ti) < 3.0) ) {
-				xMeltL = ms[i].x;			
-				break;
-			}
-		}
-		for(i=0; i<ms.getSize(); i++) {
-			if( (task.getEOS().getphase(ms[i].ro, ms[i].ti) > 1.0)&&
-			(task.getEOS().getphase(ms[i].ro, ms[i].ti) < 3.0) )
-				xMeltR = ms[i].x;			
-		}
-		//Energy conservation
-	/*	double eInner=0.0, eKinetic=0.0, eFull=0.0, deltae=0.0;
-		for(unsigned int i1=0; i1<ms.getSize(); i1++) {		
-			eInner += (ms[i1+1].x-ms[i1].x)*ms[i1].ro*ms[i1].e;
-			eKinetic += 0.5 * ms[i1].ro*ms[i1].v*ms[i1].v;
-			eFull=eInner+eKinetic;
-			deltae=eFull-eInit;
-		}
-	
-		cout << "Energy is: inner " << eInner << " kinetic " << eKinetic << " full " << eFull << endl;
-		cout << "de = " << deltae << endl;
-		*/
-	/*	if(counter%10 == 0) {   
-			if ((task.getSourceFlag()==1)||(task.getSourceFlag()==2)||(task.getSourceFlag()==3)) {
-				f=fopen(rEdgeFileName, "a+");
-				int iContact = task.getZone(0).n;
-				int nSize = ms.getSize();
-				fprintf(f,    "%e %e %e %e %e %e %e %f\n", 
-					           t*1.0e12, 
-							   ms[nSize].x*1.0e9, ms[nSize].v, 
-							   ms[iContact].x*1.0e9, ms[iContact].v, 
-							   xMeltL*1.0e9, xMeltR*1.0e9, 
-							   deltae);
-				fclose(f);
-			}
-		}*/
 		// Regular file output
 		if (t>=timesArray[timesCounter]) {
-			if(task.getMethodFlag() == 0) {
-				dumpToFile(t); 
-			} else {
-				dumpToFileEuler(t);
-				dumpToFileTestRP(t, counter);
-			}
+			dumpToFile(t); 
 			timesCounter++;
 			if(timesCounter==nTimes)
 				break;
 		}		
-		if( t>= task.getMaxTime()) {
-			break;
-		}
+		if( t>= task.getMaxTime()) 
+			break;		
 		t += tau;
 		counter++;
 		cout << oss.str() << endl; 		

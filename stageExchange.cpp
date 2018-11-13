@@ -8,7 +8,7 @@ using namespace std;
 
 // Третий вычислительный этап: электронно-ионный обмен
 
-void CSolver::calcExchangeStage(double tau)
+int CSolver::calcExchangeStage(double tau)
 {
 	int i=0, itNum = 0, iMin=0;
 	double eps = 0.01;
@@ -89,6 +89,7 @@ void CSolver::calcExchangeStage(double tau)
 		n.kappa = eos.getkappa(n.ro, n.ti, n.te);
 		
 	}
+	return itNum;
 }
 
 int CSolver::calcExchangeStageGlass(double tau) {

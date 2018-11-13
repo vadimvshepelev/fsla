@@ -1,7 +1,7 @@
 
 #include "solver.h"
 
-void CSolver::calcHeatStage(double t, double tau) {
+int CSolver::calcHeatStage(double t, double tau) {
 	int i = 0, itNum = 0, size = ms.getSize();;
 	const double eps = 0.01; 
 	double kappa_plus = 0., kappa_minus = 0., ro_plus = 0., ro_minus = 0.;
@@ -9,8 +9,7 @@ void CSolver::calcHeatStage(double t, double tau) {
 	CField ms_temp, ms_temp_temp;
 	ms_temp.initData(&task);
 	ms_temp_temp.initData(&task);
-	for(i=0; i<size; i++)
-	{
+	for(i=0; i<size; i++) {
 		     ms_temp[i].te = ms[i].te;
 		ms_temp_temp[i].te = ms[i].te;
 		
@@ -18,60 +17,25 @@ void CSolver::calcHeatStage(double t, double tau) {
 		ms_temp_temp[i].Z  = ms[i].Z;
 
 	}
-
-
-	///////////////
-//	printf("1 oh yeah!\n");
-//	fflush(stdout);
-	///////////////	
-
 	// Столбцы коэффициентов системы. Система имеет вид:
 	// A...-C...+B...=-F
-
-	double* A  = new double[size];
-	double* B  = new double[size];
-	double* C  = new double[size];
-	double* F  = new double[size];
-
-	double *alpha = new double[size];
-	double *beta  = new double[size];
-
-	///////////////
-//	printf("2 oh yeah!\n");
-//	fflush(stdout);
-	///////////////
-
-	for(;;)
-	{
+	double* A  = new double[size]; double* B  = new double[size]; double* C  = new double[size]; double* F  = new double[size];
+	double *alpha = new double[size]; double *beta  = new double[size];
+	for(;;) {
 		// Присваиваем значения коэффициентам 
 		// (решается уравнение теплопроводности с помощью неявной схемы)
-
-		for(i=0; i<size; i++)
-		{
-			if(i==0)
-			{
-				kappa_minus = ms[i].kappa;
-				   ro_minus = ms[i].ro;
+		for(i=0; i<size; i++) {
+			if(i==0) { 
+				kappa_minus=ms[i].kappa; ro_minus=ms[i].ro; 
+			} else { 
+				kappa_minus = (ms[i].kappa+ms[i-1].kappa)/2.; ro_minus=(ms[i].ro+ms[i-1].ro)/2.; 
 			}
-			else
-			{				
-				kappa_minus = (ms[i].kappa + ms[i-1].kappa) / 2.0;
-				   ro_minus = (ms[i].ro    + ms[i-1].ro   ) / 2.0;
+			if(i==size-1) {
+				kappa_plus = ms[i].kappa; ro_plus  = ms[i].ro; 
+			} else { 
+				kappa_plus= (ms[i].kappa+ms[i+1].kappa)/2.; 
+				ro_plus=(ms[i].ro+ms[i+1].ro)/2.; 
 			}
-			
-			if(i==size-1)
-			{
-
-				kappa_plus  = ms[i].kappa;
-				   ro_plus  = ms[i].ro;
-			}
-			else
-			{
-				kappa_plus  = (ms[i].kappa + ms[i+1].kappa) / 2.0;
-				   ro_plus  = (ms[i].ro    + ms[i+1].ro   ) / 2.0;
-			}
-
-
 //////////////  DEBUG ////////////////////////////////////////////////////
 // Здесь делаем так, чтобы тепло не проходило через границу "стекло-металл"
 // Возможно, это немного искусственно.
@@ -86,30 +50,24 @@ void CSolver::calcHeatStage(double t, double tau) {
 				//////////
         
 				kappa_minus = 0.0;				   
-			}
-			
+			}			
 ///////////////////////////////////////////////////////////////////////////
-
-
-
 			A[i] = tau * kappa_minus / (ms[i].dm*ms[i].dm) * ms[i].ro * ro_minus;
 			B[i] = tau * kappa_plus  / (ms[i].dm*ms[i].dm) * ms[i].ro * ro_plus;
 			C[i] = ms[i].ce + A[i] + B[i];
-// 14.06.2013
+
 			double src = 0.0;
 			double expX=0.0, expT=0.0;
-
-			if(task.getSourceFlag() == 1)
-			{
+			if(task.getSourceFlag() == SourceType::SrcMetal) {
 				expX = exp(-(ms[i].x)/deltaSkin);
 				expT = exp(-(t)*(t)/tauPulse/tauPulse);
 			}
-			else if ((task.getSourceFlag() == 2) && (i>i_pulse_min))
+			else if ((task.getSourceFlag() == SourceType::SrcGlass) && (i>i_pulse_min))
 			{
 				expX = exp(-(ms[i].x - ms[i_pulse_min].x)/deltaSkin);
 				expT = exp(-(t)*(t)/tauPulse/tauPulse);
 			}
-			else if ((task.getSourceFlag() == 3) && (i>i_pulse_min))
+			else if ((task.getSourceFlag() == SourceType::SrcUndef) && (i>i_pulse_min)) // Какой-то специфичный источник, пока оставим тип undef, потом разберемся
 			{
 				expX = exp(-(ms[i].x - ms[i_pulse_min].x)/deltaSkin)*sqrt(3.14159);
 				if( (t>=0.0) && (t<tauPulse) )
@@ -147,13 +105,6 @@ void CSolver::calcHeatStage(double t, double tau) {
 			exit(1);
 		}
 	}
-
-/*	if(t>5.e-12 && itNum <3)
-	{
-		double _Kur = getzKur();
-		setzKur(1.01*_Kur);
-	}
-*/
 	printf("calcHeatStage() complete: %d iterations of Te\n", itNum+1);
 	for(i=0; i<size; i++) {
 		Node &n = ms[i];
@@ -172,6 +123,7 @@ void CSolver::calcHeatStage(double t, double tau) {
 	delete[] F;
 	delete[] alpha;
 	delete[] beta;
+	return itNum+1;
 }
 
 void CSolver::calcHeatStage5LayersSi(double t, double tau) {

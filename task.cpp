@@ -254,6 +254,13 @@ CTask::~CTask() {
 		totalSize += zones[j].n;
 	}
 	printf("Task loaded! Total nSize=%d\n", totalSize);
+
+	// And now let's set CTask::taskType variable
+	if(!strcmp(EOSDirName.c_str(), "au") && (nZones == 2)) 
+		type = TaskType::auWater;
+	else
+		type = TaskType::undef;
+
 	fclose(f);
 }
 

@@ -487,9 +487,18 @@ void CSolver::goGlass(char* fName) {
 		ostringstream oss;
 		tau = calcTimeStep(t);			
 		oss << counter << ": " << "t=" << setprecision(6) << t*1.e12 <<  "ps tau=" << tau*1.e12 << "ps CFL=" << getCFL() << " ";
-		if(task.getHydroStage()) { itNumHydro = calcHydroStageGlass(t, tau); oss << "Hydro:" << itNumHydro << " "; }
-		if(task.getHeatStage()) { itNumHeat = calcHeatStageGlass(t, tau); oss << "Heat:" << itNumHeat << " "; }
-		if(task.getExchangeStage()) { itNumExchg = calcExchangeStageGlass(tau); oss << "Exchg:" << itNumExchg << " "; }
+		if(task.getHydroStage()) {
+			if(task.type == TaskType::auWater) itNumHydro = calcHydroStageGlass(t, tau); else itNumHydro = calcHydroStage(t, tau);			
+			oss << "Hydro:" << itNumHydro << " "; 
+		}
+		if(task.getHeatStage()) { 
+			if(task.type == TaskType::auWater) itNumHeat = calcHeatStageGlass(t, tau); else itNumHeat = calcHeatStage(t, tau);		 
+			oss << "Heat:" << itNumHeat << " "; 
+		}
+		if(task.getExchangeStage()) { 
+			if(task.type == TaskType::auWater) itNumHeat = itNumExchg = calcExchangeStageGlass(tau); else itNumHeat = itNumExchg = calcExchangeStage(tau);		 			
+			oss << "Exchg:" << itNumExchg << " "; 
+		}
 		oss << "(iters)";
 		if(handleKeys(t)) break;
 		// Regular file output
@@ -527,7 +536,7 @@ double CSolver::calcTimeStep(double t) {
 	if( task.getSourceFlag()==2 && (tauPulse<1.e-12) && (t<5.0e-12)) {
 		return 1.0e-15;
 	} else if( task.getSourceFlag()==1 && (tauPulse<1.e-12) && (t<5.0e-12)) {
-		if(task.type!=TaskType::RuGlass) 
+		if(task.type!=TaskType::ruGlass) 
 		  return 1.0e-15;
 		else
 		  return .5e-15;
@@ -1203,7 +1212,7 @@ void CSolver::initVars(void) {
 	}
 }
 
-void CSolver::calcHydroStage(double t, double tau) {	
+int CSolver::calcHydroStage(double t, double tau) {	
 	int i=0, counter=0;
 	int itNumFull=0, itNumIon=0;
 	double e_prev=0.0, ei_prev=0.0;

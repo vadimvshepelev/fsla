@@ -72,7 +72,7 @@ struct Zone
       EOSType = ideal не имеют смысла.
 */
 
-enum TaskType {undef, RuGlass, LH1D};
+enum TaskType {undef, ruGlass, LH1D, auWater};
 
 enum SourceType {SrcUndef, SrcNone, SrcGlass, SrcMetal, SrcSq, Src5Layers};
 
@@ -116,7 +116,7 @@ public:
 	string getTaskName() { return taskName; }	
 	SourceType	getSourceFlag() { return sourceFlag; }
 	int			getViscFlag() { return viscFlag; }	
-	int			getMethodFlag() { return methodFlag; }	
+	MethodType  getMethodFlag() { return methodFlag; }		
 	double		getTauPulse() { return tauPulse;}
 	double		getFluence() { return fluence; }
 	double		getDeltaSkin() { return deltaSkin; }
@@ -146,7 +146,7 @@ private:
 	double  CFL;			// Число Куранта (начальное)
 	int		totalSize;			// Суммарное количество точек во всех зонах
 	int		EOSFlag;			// Для табличного УРС -- тип таблиц (0 - нормальные, 1 - расширенные)
-	MethodType methodFlag;
+	MethodType methodFlag;	
 	string taskName, inputFileName, outputFileName, flowFileName, EOSDirName; // EOSDirName для табличного УРС -- каталог в table_data, в котором лежат таблицы
 };
 

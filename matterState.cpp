@@ -102,7 +102,7 @@ void CField::initData(CTask *task) {
 						n.Alphaei = eosSi.getAlpha(n.ro, n.ti, n.te);
 						n.kappa   = eosSi.getkappa(n.ro, n.ti, n.te);
 					}*/
-				} else if (task->type == TaskType::RuGlass) {  // Пока не навел порядок в инфраструктуре, проставляю этот флаг руками в CSolver::goGlass()			        
+				} else if (task->type == TaskType::ruGlass) {  // Пока не навел порядок в инфраструктуре, проставляю этот флаг руками в CSolver::goGlass()			        
 					if(i==0) {
 						n.pe = eos.getpe(n.ro, n.ti, n.te);
 						n.pi = eos.getpi(n.ro, n.ti);

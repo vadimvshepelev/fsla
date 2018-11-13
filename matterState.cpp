@@ -13,21 +13,18 @@
 
 using namespace std;
 
-MatterState::MatterState()
-{
+CField::CField() {
 	nodes = 0;
 	nSize = 0;
-	bEdgeMode = false;
 }
 
 
-MatterState::~MatterState()
-{
+CField::~CField() {
 	clearData();
 }
 
 
-void MatterState::initData(CTask *task) {
+void CField::initData(CTask *task) {
 	clearData();
 	nSize = task->getTotalSize();
 	nodes = new Node[nSize+1];
@@ -53,11 +50,9 @@ void MatterState::initData(CTask *task) {
 			n.ro = zone.ro;
 			n.dm = n.ro * dx;
 			n.ti = zone.ti;
-			n.te = (zone.expProperty ? 
-				    zone.te * exp(-(n.x-xInit)/ zone.expProperty) + n.ti :
-			        zone.te);
+			n.te = zone.te;
 			if(!task->eosBin) {
-				if( (task->getSourceFlag() == 2) && (i==0) ) {
+				if( (task->getSourceFlag() == SourceType::SrcGlass) && (i==0) ) {
 					n.pe = eosGlass.getpe(n.ro, n.ti, n.te);
 					n.pi = eosGlass.getpi(n.ro, n.ti);
 					n.p  = eosGlass.getp (n.ro, n.ti, n.te);
@@ -203,14 +198,14 @@ void MatterState::initData(CTask *task) {
 }
 
 
-void MatterState::clearData()
+void CField::clearData()
 {
 	delete[] nodes;
 	nodes = 0;
 	nSize = 0;
 }
 
-double MatterState::loadData(string fName, unsigned int nCut) {
+double CField::loadData(string fName, int nCut) {
 	string buf = string("");
 	string fullName = string(OUTPUT_FOLDER) + fName;
 	ifstream fInput;
@@ -219,7 +214,7 @@ double MatterState::loadData(string fName, unsigned int nCut) {
 		cout << "Error: cannot open data file!" << endl;
 		exit(1);
 	}
-	unsigned int i=0, j=0;
+	int i=0, j=0;
 	double _t=0.;
 	for(i=0; i<nSize; i++) {
 		if(i<nCut) {
@@ -293,7 +288,7 @@ double MatterState::loadData(string fName, unsigned int nCut) {
 
 
 
-void MatterState::setEdge(Node &n, double x, double dm)
+void CField::setEdge(Node &n, double x, double dm)
 {
 	n.x  = x;
 	n.v  = 0;
@@ -334,7 +329,7 @@ void MatterState::setEdge(Node &n, double x, double dm)
 }
 
 
-void MatterState::setEdgeTransparent()
+void CField::setEdgeTransparent()
 {
 	left_edge.x   = nodes[0].x - (nodes[1].x - nodes[0].x);
 /*	left_edge.ro  = 0.; 

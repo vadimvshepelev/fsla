@@ -31,8 +31,7 @@ double EOSTableFe::getei(double ro, double ti)
 	return ei;
 }
 
-double EOSTableFe::getEntropy(double ro, double ti, double te)
-{
+double EOSTableFe::getEntropy(double ro, double ti) {
 	double s  = entropy_table.interpolate(ro, ti);
 	return s;
 }
@@ -132,25 +131,18 @@ double EOSTableFe::getnuWR(double ro, double ti, double te, double b)
 	return nu;*/ return 0.0;
 }
 
-EOSTableFe::EOSTableFe(char* dirName, int EOSFlag, double _ro0)
-{
-	char buf[256];
-
+EOSTableFe::EOSTableFe(string dirName, int EOSFlag, double _ro0) {
+	char buf[256]; 
 	char filename[_MAX_PATH];
 	strcpy(filename, TABLE_FOLDER);
-	strcat(filename, dirName);
+	strcat(filename, dirName.c_str());
 	strcat(filename, "/");
 	strcat(filename, "data.man");
-
-	FILE* f=fopen(filename, "r");
-	
+	FILE* f=fopen(filename, "r");	
 	printf("Processing %s:\n", filename);
-
 	fgets(buf, sizeof(buf), f);
-	fgets(buf, sizeof(buf), f);
-	
-	if(EOSFlag == 1)
-	{
+	fgets(buf, sizeof(buf), f);	
+	if(EOSFlag == 1) {
 		fgets(buf, sizeof(buf), f);
 		fgets(buf, sizeof(buf), f);
 		fgets(buf, sizeof(buf), f);
@@ -161,68 +153,50 @@ EOSTableFe::EOSTableFe(char* dirName, int EOSFlag, double _ro0)
 		fgets(buf, sizeof(buf), f);
 		fgets(buf, sizeof(buf), f);
 	}
-
 	fgets(buf, sizeof(buf), f);
 	double tableTmin = atof(buf)*1.0e3;
-	printf("tableTmin=%7.2eK\n", tableTmin);
-	
+	printf("tableTmin=%7.2eK\n", tableTmin);	
 	fgets(buf, sizeof(buf), f);
 	double tableTmax = atof(buf)*1.0e3;
-	printf("tableTmax=%7.2fK\n", tableTmax);
-	
+	printf("tableTmax=%7.2fK\n", tableTmax);	
 	fgets(buf, sizeof(buf), f);
-	double tableVmin = atof(buf);            // 
+	double tableVmin = atof(buf);            
 	printf("tableVmin=%e\n", tableVmin);
-
 	fgets(buf, sizeof(buf), f);
 	double tableVmax = atof(buf);
-	printf("tableVmax=%e\n", tableVmax);
-	
+	printf("tableVmax=%e\n", tableVmax);	
 	fgets(buf, sizeof(buf), f);
 	int nTScale = atoi(buf);
 	printf("nTScale=%d\n", nTScale);
-
 	fgets(buf, sizeof(buf), f);
 	int nVScale = atoi(buf);
 	printf("nVScale=%d\n", nVScale);
-
 	fclose(f);
-
-	if (EOSFlag == 0)
-	{
+	if (EOSFlag == 0) {
 		v_scale.create(nVScale, tableVmin, tableVmax, 1.0e-3);
-		t_scale.create(nTScale, tableTmin, tableTmax, 1.0);
-		
+		t_scale.create(nTScale, tableTmin, tableTmax, 1.0);		
 	//	entropy_table.create("entrop.tab", dirName, 1.0, &v_scale, &t_scale, EOSFlag);				
 	}
-	else if (EOSFlag == 1)
-	{
+	else if (EOSFlag == 1)	{
 		v_scale.getFromFile("volume.in", dirName, nVScale, tableVmin, tableVmax, 1.0e-3);
 		t_scale.getFromFile("temper.in", dirName, nTScale, tableTmin, tableTmax, 1.0e3);		
-	}
-	
+	}	
 	   ei_table.create("energy.tab", dirName, 1.0e6, &v_scale, &t_scale, EOSFlag);
 	   pi_table.create("pressu.tab", dirName, 1.0e9, &v_scale, &t_scale, EOSFlag);
-
-	if(EOSFlag == 1)
-	{
+	if(EOSFlag == 1) {
 		phase_table.create("physid.tab", dirName, 1.0, &v_scale, &t_scale, EOSFlag);
 	      mix_table.create("PhsMix.tab", dirName, 1.0, &v_scale, &t_scale, EOSFlag); 
 	}		
-
-	MAX_T  = tableTmax; 
+		MAX_T  = tableTmax; 
 	MIN_T  = tableTmin;
 	MAX_RO = 1.0/tableVmin * 1.0e3;
 	MIN_RO = 1.0/tableVmax * 1.0e3;
-
 	ro0 = _ro0;
-
 	tableErrorFlag = 0;
 	tableErrorCellNum = -1;
 }
 
-double EOSTableFe::getkappa(double ro, double ti, double te)
-{
+double EOSTableFe::getkappa(double ro, double ti, double te) {
 /*	double        v2 = (2.52 + 0.405e-4*te)*1.e12; // [m2/s2]
 	
 	double nu_sol_ei = 4.9e15*pow( ((ti+520.0 )/1250.0), 1.7 );

@@ -29,7 +29,7 @@ EOSTTable::~EOSTTable()
 }
 
 
-void EOSTTable::create(char *fName, char* dirName, double scaler, EOSTScale *_v_scale, EOSTScale *_t_scale, int EOSFlag)
+void EOSTTable::create(char *fName, string dirName, double scaler, EOSTScale *_v_scale, EOSTScale *_t_scale, int EOSFlag)
 {
 	clear();
 
@@ -53,7 +53,7 @@ void EOSTTable::create(char *fName, char* dirName, double scaler, EOSTScale *_v_
 
 	char filename[_MAX_PATH];
 	strcpy(filename, TABLE_FOLDER);
-	strcat(filename, dirName);
+	strcat(filename, dirName.c_str());
 	strcat(filename, "/");
 	strcat(filename, fName);
 

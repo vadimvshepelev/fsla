@@ -289,9 +289,8 @@ double  EOSAnalytic::getnuWR(double ro, double ti, double te, double b)
 	return 0.0;
 }
 
-double EOSAnalytic::getEntropy(double ro, double ti, double te)
-{
-	return 0.0;
+double EOSAnalytic::getEntropy(double ro, double ti) {
+	return 0.;
 }
 
 double EOSAnalytic::getGamma(void) {
@@ -579,3 +578,5 @@ double EOSMieGruneisenRu::solve_te(double ro, double ti, double ee, double low_b
 
 
 double EOSMieGruneisenRu::getGamma(void) { return 0.; }
+
+double EOSMieGruneisenRu::getEntropy(double ro, double T) { return 0.; }

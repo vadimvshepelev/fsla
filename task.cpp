@@ -25,63 +25,34 @@
 #include<iostream>
 using namespace std;
 
-CTask::CTask()
-{
-	eos = 0;
-	mtd = 0;
-	bHydroStage = false;
-	bHeatStage = false;
-	bExchangeStage = false;
-
-	    zones = 0;
-	   nZones = 0;
-	totalSize = 0;
-
-	sourceFlag = SourceType::SrcNone;
-	  viscFlag = 0;
-	methodFlag = 0;
-
-	  tauPulse = 0;	
-   
-	fluence = 0.0;
-	courant = 0.0;
-	maxTime = 0.0;
-
-	type = TaskType::undef; // ѕока не навел пор€док в инфраструктуре, проставл€ю этот флаг руками в CSolver::goGlass()
-
-}
-
-//CTask::CTask(EOS *_eos, CMethod _mtd, ) 
-//{}
-
-
-
 CTask::~CTask() {
 	clear();
 }
 
 
-void CTask::load(char* fName) {
+ void CTask::load(char* fName) {
 	clear();
 	unsigned int j = 0;
 	EOSFlag = 0;
 	char task_id[_MAX_PATH];
 	strcpy(task_id, fName);
 	task_id[strlen(task_id)-4]='\0';
-	strcpy(taskName, task_id); 
+	//strcpy(taskName, task_id); 
+	taskName += task_id; 
 	buildFileNames(fName);
-	FILE* f=fopen(inputFileName, "r");
+	FILE* f=fopen(inputFileName.c_str(), "r");
 	if(!f)	{
-		printf("Can't open task file: %s\n", inputFileName);
+		printf("Can't open task file: %s\n", inputFileName.c_str());
 		exit(1);
 	}
-	printf("Processing task file: %s\n", inputFileName);
+	printf("Processing task file: %s\n", inputFileName.c_str());
 	// parse EOSType
 	const char *eos_type = readStringParam(f, "EOSType");
 	
 	if (!strcmp(eos_type, "table")) {
 		const char* tableDir  = readStringParam(f, "TableDir");
-		strcpy(EOSDirName, tableDir);
+		//strcpy(EOSDirName.c_str(), tableDir);
+		EOSDirName = string(tableDir);
 		const char* tableFlag = readStringParam(f, "TableFlag");
 		if(!strcmp(tableFlag, "normal")) EOSFlag = 0;
 		else if(!strcmp(tableFlag, "extended")) EOSFlag = 1;
@@ -89,23 +60,23 @@ void CTask::load(char* fName) {
 			printf("Unknown TableFlag parameter: %s\n", tableFlag);
 			exit(1);	
 		}	
-		if(!strcmp(EOSDirName, "ni")) {
+		if(!strcmp(EOSDirName.c_str(), "ni")) {
 			eos	= new EOSTableNi(EOSDirName, EOSFlag, 8900.);
 		} 
-		else if(!strcmp(EOSDirName, "au")) {
+		else if(!strcmp(EOSDirName.c_str(), "au")) {
 			eos	= new EOSTableAu(EOSDirName, EOSFlag, 19301.);
 		}
 /*		else if(!strcmp(EOSDir, "ta"))
 		{
 			eos	= new EOSTableTa(EOSDir, EOSFlag, 16654.);
 		}*/
-		else if(!strcmp(EOSDirName, "fe")) {
+		else if(!strcmp(EOSDirName.c_str(), "fe")) {
 			eos	= new EOSTableFe(EOSDirName, EOSFlag, 7874.);
 		}
-		else if(!strcmp(EOSDirName, "fe_comb")) {
+		else if(!strcmp(EOSDirName.c_str(), "fe_comb")) {
 			eos	= new EOSTableFe(EOSDirName, EOSFlag, 7874.);
 		}
-		else if(!strcmp(EOSDirName, "fe_alpha")) {
+		else if(!strcmp(EOSDirName.c_str(), "fe_alpha")) {
 			eos	= new EOSTableFeAlpha(EOSDirName, EOSFlag, 7874.);
 		} else {	
 			eos	= new EOSTable(EOSDirName, EOSFlag, 2700.);
@@ -133,27 +104,27 @@ void CTask::load(char* fName) {
 	// parse Method
 	const char *method = readStringParam(f, "Method");
 	if(!strcmp(method, "samarskii")) {
-		methodFlag = 0;
+		methodFlag = MethodType::samarskii;
 		printf("Method: Samarskii scheme, lagrangian variables\n");
 	} else if(!strcmp(method, "bgk"))	{
 		mtd = new CMethodEuler(eos);
-		methodFlag = 1;
+		methodFlag = MethodType::bgk;
 		printf("Method: Belotserkovskii-Gushchin-Konshin scheme, eulerian variables\n");
-	} else if(!strcmp(method, "godunov"))	{
+	} else if(!strcmp(method, "godunov1"))	{
 		mtd = new CMethodEuler(eos);
-		methodFlag = 1;
+		methodFlag = MethodType::godunov1;
 		printf("Method: Godunov 1st-order scheme, eulerian variables\n");
 	} else if(!strcmp(method, "eno3g"))	{
 		mtd = new CMethodEuler(eos);
-		methodFlag = 1;
-		printf("Method: ENO-3 reconstruciotn, Godunov 1st-order scheme Riemann solver, eulerian variables\n");
+		methodFlag = MethodType::eno3g;
+		printf("Method: ENO-3 reconstruction, Godunov 1st-order scheme Riemann solver, eulerian variables\n");
 	} else {
 		printf("Unknown Method: %s\n", method);
 		exit(1);
 	}
 
 	// parse Stages
-		if(methodFlag != 1)	{ 
+		if(methodFlag == MethodType::samarskii)	{ 
 		bHydroStage		 = readIntParam(f, "HydroStage")		? true : false;
 		bHeatStage		 = readIntParam(f, "HeatStage")		    ? true : false;
 		bExchangeStage	 = readIntParam(f, "ExchangeStage")	    ? true : false;
@@ -163,8 +134,8 @@ void CTask::load(char* fName) {
 		bExchangeStage   = false;
 	}
 
-	// parse Source and Viscosity
-	if (methodFlag != 1) {
+	// parse Source 
+	if (methodFlag == MethodType::samarskii) {
 		const char *sourceParam = readStringParam(f, "source");
 		if(!strcmp(sourceParam, "no")) 	{	
 			sourceFlag = SrcNone;
@@ -191,7 +162,7 @@ void CTask::load(char* fName) {
 		sourceFlag = SourceType::SrcNone;
 	}
 
-	if(methodFlag != 1)	{
+	if(methodFlag == MethodType::samarskii)	{
 		tauPulse = readFloatParam(f, "tauPulse");
 		if (tauPulse>0)
 			printf("Laser pulse duration: %e seconds\n", tauPulse);
@@ -216,14 +187,14 @@ void CTask::load(char* fName) {
 	} else {
 		tauPulse = 0.; fluence = 0.; deltaSkin = 0.;
 	}
-	courant = readFloatParam(f, "courant");
-	if (courant>0)
-		printf("Courant number: %e\n", courant);
+	CFL = readFloatParam(f, "CFL");
+	if (CFL > 0)
+		printf("Courant number: %e\n", CFL);
 	else {
-		printf("Incorrect courant parameter (must be positive): %e\n", courant);
+		printf("Incorrect courant parameter (must be positive): %e\n", CFL);
 		exit(1);
 	}
-	if(methodFlag != 1)	{
+	if(methodFlag == MethodType::samarskii)	{
 		viscFlag = readIntParam(f, "viscosity");
 		if (viscFlag==0)
 			printf("Artifficial viscosity: off\n");
@@ -260,7 +231,7 @@ void CTask::load(char* fName) {
 		zones[j].l  = readFloatParam(f,	"l");
 		zones[j].n  = readIntParam  (f,	"nSize");
 		zones[j].ro = readFloatParam(f, "ro");
-		if(methodFlag==1) {
+		if(methodFlag!=MethodType::samarskii) {
 			zones[j].v  = readFloatParam(f,	"v");
 			double _p = readFloatParam(f, "p");
 			if(eos) {   
@@ -278,7 +249,6 @@ void CTask::load(char* fName) {
 			zones[j].ti = readFloatParam(f, "ti");
 			zones[j].te = readFloatParam(f, "te");
 			zones[j].v  = readFloatParam(f,	"v");
-			//zones[j].expProperty = readFloatParam(f, "exp");
 		}		
 		printf("Zone %d loaded!\n", j);
 		totalSize += zones[j].n;
@@ -351,15 +321,15 @@ int CTask::readIntParam(FILE *f, const char *name)
 }
 
 
-void CTask::buildFileNames(const char *inputName) {
-	strcpy(inputFileName, INPUT_FOLDER);
-	strcat(inputFileName, inputName);
-
-	strcpy(outputFileName, OUTPUT_FOLDER);
-	strcat(outputFileName, TIME_SUFFIX);
-	strcat(outputFileName, inputName);
-	strcpy(outputFileName + strlen(outputFileName)-3, "dat");
-
+void CTask::buildFileNames(string inputName) {
+	// strcpy(inputFileName.c_str(), INPUT_FOLDER);
+	inputName = string (INPUT_FOLDER) + inputName;
+	// strcat(inputFileName.c_str(), inputName);
+	inputFileName += inputName;
+	outputFileName = string(OUTPUT_FOLDER);
+	outputFileName += string(TIME_SUFFIX);
+	outputFileName += inputName;
+	outputFileName += string(".dat");
 	// —ледующие две строки порт€т значение переменной task.taskName, удал€ю их
 //	strcpy(outputFileName, OUTPUT_FOLDER);
 //	strcat(flowFileName, "flow.dat");

@@ -18,15 +18,15 @@ class CMethod
 public:
 
 	CMethod(EOS *_eos);
-	virtual void	matter2Flow(MatterState &ms) = 0;
-	virtual void	advanceFlow(MatterState &ms, double tau) = 0;
-	virtual void	advanceFlowVacuum(MatterState &ms, double tau) = 0;
-	virtual void	flow2Matter(MatterState &ms, double tau) = 0;
-	virtual void	flow2MatterVacuum(MatterState &ms, MatterState &ms_temp, double t, double tau) = 0;
+	virtual void	matter2Flow(CField &ms) = 0;
+	virtual void	advanceFlow(CField &ms, double tau) = 0;
+	virtual void	advanceFlowVacuum(CField &ms, double tau) = 0;
+	virtual void	flow2Matter(CField &ms, double tau) = 0;
+	virtual void	flow2MatterVacuum(CField &ms, CField &ms_temp, double t, double tau) = 0;
 	virtual	Matrix4 getOmega(Node &n) = 0;
 	virtual Matrix4 getOmegaInv(Node &n) = 0;
 	virtual Vector4 getLambda(Node &n) = 0;
-	virtual void	createGrid(MatterState &ms) = 0;
+	virtual void	createGrid(CField &ms) = 0;
 	virtual void	deleteGrid() = 0;
 	virtual void	averageNode(Node &n1, Node &n2, Node &nav) = 0;
 	virtual void	updateNode(Node &n) = 0;

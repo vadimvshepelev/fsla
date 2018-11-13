@@ -31,8 +31,7 @@ double EOSTableFeAlpha::getei(double ro, double ti)
 	return ei;
 }
 
-double EOSTableFeAlpha::getEntropy(double ro, double ti, double te)
-{
+double EOSTableFeAlpha::getEntropy(double ro, double ti) {
 	double s  = entropy_table.interpolate(ro, ti);
 	return s;
 }
@@ -133,25 +132,18 @@ double EOSTableFeAlpha::getnuWR(double ro, double ti, double te, double b, doubl
 	return nu;*/ return 0.0;
 }
 
-EOSTableFeAlpha::EOSTableFeAlpha(char* dirName, int EOSFlag, double _ro0)
-{
+EOSTableFeAlpha::EOSTableFeAlpha(string dirName, int EOSFlag, double _ro0) {
 	char buf[256];
-
 	char filename[_MAX_PATH];
 	strcpy(filename, TABLE_FOLDER);
-	strcat(filename, dirName);
+	strcat(filename, dirName.c_str());
 	strcat(filename, "/");
 	strcat(filename, "data.man");
-
-	FILE* f=fopen(filename, "r");
-	
+	FILE* f=fopen(filename, "r");	
 	printf("Processing %s:\n", filename);
-
 	fgets(buf, sizeof(buf), f);
-	fgets(buf, sizeof(buf), f);
-	
-	if(EOSFlag == 1)
-	{
+	fgets(buf, sizeof(buf), f);	
+	if(EOSFlag == 1) {
 		fgets(buf, sizeof(buf), f);
 		fgets(buf, sizeof(buf), f);
 		fgets(buf, sizeof(buf), f);
@@ -161,39 +153,29 @@ EOSTableFeAlpha::EOSTableFeAlpha(char* dirName, int EOSFlag, double _ro0)
 		fgets(buf, sizeof(buf), f);
 		fgets(buf, sizeof(buf), f);
 		fgets(buf, sizeof(buf), f);
-	}
-
+	} 
 	fgets(buf, sizeof(buf), f);
 	double tableTmin = atof(buf)*1.0e3;
-	printf("tableTmin=%7.2eK\n", tableTmin);
-	
+	printf("tableTmin=%7.2eK\n", tableTmin);	
 	fgets(buf, sizeof(buf), f);
 	double tableTmax = atof(buf)*1.0e3;
-	printf("tableTmax=%7.2fK\n", tableTmax);
-	
+	printf("tableTmax=%7.2fK\n", tableTmax); 	
 	fgets(buf, sizeof(buf), f);
-	double tableVmin = atof(buf);            // 
+	double tableVmin = atof(buf);            
 	printf("tableVmin=%e\n", tableVmin);
-
 	fgets(buf, sizeof(buf), f);
 	double tableVmax = atof(buf);
-	printf("tableVmax=%e\n", tableVmax);
-	
+	printf("tableVmax=%e\n", tableVmax);	
 	fgets(buf, sizeof(buf), f);
 	int nTScale = atoi(buf);
-	printf("nTScale=%d\n", nTScale);
-
+	printf("nTScale=%d\n", nTScale); 
 	fgets(buf, sizeof(buf), f);
 	int nVScale = atoi(buf);
-	printf("nVScale=%d\n", nVScale);
-
+	printf("nVScale=%d\n", nVScale); 
 	fclose(f);
-
-	if (EOSFlag == 0)
-	{
+	if (EOSFlag == 0) {
 		v_scale.create(nVScale, tableVmin, tableVmax, 1.0e-3);
-		t_scale.create(nTScale, tableTmin, tableTmax, 1.0);
-		
+		t_scale.create(nTScale, tableTmin, tableTmax, 1.0); 		
 		entropy_table.create("entrop.tab", dirName, 1.0, &v_scale, &t_scale, EOSFlag);				
 	}
 	else if (EOSFlag == 1)

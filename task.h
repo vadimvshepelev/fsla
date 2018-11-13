@@ -9,6 +9,8 @@
 #include "eos.h"
 #include "CTestToro.h"
 #include "eos\\EOSBin.h"
+#include "matterState.h"
+
 //#include "eosTableFeAlpha.h"
 
 /* Структура, обозначающая зону. Вычислительная область -- набор зон. */
@@ -70,16 +72,21 @@ struct Zone
       EOSType = ideal не имеют смысла.
 */
 
-enum TaskType { undef, RuGlass, LH1D };
+enum TaskType {undef, RuGlass, LH1D};
 
-enum SourceType { SrcNone, SrcGlass, SrcMetal, SrcSq, Src5Layers };
+enum SourceType {SrcUndef, SrcNone, SrcGlass, SrcMetal, SrcSq, Src5Layers};
+
+enum MethodType {nomtd, samarskii, godunov1, eno2g, muscl, bgk, eno3g};
 
 class CTask {
 public:
-	CTask();
+	CTask() : type(TaskType::undef), bHydroStage(false), bHeatStage(false), bExchangeStage(false), 
+		      eos(0), eosGlass(0), sourceFlag(SourceType::SrcUndef), tauPulse(0.), fluence(0.), deltaSkin(0.), 
+			  zones(0), nZones(0), maxTime(0.), mtd(0), viscFlag(0), CFL(0.), totalSize(0), 
+			  EOSFlag(0), methodFlag(MethodType::nomtd) {}
 	CTask(TaskType _type, bool _bHydroStage, bool _bHeatStage, bool _bExchangeStage, EOS* _eos, EOS* _eosGlass, SourceType _sourceFlag,
-		  double _tauPulse, double _fluence, double _deltaSkin, Zone* _zones, unsigned int _nZones, double _maxTime, CMethod* _mtd,
-		  int _viscFlag, double _courant, unsigned int _totalSize, int _EOSFlag, int _methodFlag) :
+		  double _tauPulse, double _fluence, double _deltaSkin, Zone* _zones, int _nZones, double _maxTime, CMethod* _mtd,
+		  int _viscFlag, double _CFL, int _totalSize, int _EOSFlag, MethodType _methodFlag) :
 		  type(_type), 
 		  bHydroStage(_bHydroStage), bHeatStage(_bHeatStage), bExchangeStage(_bExchangeStage), 
 		  eos(_eos), eosGlass(_eosGlass),
@@ -87,7 +94,7 @@ public:
 		  tauPulse(_tauPulse), fluence(_fluence), deltaSkin(_deltaSkin), 
 		  zones(_zones), nZones(_nZones), 
 		  maxTime(_maxTime),
-		  mtd(_mtd), viscFlag(_viscFlag), courant(_courant), totalSize(_totalSize), 
+		  mtd(_mtd), viscFlag(_viscFlag), CFL(_CFL), totalSize(_totalSize), 
 		  EOSFlag(_EOSFlag), methodFlag(_methodFlag) {}
 	~CTask();					
 	void		load(char *fName);		// Считать условие задачи из файла
@@ -103,23 +110,22 @@ public:
 	bool		getHydroStage() { return bHydroStage; }
 	bool		getHeatStage() { return bHeatStage; }
 	bool		getExchangeStage() { return bExchangeStage; }
-	char	   *getOutputFilename() { return outputFileName; }
-	char	   *getInputFilename() { return inputFileName; }
-	const char *getFlowFilename() { return flowFileName; }
-	char	   *getTaskName() { return taskName; }	
+	string getOutputFilename() { return outputFileName; }
+	string getInputFilename() { return inputFileName; }
+	string getFlowFilename() { return flowFileName; }
+	string getTaskName() { return taskName; }	
 	SourceType	getSourceFlag() { return sourceFlag; }
 	int			getViscFlag() { return viscFlag; }	
 	int			getMethodFlag() { return methodFlag; }	
 	double		getTauPulse() { return tauPulse;}
 	double		getFluence() { return fluence; }
 	double		getDeltaSkin() { return deltaSkin; }
-	double		getCourant() { return courant; }
+	double		getCFL() { return CFL; }
 	double		getMaxTime() { return maxTime; }
 	TaskType type;
-
 	EOSBin  *eosBin;			// Указатель на двучленное УРС, если понадобится
 private:
-	void		buildFileNames(const char *inputName);
+	void		buildFileNames(string inputName);
 	const char *readStringParam(FILE *f, const char *name);
 	double		readFloatParam(FILE *f, const char *name);
 	int			readIntParam(FILE *f, const char *name);
@@ -137,23 +143,11 @@ private:
 	double  maxTime;			// Время, до которого ведется расчет
 	CMethod	*mtd;				// Метод расчета - Эйлер/Лагранж
 	int		viscFlag;			// Искусственная вязкость ( 0 - не использовать, 1 - использовать).
-	double  courant;			// Число Куранта (начальное)
-
+	double  CFL;			// Число Куранта (начальное)
 	int		totalSize;			// Суммарное количество точек во всех зонах
 	int		EOSFlag;			// Для табличного УРС -- тип таблиц (0 - нормальные, 1 - расширенные)
-	int		methodFlag;			// Флаг, обозначающий выбранный метод. 0 - Лагранж, консервативная схема Самарского,
-								// 1 - Эйлер, схема Белоцерковского-Гущина-Коньшина, 2 - Двумерный Эйлер (в разработке).
-
-	char inputFileName[_MAX_PATH];
-	char outputFileName[_MAX_PATH];
-	char flowFileName[_MAX_PATH];
-	char EOSDirName[_MAX_PATH];  // Для табличного УРС -- каталог в table_data, в котором лежат таблицы
-	char taskName[_MAX_PATH];
+	MethodType methodFlag;
+	string taskName, inputFileName, outputFileName, flowFileName, EOSDirName; // EOSDirName для табличного УРС -- каталог в table_data, в котором лежат таблицы
 };
-
-
-
-
-
 
 #endif

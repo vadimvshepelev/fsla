@@ -10,7 +10,7 @@ class EOSTableNi : public EOSAnalyticNi
 {
 public:
 	EOSTableNi();
-	EOSTableNi(char *dirName, int EOSFlag, double _ro0);
+	EOSTableNi(string dirName, int EOSFlag, double _ro0);
 	EOSType getType() { return tableNi; }
 	double    getpi(double ro, double ti);
 	double    getei(double ro, double ti);
@@ -20,7 +20,7 @@ public:
 	double        getC(double ro, double ti, double te);
 	double	  getphase(double ro, double ti);
 	double	    getmix(double ro, double ti);	
-	double getEntropy(double ro, double ti, double te);
+	double getEntropy(double ro, double ti);
 
 	////DEBUG//////////////
 	

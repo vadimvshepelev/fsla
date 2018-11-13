@@ -1,18 +1,13 @@
-
 #include "eosIdeal.h"
-
 #include <math.h>
-
+#include <iostream>
 
 double EOSIdeal::gette(double ro, double ti, double ee) { return 0.0; }
 double EOSIdeal::getti(double ro, double e)				{ return (gamma-1.0)*e*M/R; }
-
 double EOSIdeal::getpe(double ro, double ti, double te) { return 0.0; }
 double EOSIdeal::getpi(double ro, double ti)			{ return ro*R*ti/M; }
-
 double EOSIdeal::getee(double ro, double ti, double te) { return 0.0; }
 double EOSIdeal::getei(double ro, double ti)			{ return R*ti/M/(gamma-1.0); }
-
 double EOSIdeal::getce(double ro, double te)			{ return 0.0; }
 double EOSIdeal::getci(double ro, double ti)			{ return R/M/(gamma-1.); } // [J/kg/K]
 
@@ -26,11 +21,23 @@ double EOSIdeal::getC(double ro, double ti, double te)
 
 double EOSIdeal::getAlpha(double ro, double ti, double te)	   { return 0.0; }
 double EOSIdeal::getkappa(double ro, double ti, double te) { return 0.0; } 
-
 double EOSIdeal::getphase(double ro, double ti) { return 5.0; }
 double EOSIdeal::getmix(double ro, double ti) { return 1.0; }
-
 double EOSIdeal::getGamma(void) {return gamma;}
+
+double EOSIdeal::getEntropy(double ro, double T) {
+	double ci = getci(ro, T);
+	double  p = getp(ro, T, T);
+	if(p<0) {
+		cerr << "Error: CSolver::getEntropy(): negative pressure!" << endl;
+		exit(1);
+	}
+	double ro_gamma = pow(ro, gamma);
+	if(ro!=0.)
+		return ci*log(p/ro_gamma);
+	else 
+		return 0.;
+}
 
 //double EOSIdeal::getnuWR(double ro, double ti, double te, double b, double Z) {return 0.0; }
 

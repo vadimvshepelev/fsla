@@ -271,16 +271,7 @@ void CSolver::calcHydroStageENO2G(double t, double tau) {
 		if( fabs(diffMinus[1])<=fabs(diffPlus[1]) ) stencil1 = i-1; else stencil1 = i;
 		if( fabs(diffMinus[2])<=fabs(diffPlus[2]) ) stencil2 = i-1; else stencil2 = i;
 		// Calculate ENO-2 approximations themselves
-
-
-		if(i==33) {
-
-			double qq = 0.;
-
-		}
-
-
-	   if (stencil0 == i-1) {
+	    if (stencil0 == i-1) {
 			Up[i][0] = rm1r[0]*U[i-1][0] + rm1r[1]*U[i][0] + rm1r[2]*U[i+1][0];
 			Um[i][0] = rm1l[0]*U[i-1][0] + rm1l[1]*U[i][0] + rm1l[2]*U[i+1][0];
 		} else if (stencil0 == i) {
@@ -301,7 +292,6 @@ void CSolver::calcHydroStageENO2G(double t, double tau) {
 			Up[i][2] = r0r[0]*U[i-1][2] + r0r[1]*U[i][2] + r0r[2]*U[i+1][2];
 			Um[i][2] = r0l[0]*U[i-1][2] + r0l[1]*U[i][2] + r0l[2]*U[i+1][2];
 		}		
-	
 		 //Minmod slope limiter
 /*		Up[i] = U[i]+0.5*calcMinmodSlopeModified(U[i]-U[i-1], U[i+1]-U[i]);
 		Um[i] = U[i]-0.5*calcMinmodSlopeModified(U[i]-U[i-1], U[i+1]-U[i]);*/		

@@ -297,94 +297,61 @@ void CSolver::calcHeatStage5LayersSi(double t, double tau) {
 
 
 int CSolver::calcHeatStageGlass(double t, double tau) {
-	int i=0;
-	int itNum = 0;
+	int i=0, itNum = 0;
 	const double eps = 0.01;
-	double kappa_plus=0., kappa_minus=0.;
-	double ro_plus=0., ro_minus=0.;
+	// Для поглощения
+	const int N = task.getZone(0).n;
+	const double L = task.getZone(0).l;	
+	double kappa_plus=0., kappa_minus=0., ro_plus=0., ro_minus=0.;
+	double dx = L/N, _x = 0., src = 0.0, expX=0.0, expT=0.0;
 	int size = ms.getSize();
 	EOS &eos = task.getEOS();
 	EOS &eosGlass = task.getEOSGlass();
 	int nBound = task.getZone(0).n;
 	CField ms_temp, ms_temp_temp;
 	ms_temp.initData(&task);
-	ms_temp_temp.initData(&task);
-	// Для поглощения
-	const int N = task.getZone(0).n;
-	const double L = task.getZone(0).l;
-	double dx = L/N;
-	double _x = 0.;
+	ms_temp_temp.initData(&task);	
 	for(i=0; i<size; i++) {
-		     ms_temp[i].te = ms[i].te;
-		ms_temp_temp[i].te = ms[i].te;
+		ms_temp[i].te = ms[i].te; ms_temp_temp[i].te = ms[i].te;
 	}
 	// Столбцы коэффициентов системы. Система имеет вид:
 	// A...-C...+B...=-F
-
-	double* A  = new double[size];
-	double* B  = new double[size];
-	double* C  = new double[size];
-	double* F  = new double[size];
-
-	double *alpha = new double[size];
-	double *beta  = new double[size];
-
-	//cout << "Heat:";
-	for(;;)
-	{
+	double* A  = new double[size]; double* B  = new double[size]; double* C  = new double[size]; double* F  = new double[size];
+	double *alpha = new double[size]; double *beta  = new double[size];
+	for(;;) {
 		// Присваиваем значения коэффициентам 
 		// (решается уравнение теплопроводности с помощью неявной схемы)
-
-		for(i=0; i<size; i++)
-		{
-			if(i==0)
-			{
-				kappa_minus = ms[i].kappa;
-				   ro_minus = ms[i].ro;
-			}
-			else
-			{				
-				kappa_minus = (ms[i].kappa + ms[i-1].kappa) / 2.0;
-				   ro_minus = (ms[i].ro    + ms[i-1].ro   ) / 2.0;
-			}
-			
-			if(i==size-1)
-			{
-
-				kappa_plus  = ms[i].kappa;
-				   ro_plus  = ms[i].ro;
-			}
-			else
-			{
-				kappa_plus  = (ms[i].kappa + ms[i+1].kappa) / 2.0;
-				   ro_plus  = (ms[i].ro    + ms[i+1].ro   ) / 2.0;
+		for(i=0; i<size; i++) {
+			if(i==0) {
+				kappa_minus = ms[i].kappa; ro_minus = ms[i].ro;
+			} else {				
+				kappa_minus = (ms[i].kappa + ms[i-1].kappa) / 2.0; ro_minus = (ms[i].ro    + ms[i-1].ro   ) / 2.0;
+			}			
+			if(i==size-1) {
+				kappa_plus  = ms[i].kappa; ro_plus  = ms[i].ro;
+			} else {
+				kappa_plus  = (ms[i].kappa + ms[i+1].kappa) / 2.0; ro_plus  = (ms[i].ro    + ms[i+1].ro   ) / 2.0;
 			}
 			A[i] = tau * kappa_minus / (ms[i].dm*ms[i].dm) * ms[i].ro * ro_minus;
 			B[i] = tau * kappa_plus  / (ms[i].dm*ms[i].dm) * ms[i].ro * ro_plus;
 			C[i] = ms[i].ce + A[i] + B[i];
-			double src = 0.0;
-			double expX=0.0, expT=0.0;
-
-			if(task.getSourceFlag() == 1) 	{
-				//expX = exp(-(ms[i].x)/deltaSkin);
+			if(task.getSourceFlag() == SourceType::SrcMetal) {				
+				// expX = exp(-(ms[i].x)/deltaSkin);
 				// Здесь для рентгеновского лазера не слишком точный учет поглощения -- на самом деле, нужно брать начальную координату
 				// x с номером i. Также хочу сразу внести уточнение в интеграл -- брать не левую границу примоугольника, а среднее
 				// арифметическое между двумя
-
-				if(i >= N) 
+				if(i >= N) { 
 					expX = 0.; 
-				else {
+				} else {
 					_x = (0.5 + i)*dx;
 					expX = exp(-(_x/deltaSkin));
 				}					
 				expT = exp(-(t)*(t)/tauPulse/tauPulse);
-			}
-			else if ((task.getSourceFlag() == 2) && (i>=i_pulse_min)) // '>' или '>=' ??? -- скорее всего, '>=', проверить
-			{
+			} else if ((task.getSourceFlag() == SourceType::SrcGlass) && (i>=i_pulse_min)) { // Проверить! Поглощается в последней ячейке стекла или нет? 
 				expX = exp(-(ms[i].x - ms[i_pulse_min].x)/deltaSkin);
 				expT = exp(-(t)*(t)/tauPulse/tauPulse);
 			}
-			else if ((task.getSourceFlag() == 3) && (i>=i_pulse_min))
+			else if ((task.getSourceFlag() == SourceType::SrcUndef) && (i>=i_pulse_min))
 			{
 				expX = exp(-(ms[i].x - ms[i_pulse_min].x)/deltaSkin)*sqrt(3.14159);
 				if( (t>=0.0) && (t<tauPulse) )

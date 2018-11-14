@@ -1522,33 +1522,22 @@ int CSolver::calcHydroStage(double t, double tau) {
 
 
 int CSolver::calcHydroStageGlass(double t, double tau) {	
-	unsigned int i=0, counter=0;
-	unsigned int itNumFull=0, itNumIon=0;
-	double e_prev=0.0, ei_prev=0.0;
-	double Q=0, dv=0;
-	double p_next_plus  = 0.0,
-		   p_next_minus = 0.0,	
-		   p_plus       = 0.0,
-		   p_minus      = 0.0;
-	CField ms_temp;
-	CField ms_prev;
+	int i=0, counter=0, itNumFull=0, itNumIon=0;
+	double h = ms[0].dm, e_prev=0., ei_prev=0., Q=0, dv=0;
+	double p_next_plus  = 0., p_next_minus = 0., p_plus = 0., p_minus = 0.;
+	CField ms_temp, ms_prev;
     ms_temp.initData(&task);
 	ms_prev.initData(&task);
 	EOS &eos = task.getEOS();
 	EOS &eosGlass = task.getEOSGlass();
-	int flag = task.getSourceFlag();
-	unsigned int nSize = ms.getSize();
-	unsigned int nBound = task.getZone(0).n;
-	double h = ms[0].dm;
-	unsigned int itCounter = 0;
+	SourceType flag = task.getSourceFlag();
+	int nSize = ms.getSize(), nBound = task.getZone(0).n, itCounter = 0;
 	double *g = new double[nSize];
-	for(i=0; i<nSize; i++) 	{
-		g[i]=0.0;
-	}
+	for(i=0; i<nSize; i++) g[i]=0.;
 	if(task.getViscFlag()) {
 		for(i=1; i<nSize-1; i++) {
 			double dv = ms[i+1].v - ms[i].v;
-			 Q =8000.0*ms[i].ro*dv*dv; // Al
+			Q = 8000.*ms[i].ro*dv*dv; // Al
 			if (dv < 0) {
 				g[i] += Q;
 			}
@@ -1568,18 +1557,8 @@ int CSolver::calcHydroStageGlass(double t, double tau) {
 	i=nSize;
 	ms_temp[i].x  = ms[i].x;
 	ms_temp[i].v  = ms[i].v;
-	//cout << "Hydro:";
 	do {
 		itCounter++;	
-	/*	
-		if(t > 8.595000e-013) {
-			// ѕрикольное преобразование числа в строку
-			std::ostringstream oss;
-			oss << itCounter;
-			string _fName = string("error-te-") + oss.str() + ".dat"; 
-			saveSolution((_fName.c_str()), t);
-		}
-	*/				
 		if(itCounter > 30)	{
 			cout << endl << 
 				 "CalcHydroStageGlass() error: no convergence in 30 iterations" << endl;
@@ -1630,7 +1609,7 @@ int CSolver::calcHydroStageGlass(double t, double tau) {
 			ms_temp[i].e  = ms_temp[i].ei + ms_temp[i].ee;		
 		}
 		for(i=0; i<nSize; i++)	{	
-			if(flag == 2) {
+			if(flag == SourceType::SrcGlass) {
 				if(i >= nBound) 
 				    ms_temp[i].ti = eos.getti(ms_temp[i].ro, ms_temp[i].ei);
 				else
@@ -1656,7 +1635,7 @@ int CSolver::calcHydroStageGlass(double t, double tau) {
 				cin.get();
 				exit(1);
 			}
-			if(flag == 2) {
+			if(flag == SourceType::SrcGlass) {
 				if(i >= nBound) 
 					ms_temp[i].te = eos.gette(ms_temp[i].ro, ms_temp[i].ti, ms_temp[i].ee);			
 				else
@@ -1682,7 +1661,7 @@ int CSolver::calcHydroStageGlass(double t, double tau) {
 			}
 		}
 		for(i=0; i<nSize; i++) 	{			
-			if(flag == 2) {
+			if(flag == SourceType::SrcGlass) {
 				if(i >= nBound) {
 					ms_temp[i].pi = eos.getpi(ms_temp[i].ro, ms_temp[i].ti);
 					ms_temp[i].pe = eos.getpe(ms_temp[i].ro, ms_temp[i].ti, ms_temp[i].te);
@@ -1699,8 +1678,7 @@ int CSolver::calcHydroStageGlass(double t, double tau) {
 			}
 			ms_temp[i].p  = ms_temp[i].pi + ms_temp[i].pe;
 		}		
-	} 	
-	while (compTi(ms_temp, ms_prev) > 0.01);
+	} while (compTi(ms_temp, ms_prev) > 0.01);
 	//cout << itCounter << "it ";
 	for(i=0; i<nSize; i++) {
 		 ms[i].x = ms_temp[i].x;
@@ -1714,7 +1692,7 @@ int CSolver::calcHydroStageGlass(double t, double tau) {
 		ms[i].pe = ms_temp[i].pe;
 		ms[i].te = ms_temp[i].te;
 		ms[i].ti = ms_temp[i].ti;
-		if(flag == 2) {
+		if(flag == SourceType::SrcGlass) {
 				if(i >= nBound) {
 					ms[i].C     = eos.getC(ms[i].ro, ms[i].ti, ms[i].te);
 					ms[i].Alphaei	    = eos.getAlpha(ms[i].ro, ms[i].ti, ms[i].te);

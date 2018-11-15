@@ -1,95 +1,63 @@
-
-#include "solver.h"
-
 #include <iostream>
-
+#include "solver.h"
 using namespace std;
 
-
 // Третий вычислительный этап: электронно-ионный обмен
-
-int CSolver::calcExchangeStage(double tau)
-{
+int CSolver::calcExchangeStage(double tau) {
 	int i=0, itNum = 0, iMin=0;
-	double eps = 0.01;
-	
+	double eps = .01;	
 	EOS &eos = task.getEOS();
 	CField ms_temp, ms_temp_temp;
 	ms_temp.initData(&task);
 	ms_temp_temp.initData(&task);
-
-	for(i=0; i<ms.getSize(); i++)
-	{
+	for(i=0; i<ms.getSize(); i++) {
 		ms_temp[i].te = ms[i].te;
 		ms_temp[i].ti = ms[i].ti;
 		ms_temp[i].Z  = ms[i].Z;
 	}
-
-	for(;;)
-	{
-		for(i=iMin; i<ms.getSize(); i++)
-		{
+	for(;;) {
+		for(i=iMin; i<ms.getSize(); i++) {
 			Node &n = ms[i];
-
 			ms_temp_temp[i].te=ms_temp[i].te;
-			ms_temp_temp[i].ti=ms_temp[i].ti;
-	
+			ms_temp_temp[i].ti=ms_temp[i].ti;	
 			ms_temp[i].ti = (tau * n.Alphaei*n.te + (tau * n.Alphaei/n.ce - 1.0)*n.ci*n.ti) / 
 				            (tau * n.Alphaei*(1.0 + n.ci/n.ce) - n.ci);
-
 			ms_temp[i].te = n.te + n.ci/n.ce*n.ti - n.ci/n.ce * ms_temp[i].ti;
-
 			/*
 			te_temp[i] =te[i] + ci[i]/ce[i]*ti[i] - ci[i]/ce[i] *
 					 (tau*Alphaei[i]*te[i] + (tau*Alphaei[i]/ce[i] - 1.0)*ci[i]*ti[i]) /
 					 (tau*Alphaei[i]*(1.0 + ci[i]/ce[i]) - ci[i]);
 	        */
-
 			n.ce = eos.getce(n.ro, ms_temp[i].te);
 			n.ci = eos.getci(n.ro, ms_temp[i].ti);
 			n.Alphaei  = eos.getAlpha(n.ro, ms_temp[i].ti, ms_temp[i].te);
 		}
-
-		if(compTe(ms_temp, ms_temp_temp)<eps && 
-		   compTi(ms_temp, ms_temp_temp)<eps) break;
-		
+		if(compTe(ms_temp, ms_temp_temp)<eps && compTi(ms_temp, ms_temp_temp)<eps) break;		
 		itNum++;
-
-		if(itNum >= maxIt)
-		{
+		if(itNum > maxIt) {
 			printf("Divergence=%f, iteration number=%d\n", compTe(), itNum);
 			printf("Error. Too many iterations for convergence.\n")	;
 			cin.get();
 			exit(1);
 		}
 	}
-
-	cout << "calcExchangeStage() complete: " << itNum+1 <<
-		    " iterations of Ti, Te" << endl;
-	
-	for(i=0; i<ms.getSize(); i++)
-	{
+	//cout << "calcExchangeStage() complete: " << itNum+1 << " iterations of Ti, Te" << endl;	
+	for(i=0; i<ms.getSize(); i++) {
 		Node &n = ms[i];
-
 		n.te = ms_temp[i].te;
 		n.ti = ms_temp[i].ti;
-
 		n.pe = eos.getpe(n.ro, n.ti, n.te);
 		n.pi = eos.getpi(n.ro, n.ti);
 		n.p  = n.pe + n.pi;
-
 		n.ee = eos.getee(n.ro, n.ti, n.te);
 		n.ei = eos.getei(n.ro, n.ti);
-		n.e  = n.ee + n.ei;
-
+		n.e  = n.ee + n.ei; 
 		n.ci    = eos.getci(n.ro, n.ti);
-		n.C     = eos.getC(n.ro, n.ti, n.te);
-				
+		n.C     = eos.getC(n.ro, n.ti, n.te);				
 		n.ce    = eos.getce(n.ro, n.te);
-		n.kappa = eos.getkappa(n.ro, n.ti, n.te);
-		
+		n.kappa = eos.getkappa(n.ro, n.ti, n.te);		
 	}
-	return itNum;
+	return itNum+1;
 }
 
 int CSolver::calcExchangeStageGlass(double tau) {

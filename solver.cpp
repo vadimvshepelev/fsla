@@ -1190,39 +1190,28 @@ void CSolver::initVars(void) {
 	tauPulse  = task.getTauPulse();
 	fluence   = task.getFluence();
 	deltaSkin = task.getDeltaSkin(); 
-	if((task.getSourceFlag()==0)||(task.getSourceFlag()==1)) {
+	if(task.getSourceFlag()==SourceType::SrcUndef) {
 		x_pulse_min = 0.;
 		i_pulse_min = 0; 
-		tInit = 0.;
-	}
-	if(task.getSourceFlag()==1) {
-		x_pulse_min = 0.;
-		i_pulse_min = 0;
-		tInit = -5.0*tauPulse;
-	} 	
-	if(task.getSourceFlag() == 2) {
+		//tInit = 0.;
+	}	 	
+	if(task.getSourceFlag() == SourceType::SrcGlass) {
 		x_pulse_min = task.getZone(0).l;
 		i_pulse_min = task.getZone(0).n - 1;
-		tInit = -5.0*tauPulse;
+		//tInit = -5.0*tauPulse;
 	}	
-	if(task.getSourceFlag() == 3) {
-		x_pulse_min = task.getZone(0).l;
-		i_pulse_min = task.getZone(0).n - 1; 
-		tInit = 0.0;
+	if(task.getSourceFlag() == SourceType::SrcMetal) {
+		x_pulse_min = 0.; // task.getZone(0).l;
+		i_pulse_min = 0; //task.getZone(0).n - 1; 
+		//tInit = 0.0;
 	}
 }
 
 int CSolver::calcHydroStage(double t, double tau) {	
-	int i=0, counter=0;
-	int itNumFull=0, itNumIon=0;
-	double e_prev=0.0, ei_prev=0.0;
-	double Q=0, dv=0;
-	double p_next_plus  = 0.0,
-		   p_next_minus = 0.0,	
-		   p_plus       = 0.0,
-		   p_minus      = 0.0;
-	CField ms_temp;
-	CField ms_prev;
+	int i=0, counter=0, itNumFull=0, itNumIon=0;
+	double e_prev=0., ei_prev=0., Q=0., dv=0.,
+		   p_next_plus = 0., p_next_minus = 0., p_plus = 0., p_minus = 0.;
+	CField ms_temp, ms_prev;
     ms_temp.initData(&task);
 	ms_prev.initData(&task);
 	EOS &eos = task.getEOS();
@@ -1230,10 +1219,7 @@ int CSolver::calcHydroStage(double t, double tau) {
 	double h = ms[0].dm;
 	int itCounter = 0;
 	double *g = new double[nSize];
-	for(i=0; i<nSize; i++)
-	{
-		g[i]=0.0;
-	}
+	for(i=0; i<nSize; i++) g[i]=0.;
 	if(task.getViscFlag()) {
 		for(int i=1; i<nSize-1; i++) {
 			double dv = ms[i+1].v - ms[i].v;
@@ -1260,29 +1246,6 @@ int CSolver::calcHydroStage(double t, double tau) {
 	i=nSize;
 	ms_temp[i].x  = ms[i].x;
 	ms_temp[i].v  = ms[i].v;
-
-
-	///////////////////////
-		i = nSize-1;
-			{
-				double qq = 30.;
-				double x1 = ms[i].ro,
-					   x2 = ms_temp[i].ro,
-					   x3 = (ms_temp[i+1].v + ms[i+1].v - ms_temp[i].v-ms[i].v),
-					   x5 = ms_temp[501].v,
-					   x6 = ms[501].v,
-					   x7 = ms_temp[500].v,
-					   x8 = ms[500].v,
-					   x4 = 0.,
-					   qqq = 5.;
-
-			}
-	///////////////
-
-
-
-
-
 	do {
 		itCounter++;
 		if(itCounter > 30)
@@ -1293,7 +1256,6 @@ int CSolver::calcHydroStage(double t, double tau) {
 			exit(1);
 		}
 		for(i=0; i<nSize; i++) {
-
 			ms_prev[i].x  = ms_temp[i].x;
 			ms_prev[i].v  = ms_temp[i].v;
 			ms_prev[i].ro = ms_temp[i].ro;
@@ -1307,12 +1269,6 @@ int CSolver::calcHydroStage(double t, double tau) {
 		}	
 		ms_prev[nSize].x  = ms_temp[nSize].x;
 		ms_prev[nSize].v  = ms_temp[nSize].v;
-
-
-
-
-
-
 		for(i=0; i<=nSize; i++) {
 			if(i==0) {
 				p_next_plus  = ms_prev[i].p;
@@ -1332,55 +1288,18 @@ int CSolver::calcHydroStage(double t, double tau) {
 			}
 			ms_temp[i].v = ms[i].v - tau/2.0/h*(p_next_plus - p_next_minus + p_plus - p_minus);
 			ms_temp[i].x = ms[i].x + 0.5*tau*(ms_temp[i].v + ms[i].v);
-		}
-		
-
-		///////////////////////
-		i = nSize-1;
-			{
-				double qq = 30.;
-				double x1 = ms[i].ro,
-					   x2 = ms_temp[i].ro,
-					   x3 = (ms_temp[i+1].v + ms[i+1].v - ms_temp[i].v-ms[i].v),
-					   x5 = ms_temp[501].v,
-					   x6 = ms[501].v,
-					   x7 = ms_temp[500].v,
-					   x8 = ms[500].v,
-					   x4 = 0.,
-					   qqq = 5.;
-
-			}
-			///////////////
+		}		
 
 		for(int i=0; i<nSize; i++) {
 			ms_temp[i].ro = 1.0/(1.0/ms[i].ro + tau/2.0/h*
-				            (ms_temp[i+1].v + ms[i+1].v - ms_temp[i].v-ms[i].v));
-			///////////////
-
-			if(ms_temp[i].ro < 0.)
-			{
-				double qq = 30.;
-				double x1 = ms[i].ro,
-					   x2 = ms_temp[i].ro,
-					   x3 = (ms_temp[i+1].v + ms[i+1].v - ms_temp[i].v-ms[i].v),
-					   x5 = ms_temp[i+1].v,
-					   x6 = ms[i+1].v,
-					   x7 = ms_temp[i].v,
-					   x8 = ms[i].v,
-					   x4 = 0.,
-					   qqq = 5.;
-
-			}
-			///////////////
-
+				            (ms_temp[i+1].v + ms[i+1].v - ms_temp[i].v-ms[i].v));			
 			ms_temp[i].ei = ms[i].ei - tau/4.0/h*(ms_prev[i].pi + ms[i].pi + g[i]) *
 							(ms_temp[i+1].v + ms[i+1].v - ms_temp[i].v - ms[i].v);
 			ms_temp[i].ee = ms[i].ee - tau/4.0/h*(ms_prev[i].pe + ms[i].pe + g[i]) *
 							(ms_temp[i+1].v + ms[i+1].v - ms_temp[i].v - ms[i].v);
 			ms_temp[i].e  = ms_temp[i].ei + ms_temp[i].ee;		
 		}
-		for(int i=0; i<nSize; i++)	{	
-			
+		for(int i=0; i<nSize; i++)	{				
 			ms_temp[i].ti = eos.getti(ms_temp[i].ro, ms_temp[i].ei);
 			if(ms_temp[i].ti == -1.) {
 				cout << "Ooops! No solution of non-linear equation of hydrodynamics in node " << i << endl 
@@ -1402,102 +1321,9 @@ int CSolver::calcHydroStage(double t, double tau) {
 			ms_temp[i].pi = eos.getpi(ms_temp[i].ro, ms_temp[i].ti);
 			ms_temp[i].pe = eos.getpe(ms_temp[i].ro, ms_temp[i].ti, ms_temp[i].te);
 			ms_temp[i].p  = ms_temp[i].pi + ms_temp[i].pe;
-		}
-		
+		}		
 	} 	
-	while (compTi(ms_temp, ms_prev) > 0.01);
-	////////////////////// Проверка схемы (закона сохранения энергии) в одном узле.						///////
-	////////////////////// Отличный тест! Стирать не нужно, а наоборот, вынести в отдельную функцию.   ////////
-	// Внимание! "Крайние" случаи i=0, i=nSize пока не оговорены! Их нужно учитывать отдельно.
-	for(i = 0; i<nSize; i++)
-	double  x_old = ms[i].x,   x_new = ms_temp[i].x,   v_old = ms[i].v,   v_new = ms_temp[i].v;
-	double ro_old = ms[i].ro, ro_new = ms_temp[i].ro, ei_old = ms[i].ei, ei_new = ms_temp[i].ei;
-	double v_old_p = ms[i+1].v, v_new_p = ms_temp[i+1].v;
-	double ee_old = ms_temp[i].ee, ee_new = ms_temp[i].ee, e_new = ms_temp[i].e, e_old = ms[i].e;
-	double pi_new = ms_temp[i].pi, pi_old = ms_temp[i].pi; 
-	double pe_new = ms_temp[i].pe, pe_old = ms_temp[i].pe;
-	///////////Оххххххх! Граничные-то условия не очень понимаю, как выглядят, надо лопатить и разбираться./////
-	if(i==0) {
-		/*if(i==0) {
-				// Эта аппроксимация граничных условий на давление, быть может, 
-				// чуть менее точна на автомодельной ВР в идеальном газе, но гораздо 
-				// монотоннее на алюминии (не порождает жутких осцилляций на границе).
-				p_next_plus  = ms_prev[i].p;
-			    p_next_minus = 0.0; //-ms_prev[i].p; 
-			    p_plus       = ms[i].p;
-			    p_minus      = 0.0; //-ms[i].p;  
-			} else if(i==nSize) {
-				p_next_plus  = 0.0; //-ms_prev[i-1].p;
-			    p_next_minus = ms_prev[i-1].p; 
-			    p_plus       = 0.0; //-ms[i-1].p;
-			    p_minus      = ms[i-1].p;  
-			} else {
-				p_next_plus  = ms_prev[i].p + g[i];
-				p_next_minus = ms_prev[i-1].p + g[i-1];
-				p_plus       = ms[i].p + g[i];
-			    p_minus      = ms[i-1].p + g[i-1];
-			}
-		*/
-
-	} else if (i == nSize-1) {
-
-	} else {
-		p_plus = (ms[i].p + ms[i+1].p)/2.; p_minus = (ms[i].p + ms[i-1].p)/2.;
-		p_next_plus  = (ms_temp[i].p + ms_temp[i+1].p)/2.; p_next_minus = (ms_temp[i].p + ms_temp[i-1].p)/2.;
-	}
-			double delta_v = ms[i+1].v - ms[i].v, pVisc = 0.; 
-	if(delta_v < 0) pVisc = 160.0*ro_old*dv*dv;
-/*	double E1 = (v_new - v_old)/tau, E2 = - (p_next_plus - p_next_minus + p_plus - p_minus)/4.0/h;
-	if(fabs(E1-E2/E2) > .01)
-	{
-		cout << "CSolver::calcHydroStage() test error!" << endl;
-	}
-	double E3 = (x_new - x_old)/tau, E4 = 0.5*(v_new + v_old);
-	if(fabs(E3-E4/E4) > .01)
-	{
-		cout << "CSolver::calcHydroStage() test error!" << endl;
-	}
-	double E5 = (v_new_p + v_old_p - v_new - v_old)/2.0/h, E6 = (1/ro_new - 1.0/ro_old)/tau;
-	if(fabs(E6-E5/E5) > .01)
-	{
-		cout << "CSolver::calcHydroStage() test error!" << endl;
-	}
-	double E7 = (ei_new - ei_old)/tau, E8  = - (pi_new + pi_old + pVisc)*(v_new_p + v_old_p - v_new - v_old)/4./h;
-	if(fabs(E7-E8/E8) > .01)
-	{
-		cout << "CSolver::calcHydroStage() test error!" << endl;
-	}
-	double E9 = (ee_new - ee_old)/tau, E10 = - (pe_new + pe_old + pVisc)*(v_new_p + v_old_p - v_new - v_old)/4./h;
-	if(fabs(E9-E10/E10) > .01)
-	{
-		cout << "CSolver::calcHydroStage() test error!" << endl;
-	}
-	*/
-
-	/*
-	double te_old		= ms[i].te;
-	double te_minus_new = ms_temp[i-1].te;
-	double te_new		= ms_temp[i].te;
-	double te_plus_new  = ms_temp[i+1].te;
-	kappa_minus  = (ms[i-1].kappa + ms[i].kappa)/2.;
-	kappa_plus   = 0.;//(ms[i].kappa   + ms[i+1].kappa)/2.;	
-	ro_minus	 = (ms[i-1].ro    + ms[i].ro)/2.;
-	ro_plus		 = (ms[i].ro      + ms[i+1].ro)/2.;
-	double ro_cell			= ms[i].ro;
-	double dm_cell			= ms[i].dm;
-	double ce_new			= ms[i].ce;
-	double expX = exp(-(ms[i].x - ms[i_pulse_min].x)/deltaSkin); double expT = exp(-(t)*(t)/tauPulse/tauPulse);
-	double src			= fluence/sqrt(3.14159)/deltaSkin/tauPulse*expX*expT;
-	double E1			= ce_new*te_new;
-	double E2			= ce_new*te_old;
-	double E3			= tau * kappa_plus  / (dm_cell*dm_cell) * ro_cell * ro_plus * (te_plus_new - te_new);
-	double E4			= tau * kappa_minus / (dm_cell*dm_cell) * ro_cell * ro_minus * (te_new - te_minus_new);	
-	double E5			= src * tau;
-	double left			= E1 - E2;
-	double right		= E3 - E4 + E5;
-	double delta		= left - right;*/
-	//////////////////////////////////////////////////////////////////
-	printf("calcHydroStage() complete: %d iterations\n", itCounter);
+	while (compTi(ms_temp, ms_prev) > .01);	
 	for(int i=0; i<nSize; i++) {
 		 ms[i].x = ms_temp[i].x;
 		 ms[i].v = ms_temp[i].v;
@@ -1518,8 +1344,8 @@ int CSolver::calcHydroStage(double t, double tau) {
 	ms[nSize].x = ms_temp[nSize].x;
 	ms[nSize].v = ms_temp[nSize].v;	
 	delete[] g;
+	return 1;
 }
-
 
 int CSolver::calcHydroStageGlass(double t, double tau) {	
 	int i=0, counter=0, itNumFull=0, itNumIon=0;

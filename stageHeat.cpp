@@ -12,15 +12,12 @@ int CSolver::calcHeatStage(double t, double tau) {
 	for(i=0; i<size; i++) {
 		     ms_temp[i].te = ms[i].te;
 		ms_temp_temp[i].te = ms[i].te;
-		
-			 ms_temp[i].Z  = ms[i].Z;
-		ms_temp_temp[i].Z  = ms[i].Z;
-
 	}
 	// Столбцы коэффициентов системы. Система имеет вид:
 	// A...-C...+B...=-F
 	double* A  = new double[size]; double* B  = new double[size]; double* C  = new double[size]; double* F  = new double[size];
 	double *alpha = new double[size]; double *beta  = new double[size];
+	double src = 0., expX=0., expT=0.;
 	for(;;) {
 		// Присваиваем значения коэффициентам 
 		// (решается уравнение теплопроводности с помощью неявной схемы)
@@ -36,76 +33,42 @@ int CSolver::calcHeatStage(double t, double tau) {
 				kappa_plus= (ms[i].kappa+ms[i+1].kappa)/2.; 
 				ro_plus=(ms[i].ro+ms[i+1].ro)/2.; 
 			}
-//////////////  DEBUG ////////////////////////////////////////////////////
-// Здесь делаем так, чтобы тепло не проходило через границу "стекло-металл"
-// Возможно, это немного искусственно.
-// Если наводить потом красоту, надо будет этот момент тоже сделать красивым
-			
-			if(i==i_pulse_min+1)
-			{
-				//////////
-				double te_minus  = ms[i-1].te;
-				double te_center = ms[i].te;
-				double te_plus   = ms[i+1].te;
-				//////////
-        
-				kappa_minus = 0.0;				   
-			}			
-///////////////////////////////////////////////////////////////////////////
 			A[i] = tau * kappa_minus / (ms[i].dm*ms[i].dm) * ms[i].ro * ro_minus;
 			B[i] = tau * kappa_plus  / (ms[i].dm*ms[i].dm) * ms[i].ro * ro_plus;
 			C[i] = ms[i].ce + A[i] + B[i];
-
-			double src = 0.0;
-			double expX=0.0, expT=0.0;
 			if(task.getSourceFlag() == SourceType::SrcMetal) {
 				expX = exp(-(ms[i].x)/deltaSkin);
 				expT = exp(-(t)*(t)/tauPulse/tauPulse);
 			}
-			else if ((task.getSourceFlag() == SourceType::SrcGlass) && (i>i_pulse_min))
-			{
+			else if ((task.getSourceFlag() == SourceType::SrcGlass) && (i>i_pulse_min)) {
 				expX = exp(-(ms[i].x - ms[i_pulse_min].x)/deltaSkin);
 				expT = exp(-(t)*(t)/tauPulse/tauPulse);
 			}
 			else if ((task.getSourceFlag() == SourceType::SrcUndef) && (i>i_pulse_min)) // Какой-то специфичный источник, пока оставим тип undef, потом разберемся
 			{
 				expX = exp(-(ms[i].x - ms[i_pulse_min].x)/deltaSkin)*sqrt(3.14159);
-				if( (t>=0.0) && (t<tauPulse) )
-					expT = 1.0;
-				else
-					expT = 0.0;
-				
+				if( (t>=0.0) && (t<tauPulse) ) expT = 1.0; else expT = 0.0;				
 				// expT = exp(-(t)*(t)/tauPulse/tauPulse);
 			}
-
 			src=fluence/sqrt(3.14159)/deltaSkin/tauPulse*expX*expT;
-
 			F[i] = ms[i].ce * ms[i].te + src * tau;
 		}	
-
 		sweepTe(ms_temp, ms_temp_temp, A, B, C, F, alpha, beta, size);
-
-		for(i=0; i<size; i++)
-		{
+		for(i=0; i<size; i++) {
 			Node &n = ms[i];
-
 			n.ce    = eos.getce   (n.ro, ms_temp[i].te);
 			n.kappa = eos.getkappa(n.ro, n.ti, ms_temp[i].te);
-		}
-	
+		}	
 		if(compTe(ms_temp, ms_temp_temp) < eps) break;
-
 		itNum++;
-
-		if(itNum == maxIt)
-		{
+		if(itNum > maxIt) {
 			printf("Divergence=%f, iteration number %d\n", compTe(), itNum);
 			printf("Error. Too many iterations for convergence.\n")	;
 			cin.get();
 			exit(1);
 		}
 	}
-	printf("calcHeatStage() complete: %d iterations of Te\n", itNum+1);
+	// printf("calcHeatStage() complete: %d iterations of Te\n", itNum+1);
 	for(i=0; i<size; i++) {
 		Node &n = ms[i];
 		n.te    = ms_temp[i].te;
@@ -409,8 +372,8 @@ int CSolver::calcHeatStageGlass(double t, double tau) {
 	for(i=0; i<size; i++)	{
 		Node &n = ms[i];
 		n.te    = ms_temp[i].te;
-		if ( task.getSourceFlag() == 2 ) {
-				if(i>=nBound) {
+		if ( task.getSourceFlag() == SourceType::SrcGlass ) {
+				if(i>=nBound) {  // Неаккуратно! Выше поглощение с i_pulse_min = 499, тут пересчет электронных параметров с nBound=500. Исправить, когда доразберемся с поглощением без стекла.
 					n.kappa = eos.getkappa(n.ro ,n.ti, n.te);
 					n.Alphaei = eos.getAlpha(n.ro, n.ti, n.te);
 					n.C = eos.getC(n.ro, n.ti, n.te);

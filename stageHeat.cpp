@@ -299,10 +299,6 @@ int CSolver::calcHeatStageGlass(double t, double tau) {
 			B[i] = tau * kappa_plus  / (ms[i].dm*ms[i].dm) * ms[i].ro * ro_plus;
 			C[i] = ms[i].ce + A[i] + B[i];
 			if(task.getSourceFlag() == SourceType::SrcMetal) {				
-				// expX = exp(-(ms[i].x)/deltaSkin);
-				// Здесь для рентгеновского лазера не слишком точный учет поглощения -- на самом деле, нужно брать начальную координату
-				// x с номером i. Также хочу сразу внести уточнение в интеграл -- брать не левую границу примоугольника, а среднее
-				// арифметическое между двумя
 				if(i >= N) { 
 					expX = 0.; 
 				} else {
@@ -310,28 +306,18 @@ int CSolver::calcHeatStageGlass(double t, double tau) {
 					expX = exp(-(_x/deltaSkin));
 				}					
 				expT = exp(-(t)*(t)/tauPulse/tauPulse);
-			} else if ((task.getSourceFlag() == SourceType::SrcGlass) && (i>=i_pulse_min)) { // Проверить! Поглощается в последней ячейке стекла или нет? 
-				expX = exp(-(ms[i].x - ms[i_pulse_min].x)/deltaSkin);
+			} else if ((task.getSourceFlag() == SourceType::SrcGlass) && (i>=nBound)) { 
+				expX = exp(-(ms[i].x - ms[nBound].x)/deltaSkin);
 				expT = exp(-(t)*(t)/tauPulse/tauPulse);
 			}
-			else if ((task.getSourceFlag() == SourceType::SrcUndef) && (i>=i_pulse_min))
-			{
-				expX = exp(-(ms[i].x - ms[i_pulse_min].x)/deltaSkin)*sqrt(3.14159);
-				if( (t>=0.0) && (t<tauPulse) )
-					expT = 1.0;
-				else
-					expT = 0.0;
-				
-				// expT = exp(-(t)*(t)/tauPulse/tauPulse);
+			else if ((task.getSourceFlag() == SourceType::SrcUndef) && (i>=nBound))	{
+				expX = exp(-(ms[i].x - ms[nBound].x)/deltaSkin)*sqrt(3.14159);
+				if( (t>=0.0) && (t<tauPulse) ) expT = 1.0; else expT = 0.0;
 			} 
-
 			src=fluence/sqrt(3.14159)/deltaSkin/tauPulse*expX*expT;
-
 			F[i] = ms[i].ce * ms[i].te + src * tau;
 		}	
-
 		sweepTe(ms_temp, ms_temp_temp, A, B, C, F, alpha, beta, size);
-
 		for(i=0; i<size; i++) {
 			Node &n = ms[i];
 			if ( task.getSourceFlag() == 2 ) {
@@ -360,20 +346,11 @@ int CSolver::calcHeatStageGlass(double t, double tau) {
 			exit(1);
 		}
 	}
-
-/*	if(t>5.e-12 && itNum <3)
-	{
-		double _Kur = getzKur();
-		setzKur(1.01*_Kur);
-	}
-*/
-	//printf("calcHeatStageGlass() complete: %d iterations of Te\n", itNum+1);
-//	cout << itNum+1 << "it ";
 	for(i=0; i<size; i++)	{
 		Node &n = ms[i];
 		n.te    = ms_temp[i].te;
 		if ( task.getSourceFlag() == SourceType::SrcGlass ) {
-				if(i>=nBound) {  // Неаккуратно! Выше поглощение с i_pulse_min = 499, тут пересчет электронных параметров с nBound=500. Исправить, когда доразберемся с поглощением без стекла.
+				if(i>=nBound) {  
 					n.kappa = eos.getkappa(n.ro ,n.ti, n.te);
 					n.Alphaei = eos.getAlpha(n.ro, n.ti, n.te);
 					n.C = eos.getC(n.ro, n.ti, n.te);
@@ -600,29 +577,18 @@ void CSolver::calcHeatStageSpallation(double t, double tau) {
 				expX = exp(-(ms[i].x)/deltaSkin);
 				expT = exp(-(t)*(t)/tauPulse/tauPulse);
 			}
-			else if ((task.getSourceFlag() == 2) && (i>i_pulse_min))
-			{
+			else if ((task.getSourceFlag() == 2) && (i>i_pulse_min)) {
 				expX = exp(-(ms[i].x - ms[i_pulse_min].x)/deltaSkin);
 				expT = exp(-(t)*(t)/tauPulse/tauPulse);
 			}
-			else if ((task.getSourceFlag() == 3) && (i>i_pulse_min))
-			{
+			else if ((task.getSourceFlag() == 3) && (i>i_pulse_min)) {
 				expX = exp(-(ms[i].x - ms[i_pulse_min].x)/deltaSkin)*sqrt(3.14159);
-				if( (t>=0.0) && (t<tauPulse) )
-					expT = 1.0;
-				else
-					expT = 0.0;
-				
+				if( (t>=0.0) && (t<tauPulse) ) expT = 1.0; else expT = 0.0;				
 				// expT = exp(-(t)*(t)/tauPulse/tauPulse);
 			}
-
-			if (i!=iSpall) 
-				src=fluence/sqrt(3.14159)/deltaSkin/tauPulse*expX*expT;
-			else
-				src=0.;
+			if (i!=iSpall) src=fluence/sqrt(3.14159)/deltaSkin/tauPulse*expX*expT; else src=0.;
 			F[i] = ms[i].ce * ms[i].te + src * tau;
-		}	
-
+		}
 		sweepTe(ms_temp, ms_temp_temp, A, B, C, F, alpha, beta, size);
 
 		for(i=0; i<size; i++)
@@ -684,81 +650,31 @@ void CSolver::calcHeatStageSpallation(double t, double tau) {
 void CSolver::sweepTe(CField& ms_temp, CField& ms_temp_temp, double *A, double *B, double *C, double *F,
 					  double *alpha, double *beta, int size) {
 	int i = 0;
-//	int iMin = 0;
-
 	double teL=0.0, teR=0.0, alphaR=0.0, betaR=0.0;
-
+	int nBound = task.getZone(0).n;
 	// Граничные условия
-
-	double  AL = 0.0,
-			BL = 1.0,
-			CL = 1.0,
-			FL = 0.0,
-
-			AR = 1.0,
-			BR = 0.0,
-			CR = 1.0,
-			FR = 0.0;
-
+	// Ячейка nBound-1 должна играть роль фиктивной. Если код это не делает, сдвинуть левую ячейку до nBound
+	double  AL = 0.0, BL = 1.0, CL = 1.0, FL = 0.0, 
+		    AR = 1.0, BR = 0.0, CR = 1.0, FR = 0.0;
 	// Прямая прогонка
-
-		alpha[i_pulse_min] = BL/CL;
-		 beta[i_pulse_min] = FL/CL;
-		
-	for(i=i_pulse_min; i<size-1; i++)
-	{
+	alpha[nBound-1] = BL/CL; beta[nBound-1] = FL/CL;		
+	for(i=nBound-1; i<size-1; i++) {
 		alpha[i+1] = B[i] / (C[i]-A[i]*alpha[i]);
 		 beta[i+1] = (A[i]*beta[i]+F[i]) / (C[i]-A[i]*alpha[i]);
 	}
-
 	alphaR = B[size-1] / (C[size-1]-A[size-1]*alpha[size-1]);
 	 betaR = (A[size-1]*beta[size-1]+F[size-1]) / 
 		     (C[size-1]-A[size-1]*alpha[size-1]);
-	
 	// Обратная прогонка
-
 	teR = (AR/CR*betaR + FR/CR) / (1.0 - AR/CR*alphaR);
-	
 	i = size-1;
-
 	ms_temp_temp[i].te = ms_temp[i].te;
 	     ms_temp[i].te = alphaR * teR + betaR;
-
-	for(i=size-2; i>=(int)i_pulse_min; i--) 
-
-
-
-
-
-
-
-
-		// Почему-то тут i может становиться меньше 0! Ошибка с типами signed/unsigned int???
-
-
-	
-
-
-
-
-
-	{
-
-
-		if(i==1)
-		{
-
-			double qq=0.;
-		}
-
-
-
-
+	for(i=size-2; i>=nBound-1; i--)	{
 		ms_temp_temp[i].te = ms_temp[i].te;
 		     ms_temp[i].te = alpha[i+1] * ms_temp[i+1].te + beta[i+1];
 	}
-
-	teL = alpha[i_pulse_min] * ms_temp[i_pulse_min].te + beta[i_pulse_min];
+	teL = alpha[nBound-1] * ms_temp[nBound-1].te + beta[nBound];
 }
 
 

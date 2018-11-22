@@ -78,7 +78,7 @@ void CSolver::goEuler(char* fName) {
 		if(t+tau >tMax) tau = tMax-t;
 		if(counter <=4) tau *=.2;
 		cout << counter << ": " << "t=" << t+tau <<  " tau=" << tau << " CFL=" << getCFL() << endl;
-		if(task.getHydroStage()) calcHydroStageGodunov(t, tau);
+		//if(task.getHydroStage()) calcHydroStageGodunov(t, tau);
 		//if(task.getHydroStage()) calcHydroStageRoe(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageGPS(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageLaxFriedrichs(t, tau);	
@@ -86,7 +86,7 @@ void CSolver::goEuler(char* fName) {
 		//if(task.getHydroStage()) calcHydroStageMHM(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageGushchinIdealSimple(t, tau);
 		//if(task.getHydroStage()) calcHydroStageG2(t, tau);	
-		//if(task.getHydroStage()) calcHydroStageENO2G(t, tau);	
+		if(task.getHydroStage()) calcHydroStageENO2G(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageENO3G(t, tau);	
 
 

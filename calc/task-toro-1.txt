@@ -1,7 +1,7 @@
 EOSType = ideal
 Method = eno3g
-courant = 0.4
-maxTime = 0.2
+CFL = .5
+maxTime = .2
 nZones = 2
 
 l = .3

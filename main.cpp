@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 	//s->goGlass("task-Fe-glass.txt");
 
 	//s->goGlass("task-Au-water-simple.txt");
-	s->goGlass("task-Au-water.txt");
+	//s->goGlass("task-Au-water.txt");
 	//s->goGlass("task-Au-water-vacuum.txt");
 
 
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 	
 
 	// Uncomment for Euler problems
-	//s->goEuler("task-toro-1.txt");
+	s->goEuler("task-toro-1.txt");
 
 
 	delete s;

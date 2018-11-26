@@ -320,7 +320,7 @@ void CSolver::calcHydroStageENO2G(double t, double tau) {
 
 
 
-		if(i==31) {
+		if(i==29) {
 
 			double qq = 0.;
 

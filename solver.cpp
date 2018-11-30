@@ -101,10 +101,10 @@ void CSolver::goEuler(char* fName) {
 
 		//if(task.getHydroStage()) calcHydroStageGodunovEOSBin(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageENO2G(t, tau);		
-		if(handleKeys(t)) break;
-		//dumpToFileTestRP(t+tau, 100);		
+		if(handleKeys(t)) break;		
 		// Regular file output
 		t += tau;
+		dumpToFileTestRP(t+tau, 100);		
 		if (t>=timesArray[nTimesCounter]) {
 			dumpToFileTestRP(t, nTimesCounter++);
 			if(nTimesCounter==nTimes)

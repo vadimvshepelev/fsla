@@ -238,8 +238,8 @@ void CSolver::calcHydroStageENO2G(double t, double tau) {
 	const double h=ms[1].x-ms[0].x;
 	Vector4 L = Vector4::ZERO, R = Vector4::ZERO, D = Vector4::ZERO, V = Vector4::ZERO;	
 	// —пециальные массивы дл€ хранени€ переменных и потоков, с дополнительными фиктивными €чейками
-	const unsigned int nGhostCells = 3;	
-	const unsigned int mini = nGhostCells, maxi = nGhostCells+nSize;
+	const int nGhostCells = 2;	
+	const int mini = nGhostCells, maxi = nGhostCells+nSize;
 	std::vector<Vector4> U, Up, Um;
 	std::vector<Vector4> F;
 	for(i=0; i<nSize+nGhostCells+nGhostCells; i++) {
@@ -250,8 +250,22 @@ void CSolver::calcHydroStageENO2G(double t, double tau) {
 			U.push_back(Vector4::ZERO);
 	}
 	// Transmissive b.c.s
-	U[2] = U[mini]; U[1] = U[mini]; U[0] = U[mini];  
-	U[maxi] = U[maxi-1]; U[maxi+1] = U[maxi-1]; U[maxi+2] = U[maxi-1];
+	
+	
+	
+	
+	
+	// Former:
+	/*U[2] = U[mini]; U[1] = U[mini]; U[0] = U[mini];  
+	U[maxi] = U[maxi-1]; U[maxi+1] = U[maxi-1]; U[maxi+2] = U[maxi-1];*/
+	
+	// Now:
+	U[mini-1] = U[mini]; U[mini-2] = U[mini]; //U[0] = U[mini];  
+	U[maxi] = U[maxi-1]; U[maxi+1] = U[maxi-1]; //U[maxi+2] = U[maxi-1];
+	
+	
+	
+	
 	// Possible ENO-2 stencils
 	double  rm1r[] = {-1./2., 3./2.,  0.},       // {0.,     3./2.,  -1./2}, 
 		    r0r[]  = {0.,     1./2.,  1./2.},

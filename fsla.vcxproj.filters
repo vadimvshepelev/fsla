@@ -120,6 +120,9 @@
     <ClCompile Include="solvers\HLL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ceos.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="_matrix4.h">
@@ -211,6 +214,9 @@
     </ClInclude>
     <ClInclude Include="eos\EOSBin.h">
       <Filter>EOSBin</Filter>
+    </ClInclude>
+    <ClInclude Include="ceos.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

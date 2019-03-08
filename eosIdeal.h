@@ -8,7 +8,7 @@
 
 // Уравнение состояния идеального газа
 
-class EOSIdeal : public EOS
+class EOSIdeal : public EOSOld
 {
 
 public:

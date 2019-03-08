@@ -65,6 +65,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ceos.cpp" />
     <ClCompile Include="CTestToro.cpp" />
     <ClCompile Include="eos.cpp" />
     <ClCompile Include="eosAnalytic.cpp" />
@@ -101,6 +102,7 @@
     <ClCompile Include="_vector4.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ceos.h" />
     <ClInclude Include="CTestToro.h" />
     <ClInclude Include="defines.h" />
     <ClInclude Include="eos.h" />

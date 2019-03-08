@@ -54,7 +54,7 @@ enum EOSType {none, table, analytic, ideal, test,
 основе этого класса. Достаточно просто унаследовать объект.
 */
 
-class EOS
+class EOSOld
 {
 
 public:

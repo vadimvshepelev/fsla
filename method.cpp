@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 
-CMethod::CMethod(EOS *_eos) : eos(*_eos),
+CMethod::CMethod(EOSOld *_eos) : eos(*_eos),
 							  La(Vector4::ZERO),
 							  Lb(Vector4::ZERO),
 							  Lg(Vector4::ZERO),

@@ -3,8 +3,8 @@
 #define METHOD_H
 
 
-#include "matterState.h"
-#include "eos.h"
+#include "cfield.h"
+#include "eosold.h"
 
 
 /*
@@ -17,16 +17,16 @@ class CMethod
 {
 public:
 
-	CMethod(EOS *_eos);
-	virtual void	matter2Flow(CField &ms) = 0;
-	virtual void	advanceFlow(CField &ms, double tau) = 0;
-	virtual void	advanceFlowVacuum(CField &ms, double tau) = 0;
-	virtual void	flow2Matter(CField &ms, double tau) = 0;
-	virtual void	flow2MatterVacuum(CField &ms, CField &ms_temp, double t, double tau) = 0;
+	CMethod(EOSOld *_eos);
+	virtual void	matter2Flow(CFieldOld &ms) = 0;
+	virtual void	advanceFlow(CFieldOld &ms, double tau) = 0;
+	virtual void	advanceFlowVacuum(CFieldOld &ms, double tau) = 0;
+	virtual void	flow2Matter(CFieldOld &ms, double tau) = 0;
+	virtual void	flow2MatterVacuum(CFieldOld &ms, CFieldOld &ms_temp, double t, double tau) = 0;
 	virtual	Matrix4 getOmega(Node &n) = 0;
 	virtual Matrix4 getOmegaInv(Node &n) = 0;
 	virtual Vector4 getLambda(Node &n) = 0;
-	virtual void	createGrid(CField &ms) = 0;
+	virtual void	createGrid(CFieldOld &ms) = 0;
 	virtual void	deleteGrid() = 0;
 	virtual void	averageNode(Node &n1, Node &n2, Node &nav) = 0;
 	virtual void	updateNode(Node &n) = 0;
@@ -45,7 +45,7 @@ protected:
 	
 	// Vector4 La, Lb, Lg, Ld;		// Лямбды * веса для 4ех точек сетки
 
-	EOS &eos;
+	EOSOld &eos;
 };
 
 

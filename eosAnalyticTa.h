@@ -1,11 +1,11 @@
 #ifndef EOSANALYTICTA_H
 #define EOSANALYTICTA_H
 
-#include "eos.h"
+#include "eosold.h"
 
 // јналитическое уравнение состо€ни€ дл€ тантала
 
-class EOSAnalyticTa : public EOS
+class EOSAnalyticTa : public EOSOld
 {
 public:
 	EOSAnalyticTa();

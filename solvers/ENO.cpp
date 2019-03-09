@@ -6,7 +6,7 @@
 // Riemann solver based on exact solution + ENO reconstruction of 3rd order
 void CSolver::calcHydroStageENO3G(double t, double tau) {
 	cout << "calcHydroStageENO3G(): ";
-	EOS &eos = task.getEOS(); 
+	EOSOld &eos = task.getEOS(); 
 	const double gamma = eos.getGamma();
 	double E=0.; 
 	int i=0, nDimCounter=0;
@@ -230,11 +230,11 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 
 void CSolver::calcHydroStageENO2G(double t, double tau) {
 	cout << "calcHydroStageENO2G(): ";
-	EOS &eos = task.getEOS(); 
+	EOSOld &eos = task.getEOS(); 
 	const double gamma = eos.getGamma();
 	double E=0.; 
-	unsigned int i=0, j=0;
-	const unsigned int nSize = ms.getSize();
+	int i=0, j=0;
+	const int nSize = ms.getSize();
 	const double h=ms[1].x-ms[0].x;
 	Vector4 L = Vector4::ZERO, R = Vector4::ZERO, D = Vector4::ZERO, V = Vector4::ZERO;	
 	// —пециальные массивы дл€ хранени€ переменных и потоков, с дополнительными фиктивными €чейками

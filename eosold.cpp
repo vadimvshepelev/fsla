@@ -1,5 +1,5 @@
 #include <math.h>
-#include "eos.h"
+#include "eosold.h"
 
 /*double EOS::getC_an(double ro, double ti, double te)
 {
@@ -49,7 +49,7 @@ double EOS::getdeidti_ro(double ro, double ti)
 	return ( getei(ro, ti*(1.0+h))-getei(ro, ti) ) / (ti*h);
 }
 */
-double EOS::getdeedte_ro(double ro, double ti, double te)
+double EOSOld::getdeedte_ro(double ro, double ti, double te)
 {
 	double h = 0.1;
 	return ( getee(ro, ti, te*(1.0+h))-getee(ro, ti, te) ) / (te*h);

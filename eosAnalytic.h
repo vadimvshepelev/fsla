@@ -2,11 +2,11 @@
 #ifndef EOSANALYTIC_H
 #define EOSANALYTIC_H
 
-#include "eos.h"
+#include "eosold.h"
 
 // Аналитическое уравнение состояния для газообразного алюминия
 
-class EOSAnalytic : public EOS {
+class EOSAnalytic : public EOSOld {
 public:
 	EOSAnalytic();
 
@@ -61,7 +61,7 @@ protected:
 };
 
 
-class EOSPyrexGlass: public EOS {
+class EOSPyrexGlass: public EOSOld {
 	double  getnuWR(double ro, double ti, double te, double b) {return 0.;}
 public:
 	EOSPyrexGlass() {}
@@ -101,7 +101,7 @@ protected:
 };
 
 
-class EOSSimpleWater: public EOS {
+class EOSSimpleWater: public EOSOld {
 	double  getnuWR(double ro, double ti, double te, double b) {return 0.;}
 public:
 	EOSSimpleWater() {}
@@ -230,7 +230,7 @@ protected:
 };
 
 
-class EOSMieGruneisenRu : public EOS {
+class EOSMieGruneisenRu : public EOSOld {
 	const double A, a, b, ro0, v0;
 	double al1, al2, bet1, bet2, c1, c2;
 	double G(double x) {

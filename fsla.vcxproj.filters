@@ -27,9 +27,6 @@
     <ClCompile Include="CTestToro.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="eos.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="eosAnalytic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -78,16 +75,10 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="matterState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="method.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="methodEuler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="methodEuler2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="solver.cpp">
@@ -123,6 +114,15 @@
     <ClCompile Include="ceos.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="eosold.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cfield.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="csimulation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="_matrix4.h">
@@ -135,9 +135,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="defines.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="eos.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="eosAnalytic.h">
@@ -191,16 +188,10 @@
     <ClInclude Include="eosTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="matterState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="method.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="methodEuler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="methodEuler2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="node.h">
@@ -216,6 +207,15 @@
       <Filter>EOSBin</Filter>
     </ClInclude>
     <ClInclude Include="ceos.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eosold.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cfield.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="csimulation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

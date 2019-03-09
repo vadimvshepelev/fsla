@@ -119,18 +119,18 @@ private:
 	double  solveteSource(double t, double tau, int i, double ro_temp, double dv_temp, double ti_temp);
 	double  solveteConservative(double t, double tau, int i, double ro_temp, double dv_temp, double ti_temp);
 	bool	handleKeys(double t);
-	void	sweepTe(CField& ms_temp, CField& ms_temp_temp, 
+	void	sweepTe(CFieldOld& ms_temp, CFieldOld& ms_temp_temp, 
 					double *A, double *B, double *C, double *F,
 					double *alpha, double *beta, int size);
-	void	sweepTi(CField& ms_temp, CField& ms_temp_temp, 
+	void	sweepTi(CFieldOld& ms_temp, CFieldOld& ms_temp_temp, 
 					double *A, double *B, double *C, double *F,
 					double *alpha, double *beta, int size);
 	double	compTe();
 	double	compTi();
-	double	compTe(CField &ms1, CField &ms2);
-	double	compTi(CField &ms1, CField &ms2);
-	double  compE(CField &ms1, CField &ms2);
-	double  compEi(CField &ms1, CField &ms2);
+	double	compTe(CFieldOld &ms1, CFieldOld &ms2);
+	double	compTi(CFieldOld &ms1, CFieldOld &ms2);
+	double  compE(CFieldOld &ms1, CFieldOld &ms2);
+	double  compEi(CFieldOld &ms1, CFieldOld &ms2);
 	void	dumpToFile(double t);
 	void    dumpToFileTestRP(double t, int num);
 	void	dumpFlowToFile(double t);
@@ -148,7 +148,7 @@ private:
 	// солвера уже после загрузки задачи.
 	void initVars(void);
 	CTask task;
-	CField ms, ms_temp, ms_temp_temp, ms_prev;
+	CFieldOld ms, ms_temp, ms_temp_temp, ms_prev;
 	double	CFL, epsE;
 	int maxIt;
 	double tauPulse, fluence, deltaSkin, x_pulse_min;

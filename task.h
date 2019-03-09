@@ -6,10 +6,10 @@
 
 #include "defines.h"
 #include "method.h"
-#include "eos.h"
+#include "eosold.h"
 #include "CTestToro.h"
 #include "eos\\EOSBin.h"
-#include "matterState.h"
+#include "cfield.h"
 
 //#include "eosTableFeAlpha.h"
 
@@ -84,7 +84,7 @@ public:
 		      eos(0), eosGlass(0), sourceFlag(SourceType::SrcUndef), tauPulse(0.), fluence(0.), deltaSkin(0.), 
 			  zones(0), nZones(0), maxTime(0.), mtd(0), viscFlag(0), CFL(0.), totalSize(0), 
 			  EOSFlag(0), methodFlag(MethodType::nomtd) {}
-	CTask(TaskType _type, bool _bHydroStage, bool _bHeatStage, bool _bExchangeStage, EOS* _eos, EOS* _eosGlass, SourceType _sourceFlag,
+	CTask(TaskType _type, bool _bHydroStage, bool _bHeatStage, bool _bExchangeStage, EOSOld* _eos, EOSOld* _eosGlass, SourceType _sourceFlag,
 		  double _tauPulse, double _fluence, double _deltaSkin, Zone* _zones, int _nZones, double _maxTime, CMethod* _mtd,
 		  int _viscFlag, double _CFL, int _totalSize, int _EOSFlag, MethodType _methodFlag) :
 		  type(_type), 
@@ -99,9 +99,9 @@ public:
 	~CTask();					
 	void		load(char *fName);		// Считать условие задачи из файла
 	void		clear();				// Удалить задачу
-	EOS			&getEOS() { return *eos; }	
-	EOS			&getEOSGlass() { return *eosGlass; }	
-	void		setEOS(EOS* newEOS) { eos = newEOS; } ;			
+	EOSOld			&getEOS() { return *eos; }	
+	EOSOld			&getEOSGlass() { return *eosGlass; }	
+	void		setEOS(EOSOld* newEOS) { eos = newEOS; } ;			
 	int			getEOSFlag() { return EOSFlag; }
 	CMethod		&getMethod() { return *mtd; }	
 	Zone		&getZone(int i) { return zones[i]; }
@@ -132,8 +132,8 @@ private:
 	bool	bHydroStage;		// Расчитывать гидродинамику?
 	bool	bHeatStage;			// Расчитывать электронную теплопроводность?
 	bool	bExchangeStage;		// Расчитывать электронно-ионный обмен?
-	EOS		*eos;				// Уравнение состояния
-	EOS		*eosGlass;			// Уравнение состояния стекла	
+	EOSOld		*eos;				// Уравнение состояния
+	EOSOld		*eosGlass;			// Уравнение состояния стекла	
 	SourceType sourceFlag;			// Источник энергии в расчетной области 
 	double  tauPulse;			// Длительность вспышки
 	double  fluence;			// Флюенс -- энергия, поглощенная единицей поверхности

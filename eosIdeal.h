@@ -3,7 +3,7 @@
 #define EOSIDEAL_H
 
 
-#include "eos.h"
+#include "eosold.h"
 
 
 // Уравнение состояния идеального газа

@@ -2,7 +2,7 @@
 #include "methodEuler.h"
 #include <math.h>
 
-void CMethodEuler::createGrid(CField &ms){
+void CMethodEuler::createGrid(CFieldOld &ms){
 	vGrid = new double[ms.getSize()+1];
 	X     = new double[ms.getSize()+1];
 	for(int i=0; i<=ms.getSize(); i++){
@@ -20,7 +20,7 @@ CMethodEuler::~CMethodEuler(){
 	deleteGrid();
 }
 
-void CMethodEuler::matter2Flow(CField &ms) {
+void CMethodEuler::matter2Flow(CFieldOld &ms) {
 	double E=0.;
 	for(int i=0; i<ms.getSize(); i++) {
 		Node &n = ms[i];
@@ -30,7 +30,7 @@ void CMethodEuler::matter2Flow(CField &ms) {
 	}
 }
 
-void CMethodEuler::advanceFlow(CField &ms, double tau) {
+void CMethodEuler::advanceFlow(CFieldOld &ms, double tau) {
 	Matrix4 O, OI;
 	Vector4 Fp, Fm;
 	Vector4 L;
@@ -76,7 +76,7 @@ void CMethodEuler::advanceFlow(CField &ms, double tau) {
 	}
 }
 
-void CMethodEuler::advanceFlowVacuum(CField &ms, double tau) {
+void CMethodEuler::advanceFlowVacuum(CFieldOld &ms, double tau) {
 	Matrix4 O, OI;
 	Vector4 Fp, Fm;
 	Vector4 L;
@@ -162,7 +162,7 @@ void CMethodEuler::advanceFlowVacuum(CField &ms, double tau) {
 	}
 }
 
-void CMethodEuler::flow2Matter(CField &ms, double tau)
+void CMethodEuler::flow2Matter(CFieldOld &ms, double tau)
 {
 	double E=0.;
 	for(int i=0; i<ms.getSize(); i++)
@@ -180,7 +180,7 @@ void CMethodEuler::flow2Matter(CField &ms, double tau)
 	}
 }
 
-void CMethodEuler::flow2MatterVacuum(CField &ms, CField &ms_temp, double t, double tau)
+void CMethodEuler::flow2MatterVacuum(CFieldOld &ms, CFieldOld &ms_temp, double t, double tau)
 {
 	double E=0.;
 	for(int i=0; i<ms.getSize(); i++) {

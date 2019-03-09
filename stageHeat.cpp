@@ -1,12 +1,13 @@
 
 #include "solver.h"
 
+
 int CSolver::calcHeatStage(double t, double tau) {
 	int i = 0, itNum = 0, size = ms.getSize();;
 	const double eps = 0.01; 
 	double kappa_plus = 0., kappa_minus = 0., ro_plus = 0., ro_minus = 0.;
-	EOS &eos = task.getEOS();
-	CField ms_temp, ms_temp_temp;
+	EOSOld &eos = task.getEOS();
+	CFieldOld ms_temp, ms_temp_temp;
 	ms_temp.initData(&task);
 	ms_temp_temp.initData(&task);
 	for(i=0; i<size; i++) {
@@ -268,10 +269,10 @@ int CSolver::calcHeatStageGlass(double t, double tau) {
 	double kappa_plus=0., kappa_minus=0., ro_plus=0., ro_minus=0.;
 	double dx = L/N, _x = 0., src = 0.0, expX=0.0, expT=0.0;
 	int size = ms.getSize();
-	EOS &eos = task.getEOS();
-	EOS &eosGlass = task.getEOSGlass();
+	EOSOld &eos = task.getEOS();
+	EOSOld &eosGlass = task.getEOSGlass();
 	int nBound = task.getZone(0).n;
-	CField ms_temp, ms_temp_temp;
+	CFieldOld ms_temp, ms_temp_temp;
 	ms_temp.initData(&task);
 	ms_temp_temp.initData(&task);	
 	for(i=0; i<size; i++) {
@@ -394,10 +395,10 @@ int CSolver::calcIonicHeatStageGlass(double t, double tau) {
 	double kappa_plus=0., kappa_minus=0.;
 	double ro_plus=0., ro_minus=0.;
 	unsigned int size = ms.getSize();
-	EOS &eos = task.getEOS();
-	EOS &eosGlass = task.getEOSGlass();
+	EOSOld &eos = task.getEOS();
+	EOSOld &eosGlass = task.getEOSGlass();
 	unsigned int nBound = task.getZone(0).n;
-	CField ms_temp, ms_temp_temp;
+	CFieldOld ms_temp, ms_temp_temp;
 	ms_temp.initData(&task);
 	ms_temp_temp.initData(&task);
 	// Для поглощения
@@ -499,8 +500,8 @@ int CSolver::calcIonicHeatStageGlass(double t, double tau) {
 void CSolver::calcHeatStageSpallation(double t, double tau) {
 	int i = 0, itNum = 0, iSpall = getSpallCellNum(), size = ms.getSize();
 	double eps = 0.01, kappa_plus = 0., kappa_minus = 0., ro_plus=0., ro_minus=0.;
-	EOS &eos = task.getEOS();
-	CField ms_temp, ms_temp_temp;
+	EOSOld &eos = task.getEOS();
+	CFieldOld ms_temp, ms_temp_temp;
 	ms_temp.initData(&task);
 	ms_temp_temp.initData(&task);
 	for(i=0; i<size; i++) {
@@ -647,7 +648,7 @@ void CSolver::calcHeatStageSpallation(double t, double tau) {
 
 // Решение системы линейных уравнений с трехдиагональной матрицей методом прогонки.
 
-void CSolver::sweepTe(CField& ms_temp, CField& ms_temp_temp, double *A, double *B, double *C, double *F,
+void CSolver::sweepTe(CFieldOld& ms_temp, CFieldOld& ms_temp_temp, double *A, double *B, double *C, double *F,
 					  double *alpha, double *beta, int size) {
 	int i = 0;
 	double teL=0.0, teR=0.0, alphaR=0.0, betaR=0.0;
@@ -678,7 +679,7 @@ void CSolver::sweepTe(CField& ms_temp, CField& ms_temp_temp, double *A, double *
 }
 
 
-void CSolver::sweepTi(CField& ms_temp, CField& ms_temp_temp, 
+void CSolver::sweepTi(CFieldOld& ms_temp, CFieldOld& ms_temp_temp, 
 					  double *A, double *B, double *C, double *F,
 					  double *alpha, double *beta, int size) {
 	int i = 0;

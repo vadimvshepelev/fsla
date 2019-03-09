@@ -4,7 +4,7 @@
 
 // Схема Годунова-Прокопова-Сафронова
 void CSolver::calcHydroStageGPS(double t, double tau) {
-	EOS &eos = task.getEOS(); 
+	EOSOld &eos = task.getEOS(); 
 	double gamma = eos.getGamma();
 	double E=0.; 
 	int i=0, nSize = ms.getSize();
@@ -58,9 +58,9 @@ void CSolver::calcHydroStageGushchin(double t, double tau) {
 void CSolver::calcHydroStageSimpleCIR(double t, double tau){
 	int i=0;
 	double p_plus = 0., p_minus = 0.;
-	CField ms_temp;
+	CFieldOld ms_temp;
     ms_temp.initData(&task);
-	EOS &eos = task.getEOS();
+	EOSOld &eos = task.getEOS();
 	int nSize = ms.getSize();
 	double h = ms[1].x - ms[0].x;
 	for(i=0; i<nSize; i++) 	{
@@ -331,7 +331,7 @@ void CSolver::calcHydroStageSimpleCIR(double t, double tau){
 // обновление температур через УРС на каждом этапе. Обновляем только энергии.
 // Нужно ли обновлять давления? -- это вопрос, надо разобраться.
 void CSolver::calcHydroStageGushchinIdealSimple(double t, double tau) {
-	EOS &eos = task.getEOS();
+	EOSOld &eos = task.getEOS();
 	CMethod &method = task.getMethod();
 	ms_temp.initData(&task);
 	double E=0.; int i=0;
@@ -513,7 +513,7 @@ void CSolver::calcHydroStageGushchinIdealSimple(double t, double tau) {
 // Первый вычислительный этап: гидродинамика
 // С вакуумом и подвижной сеткой. То, на основе чего мы собираемся считать реальные задачи с металлом.
 void CSolver::calcHydroStageGushchinMovingGrid(double t, double tau) {
-	EOS &eos = task.getEOS();
+	EOSOld &eos = task.getEOS();
 	CMethod &method = task.getMethod();
 	ms_temp.initData(&task);
 	//Сетка уже сгенерирована в функции go()

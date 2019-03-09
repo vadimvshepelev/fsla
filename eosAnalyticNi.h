@@ -3,12 +3,12 @@
 #define EOSANALYTICNI_H
 
 
-#include "eos.h"
+#include "eosold.h"
 
 
 // јналитическое уравнение состо€ни€ дл€ никел€
 
-class EOSAnalyticNi : public EOS {
+class EOSAnalyticNi : public EOSOld {
 public:
 	EOSAnalyticNi(); 
 	EOSType getType()  { return analyticNi; } 	

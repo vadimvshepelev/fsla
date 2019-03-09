@@ -17,12 +17,11 @@
 
 
 #include "methodEuler.h"
-#include "methodEuler2D.h"
 
 #include<stdlib.h>
 #include<string.h>
-
 #include<iostream>
+
 using namespace std;
 
 CTask::~CTask() {

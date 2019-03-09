@@ -1,11 +1,11 @@
 #ifndef _EOS_ANALYTIC_FE
 #define _EOS_ANALYTIC_FE
 
-#include "eos.h"
+#include "eosold.h"
 
 // јналитическое уравнение состо€ни€ дл€ железа
 
-class EOSAnalyticFe : public EOS
+class EOSAnalyticFe : public EOSOld
 {
 	double  getnuWR(double ro, double ti, double te, double b);
 public:

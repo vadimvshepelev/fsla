@@ -1,11 +1,11 @@
 #ifndef EOSANALYTICAU_H
 #define EOSANALYTICAU_H
 
-#include "eos.h"
+#include "eosold.h"
 
 // Золото
 
-class EOSAnalyticAu : public EOS {
+class EOSAnalyticAu : public EOSOld {
 public:
 	EOSAnalyticAu();
 	EOSType getType() { return analyticAu; }

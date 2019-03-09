@@ -2,7 +2,7 @@
 
 #include "defines.h"
 #include "solver.h"
-#include "matterState.h"
+#include "cfield.h"
 #include "eosFigures.h"
 #include "task.h"
 #include "node.h"
@@ -404,7 +404,7 @@ void CSolver::goAuSpall(char *fName) {
 		double xMeltR=1.0e-6;
 		for(i=0; i<ms.getSize(); i++) {
 			if( (task.getEOS().getphase(ms[i].ro, ms[i].ti) > 1.0)&&
-			(task.getEOS().getphase(ms[i].ro, ms[i].ti) < 3.0) ) {
+ 			(task.getEOS().getphase(ms[i].ro, ms[i].ti) < 3.0) ) {
 				xMeltL = ms[i].x;			
 				break;
 			}
@@ -631,7 +631,7 @@ double CSolver::compTi()
 	return rValue1;
 }
 
-double CSolver::compTi(CField &ms1, CField &ms2)
+double CSolver::compTi(CFieldOld &ms1, CFieldOld &ms2)
 {
 	double rValue1 = fabs(ms1[0].ti - ms2[0].ti);
 	double rValue2 = 0;
@@ -644,7 +644,7 @@ double CSolver::compTi(CField &ms1, CField &ms2)
 }
 
 
-double CSolver::compTe(CField &ms1, CField &ms2)
+double CSolver::compTe(CFieldOld &ms1, CFieldOld &ms2)
 {
 	double rValue1 = fabs(ms1[0].te - ms2[0].te);
 	double rValue2;
@@ -660,7 +660,7 @@ double CSolver::compTe(CField &ms1, CField &ms2)
 	return rValue1;
 }
 
-double CSolver::compE(CField &ms1, CField &ms2)
+double CSolver::compE(CFieldOld &ms1, CFieldOld &ms2)
 {
 	Node* n1=ms1.getnodes();
 	Node* n2=ms2.getnodes();
@@ -680,7 +680,7 @@ double CSolver::compE(CField &ms1, CField &ms2)
 	return rValue1;
 }
 
-double CSolver::compEi(CField &ms1, CField &ms2)
+double CSolver::compEi(CFieldOld &ms1, CFieldOld &ms2)
 {
 	double rValue1 = fabs(ms1[0].ei - ms2[0].ei);
 	double rValue2;
@@ -843,7 +843,7 @@ void CSolver::dumpToFileTestRP(double t, int num) {
 		exit(1);
 	}
 	CVectorPrimitive q;
-	EOS* eos = &(task.getEOS());
+	EOSOld* eos = &(task.getEOS());
 	int nZones = task.getNumZones();
 	double roL = 0., vL = 0., pL = 0., roR = 0., vR = 0., pR = 0., x0 = 0., e = 0., s = 0., IL = 0., IR = 0., IL_an = 0., IR_an = 0, T= 0.;
 	double gamma = 0.; 
@@ -1211,10 +1211,10 @@ int CSolver::calcHydroStage(double t, double tau) {
 	int i=0, counter=0, itNumFull=0, itNumIon=0;
 	double e_prev=0., ei_prev=0., Q=0., dv=0.,
 		   p_next_plus = 0., p_next_minus = 0., p_plus = 0., p_minus = 0.;
-	CField ms_temp, ms_prev;
+	CFieldOld ms_temp, ms_prev;
     ms_temp.initData(&task);
 	ms_prev.initData(&task);
-	EOS &eos = task.getEOS();
+	EOSOld &eos = task.getEOS();
 	int nSize = ms.getSize();
 	double h = ms[0].dm;
 	int itCounter = 0;
@@ -1351,11 +1351,11 @@ int CSolver::calcHydroStageGlass(double t, double tau) {
 	int i=0, counter=0, itNumFull=0, itNumIon=0;
 	double h = ms[0].dm, e_prev=0., ei_prev=0., Q=0, dv=0;
 	double p_next_plus  = 0., p_next_minus = 0., p_plus = 0., p_minus = 0.;
-	CField ms_temp, ms_prev;
+	CFieldOld ms_temp, ms_prev;
     ms_temp.initData(&task);
 	ms_prev.initData(&task);
-	EOS &eos = task.getEOS();
-	EOS &eosGlass = task.getEOSGlass();
+	EOSOld &eos = task.getEOS();
+	EOSOld &eosGlass = task.getEOSGlass();
 	SourceType flag = task.getSourceFlag();
 	int nSize = ms.getSize(), nBound = task.getZone(0).n, itCounter = 0;
 	double *g = new double[nSize];
@@ -1555,9 +1555,9 @@ void CSolver::calcHydroStageSpallation(double t, double tau)
 	int i=0; int counter=0; int itCounter = 0; int iSpall = getSpallCellNum();
 	double Q=0., dv=0.;
 	double p_next_plus = 0.0, p_next_minus = 0.0, p_plus = 0.0, p_minus = 0.0;
-	CField ms_temp, ms_prev;
+	CFieldOld ms_temp, ms_prev;
     ms_temp.initData(&task); ms_prev.initData(&task);
-	EOS &eos = task.getEOS(); int nSize = ms.getSize(); double h = ms[0].dm;
+	EOSOld &eos = task.getEOS(); int nSize = ms.getSize(); double h = ms[0].dm;
 	///// Artificial viscosity
 	double *g = new double[nSize]; for(int i=0; i<nSize; i++) { g[i] = 0.;}
 	if(task.getViscFlag()) {
@@ -1722,10 +1722,10 @@ void CSolver::calcHydroStageNoElectron(double t, double tau) {
 	int i=0, counter=0, itNumFull=0, itNumIon=0;	
 	double e_prev = 0., ei_prev = 0., Alphaei = 0., dv = 0.,
 		   p_next_plus  = 0., p_next_minus = 0., p_plus = 0., p_minus = 0.;
-	CField ms_temp, ms_prev;
+	CFieldOld ms_temp, ms_prev;
     ms_temp.initData(&task);
 	ms_prev.initData(&task);
-	EOS &eos = task.getEOS();
+	EOSOld &eos = task.getEOS();
 	int nSize = ms.getSize();
 	double h = ms[0].dm;
 	int itCounter = 0;
@@ -1987,7 +1987,7 @@ double CSolver::solveti(double tau, int i, double ro_temp, double dv_temp) {
 	double 	ei		 = ms[i].ei,
 			dm		 = ms[i].dm;
 
-	EOS& eos = task.getEOS();
+	EOSOld& eos = task.getEOS();
 
 	double  lowBorder = eos.getMIN_T() + 1.0,
 		   highBorder = eos.getMAX_T() - 1.0;
@@ -2051,7 +2051,7 @@ double CSolver::solvete(double t, double tau, int i, double ro_temp, double dv_t
 
 	double src = 0.0;
 
-	EOS& eos = task.getEOS();
+	EOSOld& eos = task.getEOS();
 	
 	if(eos.getType() == ideal )
 		return 0.0;
@@ -2111,7 +2111,7 @@ double CSolver::solveteConservative(double t, double tau, int i, double ro_temp,
 
 	double src = 0.0;
 
-	EOS& eos = task.getEOS();
+	EOSOld& eos = task.getEOS();
 	
 	if(eos.getType() == ideal )
 		return 0.0;
@@ -2197,7 +2197,7 @@ double CSolver::solveteSource(double t, double tau, int i, double ro_temp, doubl
 	double 	ee		 = ms[i].ee,
 			dm		 = ms[i].dm;
 
-	EOS& eos = task.getEOS();
+	EOSOld& eos = task.getEOS();
 	
 	if(eos.getType() == ideal )
 		return 0.0;
@@ -2279,7 +2279,7 @@ void CSolver::testHeatStage(char* inputFileName, char* outputFileName)
 
 	task.load(inputFileName);
 	ms.initData(&task);
-	EOS &eos = task.getEOS();
+	EOSOld &eos = task.getEOS();
 	
 
 	double t   = 1.0e-8;
@@ -2336,7 +2336,7 @@ void CSolver::testExchangeStage(char* inputFileName, char* outputFileName)
 
 	task.load(inputFileName);
 	ms.initData(&task);
-	EOS &eos = task.getEOS();
+	EOSOld &eos = task.getEOS();
 
 	double t   = 0;
 	double tau = 5.0e-2;
@@ -2723,7 +2723,7 @@ void CSolver::calcHydroStageGodunov(double t, double tau) {
 	double E = 0.;
 	Vector4 Fm = Vector4::ZERO, Fp = Vector4::ZERO;
 	int nSize = ms.getSize();
-	EOS &eos=task.getEOS();
+	EOSOld &eos=task.getEOS();
 	double h = ms[1].x-ms[0].x;
 	double gamma=eos.getGamma();
 	int i=0;
@@ -2818,7 +2818,7 @@ void CSolver::calcHydroStageGodunovMovingMesh(double t, double tau)
 	double E = 0.;
 	Vector4 Fm = Vector4::ZERO, Fp = Vector4::ZERO;
 	int nSize = ms.getSize();
-	EOS &eos=task.getEOS();
+	EOSOld &eos=task.getEOS();
 	double h = 0.;
 	double hNew = 0.;
 	double gamma=eos.getGamma();
@@ -3020,7 +3020,7 @@ void CSolver::calcHydroStageGodunovMovingMesh(double t, double tau)
 }
 
 void CSolver::calcHydroStageMHM(double t, double tau) {
-	EOS &eos = task.getEOS();
+	EOSOld &eos = task.getEOS();
 	double E=0.; 
 	int i=0;
 	int nSize = ms.getSize();
@@ -3176,7 +3176,7 @@ void CSolver::calcHydroStageMHM(double t, double tau) {
 // "Godunov second order" method
 // Riemann solver based on exact solution + simple LSQ reconstruction
 void CSolver::calcHydroStageG2(double t, double tau) {
-	EOS &eos = task.getEOS(); 
+	EOSOld &eos = task.getEOS(); 
 	double gamma = eos.getGamma();
 	double E=0.; 
 	int i=0, j=0, nSize = ms.getSize();
@@ -3266,7 +3266,7 @@ void CSolver::calcHydroStageG2(double t, double tau) {
 
 // Lax-Friedrichs 1st order method
 void CSolver::calcHydroStageLaxFriedrichs(double t, double tau) {
-	EOS &eos = task.getEOS();
+	EOSOld &eos = task.getEOS();
 	unsigned int i=0;
 	const unsigned int nSize = ms.getSize();
 	const double h=ms[1].x-ms[0].x;
@@ -3447,7 +3447,7 @@ Vector4 CSolver::calcF(double ro, double v, double p, double e) {
 
 Vector4 CSolver::calcPhysicalFlux(double ro, double rou, double roE) {
 	if (ro==0) return Vector4::ZERO; 
-	EOS& eos = task.getEOS();
+	EOSOld& eos = task.getEOS();
 	double gamma = eos.getGamma();
 	double u = rou/ro;
 	double E = roE/ro;
@@ -3467,7 +3467,7 @@ Vector4 CSolver::calcPhysicalFluxEOSBin(double ro, double rou, double roE) {
 
 
 void CSolver::calcHydroStageMccormack(double t, double tau) {
-	EOS &eos = task.getEOS();
+	EOSOld &eos = task.getEOS();
 	ms_temp.initData(&task);
 	ms_temp_temp.initData(&task);
 	double E=0.; int i=0;
@@ -3653,7 +3653,7 @@ void CSolver::calcHydroStageMccormack(double t, double tau) {
 }
 
 void CSolver::calcHydroStageRoe(double t, double tau) {
-	EOS &eos = task.getEOS();
+	EOSOld &eos = task.getEOS();
 	double E=0.; 
 	int i=0, nSize = ms.getSize();
 	double h=ms[1].x-ms[0].x;
@@ -3696,7 +3696,7 @@ void CSolver::calcHydroStageRoe(double t, double tau) {
 }
 
 Vector4 CSolver::calcGPSFlux(double roL, double rouL, double roEL, double roR, double rouR, double roER) {
-	EOS& eos = task.getEOS(); 
+	EOSOld& eos = task.getEOS(); 
 	double gamma = eos.getGamma(), _ro=0., _u=0., _p=0., _e=0., _E=0., _sigma = 0., sigmaL = 0., sigmaR = 0.;
 	double uL = rouL/roL, uR = rouR/roR, EL = roEL/roL, ER = roER/roR, eL = EL - 0.5*uL*uL, eR = ER - 0.5*uR*uR, 
 		   pL = (gamma-1.)*roL*eL, pR = (gamma-1.)*roR*eR, cL = sqrt(gamma*pL/roL), cR = sqrt(gamma*pR/roR);
@@ -3720,7 +3720,7 @@ Vector4 CSolver::calcGPSFlux(double roL, double rouL, double roEL, double roR, d
 
 
 Vector4 CSolver::calcRoeFlux(double roL, double rouL, double roEL, double roR, double rouR, double roER) {
-	EOS &eos = task.getEOS(); double gamma = eos.getGamma();
+	EOSOld &eos = task.getEOS(); double gamma = eos.getGamma();
 	double uL = rouL/roL, eL = roEL/roL - 0.5*uL*uL, uR = rouR/roR, eR = roER/roR - 0.5*uR*uR;
 	double pL = (gamma-1.)*roL*eL, pR = (gamma-1.)*roR*eR, cL = sqrt(gamma*pL/roL), cR = sqrt(gamma*pR/roR);
 	double EL = roEL/roL, ER = roER/roR, HL = (roEL + pL)/roL, HR = (roER + pR)/roR;
@@ -3789,7 +3789,7 @@ Vector4 CSolver::calcRoeFlux(double roL, double rouL, double roEL, double roR, d
 }
 
 Vector4 CSolver::calcGodunovFlux(double roL, double rouL, double roEL, double roR, double rouR, double roER) {
-	EOS &eos=task.getEOS(); double gamma=eos.getGamma();	
+	EOSOld &eos=task.getEOS(); double gamma=eos.getGamma();	
 	double uL = rouL/roL, uR = rouR/roR;
 	double pL = (gamma-1.)*(roEL - .5*roL*uL*uL), pR = (gamma-1.)*(roER - .5*roR*uR*uR);
 	CVectorPrimitive res = calcRPAnalyticalSolution(roL, uL, pL, roR, uR, pR, 0., .01);
@@ -4310,7 +4310,7 @@ void CSolver::testSaveSolution(char *inputFileName)
 
 void CSolver::testEOSControlNumbers(double _ro, double _ti, double _te) {
 	//double _ro = 19301., _ti = 1000., _te = 1000.;
-	EOS& eos = task.getEOS();
+	EOSOld& eos = task.getEOS();
 	cout << endl <<"Gold EOS test" << endl;
 	cout << "ro = " << _ro << " kg/m3, ti = " << _ti <<" K, te = " << _te << " K" << endl;
 	double _ei = eos.getei(_ro, _ti); double _eiToCGSMul = 1.e-6;

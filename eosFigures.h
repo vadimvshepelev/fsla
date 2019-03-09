@@ -6,13 +6,13 @@
 	демонстрирующих свойства уравнения состояния.
 */
 
-#include "eos.h"
+#include "eosold.h"
 #include "eosTable.h"
 
 class EOSFigures
 {
 public:
-	EOSFigures(EOS* _eos);
+	EOSFigures(EOSOld* _eos);
 	void writeIsoterms(char *outputFileName);
 	void writePiEi(char *outputFileName);
 	void writePeEe(char *outputFileName);
@@ -38,10 +38,10 @@ public:
 	void writeColdCurve(char* outputFileName);
 
 
-	EOS	 &getEOS() { return *eos; }
+	EOSOld	 &getEOS() { return *eos; }
 
 private:
-	EOS* eos;
+	EOSOld* eos;
 
 	double getTiFromEntropy(double ro, double s, double low_border, double high_border);
 };

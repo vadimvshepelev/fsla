@@ -1,30 +1,28 @@
-#include "matterState.h"
+#include "cfield.h"
 #include "task.h"
-
-#include "eos.h"
+#include "eosold.h"
 #include "eosTable.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-
 #include <fstream>
 
 using namespace std;
 
-CField::CField() {
+CFieldOld::CFieldOld() {
 	nodes = 0;
 	nSize = 0;
 }
 
 
-CField::~CField() {
+CFieldOld::~CFieldOld() {
 	clearData();
 }
 
 
-void CField::initData(CTask *task) {
+void CFieldOld::initData(CTask *task) {
 	clearData();
 	nSize = task->getTotalSize();
 	nodes = new Node[nSize+1];
@@ -33,8 +31,8 @@ void CField::initData(CTask *task) {
 	double nextX   = 0.0;
 	unsigned int counter = 0;
 	unsigned int i = 0;
-	EOS &eos = task->getEOS();
-	EOS &eosGlass = task->getEOSGlass();
+	EOSOld &eos = task->getEOS();
+	EOSOld &eosGlass = task->getEOSGlass();
 	for(i=0; i<task->getNumZones(); i++) {
 		Zone &zone = task->getZone(i);
 		//DEBUG///////////////////////////////
@@ -198,14 +196,14 @@ void CField::initData(CTask *task) {
 }
 
 
-void CField::clearData()
+void CFieldOld::clearData()
 {
 	delete[] nodes;
 	nodes = 0;
 	nSize = 0;
 }
 
-double CField::loadData(string fName, int nCut) {
+double CFieldOld::loadData(string fName, int nCut) {
 	string buf = string("");
 	string fullName = string(OUTPUT_FOLDER) + fName;
 	ifstream fInput;
@@ -288,7 +286,7 @@ double CField::loadData(string fName, int nCut) {
 
 
 
-void CField::setEdge(Node &n, double x, double dm)
+void CFieldOld::setEdge(Node &n, double x, double dm)
 {
 	n.x  = x;
 	n.v  = 0;
@@ -329,7 +327,7 @@ void CField::setEdge(Node &n, double x, double dm)
 }
 
 
-void CField::setEdgeTransparent()
+void CFieldOld::setEdgeTransparent()
 {
 	left_edge.x   = nodes[0].x - (nodes[1].x - nodes[0].x);
 /*	left_edge.ro  = 0.; 

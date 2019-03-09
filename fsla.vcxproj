@@ -66,8 +66,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ceos.cpp" />
+    <ClCompile Include="csimulation.cpp" />
     <ClCompile Include="CTestToro.cpp" />
-    <ClCompile Include="eos.cpp" />
+    <ClCompile Include="eosold.cpp" />
     <ClCompile Include="eosAnalytic.cpp" />
     <ClCompile Include="eosAnalyticAu.cpp" />
     <ClCompile Include="eosAnalyticFe.cpp" />
@@ -85,10 +86,9 @@
     <ClCompile Include="eosTable_table.cpp" />
     <ClCompile Include="eos\EOSBin.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="matterState.cpp" />
+    <ClCompile Include="cfield.cpp" />
     <ClCompile Include="method.cpp" />
     <ClCompile Include="methodEuler.cpp" />
-    <ClCompile Include="methodEuler2D.cpp" />
     <ClCompile Include="solver.cpp" />
     <ClCompile Include="solvers\ENO.cpp" />
     <ClCompile Include="solvers\godunov-EOSBin.cpp" />
@@ -103,9 +103,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ceos.h" />
+    <ClInclude Include="csimulation.h" />
     <ClInclude Include="CTestToro.h" />
     <ClInclude Include="defines.h" />
-    <ClInclude Include="eos.h" />
+    <ClInclude Include="eosold.h" />
     <ClInclude Include="eosAnalytic.h" />
     <ClInclude Include="eosAnalyticAu.h" />
     <ClInclude Include="eosAnalyticFe.h" />
@@ -124,10 +125,9 @@
     <ClInclude Include="eosTable_table.h" />
     <ClInclude Include="eosTest.h" />
     <ClInclude Include="eos\EOSBin.h" />
-    <ClInclude Include="matterState.h" />
+    <ClInclude Include="cfield.h" />
     <ClInclude Include="method.h" />
     <ClInclude Include="methodEuler.h" />
-    <ClInclude Include="methodEuler2D.h" />
     <ClInclude Include="node.h" />
     <ClInclude Include="solver.h" />
     <ClInclude Include="task.h" />

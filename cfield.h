@@ -10,11 +10,11 @@ using namespace std;
 
 class CTask;
 
-class CField {
+class CFieldOld {
 public:
 
-	CField();
-	~CField();
+	CFieldOld();
+	~CFieldOld();
 
 	void	initData(CTask *task);
 	void	clearData();

@@ -13,7 +13,7 @@
 
 using namespace std;
 
-EOSFigures::EOSFigures(EOS* _eos) : eos(_eos)
+EOSFigures::EOSFigures(EOSOld* _eos) : eos(_eos)
 {}
 
 void EOSFigures::writeIsoterms(char *outputFileName)

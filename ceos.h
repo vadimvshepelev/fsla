@@ -25,11 +25,13 @@ public:
 class CEOSMieGruneisen : public CEOS {
 public:
 	const double ro0;
-	//CEOSMieGruneisen(): ro0(0.) {}
+	CEOSMieGruneisen(): ro0(998.2) {}            // [kg/m3]
 	CEOSMieGruneisen(double _ro0) : ro0(_ro0) {}
 	double getp(double ro, double e);
 	double gete(double ro, double p);
 	double getc(double ro, double e);
+private:
+	double getG(double ro);
 };
 
 

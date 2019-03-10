@@ -2,7 +2,7 @@
 #define _SOLVER_H_
 
 #include "task.h"
-#include <complex>
+#include "ceos.h"
 
 using namespace std;
 
@@ -53,6 +53,10 @@ public:
 	double dfLdpEOSBin(double p, double roL, double vL, double pL);
 	double fREOSBin(double p, double roR, double vR, double pR);
 	double dfRdpEOSBin(double p, double roR, double vR, double pR);
+	// Аппарат для точного решения задачи о распаде разрыва с УРС Ми-Грюнайзена 
+	CVectorPrimitive calcRPExactMillerPuckett(CEOSMieGruneisen const& eos, double roL, double vL, double pL, double roR, double vR, double pR, double x, double t);
+	RPSolutionPrimitive CSolver::solveRPMieGruneisen(CEOSMieGruneisen const& eos, double roL, double vL, double pL, double roR, double vR, double pR);
+	
 	double getdx(); 	
 private:
 	//double getEntropy(double ro, double ti, double te);
@@ -106,8 +110,6 @@ private:
 	Vector4 calcHLLFluxEOSBin(double roL, double rouL, double roEL, double roR, double rouR, double roER);
 	// Для двучленного УРС
 	Vector4 calcGodunovFluxEOSBin(double roL, double rouL, double roEL, double roR, double rouR, double roER);
-	void	solveRiemann();
-	void	solveHelmholtz(void);
 	void	testSolveHelmholtz(void);
 	void	sweep(double *u, double *A, double *B, double *C, double *F, int size);
 	void    sweepComplex(complex<double>* u, complex<double>* A, complex<double>* B, complex<double>* C,

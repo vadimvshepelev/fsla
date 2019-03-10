@@ -7,6 +7,7 @@
 #include "task.h"
 #include "node.h"
 #include "methodEuler.h"
+#include "ceos.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -73,6 +74,16 @@ void CSolver::goEuler(char* fName) {
 	for(i=0; i<nTimes; i++) {
 		timesArray[i] = (tMax-tInit)/(nTimes-1)*i;
 	}
+
+
+
+	// For Mie-Gruneisen Riemann solver tests
+	CEOSMieGruneisen eos;
+
+
+
+
+
 	for(;;)	{
 		tau = calcTimeStepEuler(t);
 		if(t+tau >tMax) tau = tMax-t;
@@ -88,8 +99,7 @@ void CSolver::goEuler(char* fName) {
 		//if(task.getHydroStage()) calcHydroStageG2(t, tau);	
 		if(task.getHydroStage()) calcHydroStageENO2G(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageENO3G(t, tau);	
-
-
+		
 
 
 		if(counter == 26) {
@@ -2369,149 +2379,6 @@ void CSolver::testExchangeStage(char* inputFileName, char* outputFileName)
 	fclose(f1);
 }
 
-void CSolver::solveHelmholtz(void)
-{
-	int nSize = ms.getSize();
-
-	double *u = new double[nSize],	
-		   *k = new double[nSize];
-
-	double *A = new double[nSize],
-		   *B = new double[nSize],
-		   *C = new double[nSize],
-		   *F = new double[nSize];
-	
-	int i=0;
-
-	for(i=0; i<nSize; i++)
-	{
-		A[i]=0.0;
-		B[i]=0.0;
-		C[i]=0.0;
-		F[i]=0.0;
-		u[i]=0.0;
-		
-		k[i]=16.0;
-	}
-
-	double h = ms[1].x - ms[0].x;
-
-/* Решаем действительное уравнение **********/
-
-	      C[0]=-1.0;       F[0]=0.0; 
-	C[nSize-1]=-1.0; F[nSize-1]=-sin(8.0);	
-
-	for(i=1; i<nSize-1; i++)
-	{
-		A[i] = 1.0;
-		B[i] = 1.0;
-		C[i] = 2.0 - h*h*k[i];
-		F[i] = 0.0;
-	}	
-
-	sweep(u, A, B, C, F, nSize);
-
-/***********************************/
-
-//  А теперь решаем комплексное уравнение!!!
-
-	complex<double> *_u = new complex<double>[nSize];
-	complex<double> *_k = new complex<double>[nSize];
-	complex<double> *_a = new complex<double>[nSize];
-	complex<double> *_b = new complex<double>[nSize];
-	complex<double> *_c = new complex<double>[nSize];
-	complex<double> *_f = new complex<double>[nSize];
-
-	h = ms[0].dm;
-	
-	for(i=0; i<nSize; i++)
-	{
-		_u[i] = complex<double>(0.0, 0.0);
-	
-	// DEBUG!!! ///////////////////////////////////
-	// Сюда (в член k) пока полностью зашито выражение k^2*eps	
-		_k[i] = complex<double>(3.0, 4.0);
-	///////////////////////////////////////////////
-		_a[i] = complex<double>(0.0, 0.0);
-		_b[i] = complex<double>(0.0, 0.0);
-		_c[i] = complex<double>(0.0, 0.0);
-		_f[i] = complex<double>(0.0, 0.0);
-	}
-
-	// DEBUG!!! для тестовых целей вставим неоднородную плотность !!!
-
-/*	for(int i=0; i<nSize; i++)
-	{
-		ms[i].ro = 2.0 + sin(i);
-	}	
-*/
-	//////////////////////////////////////////////////////////////////
-
-
-	for(i=1; i<nSize-1; i++)
-	{
-		double ro_plus  = 0.5*(ms[i].ro+ms[i+1].ro);
-		double ro_minus = 0.5*(ms[i].ro+ms[i-1].ro);
-				
-		_a[i] = complex<double>(ro_minus, 0.0);
-		_b[i] = complex<double>(ro_plus, 0.0);
-		_c[i] = _a[i] + _b[i] - h*h*_k[i]/ms[i].ro;
-		_f[i] = complex<double>(0.0, 0.0);
-	}
-	
-	_c[0] = complex<double>(1.0, 0.0);
-	_f[0] = complex<double>(1.0, 0.0);
-
-	_c[nSize-1] = complex<double>(1.0, 0.0);
-	_f[nSize-1] = complex<double>(exp(-2.0)*cos(4.0), exp(-2.0)*sin(4.0));
-
-	sweepComplex(_u, _a, _b, _c, _f, nSize);
-
-//  Вывод решения
-
-	FILE *f1  = fopen("helmholtz.dat", "w+");
-    fprintf(f1, "TITLE=\"Helmholtz equation solution\"\n");
-	fprintf(f1, 
-	"VARIABLES=\"x\",\"u\",\"an\",\"k\",\"Re uC\",\"Im uC\",\"ReuCan\",\"ImuCan\"\n");
-	for(i=0; i<nSize; i++)
-	{
-		fprintf(f1, "%e %e %e %e %e %e %e %e\n", 
-		   ms[i].x, u[i], sin(4.0*ms[i].x), k[i], _u[i].real(), _u[i].imag(),
-		   exp(-ms[i].x)*cos(2.0*ms[i].x), exp(-ms[i].x)*sin(2.0*ms[i].x));
-	}
-
-	fclose(f1);
-
-
-////// DEBUG!!!/////////
-
-	for(i=1; i<nSize-1; i++)
-	{
-		double t1 = A[i]*u[i-1] - C[i]*u[i] + B[i]*u[i+1];
-		double t2 = -F[i];
-	}
-
-////////////////////////
-
-
-
-	delete []A;
-	delete []B;
-	delete []C;
-	delete []F;
-	delete []u;
-	delete []k;
-
-	delete []_a;
-	delete []_b;
-	delete []_c;
-	delete []_f;
-	delete []_u;
-	delete []_k;
-
-
-
-}
 
 void CSolver::sweep(double *u, double *A, double *B, double *C, double *F, int size)
 {
@@ -2545,180 +2412,6 @@ void CSolver::sweep(double *u, double *A, double *B, double *C, double *F, int s
 
 }
 
-void CSolver::sweepComplex(complex<double>* u, 
-						   complex<double>* A,
-						   complex<double>* B,
-						   complex<double>* C,
-						   complex<double>* F,
-						   int size)
-{
-	complex	<double>*alpha = new complex<double>[size];
-	complex	<double> *beta = new complex<double>[size];
-	int i=0;
-
-	alpha[0] = 0.0;
-	 beta[0] = 0.0;
-		
-	for(i=0; i<size-1; i++)
-	{
-		alpha[i+1] = B[i] / (C[i]-A[i]*alpha[i]);
-		 beta[i+1] = (A[i]*beta[i]+F[i]) / (C[i]-A[i]*alpha[i]);
-	}
-
-	// Обратная прогонка
-
-//	teR = (AR/CR*betaR + FR/CR) / (1.0 - AR/CR*alphaR);
-
-	u[size-1] = (A[size-1]/C[size-1]*beta[size-1] + F[size-1]/C[size-1]) /
-		        (1.0 - A[size-1]/C[size-1]*alpha[size-1]);
-
-	for(i=size-2; i>=0; i--)
-	{
-		u[i] = alpha[i+1] * u[i+1] + beta[i+1];
-	}
-
-}
-
-void CSolver::testSolveHelmholtz(void)
-{
-	int nSize = ms.getSize();
-
-	double *u = new double[nSize],	
-		   *k = new double[nSize];
-
-	double *A = new double[nSize],
-		   *B = new double[nSize],
-		   *C = new double[nSize],
-		   *F = new double[nSize];
-	int i=0;
-	
-	for(i=0; i<nSize; i++)
-	{
-		A[i]=0.0;
-		B[i]=0.0;
-		C[i]=0.0;
-		F[i]=0.0;
-		u[i]=0.0;
-		
-		k[i]=16.0;
-	}
-
-	double h = ms[1].x - ms[0].x;
-
-/* Решаем действительное уравнение **********/
-
-	      C[0]=-1.0;       F[0]=0.0; 
-	C[nSize-1]=-1.0; F[nSize-1]=-sin(8.0);	
-
-	for(i=1; i<nSize-1; i++)
-	{
-		A[i] = 1.0;
-		B[i] = 1.0;
-		C[i] = 2.0 - h*h*k[i];
-		F[i] = 0.0;
-	}	
-
-	sweep(u, A, B, C, F, nSize);
-
-/***********************************/
-
-//  А теперь решаем комплексное уравнение!!!
-
-	complex<double> *_u = new complex<double>[nSize];
-	complex<double> *_k = new complex<double>[nSize];
-	complex<double> *_a = new complex<double>[nSize];
-	complex<double> *_b = new complex<double>[nSize];
-	complex<double> *_c = new complex<double>[nSize];
-	complex<double> *_f = new complex<double>[nSize];
-
-	h = ms[0].dm;
-	
-	for(i=0; i<nSize; i++)
-	{
-		_u[i] = complex<double>(0.0, 0.0);
-	
-	// DEBUG!!! ///////////////////////////////////
-	// Сюда (в член k) пока полностью зашито выражение k^2*eps	
-		_k[i] = complex<double>(3.0, 4.0);
-	///////////////////////////////////////////////
-		_a[i] = complex<double>(0.0, 0.0);
-		_b[i] = complex<double>(0.0, 0.0);
-		_c[i] = complex<double>(0.0, 0.0);
-		_f[i] = complex<double>(0.0, 0.0);
-	}
-
-	// DEBUG!!! для тестовых целей вставим неоднородную плотность !!!
-
-/*	for(int i=0; i<nSize; i++)
-	{
-		ms[i].ro = 2.0 + sin(i);
-	}	
-*/
-	//////////////////////////////////////////////////////////////////
-
-
-	for(i=1; i<nSize-1; i++)
-	{
-		double ro_plus  = 0.5*(ms[i].ro+ms[i+1].ro);
-		double ro_minus = 0.5*(ms[i].ro+ms[i-1].ro);
-				
-		_a[i] = complex<double>(ro_minus, 0.0);
-		_b[i] = complex<double>(ro_plus, 0.0);
-		_c[i] = _a[i] + _b[i] - h*h*_k[i]/ms[i].ro;
-		_f[i] = complex<double>(0.0, 0.0);
-	}
-	
-	_c[0] = complex<double>(1.0, 0.0);
-	_f[0] = complex<double>(1.0, 0.0);
-
-	_c[nSize-1] = complex<double>(1.0, 0.0);
-	_f[nSize-1] = complex<double>(exp(-2.0)*cos(4.0), exp(-2.0)*sin(4.0));
-
-	sweepComplex(_u, _a, _b, _c, _f, nSize);
-
-//  Вывод решения
-
-	FILE *f1  = fopen("helmholtz.dat", "w+");
-    fprintf(f1, "TITLE=\"Helmholtz equation solution\"\n");
-	fprintf(f1, 
-	"VARIABLES=\"x\",\"u\",\"an\",\"k\",\"Re uC\",\"Im uC\",\"ReuCan\",\"ImuCan\"\n");
-	for(i=0; i<nSize; i++)
-	{
-		fprintf(f1, "%e %e %e %e %e %e %e %e\n", 
-		   ms[i].x, u[i], sin(4.0*ms[i].x), k[i], _u[i].real(), _u[i].imag(),
-		   exp(-ms[i].x)*cos(2.0*ms[i].x), exp(-ms[i].x)*sin(2.0*ms[i].x));
-	}
-
-	fclose(f1);
-
-
-////// DEBUG!!!/////////
-
-	for(i=1; i<nSize-1; i++)
-	{
-		double t1 = A[i]*u[i-1] - C[i]*u[i] + B[i]*u[i+1];
-		double t2 = -F[i];
-	}
-
-////////////////////////
-
-
-
-	delete []A;
-	delete []B;
-	delete []C;
-	delete []F;
-	delete []u;
-	delete []k;
-
-	delete []_a;
-	delete []_b;
-	delete []_c;
-	delete []_f;
-	delete []_u;
-	delete []_k;
-}
-
 void CSolver::calcHydroStageGodunov(double t, double tau) {
 	double E = 0.;
 	Vector4 Fm = Vector4::ZERO, Fp = Vector4::ZERO;
@@ -2732,21 +2425,6 @@ void CSolver::calcHydroStageGodunov(double t, double tau) {
 	// Потоки считаем по решению задачи Римана о распаде разрыва между ячейками
 	for(i=0; i<nSize; i++) {
 		Node& n=ms[i];
-
-
-
-
-		if(i==49) {
-
-			double qq = 0.;
-
-		}
-
-
-
-
-
-
 		if(i!=0) {
 			Node& nm=ms[i-1];
 			res = calcRPAnalyticalSolution(nm.ro, nm.v, nm.p, n.ro, n.v, n.p, 0., tau);

@@ -30,7 +30,6 @@ public:
 	double getp(double ro, double e);
 	double gete(double ro, double p);
 	double getc(double ro, double e);
-private:
 	double getG(double ro);
 };
 

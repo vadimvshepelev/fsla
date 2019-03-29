@@ -1270,7 +1270,13 @@ CVectorPrimitive CSolver::calcRPAnalyticalSolution(double roL, double vL, double
 
 
 // Точный Риманосвский солвер для (предположительно, произвольного) УРС в форме Ми-Грюнайзена
-CVectorPrimitive CSolver::calcRPExactMillerPuckett(CEOSMieGruneisen const& eos, double roL, double vL, double pL, double roR, double vR, double pR, double x, double t) {
+CVectorPrimitive CSolver::calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double roL, double vL, double pL, double roR, double vR, double pR, double x=0., double t=1.) {
+	const double gammaL = eos.getG(roL), gammaR = eos.getG(roR);
+	const double KHL = 
+	const double KSL = 
+
+
+
 /*	RPSolutionPrimitive res = solveRP(roL, vL, pL, roR, vR, pR);
 	// V = (ro, v, p)T
 	CVectorPrimitive V;
@@ -1411,6 +1417,7 @@ CVectorPrimitive CSolver::calcRPExactMillerPuckett(CEOSMieGruneisen const& eos, 
 }
 
 RPSolutionPrimitive CSolver::solveRPMieGruneisen(CEOSMieGruneisen const& eos, double roL, double vL, double pL, double roR, double vR, double pR) {
+	
 
 	/*
 	// Решаем нелинейное уравнение относительно давления методом касательных Ньютона

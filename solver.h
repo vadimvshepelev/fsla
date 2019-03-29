@@ -54,7 +54,7 @@ public:
 	double fREOSBin(double p, double roR, double vR, double pR);
 	double dfRdpEOSBin(double p, double roR, double vR, double pR);
 	// Аппарат для точного решения задачи о распаде разрыва с УРС Ми-Грюнайзена 
-	CVectorPrimitive calcRPExactMillerPuckett(CEOSMieGruneisen const& eos, double roL, double vL, double pL, double roR, double vR, double pR, double x, double t);
+	CVectorPrimitive calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double roL, double vL, double pL, double roR, double vR, double pR, double x, double t);
 	RPSolutionPrimitive CSolver::solveRPMieGruneisen(CEOSMieGruneisen const& eos, double roL, double vL, double pL, double roR, double vR, double pR);
 	
 	double getdx(); 	

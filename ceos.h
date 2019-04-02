@@ -24,13 +24,16 @@ public:
 
 class CEOSMieGruneisen : public CEOS {
 public:
-	const double ro0;
-	CEOSMieGruneisen(): ro0(998.2) {}            // [kg/m3]
-	CEOSMieGruneisen(double _ro0) : ro0(_ro0) {}
+	const double ro0, e0;
+	CEOSMieGruneisen(): ro0(998.2), e0(1000./ro0*(-1.15e9/.85*pow(998.2/ro0, .85))) {}     // ro0 = [kg/m3], e0 = [J/kg]
+	CEOSMieGruneisen(double _ro0, double _e0) : ro0(_ro0), e0(_e0) {}
 	double getp(double ro, double e);
 	double gete(double ro, double p);
 	double getc(double ro, double e);
 	double getG(double ro);
+
+	double getGPrime(double ro);
+	double getp0Prime(double ro);
 };
 
 

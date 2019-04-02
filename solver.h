@@ -55,7 +55,7 @@ public:
 	double dfRdpEOSBin(double p, double roR, double vR, double pR);
 	// Аппарат для точного решения задачи о распаде разрыва с УРС Ми-Грюнайзена 
 	CVectorPrimitive calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double roL, double vL, double pL, double roR, double vR, double pR, double x, double t);
-	RPSolutionPrimitive CSolver::solveRPMieGruneisen(CEOSMieGruneisen const& eos, double roL, double vL, double pL, double roR, double vR, double pR);
+	RPSolutionPrimitive solveRPMieGruneisen(CEOSMieGruneisen const& eos, double roL, double vL, double pL, double roR, double vR, double pR);
 	
 	double getdx(); 	
 private:
@@ -142,9 +142,9 @@ private:
 	// Функции для сохранения и загрузки всех массивов
 	void	saveSolution(const char* fName, double t);
 	double  loadSolution(char* fName);
-	void	getEulerAnalyticApproximation(int i, double t, double *p_an, double *v_an, double *ro_an);
+	/*void	getEulerAnalyticApproximation(int i, double t, double *p_an, double *v_an, double *ro_an);
 	void	getEulerAnalyticApproximationGrid(int i, double x, double t, double *p_an, double *v_an, double *ro_an);
-	void	getLagrangeAnalyticApproximation(int i, double t, double *p_an, double *v_an, double *ro_an);
+	void	getLagrangeAnalyticApproximation(int i, double t, double *p_an, double *v_an, double *ro_an);*/
 	int getSpallCellNum(void) {return spallCellNum;}
 	// Служебная функция для инициализации двух переменных 
 	// солвера уже после загрузки задачи.

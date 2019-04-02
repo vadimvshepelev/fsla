@@ -1272,8 +1272,14 @@ CVectorPrimitive CSolver::calcRPAnalyticalSolution(double roL, double vL, double
 // Точный Риманосвский солвер для (предположительно, произвольного) УРС в форме Ми-Грюнайзена
 CVectorPrimitive CSolver::calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double roL, double vL, double pL, double roR, double vR, double pR, double x=0., double t=1.) {
 	const double gammaL = eos.getG(roL), gammaR = eos.getG(roR);
-	const double KHL = 
-	const double KSL = 
+	const double K0S = eos.ro0*eos.getc(eos.ro0, eos.e0);
+	const double eL = eos.gete(roL, pL), eR = eos.gete(roR, pR), cL = eos.getc(roL, eL), cR = eos.getc(roR, cR);
+	const double KSL = roL*cL*cL, KSR = roL*cR*cR;
+	const double KSPrimeL = 
+	double a0L = cL, a0R = cR;
+
+
+
 
 
 

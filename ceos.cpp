@@ -44,7 +44,7 @@ double CEOSMieGruneisen::gete(double ro, double p) {
 	const double xi = .85; 
 	// Cold component, Born-Meyer potential 
 	double x = ro/ro0;
-	double p0 =  A*pow(x, -beta+1.) * exp(b*(1.-pow(x, -beta))) - K*(pow(x, xi+1.)); 
+	double p0 =  x*(A*pow(x, -beta+1.) * exp(b*(1.-pow(x, -beta))) - K*(pow(x, xi+1.))); 
 	double e0 = 1000./ro0*(A/beta/b * exp(b*(1.-pow(x, -beta))) - K/xi*pow(x, xi));
 	double G = getG(ro);
 	double e = e0 + ro/G*(p-p0);
@@ -52,8 +52,32 @@ double CEOSMieGruneisen::gete(double ro, double p) {
 }
 
 double CEOSMieGruneisen::getc(double ro, double p) {
+	
 	return 0.;
 }
+
+double CEOSMieGruneisen::getGPrime(double ro) {
+	
+	return 0.;
+}
+	
+double CEOSMieGruneisen::getp0Prime(double ro) {
+	const double A = .7626e9; // [Pa]
+	const double b = 11.55;   	
+	const double K = 1.15e9;  // [Pa]
+	const double beta = .3333; 
+	const double xi = .85; 
+	double x = ro/ro0;
+	double p0Prime = A*pow(x, -beta+1.) * exp(b*(1.-pow(x, -beta))) - K*(pow(x, xi+1.)) + 
+		             A*(-beta+1.)*pow(x, -beta)*exp(b*(1.-pow(x, -beta))) + A*pow(x, -beta+1.) * exp(b*(1.-pow(x, -beta))) * 
+	
+		
+		x*(         A*pow(x, -beta+1.) * exp(b*(1.-pow(x, -beta))) - K*(pow(x, xi+1.))); 
+
+	return 0.;
+}
+
+
 
 
 // Значения констант для широкодиапазонных (по-видимому) УРС Ломоносова

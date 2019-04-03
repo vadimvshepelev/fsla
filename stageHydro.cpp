@@ -1270,14 +1270,30 @@ CVectorPrimitive CSolver::calcRPAnalyticalSolution(double roL, double vL, double
 
 
 // Точный Риманосвский солвер для (предположительно, произвольного) УРС в форме Ми-Грюнайзена
-CVectorPrimitive CSolver::calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double roL, double vL, double pL, double roR, double vR, double pR, double x=0., double t=1.) {
+CVectorPrimitive CSolver::calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double roL, double uL, double pL, double roR, double uR, double pR, double x=0., double t=1.) {
 	const double gammaL = eos.getG(roL), gammaR = eos.getG(roR);
 	const double K0S = eos.ro0*eos.getc(eos.ro0, eos.e0);
 	const double eL = eos.gete(roL, pL), eR = eos.gete(roR, pR), cL = eos.getc(roL, eL), cR = eos.getc(roR, cR);
 	const double KSL = roL*cL*cL, KSR = roL*cR*cR;
-	const double KSPrimeL = 
-	double a0L = cL, a0R = cR;
-
+	//////////////
+	const double KSPrimeL = 0., KSPrimeR; // Аккуратно посчитать через первые и вторые производные, просто это надо чуть времени
+	/////////////
+	double a0L = cL, a1L = (KSPrimeL + 1.)/4., a0R = cR, a1R = (KSPrimeR + 1.)/4.; 
+	double b0 = pL-pR + roL*uL*(a0L+a1L*uL) + roR*uR*(a0L-a1R*uR),
+		   b1 = -roL*(a0L+2.*a1L*uL) - roR*(a0R-2.*a1R*uR),
+		   b2 = roL*a1L - roR*a1R;
+	double uContact = (-b1 - sqrt(b1*b1-4.*b0*b2))/2./b2;
+	double pLHat = 0., pRHat = 0.;
+	if(uL>uR) {
+		pLHat = pL + roL*(uL-uR)*(a0L + a1L*(uL-uR)); 
+		pRHat = pR + roR*(uL-uR)*(a0R + a1R*(uL-uR));
+	} else {
+		pLHat = pL + roL*a0L*(uL-uR);
+		pRHat = pR + roR*a0R*(uL-uR);
+	}
+	if(pL>pRHat) a1L = 0.; 
+	if(pR>pLHat) a1R = 0.;
+		
 
 
 

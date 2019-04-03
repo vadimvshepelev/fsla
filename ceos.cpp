@@ -18,7 +18,6 @@ double CEOSMieGruneisen::getG(double ro) {
 	// Здесь используем только жидкую фазу! Можно будет дифференцировать при усложнении
 	const double CV = CVLiq;
 	double G = R/CV/M*(a0 + (1.-a0)*exp(-pow(x/.5273, 1.7)) + a1*exp(-pow(x/1.0904, -3.5)) + a2*exp(-pow(x/1.3927, -5.)));
-
 }
 
 double CEOSMieGruneisen::getp(double ro, double e) {
@@ -52,13 +51,33 @@ double CEOSMieGruneisen::gete(double ro, double p) {
 }
 
 double CEOSMieGruneisen::getc(double ro, double p) {
-	
-	return 0.;
+	const double A = .7626e9; // [Pa]
+	const double b = 11.55;   	
+	const double K = 1.15e9;  // [Pa]
+	const double beta = .3333; 
+	const double xi = .85;
+	double x = ro/ro0;
+	double G = getG(ro);
+	double p0 = A*pow(x, -beta+1.) * exp(b*(1.-pow(x, -beta))) - K*(pow(x, xi+1.)); 
+	double p0Prime = getp0Prime(ro);
+	double GPrime = getGPrime(ro);
+	double c2 = 1/ro0*(p0Prime + (GPrime/G + 1./x + G/x)*(p-p0));
+	return sqrt(c2);
 }
 
 double CEOSMieGruneisen::getGPrime(double ro) {
-	
-	return 0.;
+	double x = ro/ro0;
+	const double a0 = 2.95, a1 = 2.408, a2 = 12.151;
+	const double M = 18.;     // [g/mole]
+	const double CVLiq = 4150.;   // [J/kg/K] 
+	const double CVGas = 1430.;	  // [J/kg/K]
+	const double R = 8.31;        // [J/mole/K]
+	// Здесь используем только жидкую фазу! Можно будет дифференцировать при усложнении
+	const double CV = CVLiq;
+	double GPrime = R/CV/M*((1.-a0)*exp(-pow(x/.5273, 1.7))*pow(x/.5273, -2.7)*(-1.7/.5273) + 
+		                        a1 *exp(-pow(x/1.0904, -3.5))*pow(x/1.0904, -4.5)*(3.5/1.0904) +
+								a2 *exp(-pow(x/1.3927, -5.0))*pow(x/1.3927, -6.0)*(5.0/1.3927);
+	return GPrime;
 }
 	
 double CEOSMieGruneisen::getp0Prime(double ro) {
@@ -68,20 +87,16 @@ double CEOSMieGruneisen::getp0Prime(double ro) {
 	const double beta = .3333; 
 	const double xi = .85; 
 	double x = ro/ro0;
-	double p0Prime = A*pow(x, -beta+1.) * exp(b*(1.-pow(x, -beta))) - K*(pow(x, xi+1.)) + 
-		             A*(-beta+1.)*pow(x, -beta)*exp(b*(1.-pow(x, -beta))) + A*pow(x, -beta+1.) * exp(b*(1.-pow(x, -beta))) * 
-	
-		
+	double p0Prime = /*A*pow(x, -beta+1.) * exp(b*(1.-pow(x, -beta))) - K*(pow(x, xi+1.)) + 
+		             A*(-beta+1.)*pow(x, -beta)*exp(b*(1.-pow(x, -beta))) + A*pow(x, -beta+1.) * exp(b*(1.-pow(x, -beta))) * 		
 		x*(         A*pow(x, -beta+1.) * exp(b*(1.-pow(x, -beta))) - K*(pow(x, xi+1.))); 
-
-	return 0.;
+		*/
+		A*pow(x, -beta)*exp(b*(1.-pow(x, -beta))) - K*pow(x, xi) + 
+		A*beta*exp(b*(1.-pow(x, -beta)))*(-pow(x, -beta) + pow(x, -2.*beta)) - K*xi*pow(x, xi);
+	return p0Prime;
 }
 
-
-
-
 // Значения констант для широкодиапазонных (по-видимому) УРС Ломоносова
-
 double __V0[] = { 0.12700000E+00, 0.88200003E-01, 
 	            0.54200000E+00, 0.57700002E+00, 0.36899999E+00, 0.12000000E+00,
 			    0.13900000E+00, 0.11300000E+00, 0.11200000E+00, 0.11200000E+00,
@@ -235,7 +250,6 @@ double __C1R[]= { 0.32979987E+01, 0.81879050E+00,
 			    0.81879050E+00, 0.54939213E+01, 0.18226281E+01, 0.20840724E+01,
 				0.22750535E+01, 0.13973175E+01, 0.30427899E+01, 0.19867337E+01,
 				0.78179336E+01, 0.19883865E+02, 0.40253441E+02, 0.52068253E+01 };
-
 
 CEOSLomonosov::CEOSLomonosov(int _id) : CEOSMieGruneisen(1./__V0[_id]*1000.) {
 	 V0 = __V0[_id]; E0 = __E0[_id]; DX = __DX[_id]; GM = __GM[_id]; CMN = __CMN[_id]; 

@@ -29,7 +29,7 @@ public:
 	CEOSMieGruneisen(double _ro0, double _e0) : ro0(_ro0), e0(_e0) {}
 	double getp(double ro, double e);
 	double gete(double ro, double p);
-	double getc(double ro, double e);
+	double getc(double ro, double p);
 	double getG(double ro);
 
 	double getGPrime(double ro);

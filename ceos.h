@@ -31,9 +31,10 @@ public:
 	double gete(double ro, double p);
 	double getc(double ro, double p);
 	double getG(double ro);
-
+	// Derivatives of G, p0, KS
 	double getGPrime(double ro);
 	double getp0Prime(double ro);
+	double getKSPrime(double ro, double e);
 };
 
 

@@ -1269,20 +1269,24 @@ CVectorPrimitive CSolver::calcRPAnalyticalSolution(double roL, double vL, double
 }
 
 
-// Точный Риманосвский солвер для (предположительно, произвольного) УРС в форме Ми-Грюнайзена
+// Точный Римановский солвер для (предположительно, произвольного) УРС в форме Ми-Грюнайзена [Miller, Puckett JoCP 1996]
 CVectorPrimitive CSolver::calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double roL, double uL, double pL, double roR, double uR, double pR, double x=0., double t=1.) {
+	CVectorPrimitive V;
 	const double gammaL = eos.getG(roL), gammaR = eos.getG(roR);
 	const double K0S = eos.ro0*eos.getc(eos.ro0, eos.e0);
-	const double eL = eos.gete(roL, pL), eR = eos.gete(roR, pR), cL = eos.getc(roL, eL), cR = eos.getc(roR, cR);
+	const double eL = eos.gete(roL, pL), eR = eos.gete(roR, pR), cL = eos.getc(roL, eL), cR = eos.getc(roR, cR); 
+	double _e = 0.;
 	const double KSL = roL*cL*cL, KSR = roL*cR*cR;
 	//////////////
-	const double KSPrimeL = 0., KSPrimeR; // Аккуратно посчитать через первые и вторые производные, просто это надо чуть времени
+	const double KSPrimeL = 0., KSPrimeR=0.; // Аккуратно посчитать через первые и вторые производные, просто это надо чуть времени
 	/////////////
 	double a0L = cL, a1L = (KSPrimeL + 1.)/4., a0R = cR, a1R = (KSPrimeR + 1.)/4.; 
 	double b0 = pL-pR + roL*uL*(a0L+a1L*uL) + roR*uR*(a0L-a1R*uR),
 		   b1 = -roL*(a0L+2.*a1L*uL) - roR*(a0R-2.*a1R*uR),
 		   b2 = roL*a1L - roR*a1R;
-	double uContact = (-b1 - sqrt(b1*b1-4.*b0*b2))/2./b2;
+	double uCD = (-b1 - sqrt(b1*b1-4.*b0*b2))/2./b2,
+		   pCD = pL + roR*a0R*(uCD - uR) + roR*a1R*(uCD - uR)*(uCD - uR),
+		   uS = 0.;		   
 	double pLHat = 0., pRHat = 0.;
 	if(uL>uR) {
 		pLHat = pL + roL*(uL-uR)*(a0L + a1L*(uL-uR)); 
@@ -1292,8 +1296,49 @@ CVectorPrimitive CSolver::calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double
 		pRHat = pR + roR*a0R*(uL-uR);
 	}
 	if(pL>pRHat) a1L = 0.; 
-	if(pR>pLHat) a1R = 0.;
-		
+	if(pR>pLHat) a1R = 0.;	
+	if(uCD>0.) {
+        // U(0) belongs 'L' part of material, initial discontinuity moves in the right direction from x=0 point 
+		if(pCD>pL) {
+			// Left shock
+			uS = uL - a0L + a1L*(uCD - uL);
+			if(uS>0.) {
+				V.ro = roL* (-a0L + a1L*(uCD - uL)) / (uL - a0L + a1L*(uCD - uL) - uCD);
+				V.v = uCD;
+				//_e = eL + .5*(pL + pCD)*(1./roL-1./V.ro);
+				//V.p = eos.getp(V.ro, _e);
+				V.p = pCD;			
+			} else {
+				V.ro = roL;
+				V.v = uL;
+				V.p = pL;
+			}
+		} else {
+		    // Left rarefaction
+		}
+	} else {
+		// U(0) belongs 'R' part of material, initial discontinuity moves in the left direction from x=0 point 
+		// Right shock
+		if(pCD>pR) {
+			// Left shock
+			uS = uR + a0R + a1R*(uCD - uR);
+			if(uS>0.) {
+				V.ro = roR* (a0R + a1R*(uCD - uR)) / (a0R + a1R*(uCD - uR) + uR - uCD);
+				V.v = uCD;
+				//_e = eL + .5*(pL + pCD)*(1./roL-1./V.ro);
+				//V.p = eos.getp(V.ro, _e);
+				V.p = pCD;			
+			} else {
+				V.ro = roR;
+				V.v = uR;
+				V.p = pR;
+			}
+		} else {
+		    // Right rarefaction
+
+		}
+	}
+
 
 
 

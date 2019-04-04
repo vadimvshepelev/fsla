@@ -96,6 +96,11 @@ double CEOSMieGruneisen::getp0Prime(double ro) {
 	return p0Prime;
 }
 
+double CEOSMieGruneisen::getKSPrime(double ro, double e) {
+
+}
+
+
 // Значения констант для широкодиапазонных (по-видимому) УРС Ломоносова
 double __V0[] = { 0.12700000E+00, 0.88200003E-01, 
 	            0.54200000E+00, 0.57700002E+00, 0.36899999E+00, 0.12000000E+00,

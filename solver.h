@@ -1,8 +1,11 @@
 #ifndef _SOLVER_H_
 #define _SOLVER_H_
 
+#include<vector>
+
 #include "task.h"
 #include "ceos.h"
+
 
 using namespace std;
 
@@ -54,9 +57,7 @@ public:
 	double fREOSBin(double p, double roR, double vR, double pR);
 	double dfRdpEOSBin(double p, double roR, double vR, double pR);
 	// Аппарат для точного решения задачи о распаде разрыва с УРС Ми-Грюнайзена 
-	CVectorPrimitive calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double roL, double vL, double pL, double roR, double vR, double pR, double x, double t);
-	RPSolutionPrimitive solveRPMieGruneisen(CEOSMieGruneisen const& eos, double roL, double vL, double pL, double roR, double vR, double pR);
-	
+	CVectorPrimitive calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double roL, double vL, double pL, double roR, double vR, double pR, double x, double t);	
 	double getdx(); 	
 private:
 	//double getEntropy(double ro, double ti, double te);
@@ -90,6 +91,7 @@ private:
 	void	calcHydroStageENO3G(double t, double tau);
 	void	calcHydroStageENO2G(double t, double tau);
 	void	calcHydroStageLaxFriedrichs(double t, double tau);
+	void calcHydroStageMieGruneisen(CEOSMieGruneisen& eos, double t, double tau);
 	double calcInterpolationPolynomialDerivative3(double xim32, double xim12, double xip12, double xip32, double fim32, double fim12, double fip12, double fip32, double x);
 	// Limiters
 	Vector4 calcMinmodSlope(Vector4 deltaMinus, Vector4 deltaplus);
@@ -102,18 +104,15 @@ private:
 	// Расчет точного значения потока F = ( ro*v, p+ro*v*v, v*(p+ro*E) )T
 	Vector4	calcF(double ro, double v, double p, double e);
 	Vector4 calcPhysicalFlux(double ro, double rou, double roE);
-	Vector4 calcPhysicalFluxEOSBin(double ro, double rou, double roE);
+	Vector4 calcPhysicalFluxEOSBin(double ro, double rou, double roE);	
 	Vector4 calcGodunovFlux(double roL, double rouL, double roEL, double roR, double rouR, double roER);
 	Vector4 calcRoeFlux(double roL, double rouL, double roEL, double roR, double rouR, double roER);
 	Vector4 calcGPSFlux(double roL, double rouL, double roEL, double roR, double rouR, double roER);
 	Vector4 calcHLLCFluxEOSBin(double roL, double rouL, double roEL, double roR, double rouR, double roER);
 	Vector4 calcHLLFluxEOSBin(double roL, double rouL, double roEL, double roR, double rouR, double roER);
 	// Для двучленного УРС
-	Vector4 calcGodunovFluxEOSBin(double roL, double rouL, double roEL, double roR, double rouR, double roER);
-	void	testSolveHelmholtz(void);
+	Vector4 calcGodunovFluxEOSBin(double roL, double rouL, double roEL, double roR, double rouR, double roER);	
 	void	sweep(double *u, double *A, double *B, double *C, double *F, int size);
-	void    sweepComplex(complex<double>* u, complex<double>* A, complex<double>* B, complex<double>* C,
-		                 complex<double>* F, int size);
 	// Функции, решающие нелинейные уравнения (pi, ei) и (pe, ee) 
 	// для схемы Самарского
 	double	solveti(double tau, int i, double ro_temp, double dv_temp);
@@ -142,9 +141,9 @@ private:
 	// Функции для сохранения и загрузки всех массивов
 	void	saveSolution(const char* fName, double t);
 	double  loadSolution(char* fName);
-	/*void	getEulerAnalyticApproximation(int i, double t, double *p_an, double *v_an, double *ro_an);
+	void	getEulerAnalyticApproximation(int i, double t, double *p_an, double *v_an, double *ro_an);
 	void	getEulerAnalyticApproximationGrid(int i, double x, double t, double *p_an, double *v_an, double *ro_an);
-	void	getLagrangeAnalyticApproximation(int i, double t, double *p_an, double *v_an, double *ro_an);*/
+	void	getLagrangeAnalyticApproximation(int i, double t, double *p_an, double *v_an, double *ro_an);
 	int getSpallCellNum(void) {return spallCellNum;}
 	// Служебная функция для инициализации двух переменных 
 	// солвера уже после загрузки задачи.

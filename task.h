@@ -72,7 +72,7 @@ struct Zone
       EOSType = ideal не имеют смысла.
 */
 
-enum TaskType {undef, ruGlass, LH1D, auWater};
+enum TaskType {undef, ruGlass, LH1D, auWater, MieGruneisenProblem};
 
 enum SourceType {SrcUndef, SrcNone, SrcGlass, SrcMetal, SrcSq, Src5Layers};
 

@@ -1,5 +1,5 @@
 #ifndef _CEOS_H_
-#define _EOS_H_
+#define _CEOS_H_
 
 class CEOS {
 public:
@@ -7,9 +7,6 @@ public:
 	virtual double gete(double ro, double p) = 0;
 	virtual double getc(double ro, double e) = 0;
 };
-
-
-#endif
 
 
 class CEOSIdeal : public CEOS {
@@ -42,7 +39,7 @@ public:
 extern double __V0[22], __E0[22], __DX[22], __GM[22], __CMN[22], __GN[22], __ES[22], __GC[22], __QS[22], __SM[22], __RS[22], 
 	          __A1[22], __A2[22], __A3[22], __A4[22], __A5[22], __TA[22], __EA[22], __GI[22], __GF[22], __CR[22], __C1R[22];
 
-class CEOSLomonosov : public CEOSMieGruneisen {
+class CEOSLomonosov {
 public:
 	double V0, E0, DX, GM, CMN, GN, ES, GC, QS, SM, RS, A1, A2, A3, A4, A5, TA, EA, GI, GF, CR, C1R;
 	CEOSLomonosov(int _id);
@@ -53,3 +50,6 @@ private:
 	void EOSE5(double ro, double e, double& P, double& C, double& g, bool& nonPhysical);
 
 };
+
+
+#endif

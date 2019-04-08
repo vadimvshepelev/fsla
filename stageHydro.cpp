@@ -1274,7 +1274,7 @@ CVectorPrimitive CSolver::calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double
 	CVectorPrimitive V;
 	const double gammaL = eos.getG(roL), gammaR = eos.getG(roR);
 	const double K0S = eos.ro0*eos.getc(eos.ro0, eos.e0);
-	const double eL = eos.gete(roL, pL), eR = eos.gete(roR, pR), cL = eos.getc(roL, eL), cR = eos.getc(roR, cR); 
+	const double eL = eos.gete(roL, pL), eR = eos.gete(roR, pR), cL = eos.getc(roL, eL), cR = eos.getc(roR, eR); 
 	double _e = 0.;
 	const double KSL = roL*cL*cL, KSR = roL*cR*cR;
 	//////////////
@@ -1338,6 +1338,9 @@ CVectorPrimitive CSolver::calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double
 
 		}
 	}
+
+
+	return V;
 
 
 
@@ -1480,99 +1483,66 @@ CVectorPrimitive CSolver::calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double
 			}
 		}
 	}
-	return V;*/ return CVectorPrimitive();
+	return V;*/ 
 }
 
-RPSolutionPrimitive CSolver::solveRPMieGruneisen(CEOSMieGruneisen const& eos, double roL, double vL, double pL, double roR, double vR, double pR) {
-	
 
-	/*
-	// Решаем нелинейное уравнение относительно давления методом касательных Ньютона
-	RPSolutionPrimitive res; res.roL = 0.; res.roR=0.; res.v = 0.; res.p = 0.;
-	double p = 0., pPrev = 0.;
-	double TOL = 1.e-6;
-	double gamma = 1.4;
-	int itCounter = 0;
-	double cL = 0., cR = 0.;
-	if(roL!=0.) cL = sqrt(gamma*pL/roL);
-	if(roR!=0.) cR = sqrt(gamma*pR/roR);
-	// Пытаюсь определить возможную конфигурацию решения, чтобы вернее выставить начальное приближение
-	// Похоже, итерации нужны только в случаях "УВ+УВ" и "УВ + ВР", т.к. в случае ВР+ВР и ВР+вакуум есть 
-	// аналитические решения для идеального газа
-	//
-	// Также вызывает вопрос последний тест Торо, где полученное решение отличается от его решения 
-	// во втором знаке после запятой
-	if(roL==roR && vL==vR && pL==pR) {
-		res.type = RWRW;
-		res.roL  = roL;
-		res.roR  = roL;
-		res.p    = pL;
-		res.v	 = vL;
-		return res;
-	}
-	if(roL==0.) {
-		res.type = VacRW;
-		res.roL  = 0.;
-		res.roR  = roR;
-		res.p	 = 0.;
-		res.v    = vR - 2.*cR/(gamma-1.);
-		return res;
-	}
-	if(roR==0.) {
-		res.type = RWVac;
-		res.roL  = roL;
-		res.roR  = 0.;
-		res.p	 = 0.;
-		res.v    = vL + 2.*cL/(gamma-1.);
-		return res;
-	}
-	if(2.*cL/(gamma-1) + 2*cR/(gamma-1.) < fabs(vL-vR)){
-		res.type  = RWVacRW;
-		res.roL	  = 0.;
-		res.roR   = 0.;
-		res.v     = 0.;
-		res.p	  = 0.;
-		return res;
-	}
 
-	double fLmin = fL(pL, roL, vL, pL) + fR(pL, roR, vR, pR) + vR-vL;
-	double fRMax = fL(pR, roL, vL, pL) + fR(pR, roR, vR, pR) + vR-vL;
-	// Начальное приближение
-	//p = 0.5*(pL+pR);
-	p=pL/2.;
-	do {
-		pPrev = p;
-		p = pPrev - (fL(pPrev, roL, vL, pL) + fR(pPrev, roR, vR, pR) + vR - vL )/
-			        (dfLdp(pPrev, roL, vL, pL) + dfRdp(pPrev, roR, vR, pR)); 
-		if (p<=0.)
-			p = TOL;
-		itCounter++;
-	} while (fabs(2*(p-pPrev)/(p+pPrev))>TOL);
-	res.p   = p;
-	res.v   = 0.5*(vL + vR) + 0.5*(fR(p, roR, vR, pR) - fL(p, roL, vL, pL));
-	if( p<pL && p>pR) {
-		res.type = RWSW;
-		res.roL  = roL*pow(res.p/pL, 1./gamma); 
-		res.roR  = roR*(res.p/pR + (gamma-1.)/(gamma+1.))/((gamma-1.)/(gamma+1.)*res.p/pR + 1.);
-	} else if(p<=pL && p<=pR) {
-		res.type = RWRW;
-		res.roL  = roL*pow(res.p/pL, 1./gamma); 
-		res.roR  = roR*pow(res.p/pR, 1./gamma); 
-	} else if(p>pL && p<pR) {
-		res.type = SWRW;
-		res.roL  = roL*(res.p/pL + (gamma-1.)/(gamma+1.))/((gamma-1.)/(gamma+1.)*res.p/pL + 1.);
-		res.roR  = roR*pow(res.p/pR, 1./gamma); 
-	} else {
-		res.type = SWSW;
-		res.roL  = roL*(res.p/pL + (gamma-1.)/(gamma+1.))/((gamma-1.)/(gamma+1.)*res.p/pL + 1.);
-		res.roR  = roR*(res.p/pR + (gamma-1.)/(gamma+1.))/((gamma-1.)/(gamma+1.)*res.p/pR + 1.);
+
+void CSolver::calcHydroStageMieGruneisen(CEOSMieGruneisen& eos, double t, double tau) {
+	double roL = 0., uL = 0., eL = 0., pL = 0.,
+		   roR = 0., uR = 0., eR = 0., pR = 0., 
+		   E = 0.;
+	Vector4 Fm, Fp;
+	// TODO: проверить на скорость выполнения операций, сравнить с реализацией через тип Vector4 -- если не медленнее, то в дальнейшем избавиться от Vector4 везде
+	int nSize = ms.getSize();	
+	double h = ms[1].x-ms[0].x;	
+	int i=0;
+	// Векторы W уже заполнены
+	CVectorPrimitive res;
+	// Потоки считаем по алгоритму решения задаче о распаде разрыва для УРС Ми-Грюнайзена из работы [Miller, Puckett]
+	for(i=0; i<nSize; i++) {		
+		Node& n=ms[i];			
+		if(i!=0) {			
+			roL = ms[i-1].W[0]; uL = ms[i-1].W[1]/roL; eL = ms[i-1].W[2]/roL - .5*uL*uL; pL = eos.getp(roL, eL);
+			roR = ms[i].W[0];   uR = ms[i].W[1]/roR;   eR = ms[i].W[2]/roR - .5*uR*uR;   pR = eos.getp(roR, eR);						
+		} else { 
+		    // Левое граничное условие -- прозрачная граница
+			roR = ms[i].W[0];   uR = ms[i].W[1]/roR;   eR = ms[i].W[2]/roR - .5*uR*uR;   pR = eos.getp(roR, eR);			
+			roL = roR; uL = uR; pL = pR;			
+		}
+		res = calcRPExactMillerPuckett(eos, roL, uL, pL, roR, uR, pR);
+		if(res.ro!=0.) E = eos.gete(res.ro, res.p) + .5*res.v*res.v; else E = 0.;
+		Fm = Vector4(res.ro*res.v, res.ro*res.v*res.v + res.p, res.v*(res.ro*E+res.p), 0.);
+		if(i!=nSize-1) {
+			
+			roL = ms[i].W[0];   uL = ms[i].W[1]/roL;   eL = ms[i].W[2]/roL - .5*uL*uL;   pL = eos.getp(roL, eL);						
+			roR = ms[i+1].W[0]; uR = ms[i+1].W[1]/roR; eR = ms[i+1].W[2]/roR - .5*uR*uR; pR = eos.getp(roR, eR);			
+		} else {
+			// Правое граничное условие -- прозрачная граница
+			roL = ms[i].W[0];   uL = ms[i].W[1]/roL;   eL = ms[i].W[2]/roL - .5*uL*uL;   pL = eos.getp(roL, eL);						
+			roR = roL; uR = uL; pR = pL;					
+		}
+		res = calcRPExactMillerPuckett(eos, roL, uL, pL, roR, uR, pR);
+		if(res.ro!=0.) E = eos.gete(res.ro, res.p) + .5*res.v*res.v; else E = 0.;		
+		Fp = Vector4(res.ro*res.v, res.ro*res.v*res.v + res.p, res.v*(res.ro*E+res.p), 0.);
+		n.W_temp = n.W - tau/h*(Fp-Fm);
 	}
-	//Тестирование (только без вакуума)
-	//double L =  - fL(p, roL, vL, pL);
-	//double R = fR(p, roR, vR, pR) + vR - vL;
-	//double delta = fabs((L-R)/0.5/(L+R));
-	//double LToro = - fL(res.p, roL, vL, pL);
-	//double RToro = fR(res.p, roR, vR, pR) + vR - vL;
-	//double deltaToro = fabs((LToro-RToro)/0.5/(LToro+RToro));
-	return res; */
+	for(i=0; i<nSize; i++) 
+	{
+		Node& n=ms[i];
+		n.W[0] = n.W_temp[0];
+		n.W[1] = n.W_temp[1];
+		n.W[2] = n.W_temp[2];
+		n.ro = n.W[0];
+		n.v  = n.W[1]/n.ro;
+		n.e  = n.W[2]/n.ro - 0.5*n.v*n.v;
+		if(n.e < 0. ) {
+			cout << "Warning: negative internal energy in cell i=" << i << ". Probably numerical instability." << endl;
+			int qq = 0;
+		}
+		n.p = eos.getp(n.ro, n.e);
+		n.C = eos.getc(n.ro, n.p);	
+	}
+	cout << "calcHydroStageMieGruneisen(): done!" << endl;
 }

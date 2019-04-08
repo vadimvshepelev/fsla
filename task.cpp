@@ -15,8 +15,9 @@
 #include "eosTableAu.h"
 #include "eos\\EOSBin.h"
 
-
 #include "methodEuler.h"
+
+#include "ceos.h"
 
 #include<stdlib.h>
 #include<string.h>
@@ -95,6 +96,10 @@ CTask::~CTask() {
 	} else if(!strcmp(eos_type, "MieGruneisenRu")) {
 		eos = new EOSMieGruneisenRu();
 		eosGlass = new EOSTable("new", 1, 2700.);
+	} else if(!strcmp(eos_type, "MieGruneisen")) {
+		type = TaskType::MieGruneisenProblem;
+		eos = NULL;
+		eosGlass = NULL;
 	} else {
 		printf("Unknown EOSType: %s\n", eos_type);
 		exit(1);
@@ -243,6 +248,12 @@ CTask::~CTask() {
 				zones[j].ti = 0.;
 				zones[j].te = 0.;
 				zones[j].e = _e;
+			}   else if(type == TaskType::MieGruneisenProblem) {
+				// —овершенно адска€ зќплатка, никогда так больше не делай!!!
+				CEOSMieGruneisen eos;
+				zones[j].ti = 0.;
+				zones[j].te = 0.;
+				zones[j].e = eos.gete(zones[j].ro, _p);
 			}
 		} else {
 			zones[j].ti = readFloatParam(f, "ti");
@@ -257,6 +268,9 @@ CTask::~CTask() {
 	// And now let's set CTask::taskType variable
 	if(!strcmp(EOSDirName.c_str(), "au") && (nZones == 2)) 
 		type = TaskType::auWater;
+	else if(type == TaskType::MieGruneisenProblem)
+		// ≈ще одна заплатка, порожденна€ неверо€тно кривой архитектурой, от которой надо избавл€тьс€
+		type == TaskType::MieGruneisenProblem;
 	else
 		type = TaskType::undef;
 

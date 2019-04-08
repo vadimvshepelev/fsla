@@ -49,8 +49,8 @@ void CSolver::goEuler(char* fName) {
 	// Наполнение объектов ms, ms_temp данными на по начальным и граничным условиям из task
 	ms.initData(&task);
 	ms_temp.initData(&task);
-	const unsigned int nSize = ms.getSize();	
-	unsigned int i=0;
+	const int nSize = ms.getSize();	
+	int i=0;
 /*  // ENO-3 testing
 	string _fName = string(OUTPUT_FOLDER) + "\\" + "test-reconstruction.dat";
 	ofstream ofs; ofs.open(_fName, ios::out);
@@ -67,8 +67,8 @@ void CSolver::goEuler(char* fName) {
 	double tau = 0.0;
 	int	counter = 0;
 	//dumpToFileTestRP(t+100.e-6, counter);
-	dumpToFileTestRP(t, counter);
-	unsigned int nTimes = 20, nTimesCounter = 0;
+    //	dumpToFileTestRP(t, counter);
+	int nTimes = 20, nTimesCounter = 0;
 	double *timesArray = new double[nTimes];
 	const double tMax = task.getMaxTime();
 	for(i=0; i<nTimes; i++) {
@@ -97,18 +97,9 @@ void CSolver::goEuler(char* fName) {
 		//if(task.getHydroStage()) calcHydroStageMHM(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageGushchinIdealSimple(t, tau);
 		//if(task.getHydroStage()) calcHydroStageG2(t, tau);	
-		if(task.getHydroStage()) calcHydroStageENO2G(t, tau);	
+		//if(task.getHydroStage()) calcHydroStageENO2G(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageENO3G(t, tau);	
-		
-
-
-		if(counter == 26) {
-			double qq = 0.;
-		}
-
-
-
-
+		if(task.getHydroStage()) calcHydroStageMieGruneisen(eos, t, tau);	
 		//if(task.getHydroStage()) calcHydroStageGodunovEOSBin(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageENO2G(t, tau);		
 		if(handleKeys(t)) break;		

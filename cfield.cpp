@@ -126,6 +126,18 @@ void CFieldOld::initData(CTask *task) {
 						n.Alphaei     = eosGlass.getAlpha(n.ro, n.ti, n.te);
 						n.kappa = eosGlass.getkappa(n.ro, n.ti, n.te);
 					}				
+				} else if(task->type == TaskType::MieGruneisenProblem) {
+					n.ee = 0.;
+					n.ei = 0.;
+					n.e  = zone.e;
+					n.pe = 0.;
+					n.pi = 0.;
+					n.p  = 0.;
+					n.ce = 0.;
+					n.ci = 0.;
+					n.C  = 0.;
+					n.Alphaei = 0.;
+					n.kappa = 0.;
 				} else {
 					n.pe = eos.getpe(n.ro, n.ti, n.te);
 					n.pi = eos.getpi(n.ro, n.ti);
@@ -163,36 +175,6 @@ void CFieldOld::initData(CTask *task) {
 	}
 	nodes[nSize].x = nodes[nSize-1].x + dx;
 	nodes[nSize].v = nodes[nSize-1].v;
-
-
-
-
-
-	///// DEBUG /////
-	// int (x^2*dx) = x^3/3
-/*	for(i=0; i<nSize; i++) {
-		double _x = .5*(nodes[i].x+nodes[i+1].x);
-		nodes[i].ro = 1./dx*(nodes[i+1].x*nodes[i+1].x*nodes[i+1].x/3. - nodes[i].x*nodes[i].x*nodes[i].x/3.); //-(_x-.5)*(_x-.5) + 2.;     //
-		nodes[i].W[0] = nodes[i].ro;
-	}
-	*/
-
-
-
-
-	/////////////////
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 

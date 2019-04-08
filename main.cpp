@@ -73,7 +73,8 @@ int main(int argc, char *argv[])
 	
 
 	// Uncomment for Euler problems
-	s->goEuler("task-toro-2.txt");
+	//s->goEuler("task-toro-2.txt");
+	s->goEuler("task-test-Mie-Gruneisen.txt");
 
 
 	delete s;

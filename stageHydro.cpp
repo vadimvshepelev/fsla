@@ -1139,7 +1139,7 @@ CVectorPrimitive CSolver::calcRPAnalyticalSolution(double roL, double vL, double
 	if(roR!=0.) cR = sqrt(gamma*pR/roR);
 	double xiFront=0., xiHead=0., xiTail=0., xiHeadL=0., xiTailL=0., xiHeadR=0., xiTailR=0.;
 	// Если вакуум
-	if(res.type == VacRW) {
+	if(res.type == VacRW) { 
 		xiHead = vR + cR;
 		xiTail = vR - 2.*cR/(gamma-1.);
 		if(xi<=xiTail) {
@@ -1278,6 +1278,8 @@ CVectorPrimitive CSolver::calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double
 	double _e = 0.;
 	const double KSL = roL*cL*cL, KSR = roL*cR*cR;
 	//////////////
+	double dpdro = 
+
 	const double KSPrimeL = 0., KSPrimeR=0.; // Аккуратно посчитать через первые и вторые производные, просто это надо чуть времени
 	/////////////
 	double a0L = cL, a1L = (KSPrimeL + 1.)/4., a0R = cR, a1R = (KSPrimeR + 1.)/4.; 

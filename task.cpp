@@ -29,7 +29,6 @@ CTask::~CTask() {
 	clear();
 }
 
-
  void CTask::load(char* fName) {
 	clear();
 	unsigned int j = 0;

@@ -5,12 +5,12 @@ maxTime = 0.2
 nZones = 2
 l = .3
 nSize = 30
-ro = 1.
+ro = 1000.
 v = .75
-p = 1 
+p = 1.e9 
 l = .7
 nSize = 70
-ro = .125
+ro = 125.
 v = 0.
-p = .1 
+p = .1e9 
 

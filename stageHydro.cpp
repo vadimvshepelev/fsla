@@ -1277,11 +1277,7 @@ CVectorPrimitive CSolver::calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double
 	const double eL = eos.gete(roL, pL), eR = eos.gete(roR, pR), cL = eos.getc(roL, eL), cR = eos.getc(roR, eR); 
 	double _e = 0.;
 	const double KSL = roL*cL*cL, KSR = roL*cR*cR;
-	//////////////
-	double dpdro = 
-
-	const double KSPrimeL = 0., KSPrimeR=0.; // Аккуратно посчитать через первые и вторые производные, просто это надо чуть времени
-	/////////////
+	const double KSPrimeL = eos.getKSPrime(roL, eL), KSPrimeR= eos.getKSPrime(roR, eR); // Аккуратно посчитать через первые и вторые производные, просто это надо чуть времени
 	double a0L = cL, a1L = (KSPrimeL + 1.)/4., a0R = cR, a1R = (KSPrimeR + 1.)/4.; 
 	double b0 = pL-pR + roL*uL*(a0L+a1L*uL) + roR*uR*(a0L-a1R*uR),
 		   b1 = -roL*(a0L+2.*a1L*uL) - roR*(a0R-2.*a1R*uR),
@@ -1317,6 +1313,18 @@ CVectorPrimitive CSolver::calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double
 			}
 		} else {
 		    // Left rarefaction
+			double roCDL = roL/(1.+(pL-pCD)/KSL);
+			double cCDL = a0L*roL/roCDL;
+			double sigmaLWave = (a0L-uL)/(a0L-uL-uCD-cCDL);
+			double sigmaL = min(1., max(0., sigmaLWave));
+			V.ro = (1.-sigmaL)*roL + sigmaL*roCDL;
+			V.v = (1.-sigmaL)*uL + sigmaL*uCD;
+			V.p = (1.-sigmaL)*pL + sigmaL*pCD;
+
+
+			// И тут вопрос, а какой будет энергия? Если мы получим V.e (энергию в нуле х) интерполяцией и сравним с V.p, что мы получим? Это повод для теста.
+
+
 		}
 	} else {
 		// U(0) belongs 'R' part of material, initial discontinuity moves in the left direction from x=0 point 
@@ -1337,155 +1345,16 @@ CVectorPrimitive CSolver::calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double
 			}
 		} else {
 		    // Right rarefaction
-
+			double roCDR = roL/(1.+(pR-pCD)/KSR);
+			double cCDR = a0R*roR/roCDR;
+			double sigmaRWave = (a0R-uR)/(a0R-uR-uCD-cCDR);
+			double sigmaR = min(1., max(0., sigmaRWave));
+			V.ro = (1.-sigmaR)*roR + sigmaR*roCDR;
+			V.v = (1.-sigmaR)*uL + sigmaR*uCD;
+			V.p = (1.-sigmaR)*pL + sigmaR*pCD;
 		}
 	}
-
-
 	return V;
-
-
-
-
-
-
-/*	RPSolutionPrimitive res = solveRP(roL, vL, pL, roR, vR, pR);
-	// V = (ro, v, p)T
-	CVectorPrimitive V;
-	double xi = x/t;
-	double gamma = 1.4;
-	double cL = 0., cR = 0.;
-	if(roL!=0.) cL = sqrt(gamma*pL/roL);
-	if(roR!=0.) cR = sqrt(gamma*pR/roR);
-	double xiFront=0., xiHead=0., xiTail=0., xiHeadL=0., xiTailL=0., xiHeadR=0., xiTailR=0.;
-	// Если вакуум
-	if(res.type == VacRW) {
-		xiHead = vR + cR;
-		xiTail = vR - 2.*cR/(gamma-1.);
-		if(xi<=xiTail) {
-			V.ro = 0.;
-			V.v  = vR - 2.*cR/(gamma-1.);
-			V.p  = 0.;
-		} else if (xi<xiHead) {
-			V.ro = roR*pow(2./(gamma+1.) - (gamma-1.)/(gamma+1.)/cR*(vR-xi), 2./(gamma-1.));
-			V.v  = 2./(gamma+1)*(-cR + (gamma-1.)/2.*vR + xi);
-			V.p  = pR*pow(2./(gamma+1.) - (gamma-1.)/(gamma+1.)/cR*(vR-xi), 2.*gamma/(gamma-1.)); 
-		} else {
-			V.ro = roR;
-			V.v  = vR;
-			V.p  = pR;
-		}
-		return V;
-	}
-	if(res.type == RWVac) {
-		xiHead = vL - cL;
-		xiTail = vL + 2.*cL/(gamma-1.);
-		if(xi>=xiTail) {
-			V.ro = 0.;
-			V.v  = 0.;
-			V.p  = 0.;
-		} else if (xi>xiHead) {
-			V.ro = roL*pow(2./(gamma+1.)+(gamma-1.)/(gamma+1.)/cL*(vL-xi), 2./(gamma-1.));
-			V.v  = 2./(gamma+1)*(cL + (gamma-1.)/2.*vL + xi);
-			V.p  = pL*pow(2./(gamma+1.)+(gamma-1.)/(gamma+1.)/cL*(vL-xi), 2.*gamma/(gamma-1.));
-		} else {
-			V.ro = roL;
-			V.v = vL;
-			V.p = pL;
-		}
-		return V;
-	}
-	if(res.type == RWVacRW) {
-		xiHeadL = vL - cL;
-		xiTailL = vL + 2.*cL/(gamma-1.);
-		xiHeadR = vR + cR;
-		xiTailR = vR - 2.*cR/(gamma-1.);
-		if(xi<=xiHeadL) {
-			V.ro = roL;
-			V.v  = vL;
-			V.p  = pL;
-		} else if (xi<xiTailL) {
-			V.ro = roL*pow(2./(gamma+1.)+(gamma-1.)/(gamma+1.)/cL*(vL-xi), 2./(gamma-1.));
-			V.v  = 2./(gamma+1)*(cL + (gamma-1.)/2.*vL + xi);
-			V.p  = pL*pow(2./(gamma+1.)+(gamma-1.)/(gamma+1.)/cL*(vL-xi), 2.*gamma/(gamma-1.));
-		} else if (xi<=xiTailR) {
-			V.ro = 0.;
-			V.v  = 0.;
-			V.p  = 0.;
-		} else if (xi<xiHeadR) {
-			V.ro = roR*pow(2./(gamma+1.) - (gamma-1.)/(gamma+1.)/cR*(vR-xi), 2./(gamma-1.));
-			V.v  = 2./(gamma+1)*(-cR + (gamma-1.)/2.*vR + xi);
-			V.p  = pR*pow(2./(gamma+1.) - (gamma-1.)/(gamma+1.)/cR*(vR-xi), 2.*gamma/(gamma-1.)); 
-		} else {
-			V.ro = roR;
-			V.v  = vR;
-			V.p  = pR;
-		}
-		return V;
-	}
-	double cLLocal = sqrt(gamma*res.p/res.roL), cRLocal = sqrt(gamma*res.p/res.roR);
-	// Если не вакуум. Пусть точка слева от контактного разрыва (xiContact = res.v)
-	if(xi<res.v) {
-		if(res.type == SWSW || res.type == SWRW) { 
-			xiFront = vL - cL*sqrt((gamma+1.)/2./gamma*res.p/pL + (gamma-1.)/2./gamma);
-			if(xi<xiFront) {
-				V.ro = roL;
-				V.v  = vL;
-				V.p  = pL;
-			} else {
-				V.ro = res.roL;
-				V.v = res.v;
-				V.p = res.p;
-			}
-		} else if (res.type == RWSW || res.type == RWRW) {
-			xiHead = vL-cL;
-			xiTail = res.v-cLLocal;
-			if(xi<=xiHead) {
-				V.ro = roL;
-				V.v  = vL;
-				V.p  = pL;
-			} else if(xi>=xiTail) {
-				V.ro = res.roL;
-				V.v  = res.v;
-				V.p  = res.p;
-			} else {
-				V.ro = roL*pow(2./(gamma+1.)+(gamma-1.)/(gamma+1.)/cL*(vL-xi), 2./(gamma-1.));
-				V.v  = 2./(gamma+1)*(cL + (gamma-1.)/2.*vL + xi);
-				V.p  = pL*pow(2./(gamma+1.)+(gamma-1.)/(gamma+1.)/cL*(vL-xi), 2.*gamma/(gamma-1.));
-			}
-		} 
-	//Пусть точка справа от контактного разрыва (xiContact = res.v)
-	} else {
-		if(res.type == RWSW || res.type == SWSW) {
-			xiFront = vR + cR*sqrt((gamma+1.)/2./gamma*res.p/pR + (gamma-1.)/2./gamma);
-			if(xi>xiFront) {
-				V.ro = roR;
-				V.v  = vR;
-				V.p  = pR;
-			} else {
-				V.ro = res.roR;
-				V.v  = res.v;
-				V.p  = res.p;
-			}
-		} else if(res.type == RWRW || res.type == SWRW) {
-			xiHead = vR + cR;
-			xiTail = res.v + cRLocal;
-			if(xi >= xiHead) {
-				V.ro = roR;
-				V.v  = vR;
-				V.p  = pR;
-			} else if (xi <= xiTail) {
-				V.ro = res.roR;
-				V.v  = res.v;
-				V.p  = res.p;
-			} else {
-				V.ro = roR*pow(2./(gamma+1.) - (gamma-1.)/(gamma+1.)/cR*(vR-xi), 2./(gamma-1.));
-				V.v  = 2./(gamma+1)*(-cR + (gamma-1.)/2.*vR + xi);
-				V.p  = pR*pow(2./(gamma+1.) - (gamma-1.)/(gamma+1.)/cR*(vR-xi), 2.*gamma/(gamma-1.));
-			}
-		}
-	}
-	return V;*/ 
 }
 
 

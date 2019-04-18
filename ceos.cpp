@@ -119,18 +119,16 @@ double CEOSMieGruneisen::getKSPrime(double ro, double e) {
 	double de0dx = 1./ro0*(A*exp(b*1.-pow(x, -beta))*pow(x, -beta-1.) - K*pow(x, xi-1));
 	double de0dro = ro0*de0dx;	
 	double dpdro = dp0dro + (G+ro*dGdro)*(e-e0) - ro*G*de0dro;
-    // e'(ro)
-	
-	// p'(e) 
+    // p'(e) 
 	double dpde = ro*G;
 	double d2p0dx2 = A*exp(b*(1.-pow(x, -beta)))*(-beta*(1.-beta)*pow(x, -beta-1.) + (b*beta-(2.+b)*beta*beta)*pow(x, -2.*beta-1.) + b*beta*beta*pow(x, -3.*beta-1.)) - K*xi*(xi+1.)*pow(x, xi-1.);
 	double d2p0dro2 = ro0*ro0*d2p0dx2;
-	double d2pdro2 = d2pdro2 + (2.*G+ro*d2Gdro2)*(e-e0) - (G+ro*dGdro)*de0dro - ro*G*d2e0dro2;
-	double d2pdrode = 
+	double d2e0dx2 = 1./ro0*(A*exp(b*(1-pow(x, -beta)))*(b*beta*pow(x, 2.*beta-2.) - (beta+1.)*pow(x, -beta-2.)) - K*pow(x, xi-2.));
+	double d2e0dro2 = ro0*ro0*d2e0dx2;
+	double d2pdro2 = d2p0dro2 + (2.*G+ro*d2Gdro2)*(e-e0) - (G+ro*dGdro)*de0dro - ro*G*d2e0dro2;
+	double d2pdrode = G + ro*dGdro;
 	double d2pde2 = 0.;
-
-
-	double KSPrime = 
+	double KSPrime = (ro*dpdro + ro*ro*d2pdro2 + dpdro*dpde + 2.*d2pdrode - p/ro*dpde - p/ro/ro*dpde*dpde + p*p/ro/ro*d2pde2)/KS;
 	return KSPrime;
 }
 

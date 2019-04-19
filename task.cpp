@@ -269,7 +269,7 @@ CTask::~CTask() {
 		type = TaskType::auWater;
 	else if(type == TaskType::MieGruneisenProblem)
 		// Еще одна заплатка, порожденная невероятно кривой архитектурой, от которой надо избавляться
-		type == TaskType::MieGruneisenProblem;
+		type = TaskType::MieGruneisenProblem;
 	else
 		type = TaskType::undef;
 

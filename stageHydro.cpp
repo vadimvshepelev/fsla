@@ -1273,7 +1273,7 @@ CVectorPrimitive CSolver::calcRPAnalyticalSolution(double roL, double vL, double
 CVectorPrimitive CSolver::calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double roL, double uL, double pL, double roR, double uR, double pR, double x=0., double t=1.) {
 	CVectorPrimitive V;
 	const double gammaL = eos.getG(roL), gammaR = eos.getG(roR);
-	const double K0S = eos.ro0*eos.getc(eos.ro0, eos.e0);
+	const double K0S = eos.ro0*eos.getc(eos.ro0, eos.getp0(eos.ro0));
 	const double eL = eos.gete(roL, pL), eR = eos.gete(roR, pR), cL = eos.getc(roL, eL), cR = eos.getc(roR, eR); 
 	double _e = 0.;
 	const double KSL = roL*cL*cL, KSR = roL*cR*cR;
@@ -1365,6 +1365,16 @@ void CSolver::calcHydroStageMieGruneisen(CEOSMieGruneisen& eos, double t, double
 		   roR = 0., uR = 0., eR = 0., pR = 0., 
 		   E = 0.;
 	Vector4 Fm, Fp;
+	double _ro = 1000., _e = .637936e5, _p = 0.; 
+	_p = eos.getp(_ro, _e); 
+	cout << "_p=" << _p << endl;
+	_e = eos.gete(_ro, _p);
+	cout << "_e=" << _e << endl;
+
+	double _x = 1., _G = eos.getG(998.2), _GPrime = eos.getGPrime(998.2), _L = _GPrime/_G + 1./_x + _G/_x;
+	cout << "_L=" << _L << endl;
+
+
 	// TODO: проверить на скорость выполнения операций, сравнить с реализацией через тип Vector4 -- если не медленнее, то в дальнейшем избавиться от Vector4 везде
 	int nSize = ms.getSize();	
 	double h = ms[1].x-ms[0].x;	
@@ -1372,7 +1382,16 @@ void CSolver::calcHydroStageMieGruneisen(CEOSMieGruneisen& eos, double t, double
 	// Векторы W уже заполнены
 	CVectorPrimitive res;
 	// Потоки считаем по алгоритму решения задаче о распаде разрыва для УРС Ми-Грюнайзена из работы [Miller, Puckett]
-	for(i=0; i<nSize; i++) {		
+	for(i=0; i<nSize; i++) {
+
+
+		if(i==30) {
+			double oo = 0;
+		}
+
+
+
+
 		Node& n=ms[i];			
 		if(i!=0) {			
 			roL = ms[i-1].W[0]; uL = ms[i-1].W[1]/roL; eL = ms[i-1].W[2]/roL - .5*uL*uL; pL = eos.getp(roL, eL);

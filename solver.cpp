@@ -51,19 +51,7 @@ void CSolver::goEuler(char* fName) {
 	ms_temp.initData(&task);
 	const int nSize = ms.getSize();	
 	int i=0;
-/*  // ENO-3 testing
-	string _fName = string(OUTPUT_FOLDER) + "\\" + "test-reconstruction.dat";
-	ofstream ofs; ofs.open(_fName, ios::out);
-	ofs << "TITLE = \"ENO-3 reconstruction test, f(x) = x^2\"" << endl;
-	ofs << "VARIABLES = \"x\", \"f(x)\", \"sq(x-100.)\"" << endl;
-	for(i=0; i<nSize; i++) {
-		double _x = 0.5*(ms[i].x + ms[i+1].x);
-			ofs << _x << " " << ms[i].ro << " " << (_x)*(_x) << endl;
-	}
-
-	ofs.close();
-	*/
-	double t   = 0.;
+	double t = 0.;
 	double tau = 0.0;
 	int	counter = 0;
 	//dumpToFileTestRP(t+100.e-6, counter);
@@ -74,16 +62,8 @@ void CSolver::goEuler(char* fName) {
 	for(i=0; i<nTimes; i++) {
 		timesArray[i] = (tMax-tInit)/(nTimes-1)*i;
 	}
-
-
-
 	// For Mie-Gruneisen Riemann solver tests
 	CEOSMieGruneisen eos;
-
-
-
-
-
 	for(;;)	{
 		tau = calcTimeStepEuler(t);
 		if(t+tau >tMax) tau = tMax-t;

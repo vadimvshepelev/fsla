@@ -11,7 +11,7 @@ using namespace std;
 double CEOSMieGruneisen::getG(double ro) {
 	double x = ro/ro0;
 	const double a0 = 2.95, a1 = 2.408, a2 = 12.151;
-	const double M = 18.;     // [g/mole]
+	const double M = 18.e-3;     // [kg/mole]
 	const double CVLiq = 4150.;   // [J/kg/K] 
 	const double CVGas = 1430.;	  // [J/kg/K]
 	const double R = 8.31;        // [J/mole/K]
@@ -21,45 +21,52 @@ double CEOSMieGruneisen::getG(double ro) {
 	return G;
 }
 
-double CEOSMieGruneisen::getp(double ro, double e) {
-	const double A = .7626e9; // [Pa]
+double CEOSMieGruneisen::getp0(double ro) {
+	const double A = .6726e9; // [Pa]
 	const double b = 11.55;   	
 	const double K = 1.15e9;  // [Pa]
 	const double beta = .3333; 
 	const double xi = .85; 
 	// Cold component, Born-Meyer potential 
 	double x = ro/ro0;
-	double p0 =  A*pow(x, -beta+1.) * exp(b*(1.-pow(x, -beta))) - K*(pow(x, xi+1.)); 
-	double e0 = 1000./ro0*(A/beta/b * exp(b*(1.-pow(x, -beta))) - K/xi*pow(x, xi));
+	double p0 =  x*(A*pow(x, -beta) * exp(b*(1.-pow(x, -beta))) - K*(pow(x, xi))); 
+	return p0;
+}
+
+double CEOSMieGruneisen::gete0(double ro) {
+	const double A = .6726e9; // [Pa]
+	const double b = 11.55;   	
+	const double K = 1.15e9;  // [Pa]
+	const double beta = .3333; 
+	const double xi = .85; 
+	// Cold component, Born-Meyer potential 
+	double x = ro/ro0;
+	double e0 = 1./ro0*(A/beta/b * exp(b*(1.-pow(x, -beta))) - K/xi*pow(x, xi));
+	return e0;
+}
+
+double CEOSMieGruneisen::getp(double ro, double e) {
+	double x = ro/ro0;
+	double p0 = getp0(ro);
+	double e0 = gete0(ro);
 	double G = getG(ro);
 	double p = p0 + ro*G*(e-e0);
 	return p;
 }
 
 double CEOSMieGruneisen::gete(double ro, double p) {
-	const double A = .7626e9; // [Pa]
-	const double b = 11.55;   	
-	const double K = 1.15e9;  // [Pa]
-	const double beta = .3333; 
-	const double xi = .85; 
-	// Cold component, Born-Meyer potential 
 	double x = ro/ro0;
-	double p0 =  x*(A*pow(x, -beta+1.) * exp(b*(1.-pow(x, -beta))) - K*(pow(x, xi+1.))); 
-	double e0 = 1000./ro0*(A/beta/b * exp(b*(1.-pow(x, -beta))) - K/xi*pow(x, xi));
+	double p0 = getp0(ro);
+	double e0 = gete0(ro);
 	double G = getG(ro);
-	double e = e0 + ro/G*(p-p0);
+	double e = e0 + 1./ro/G*(p-p0);
 	return e;
 }
 
 double CEOSMieGruneisen::getc(double ro, double p) {
-	const double A = .7626e9; // [Pa]
-	const double b = 11.55;   	
-	const double K = 1.15e9;  // [Pa]
-	const double beta = .3333; 
-	const double xi = .85;
 	double x = ro/ro0;
 	double G = getG(ro);
-	double p0 = A*pow(x, -beta+1.) * exp(b*(1.-pow(x, -beta))) - K*(pow(x, xi+1.)); 
+	double p0 = getp0(ro);
 	double p0Prime = getp0Prime(ro);
 	double GPrime = getGPrime(ro);
 	double c2 = 1/ro0*(p0Prime + (GPrime/G + 1./x + G/x)*(p-p0));

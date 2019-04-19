@@ -1,0 +1,16 @@
+EOSType = MieGruneisen
+Method = godunov1
+CFL = .9
+maxTime = 0.2
+nZones = 2
+l = .3
+nSize = 30
+ro = 1000.
+v = 0.
+p = 1.e9 
+l = .7
+nSize = 70
+ro = 1000.
+v = 0.
+p = 1.e5 
+

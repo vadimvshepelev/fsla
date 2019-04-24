@@ -82,9 +82,12 @@ double CEOSMieGruneisen::getGPrime(double ro) {
 	const double R = 8.31;        // [J/mole/K]
 	// Здесь используем только жидкую фазу! Можно будет дифференцировать при усложнении
 	const double CV = CVLiq;
-	double GPrime = R/CV/M*((1.-a0)*exp(-pow(x/.5273, 1.7))*pow(x/.5273, -2.7)*(-1.7/.5273) + 
+	/* double GPrime = R/CV/M*((1.-a0)*exp(-pow(x/.5273, 1.7))*pow(x/.5273, -2.7)*(-1.7/.5273) + 
 		                        a1 *exp(-pow(x/1.0904, -3.5))*pow(x/1.0904, -4.5)*(3.5/1.0904) +
-								a2 *exp(-pow(x/1.3927, -5.0))*pow(x/1.3927, -6.0)*(5.0/1.3927));
+								a2 *exp(-pow(x/1.3927, -5.0))*pow(x/1.3927, -6.0)*(5.0/1.3927)); */
+	double GPrime = 35.412*exp(-5.29948*pow(x, -5.))*pow(x, -6) 
+		          + 1.26927*exp(-1.95979*pow(x, -3.5))*pow(x, -4.5) 
+				  + 1.09463*exp(-2.96826*pow(x, 1.7))*pow(x, .7);
 	return GPrime;
 }
 	

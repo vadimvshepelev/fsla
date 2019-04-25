@@ -5,11 +5,11 @@
 #include <stdlib.h>
 
 #include "defines.h"
-#include "method.h"
+#include "methodold.h"
 #include "eosold.h"
 #include "CTestToro.h"
 #include "eos\\EOSBin.h"
-#include "cfield.h"
+#include "cfieldold.h"
 
 //#include "eosTableFeAlpha.h"
 
@@ -84,7 +84,7 @@ public:
 			  zones(0), nZones(0), maxTime(0.), mtd(0), viscFlag(0), CFL(0.), totalSize(0), 
 			  EOSFlag(0), methodFlag(MethodType::nomtd) {}
 	CTask(TaskType _type, bool _bHydroStage, bool _bHeatStage, bool _bExchangeStage, EOSOld* _eos, EOSOld* _eosGlass, SourceType _sourceFlag,
-		  double _tauPulse, double _fluence, double _deltaSkin, Zone* _zones, int _nZones, double _maxTime, CMethod* _mtd,
+		  double _tauPulse, double _fluence, double _deltaSkin, Zone* _zones, int _nZones, double _maxTime, CMethodOld* _mtd,
 		  int _viscFlag, double _CFL, int _totalSize, int _EOSFlag, MethodType _methodFlag) :
 		  type(_type), 
 		  bHydroStage(_bHydroStage), bHeatStage(_bHeatStage), bExchangeStage(_bExchangeStage), 
@@ -102,7 +102,7 @@ public:
 	EOSOld			&getEOSGlass() { return *eosGlass; }	
 	void		setEOS(EOSOld* newEOS) { eos = newEOS; } ;			
 	int			getEOSFlag() { return EOSFlag; }
-	CMethod		&getMethod() { return *mtd; }	
+	CMethodOld		&getMethod() { return *mtd; }	
 	Zone		&getZone(int i) { return zones[i]; }
 	unsigned int getNumZones() { return nZones; }
 	unsigned int getTotalSize() { return totalSize; }
@@ -140,7 +140,7 @@ private:
 	Zone	*zones;				// Указатель на массив зон	
 	unsigned int nZones;				// Количество зон
 	double  maxTime;			// Время, до которого ведется расчет
-	CMethod	*mtd;				// Метод расчета - Эйлер/Лагранж
+	CMethodOld	*mtd;				// Метод расчета - Эйлер/Лагранж
 	int		viscFlag;			// Искусственная вязкость ( 0 - не использовать, 1 - использовать).
 	double  CFL;			// Число Куранта (начальное)
 	int		totalSize;			// Суммарное количество точек во всех зонах

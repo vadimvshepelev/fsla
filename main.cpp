@@ -4,6 +4,11 @@
 
 #include "defines.h"
 #include "solver.h"
+#include "C1DProblem.h"
+#include "C1DSimulation.h"
+
+
+
 char* INPUT_FOLDER = new char[_MAX_PATH];  //"calc/";
 char* OUTPUT_FOLDER = new char[_MAX_PATH]; //"calc/output/";
 
@@ -16,33 +21,23 @@ char* OUTPUT_FOLDER = new char[_MAX_PATH]; //"calc/output/";
 
 int main(int argc, char *argv[])
 {
-	if(argc > 1)
-	{
+	if(argc > 1) {
 		strcpy(INPUT_FOLDER, argv[1]);
 		strcpy(OUTPUT_FOLDER, INPUT_FOLDER);
 		strcat(OUTPUT_FOLDER, "output/");
-	}
-	else
-	{
+	} else {
 		strcpy(INPUT_FOLDER, "calc/");
 		strcpy(OUTPUT_FOLDER, "calc/output/");
 	}
 		
-    //	s.go("input6_ideal_lagrange.txt");
-	//	s.go("input6_table_lagrange.txt");
-	//	s.go("input6_table_lagrange_he.txt");
-	//  s.go("input6_table_lagrange_inner.txt");
-	//	s.go("input6_source_shock.txt");
-	//  s.go("input6_source_shock_ideal.txt");
-	//  s.go("input6_test_shockwave.txt");
+	// Uncomment for new C1DSimulation class testing
+	C1DProblem pr = prNBtest;
+	CEOSMieGruneisen eosNB;
+	C1DField *fldptr = new C1DField(pr);
+	//C1DSimulation sim;
 
-	//	s->go("al_vac_350.txt");
-
-//	s->go("al_vac_500_cold.txt");
-//	delete s;
-	
 	// Uncomment for metal problems
-	CSolver* s = new CSolver;
+	// CSolver* s = new CSolver;
 	//CSolver *s = new CSolver;
 	// s->goGlass("task-Ru-glass.txt");
 	//s->goGlass("task-Ru-glass-optic-1000.txt");
@@ -74,10 +69,8 @@ int main(int argc, char *argv[])
 
 	// Uncomment for Euler problems
 	//s->goEuler("task-toro-2.txt");
-	s->goEuler("task-test-NB.txt");
-
-
-	delete s;
+	//s->goEuler("task-test-NB.txt");
+	//delete s;
 
 	///////////////////////////////////////
 	// Uncomment for convergence rate calculation

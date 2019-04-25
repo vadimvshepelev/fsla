@@ -2,7 +2,7 @@
 
 #include "defines.h"
 #include "solver.h"
-#include "cfield.h"
+#include "cfieldold.h"
 #include "eosFigures.h"
 #include "task.h"
 #include "node.h"
@@ -114,7 +114,7 @@ void CSolver::goEulerMovingMesh(char* fName) {
 	int nSize = ms.getSize();
 	dumpToFileTestRP(t+100.e-6, counter);
 	int nTimes = 20, nTimesCounter = 0;
-	CMethod& method = task.getMethod();
+	CMethodOld& method = task.getMethod();
 	method.vGrid = new double[nSize];
 	method.X	 = new double[nSize];
 	double *timesArray = new double[nTimes];
@@ -541,7 +541,7 @@ double CSolver::calcTimeStepEuler(double t)
 	double tau_temp1 = (ms[1].x - ms[0].x) / v_max;
 	double tau_temp2 = 0.;
 
-	CMethod& method = task.getMethod();
+	CMethodOld& method = task.getMethod();
 
 	for(int i=1; i<ms.getSize()-1; i++)
 	{
@@ -2479,7 +2479,7 @@ void CSolver::calcHydroStageGodunovMovingMesh(double t, double tau)
 	CVectorPrimitive res;
 	res.ro = 0.; res.v = 0.; res.p = 0.;
 	// —читаем скорости узлов сетки
-	CMethod &method = task.getMethod();
+	CMethodOld &method = task.getMethod();
 	// ƒва варианта: либо константа из начальных условий (скорость левой границы, "хвоста" волны разрежени€), либо обновл€ть на каждом шаге по времени из ¬– между крайней €чейкой и вакуумом.
 	// ѕервый вариант
 	Zone z = task.getZone(0);

@@ -75,9 +75,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="method.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="methodEuler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -120,7 +117,19 @@
     <ClCompile Include="cfield.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="csimulation.cpp">
+    <ClCompile Include="methodold.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C1DProblem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C1DSimulation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C1DField.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C1DMethod.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -188,9 +197,6 @@
     <ClInclude Include="eosTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="method.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="methodEuler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -212,10 +218,22 @@
     <ClInclude Include="eosold.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cfield.h">
+    <ClInclude Include="methodold.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="csimulation.h">
+    <ClInclude Include="C1DProblem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C1DSimulation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cfieldold.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C1DField.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C1DMethod.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,9 +1,9 @@
 
-#ifndef METHOD_H
-#define METHOD_H
+#ifndef METHODOLD_H
+#define METHODOLD_H
 
 
-#include "cfield.h"
+#include "cfieldold.h"
 #include "eosold.h"
 
 
@@ -13,11 +13,11 @@
    функции.
 */
 
-class CMethod
+class CMethodOld
 {
 public:
 
-	CMethod(EOSOld *_eos);
+	CMethodOld(EOSOld *_eos);
 	virtual void	matter2Flow(CFieldOld &ms) = 0;
 	virtual void	advanceFlow(CFieldOld &ms, double tau) = 0;
 	virtual void	advanceFlowVacuum(CFieldOld &ms, double tau) = 0;

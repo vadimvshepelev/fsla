@@ -48,7 +48,7 @@ void CSolver::calcHydroStageGPS(double t, double tau) {
 // Первый вычислительный этап: гидродинамика
 // Без вакуума и, желательно, с идеальным газом. То, что работет еще со времен Хаафа.
 void CSolver::calcHydroStageGushchin(double t, double tau) {
-	CMethod &method = task.getMethod();
+	CMethodOld &method = task.getMethod();
 	method.matter2Flow(ms);
 	method.advanceFlow(ms, tau);
 	method.flow2Matter(ms, tau);
@@ -331,7 +331,7 @@ void CSolver::calcHydroStageSimpleCIR(double t, double tau){
 // Нужно ли обновлять давления? -- это вопрос, надо разобраться.
 void CSolver::calcHydroStageGushchinIdealSimple(double t, double tau) {
 	EOSOld &eos = task.getEOS();
-	CMethod &method = task.getMethod();
+	CMethodOld &method = task.getMethod();
 	ms_temp.initData(&task);
 	double E=0.; int i=0;
 	double test=0., h=0;
@@ -513,7 +513,7 @@ void CSolver::calcHydroStageGushchinIdealSimple(double t, double tau) {
 // С вакуумом и подвижной сеткой. То, на основе чего мы собираемся считать реальные задачи с металлом.
 void CSolver::calcHydroStageGushchinMovingGrid(double t, double tau) {
 	EOSOld &eos = task.getEOS();
-	CMethod &method = task.getMethod();
+	CMethodOld &method = task.getMethod();
 	ms_temp.initData(&task);
 	//Сетка уже сгенерирована в функции go()
 	double E=0.; int i=0;

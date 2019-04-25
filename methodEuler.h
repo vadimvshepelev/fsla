@@ -3,13 +3,13 @@
 #define METHODEULER_H
 
 
-#include "method.h"
+#include "methodold.h"
 
 
-class CMethodEuler : public CMethod {
+class CMethodEuler : public CMethodOld {
 public:
 	double gamma;
-	CMethodEuler(EOSOld *_eos) : CMethod(_eos) { gamma = 1.4; }
+	CMethodEuler(EOSOld *_eos) : CMethodOld(_eos) { gamma = 1.4; }
 	~CMethodEuler();
 
 	void	matter2Flow(CFieldOld &ms);

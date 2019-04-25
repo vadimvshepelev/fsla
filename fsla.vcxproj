@@ -65,8 +65,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="C1DField.cpp" />
+    <ClCompile Include="C1DMethod.cpp" />
     <ClCompile Include="ceos.cpp" />
-    <ClCompile Include="csimulation.cpp" />
+    <ClCompile Include="C1DProblem.cpp" />
+    <ClCompile Include="C1DSimulation.cpp" />
     <ClCompile Include="CTestToro.cpp" />
     <ClCompile Include="eosold.cpp" />
     <ClCompile Include="eosAnalytic.cpp" />
@@ -87,7 +90,7 @@
     <ClCompile Include="eos\EOSBin.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="cfield.cpp" />
-    <ClCompile Include="method.cpp" />
+    <ClCompile Include="methodold.cpp" />
     <ClCompile Include="methodEuler.cpp" />
     <ClCompile Include="solver.cpp" />
     <ClCompile Include="solvers\ENO.cpp" />
@@ -102,8 +105,11 @@
     <ClCompile Include="_vector4.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="C1DField.h" />
+    <ClInclude Include="C1DMethod.h" />
     <ClInclude Include="ceos.h" />
-    <ClInclude Include="csimulation.h" />
+    <ClInclude Include="C1DProblem.h" />
+    <ClInclude Include="C1DSimulation.h" />
     <ClInclude Include="CTestToro.h" />
     <ClInclude Include="defines.h" />
     <ClInclude Include="eosold.h" />
@@ -125,8 +131,8 @@
     <ClInclude Include="eosTable_table.h" />
     <ClInclude Include="eosTest.h" />
     <ClInclude Include="eos\EOSBin.h" />
-    <ClInclude Include="cfield.h" />
-    <ClInclude Include="method.h" />
+    <ClInclude Include="cfieldold.h" />
+    <ClInclude Include="methodold.h" />
     <ClInclude Include="methodEuler.h" />
     <ClInclude Include="node.h" />
     <ClInclude Include="solver.h" />

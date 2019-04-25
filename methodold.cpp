@@ -1,11 +1,11 @@
 
-#include "method.h"
+#include "methodold.h"
 
 #include <math.h>
 #include <stdio.h>
 
 
-CMethod::CMethod(EOSOld *_eos) : eos(*_eos),
+CMethodOld::CMethodOld(EOSOld *_eos) : eos(*_eos),
 							  La(Vector4::ZERO),
 							  Lb(Vector4::ZERO),
 							  Lg(Vector4::ZERO),
@@ -13,7 +13,7 @@ CMethod::CMethod(EOSOld *_eos) : eos(*_eos),
 {}
 
 
-void CMethod::averageNode(Node &n1, Node &n2, Node &nav)
+void CMethodOld::averageNode(Node &n1, Node &n2, Node &nav)
 {
 	nav.ro = (n1.ro + n2.ro) / 2;
 	
@@ -40,7 +40,7 @@ void CMethod::averageNode(Node &n1, Node &n2, Node &nav)
 }
 
 
-void CMethod::updateNode(Node &n)
+void CMethodOld::updateNode(Node &n)
 {
 	if(eos.getType() == ideal
 		/////////// DEBUG!!! ///////////////
@@ -74,7 +74,7 @@ void CMethod::updateNode(Node &n)
 }
 
 
-void CMethod::fillLambda(Vector4 &Fm1, Vector4 &F0, Vector4 &Fp1, Vector4 &Fp2,
+void CMethodOld::fillLambda(Vector4 &Fm1, Vector4 &F0, Vector4 &Fp1, Vector4 &Fp2,
 						 Vector4 &L, double step)
 {
 	double curant;
@@ -97,7 +97,7 @@ if(curant < 0 || curant > 1)
 }
 
 
-void CMethod::fillLambdaComponent(int i, double lambda, double criteria, double curant)
+void CMethodOld::fillLambdaComponent(int i, double lambda, double criteria, double curant)
 {
 	double alpha, beta, gamma, delta;
 

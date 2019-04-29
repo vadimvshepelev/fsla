@@ -1,0 +1,56 @@
+﻿Build started 29.04.2019 19:02:18.
+     1>Project "D:\icad\fsla\fsla.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /Od /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt C1DSimulation.cpp COutput.cpp main.cpp
+         main.cpp
+         COutput.cpp
+         Generating Code...
+         Skipping... (no relevant changes detected)
+         C1DSimulation.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"D:\icad\fsla\x64\Debug\fsla.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\local\boost_1_69_0\lib64-msvc-11.0" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\icad\fsla\x64\Debug\fsla.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\icad\fsla\x64\Debug\fsla.lib" /MACHINE:X64 x64\Debug\C1DBCs.obj
+         x64\Debug\C1DField.obj
+         x64\Debug\C1DMethod.obj
+         x64\Debug\ceos.obj
+         x64\Debug\C1DProblem.obj
+         x64\Debug\C1DSimulation.obj
+         x64\Debug\COutput.obj
+         x64\Debug\CTestToro.obj
+         x64\Debug\eosold.obj
+         x64\Debug\eosAnalytic.obj
+         x64\Debug\eosAnalyticAu.obj
+         x64\Debug\eosAnalyticFe.obj
+         x64\Debug\eosAnalyticNi.obj
+         x64\Debug\eosAnalyticTa.obj
+         x64\Debug\eosFigures.obj
+         x64\Debug\eosIdeal.obj
+         x64\Debug\eosTable.obj
+         x64\Debug\eosTableAu.obj
+         x64\Debug\eosTableFe.obj
+         x64\Debug\eosTableFeAlpha.obj
+         x64\Debug\eosTableNi.obj
+         x64\Debug\eosTableTa.obj
+         x64\Debug\eosTable_scale.obj
+         x64\Debug\eosTable_table.obj
+         x64\Debug\EOSBin.obj
+         x64\Debug\main.obj
+         x64\Debug\cfield.obj
+         x64\Debug\methodold.obj
+         x64\Debug\methodEuler.obj
+         x64\Debug\solver.obj
+         x64\Debug\ENO.obj
+         "x64\Debug\godunov-EOSBin.obj"
+         x64\Debug\HLL.obj
+         x64\Debug\hllc.obj
+         x64\Debug\stageExchange.obj
+         x64\Debug\stageHeat.obj
+         x64\Debug\stageHydro.obj
+         x64\Debug\task.obj
+         x64\Debug\_matrix4.obj
+         x64\Debug\_vector4.obj
+         fsla.vcxproj -> D:\icad\fsla\x64\Debug\fsla.exe
+     1>Done Building Project "D:\icad\fsla\fsla.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:04.07

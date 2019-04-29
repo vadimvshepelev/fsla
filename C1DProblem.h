@@ -9,15 +9,16 @@ using namespace std;
 class C1DProblem {	
 public:
 	C1DProblem(string _name, 
-		       double _roL, double _uL, double _pL, double _roR, double _uR, double _pR, 
-			   double _xMin, double _xMax, double _tMin, double _tMax, double _x0,
-			   int _NX, double _CFL) : roL(_roL), uL(_uL), pL(_pL), roR(_roR), uR(_uR), pR(_pR),
-			   xMin(_xMin), xMax(_xMax), tMin(_tMin), tMax(_tMax), x0(_x0), NX(_NX), CFL(_CFL) {}
+		       double _rol, double _ul, double _pl, double _ror, double _ur, double _pr, 
+			   double _xmin, double _xmax, double _tmin, double _tmax, double _x0,
+			   int _nx, double _cfl, string _bcs) : name(_name), rol(_rol), ul(_ul), pl(_pl), ror(_ror), ur(_ur), pr(_pr),
+			   xmin(_xmin), xmax(_xmax), tmin(_tmin), tmax(_tmax), x0(_x0), nx(_nx), cfl(_cfl), bcs(_bcs) {}
 	string name;
-	const double roL, uL, pL, roR, uR, pR;
-	const double xMin, xMax, tMin, tMax, x0;
-	const int NX;
-	double CFL;	
+	const double rol, ul, pl, ror, ur, pr;
+	const double xmin, xmax, tmin, tmax, x0;
+	const int nx;
+	double cfl;	
+	string bcs;
 };
 
 

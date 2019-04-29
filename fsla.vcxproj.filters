@@ -132,6 +132,12 @@
     <ClCompile Include="C1DMethod.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C1DBCs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="COutput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="_matrix4.h">
@@ -234,6 +240,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="C1DMethod.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C1DBCs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="COutput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

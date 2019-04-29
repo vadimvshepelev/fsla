@@ -1,3 +1,29 @@
+#include<time.h>
+
 #include "C1DSimulation.h"
 
-
+void C1DSimulation::run() {
+	fld.setics(pr, eos);
+	int counter=0;	
+	clock_t tStart = 0, tEnd = 0;
+	double cfl=0., tCalc=0.;		
+	outp.manageFileOutput(pr, fld, eos);
+	cout << "'CSimulation' class: starting simulation..." << endl;
+	while(fld.t < pr.tmax) {
+		cfl = pr.cfl;
+		fld.dt = mtd.calcdt(pr, eos, fld);
+		if(counter < 5) {
+			cfl = cfl*.2;
+			fld.dt *= .2;
+		}
+		if(fld.t+fld.dt > pr.tmax) fld.dt = pr.tmax-fld.t; 						
+		tStart = clock(); mtd.calc(pr, eos, fld); tEnd = clock(); 
+		tCalc = (double)(tEnd - tStart) / CLOCKS_PER_SEC;		
+		outp.manageScreenOutput(pr, counter, fld.t, fld.dt, cfl, tCalc);
+		fld.t += fld.dt;				
+		outp.manageFileOutput(pr, fld, eos);
+		counter++;
+	}	
+	cout << "Simulation finished!" << endl;
+	return;
+}

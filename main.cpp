@@ -6,6 +6,7 @@
 #include "solver.h"
 #include "C1DProblem.h"
 #include "C1DSimulation.h"
+#include "C1DBCs.h"
 
 
 
@@ -34,7 +35,13 @@ int main(int argc, char *argv[])
 	C1DProblem pr = prNBtest;
 	CEOSMieGruneisen eosNB;
 	C1DField *fldptr = new C1DField(pr);
-	//C1DSimulation sim;
+	C1DGodunovMethodMillerPuckett mtd;	
+	double _dtt[] = {0., .05, .1};
+	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
+	COutput outp = COutput(pr, "output", dtt);
+	C1DSimulation sim = C1DSimulation(pr, eosNB, *fldptr, mtd, outp);
+	sim.run();
+	delete fldptr;	
 
 	// Uncomment for metal problems
 	// CSolver* s = new CSolver;

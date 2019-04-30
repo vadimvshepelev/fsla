@@ -51,8 +51,11 @@ double C1DGodunovMethodMillerPuckett::calcdt(C1DProblem& pr, CEOSMieGruneisen& e
 CVectorPrimitive C1DGodunovMethodMillerPuckett::calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double roL, double uL, double pL, double roR, double uR, double pR) {
 	CVectorPrimitive V;
 	const double gammaL = eos.getG(roL), gammaR = eos.getG(roR);
-	const double K0S = eos.ro0*eos.getc(eos.ro0, eos.getp0(eos.ro0));
-	const double eL = eos.gete(roL, pL), eR = eos.gete(roR, pR), cL = eos.getc(roL, eL), cR = eos.getc(roR, eR); 
+	// ѕервое замечание по физике: почему нет "нормального" нулевого давлени€? “о давление, которое "должно" быть нулевым по логике вещей, существенно отрицательно.
+	// const double K0S = eos.ro0*eos.getc(eos.ro0, eos.getp0(eos.ro0));
+	// »справл€ем:
+	const double K0S = eos.ro0*eos.getc(eos.ro0, eos.getp(eos.ro0, 2.e7));
+	const double eL = eos.gete(roL, pL), eR = eos.gete(roR, pR), cL = eos.getc(roL, pL), cR = eos.getc(roR, pR); 
 	double _e = 0.;
 	const double KSL = roL*cL*cL, KSR = roL*cR*cR;
 	const double KSPrimeL = eos.getKSPrime(roL, eL), KSPrimeR= eos.getKSPrime(roR, eR); // јккуратно посчитать через первые и вторые производные, просто это надо чуть времени

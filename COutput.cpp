@@ -27,7 +27,7 @@ using namespace std;
 			}
 			cout << "done!" << endl;
 		}		
-		subDir += pr.name;
+		subDir += "\\" + pr.name;
 		boost::filesystem::path p(subDir);
 	if(exists(p)) {
 		cout << "'" << p.string() << "'" << "...already exists!" << endl;
@@ -65,13 +65,12 @@ int COutput::manageScreenOutput(C1DProblem& _prm, int iteration, double t, doubl
 int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, CEOSMieGruneisen& eos) {	
 	assert(!dtt.empty());		
 	if (fld.t>=dtt[0]) {
-		ostringstream oss1, oss2;
-		oss1 << subDir << "\\" << pr.name << "-" << nDump << ".dat"; string fName1 = oss1.str();
+		ostringstream oss1;
+		oss1 << subDir << "\\" << pr.name << "-" << nDump++ << ".dat"; string fName1 = oss1.str();
 		cout << "Writing to file '" << fName1 << "'...";		
 		dump(pr, fld, eos, fName1);
 		cout << "done!" << endl;		
-		dtt.erase(dtt.begin());
-		nDump++;
+		dtt.erase(dtt.begin());		
 	}
 	return 1;
 }
@@ -90,7 +89,7 @@ int COutput::dump(C1DProblem& prb, C1DField& fld, CEOSMieGruneisen& eos, string 
 		exit(1);
 	}
 	ofs << "TITLE=\"Riemann Problem 1D slice t=" << t << "\"" << endl;
-	ofs << "VARIABLES=\"x,\"ro\",\"u\",\"p\",\"e\",\"ro_ex\",\"u_ex\",\"p_ex\",\"e_ex\"" << endl;	
+	ofs << "VARIABLES=\"x\",\"ro\",\"u\",\"p\",\"e\",\"ro_ex\",\"u_ex\",\"p_ex\",\"e_ex\"" << endl;	
 	ofs << "ZONE T=\"Numerical\", I=" << imax - imin << ", F=POINT" << endl;
 	double mul_x=1., mul_u=1., mul_p=1., mul_e=1.;
 	double _ro = 0., _u = 0., _v = 0., _w = 0., _e = 0., _p = 0.;	
@@ -100,7 +99,7 @@ int COutput::dump(C1DProblem& prb, C1DField& fld, CEOSMieGruneisen& eos, string 
 		_e  = U[i][2]/_ro - .5*_u*_u;
 		_p  = eos.getp(_ro, _e); 		
 		//res = calcRPAnalyticalSolution (eos, rol, ul, pl, ror, ur, pr, x-x0, t);
-		e_ex = eos.gete(res.ro, res.p);
+		e_ex = eos.gete(res.ro, res.p) ? res.ro!=0 : 0.;
 		ofs << (fld.x[imin+i]+.5*fld.dx)*mul_x << " " << _ro    << " " << _u*mul_u << " " << _p*mul_p << " " << _e*mul_e << " " << 
 			   res.ro << " " << res.v*mul_u << " " << res.p*mul_p << " " << e_ex*mul_e << endl;				
 	}	

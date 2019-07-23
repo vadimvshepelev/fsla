@@ -11,14 +11,14 @@ using namespace std;
 double CEOSMieGruneisen::getG(double ro) {
 	double x = ro/ro0;
 	const double a0 = 2.95, a1 = 2.408, a2 = 12.151;
-	const double M = 18.e-3;     // [kg/mole]
+	const double M = 18.;     // [g/mole]
 	const double CVLiq = 4150.;   // [J/kg/K] 
 	const double CVGas = 1430.;	  // [J/kg/K]
 	const double R = 8.31;        // [J/mole/K]
 	// Здесь используем только жидкую фазу! Можно будет дифференцировать при усложнении
 	const double CV = CVLiq;
 	double G = R/CV/M*(a0 + (1.-a0)*exp(-pow(x/.5273, 1.7)) + a1*exp(-pow(x/1.0904, -3.5)) + a2*exp(-pow(x/1.3927, -5.)));
-	return G;
+ 	return G;
 }
 
 double CEOSMieGruneisen::getp0(double ro) {
@@ -85,9 +85,9 @@ double CEOSMieGruneisen::getGPrime(double ro) {
 	/* double GPrime = R/CV/M*((1.-a0)*exp(-pow(x/.5273, 1.7))*pow(x/.5273, -2.7)*(-1.7/.5273) + 
 		                        a1 *exp(-pow(x/1.0904, -3.5))*pow(x/1.0904, -4.5)*(3.5/1.0904) +
 								a2 *exp(-pow(x/1.3927, -5.0))*pow(x/1.3927, -6.0)*(5.0/1.3927)); */
-	double GPrime = 35.412*exp(-5.29948*pow(x, -5.))*pow(x, -6) 
-		          + 1.26927*exp(-1.95979*pow(x, -3.5))*pow(x, -4.5) 
-				  + 1.09463*exp(-2.96826*pow(x, 1.7))*pow(x, .7);
+	double GPrime = .035412*exp(-5.23948*pow(x, -5.))*pow(x, -6) 
+		          + .00126927*exp(-1.35379*pow(x, -3.5))*pow(x, -4.5) 
+				  + .00109463*exp(-2.96826*pow(x, 1.7))*pow(x, .7);
 	return GPrime;
 }
 	
@@ -102,8 +102,10 @@ double CEOSMieGruneisen::getp0Prime(double ro) {
 		             A*(-beta+1.)*pow(x, -beta)*exp(b*(1.-pow(x, -beta))) + A*pow(x, -beta+1.) * exp(b*(1.-pow(x, -beta))) * 		
 		x*(         A*pow(x, -beta+1.) * exp(b*(1.-pow(x, -beta))) - K*(pow(x, xi+1.))); 
 		*/
-		A*pow(x, -beta)*exp(b*(1.-pow(x, -beta))) - K*pow(x, xi) + 
-		A*beta*exp(b*(1.-pow(x, -beta)))*(-pow(x, -beta) + pow(x, -2.*beta)) - K*xi*pow(x, xi);
+		/*A*pow(x, -beta)*exp(b*(1.-pow(x, -beta))) - K*pow(x, xi) + 
+		A*beta*exp(b*(1.-pow(x, -beta)))*(-pow(x, -beta) + pow(x, -2.*beta)) - K*xi*pow(x, xi);*/
+
+		exp(-11.55/pow(x,.3333))*(2.68705e14/pow(x, .6666) + 4.65359e13/pow(x,.3333)) - 2.1275e9*pow(x,.85);
 	return p0Prime;
 }
 

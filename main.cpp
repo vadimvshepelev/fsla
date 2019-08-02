@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
 	cout << "=======================================================================" << endl;
 	string outputDir = string("output");		
 	// Uncomment for new C1DSimulation class testing
-	C1DProblem pr = prNBtest;
+	/*C1DProblem pr = prNBtest;
 	CEOSMieGruneisen eosNB;
 	C1DField *fldptr = new C1DField(pr);
 	C1DGodunovMethodMillerPuckett mtd;	
@@ -43,10 +43,10 @@ int main(int argc, char *argv[]) {
 	COutput outp = COutput(pr, outputDir, dtt);
 	C1DSimulation sim = C1DSimulation(pr, eosNB, *fldptr, mtd, outp);
 	sim.run();
-	delete fldptr;	
+	delete fldptr;	*/
+
 	// Uncomment for metal problems
-	// CSolver* s = new CSolver;
-	//CSolver *s = new CSolver;
+	 CSolver* s = new CSolver;	
 	// s->goGlass("task-Ru-glass.txt");
 	//s->goGlass("task-Ru-glass-optic-1000.txt");
 	//s->goGlass("task-Ru-glass-optic-2000.txt");
@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
 	
 
 	// Uncomment for Euler problems
-	//s->goEuler("task-toro-2.txt");
+	s->goEuler("task-toro-1.txt");
 	//s->goEuler("task-test-NB.txt");
 	//delete s;
 

@@ -76,10 +76,10 @@ void CSolver::goEuler(char* fName) {
 		//if(task.getHydroStage()) calcHydroStageMccormack(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageMHM(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageGushchinIdealSimple(t, tau);
-		//if(task.getHydroStage()) calcHydroStageG2(t, tau);	
+	    if(task.getHydroStage()) calcHydroStageG2(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageENO2G(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageENO3G(t, tau);	
-		if(task.getHydroStage()) calcHydroStageMieGruneisen(eos, t, tau);	
+		//if(task.getHydroStage()) calcHydroStageMieGruneisen(eos, t, tau);	
 		//if(task.getHydroStage()) calcHydroStageGodunovEOSBin(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageENO2G(t, tau);		
 		if(handleKeys(t)) break;		
@@ -2877,12 +2877,20 @@ void CSolver::calcHydroStageG2(double t, double tau) {
 	slope[0] = calcMinmodSlope(ms[0].W-Wim1, ms[1].W-ms[0].W);
 	slope[nSize-1] = calcMinmodSlope(ms[nSize-1].W-ms[nSize-2].W, Wip1-ms[nSize-1].W);
 	slopeip1 = calcMinmodSlope(Wip1-ms[nSize-1].W, Wip2-Wip1);
-	for(i=1; i<nSize-1; i++)
+	for(i=1; i<nSize-1; i++) {
+
+
+		if(i==29) {
+			double q = 0.;
+		}
+
+
 		slope[i] = calcMinmodSlope(ms[i].W-ms[i-1].W, ms[i+1].W-ms[i].W);	
+	}
 	// Intercell fluxes
 	for(i=0; i<nSize+1; i++) {
 		Node &n = ms[i];	
-		if(i==0)			
+/*		if(i==0)			
 			n.F = calcGodunovFlux(roim1+slopeim1[0]*0.5*h, roim1*uim1+slopeim1[1]*0.5*h, roim1*Eim1+slopeim1[2]*0.5*h, 
 			                     n.W[0]-slope[i][0]*0.5*h,     n.W[1]-slope[i][1]*0.5*h,     n.W[2]-slope[i][2]*0.5*h);
 		else if(i==nSize)
@@ -2890,7 +2898,16 @@ void CSolver::calcHydroStageG2(double t, double tau) {
 			                             Wip1[0]-slopeip1[0]*0.5*h,      Wip1[1]-slopeip1[1]*0.5*h,        Wip1[2]-slopeip1[2]*0.5*h);
 		else
 			n.F = calcGodunovFlux(ms[i-1].W[0]+slope[i-1][0]*0.5*h, ms[i-1].W[1]+slope[i-1][1]*0.5*h, ms[i-1].W[2]+slope[i-1][2]*0.5*h,
-								          n.W[0]-slope[i][0]*0.5*h,         n.W[1]-slope[i][1]*0.5*h,         n.W[2]-slope[i][2]*0.5*h);		
+								          n.W[0]-slope[i][0]*0.5*h,         n.W[1]-slope[i][1]*0.5*h,         n.W[2]-slope[i][2]*0.5*h);		*/
+		if(i==0)			
+			n.F = calcGodunovFlux(roim1+slopeim1[0]*0.5, roim1*uim1+slopeim1[1]*0.5, roim1*Eim1+slopeim1[2]*0.5, 
+			                     n.W[0]-slope[i][0]*0.5,     n.W[1]-slope[i][1]*0.5,     n.W[2]-slope[i][2]*0.5);
+		else if(i==nSize)
+			n.F = calcGodunovFlux(ms[i-1].W[0]+slope[i-1][0]*0.5, ms[i-1].W[1]+slope[i-1][1]*0.5, ms[i-1].W[2]+slope[i-1][2]*0.5, 
+			                             Wip1[0]-slopeip1[0]*0.5,      Wip1[1]-slopeip1[1]*0.5,        Wip1[2]-slopeip1[2]*0.5);
+		else
+			n.F = calcGodunovFlux(ms[i-1].W[0]+slope[i-1][0]*0.5, ms[i-1].W[1]+slope[i-1][1]*0.5, ms[i-1].W[2]+slope[i-1][2]*0.5,
+								          n.W[0]-slope[i][0]*0.5,         n.W[1]-slope[i][1]*0.5,         n.W[2]-slope[i][2]*0.5);
 	}
 	
 	// Main cycle

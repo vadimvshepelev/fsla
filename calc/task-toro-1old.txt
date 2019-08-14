@@ -1,14 +1,14 @@
 EOSType = ideal
 Method = eno3g
 CFL = .5
-maxTime = .001
+maxTime = .2
 nZones = 2
 
 l = .3
 nSize = 30
 ro = 1.
 v = .75
-p = 10000. 
+p = 1 
 
 l = .7
 nSize = 70

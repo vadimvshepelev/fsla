@@ -336,6 +336,7 @@ void CSolver::calcHydroStageGushchinIdealSimple(double t, double tau) {
 	double E=0.; int i=0;
 	double test=0., h=0;
 	double L0=0., L1=0., L2=0., L3=0., R0=0., R1=0., R2=0., R3=0., epsilon=0.; 
+	double dx = ms[1].x-ms[0].x;
 	for(i=0; i<ms.getSize(); i++) {
 		Node &n = ms[i];
 		E = n.e + 0.5*n.v*n.v;
@@ -374,15 +375,15 @@ void CSolver::calcHydroStageGushchinIdealSimple(double t, double tau) {
 		L  = method.getLambda(nav);
 		if(j<nSize-2) {
 			method.fillLambda(ms[j-1].F, ms[j].F, ms[j+1].F, ms[j+2].F,
-					   L, tau/(ms[j+1].x - ms[j].x));
+					   L, tau/dx);
 			Fp = method.calcFlux(O, OI, ms[j-1].W, ms[j].W, ms[j+1].W, ms[j+2].W);
 		} else if (j==nSize-2) {
 			method.fillLambda(ms[j-1].F, ms[j].F, ms[j+1].F, ms[j+1].F,
-					   L, tau/(ms[j+1].x - ms[j].x));
+					   L, tau/dx);
 			Fp = method.calcFlux(O, OI, ms[j-1].W, ms[j].W, ms[j+1].W, ms[j+1].W);
 		} else if (j==nSize-1) {
 			method.fillLambda(ms[j-1].F, ms[j].F, ms[j].F, ms[j].F,
-					   L, tau/(ms[j+1].x - ms[j].x));
+					   L, tau/dx);
 			Fp = method.calcFlux(O, OI, ms[j-1].W, ms[j].W, ms[j].W, ms[j].W);
 		}
 		// F(i-1/2) flow
@@ -393,16 +394,16 @@ void CSolver::calcHydroStageGushchinIdealSimple(double t, double tau) {
 		L  = method.getLambda(nav);
 		if(j>0) {
 			method.fillLambda(ms[j-1].F, ms[j].F, ms[j+1].F, ms[j+2].F,
-					   L, tau/(ms[j+1].x - ms[j].x));
+					   L, tau/dx);
 			Fm = method.calcFlux(O, OI, ms[j-1].W, ms[j].W, ms[j+1].W, ms[j+2].W);
 		} else {
 			method.fillLambda(ms[j].F, ms[j].F, ms[j+1].F, ms[j+2].F,
-					   L, tau/(ms[j+1].x - ms[j].x));
+					   L, tau/dx);
 			Fm = method.calcFlux(O, OI, ms[j].W, ms[j].W, ms[j+1].W, ms[j+2].W);
 		}
 		//////////////////////////////
 		// Вычисляем W_temp 
-		ms[i].W_temp = ms[i].W - (Fp-Fm) * tau/(ms[i+1].x - ms[i].x);
+		ms[i].W_temp = ms[i].W - (Fp-Fm) * tau/dx;
 	}
 	/////////////////Здесь тестирование этапа////////////////////////////////////////////////
 	/////////////////Начало тестирования/////////////////////////////////////////////////////

@@ -7,7 +7,7 @@ RPSolutionPrimitive CSolver::solveRPEOSBin(double roL, double vL, double pL, dou
 	// Решаем нелинейное уравнение относительно давления методом касательных Ньютона
 	RPSolutionPrimitive res; 
 	EOSBin* eos = task.eosBin;
-	const double TOL = 1.e-6, gamma = eos->gamma, ro0 = eos->ro0, c0 = eos->c0, p0 = 1./gamma*ro0*ro0*c0;
+	const double TOL = 1.e-6, gamma = eos->gamma, ro0 = eos->ro0, c0 = eos->c0, p0 = 1./gamma*ro0*c0*c0;
 	int itCounter = 0;
 	double p = 0., pPrev = 0., cL = 0., cR = 0.;
 	if(roL!=0.) cL = sqrt(gamma*(pL+p0)/roL);
@@ -101,7 +101,7 @@ RPSolutionPrimitive CSolver::solveRPEOSBin(double roL, double vL, double pL, dou
 
 double CSolver::fLEOSBin(double p, double roL, double vL, double pL) {
 	EOSBin* eos = task.eosBin;
-	const double gamma = eos->gamma, ro0 = eos->ro0, c0 = eos->c0, p0 = 1./gamma*ro0*ro0*c0;
+	const double gamma = eos->gamma, ro0 = eos->ro0, c0 = eos->c0, p0 = 1./gamma*ro0*c0*c0;
 	double f = 0.;
 	if(p>pL) {
 		double AL = 2./(gamma+1)/roL;
@@ -117,7 +117,7 @@ double CSolver::fLEOSBin(double p, double roL, double vL, double pL) {
 
 double CSolver::dfLdpEOSBin(double p, double roL, double vL, double pL) {
     EOSBin* eos = task.eosBin;
-	const double gamma = eos->gamma, ro0 = eos->ro0, c0 = eos->c0, p0 = 1./gamma*ro0*ro0*c0;
+	const double gamma = eos->gamma, ro0 = eos->ro0, c0 = eos->c0, p0 = 1./gamma*ro0*c0*c0;
 	double dfdp = 0.;
 	if (p>pL) {
 		double AL = 2./(gamma+1)/roL;
@@ -133,7 +133,7 @@ double CSolver::dfLdpEOSBin(double p, double roL, double vL, double pL) {
 }
 
 double CSolver::fREOSBin(double p, double roR, double vR, double pR) {
-	const double gamma = task.eosBin->gamma, ro0 = task.eosBin->ro0, c0 = task.eosBin->c0, p0 = 1./gamma*ro0*ro0*c0;
+	const double gamma = task.eosBin->gamma, ro0 = task.eosBin->ro0, c0 = task.eosBin->c0, p0 = 1./gamma*ro0*c0*c0;
 	double f = 0.;
 	if(p>pR) {
 		double AR = 2./(gamma+1)/roR;
@@ -148,7 +148,7 @@ double CSolver::fREOSBin(double p, double roR, double vR, double pR) {
 }
 
 double CSolver::dfRdpEOSBin(double p, double roR, double vR, double pR) {
-	const double gamma = task.eosBin->gamma, ro0 = task.eosBin->ro0, c0 = task.eosBin->c0, p0 = 1./gamma*ro0*ro0*c0;
+	const double gamma = task.eosBin->gamma, ro0 = task.eosBin->ro0, c0 = task.eosBin->c0, p0 = 1./gamma*ro0*c0*c0;
 	double dfdp = 0.;
 	if (p>pR) {
 		double AR = 2./(gamma+1)/roR;
@@ -190,7 +190,7 @@ CVectorPrimitive CSolver::calcRPAnalyticalSolutionEOSBin(double roL, double vL, 
 	RPSolutionPrimitive res = solveRPEOSBin(roL, vL, pL, roR, vR, pR);
 	// V = (ro, v, p)T
 	CVectorPrimitive V;
-	const double TOL = 1.e-6, gamma = task.eosBin->gamma, ro0 = task.eosBin->ro0, c0 = task.eosBin->c0, p0 = 1./gamma*ro0*ro0*c0;
+	const double TOL = 1.e-6, gamma = task.eosBin->gamma, ro0 = task.eosBin->ro0, c0 = task.eosBin->c0, p0 = 1./gamma*ro0*c0*c0;
 	double xi = x/t, cL = 0., cR = 0.;
 	if(roL!=0.) cL = sqrt(gamma*(pL+p0)/roL);
 	if(roR!=0.) cR = sqrt(gamma*(pR+p0)/roR);
@@ -392,14 +392,14 @@ void CSolver::calcHydroStageGodunovEOSBin(double t, double tau) {
 
 
 		if(i==0)
-			//n.F = calcGodunovFluxEOSBin(roLB, roLB*vLB, roLB*ELB, n.W[0], n.W[1], n.W[2]);
-			n.F = calcHLLFluxEOSBin(roLB, roLB*vLB, roLB*ELB, n.W[0], n.W[1], n.W[2]);
+			n.F = calcGodunovFluxEOSBin(roLB, roLB*vLB, roLB*ELB, n.W[0], n.W[1], n.W[2]);
+			//n.F = calcHLLFluxEOSBin(roLB, roLB*vLB, roLB*ELB, n.W[0], n.W[1], n.W[2]);
 		else
-			//n.F = calcGodunovFluxEOSBin(ms[i-1].W[0], ms[i-1].W[1], ms[i-1].W[2], n.W[0], n.W[1], n.W[2]);	
-			n.F = calcHLLFluxEOSBin(ms[i-1].W[0], ms[i-1].W[1], ms[i-1].W[2], n.W[0], n.W[1], n.W[2]);	
+			n.F = calcGodunovFluxEOSBin(ms[i-1].W[0], ms[i-1].W[1], ms[i-1].W[2], n.W[0], n.W[1], n.W[2]);	
+			//n.F = calcHLLFluxEOSBin(ms[i-1].W[0], ms[i-1].W[1], ms[i-1].W[2], n.W[0], n.W[1], n.W[2]);	
 	}
-	//ms[nSize].F = calcGodunovFluxEOSBin(ms[nSize-1].W[0], ms[nSize-1].W[1], ms[nSize-1].W[2], roRB, roRB*vRB, roRB*ERB);
-	ms[nSize].F = calcHLLFluxEOSBin(ms[nSize-1].W[0], ms[nSize-1].W[1], ms[nSize-1].W[2], roRB, roRB*vRB, roRB*ERB);
+	ms[nSize].F = calcGodunovFluxEOSBin(ms[nSize-1].W[0], ms[nSize-1].W[1], ms[nSize-1].W[2], roRB, roRB*vRB, roRB*ERB);
+	//ms[nSize].F = calcHLLFluxEOSBin(ms[nSize-1].W[0], ms[nSize-1].W[1], ms[nSize-1].W[2], roRB, roRB*vRB, roRB*ERB);
 	// Main cycle
 	for(i=0; i<nSize; i++) {				
 		ms[i].W_temp = ms[i].W - tau/h*(ms[i+1].F-ms[i].F);

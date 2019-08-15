@@ -1,15 +1,21 @@
 EOSType = bin
-gamma = 1.6666667
-ro0 = 1.
-c0 = 1.
-Method = godunov
-courant = .9
-maxTime = 0.295
-nZones = 1
+gamma = 4.8
+ro0 = 19300.
+c0 = 1931.
+Method = eno3g
+CFL = .9
+maxTime = 10.e-12
+nZones = 2
 
-l = 1.
+l = 100.e-9
 nSize = 100
-ro = 1.
-v = -1.
-p = .224
+ro = 19300.
+v = 0.
+p = 100.e9
  
+l = 100.e-9
+nSize = 100
+ro = 2000.
+v = 0
+p = -10.e9
+

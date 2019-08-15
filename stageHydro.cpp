@@ -1274,7 +1274,8 @@ CVectorPrimitive CSolver::calcRPAnalyticalSolution(double roL, double vL, double
 CVectorPrimitive CSolver::calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double roL, double uL, double pL, double roR, double uR, double pR, double x=0., double t=1.) {
 	CVectorPrimitive V;
 	const double gammaL = eos.getG(roL), gammaR = eos.getG(roR);
-	const double K0S = eos.ro0*eos.getc(eos.ro0, eos.getp0(eos.ro0));
+	const double c0 = eos.getc(eos.ro0, eos.getp0(eos.ro0));
+	const double K0S = eos.ro0*c0*c0;
 	const double eL = eos.gete(roL, pL), eR = eos.gete(roR, pR), cL = eos.getc(roL, eL), cR = eos.getc(roR, eR); 
 	double _e = 0.;
 	const double KSL = roL*cL*cL, KSR = roL*cR*cR;

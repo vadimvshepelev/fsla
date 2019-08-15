@@ -1,0 +1,18 @@
+EOSType = ideal
+Method = eno3g
+CFL = .9
+maxTime = 100.e-12
+nZones = 2
+
+l = 100.e-9
+nSize = 100
+ro = 19300.
+v = 0.
+p = 100e-9. 
+
+l = 100.e-9
+nSize = 100
+ro = 2000.
+v = 0.
+p = 15.e9 
+

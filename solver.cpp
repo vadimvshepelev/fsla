@@ -79,8 +79,8 @@ void CSolver::goEuler(char* fName) {
 	    //if(task.getHydroStage()) calcHydroStageG2(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageENO2G(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageENO3G(t, tau);	
-		//if(task.getHydroStage()) calcHydroStageMieGruneisen(eos, t, tau);	
-		if(task.getHydroStage()) calcHydroStageGodunovEOSBin(t, tau);		
+		if(task.getHydroStage()) calcHydroStageMieGruneisen(eos, t, tau);	
+		//if(task.getHydroStage()) calcHydroStageGodunovEOSBin(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageENO2G(t, tau);		
 		if(handleKeys(t)) break;		
 		// Regular file output

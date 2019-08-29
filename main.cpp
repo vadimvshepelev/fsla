@@ -75,8 +75,8 @@ int main(int argc, char *argv[]) {
 	
 
 	// Uncomment for Euler problems
-	//s->goEuler("task-toro-1.txt");
-	s->goEuler("task-test-NB.txt");
+	s->goEuler("task-eosbin-toro-test-1.txt"); 
+	//s->goEuler("task-test-NB.txt");
 	//delete s;
 
 	///////////////////////////////////////

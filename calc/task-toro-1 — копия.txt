@@ -1,4 +1,4 @@
-EOSType = ideal
+EOSType = bin
 Method = eno3g
 CFL = .9
 maxTime = 100.e-12

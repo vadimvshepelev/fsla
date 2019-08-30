@@ -71,21 +71,21 @@ struct Zone  {
       EOSType = ideal не имеют смысла.
 */
 
-enum TaskType {undef, ruGlass, LH1D, auWater, MieGruneisenProblem};
+enum TaskType {undef, ruGlass, LH1D, auWater, MieGruneisenProblem, RP1D};
 
 enum SourceType {SrcUndef, SrcNone, SrcGlass, SrcMetal, SrcSq, Src5Layers};
 
-enum MethodType {nomtd, samarskii, godunov1, eno2g, muscl, bgk, eno3g};
+enum MethodType {nomtd, samarskii, godunov1, eno2g, muscl, bgk, eno3g, hll};
 
 class CTask {
 public:
 	CTask() : type(TaskType::undef), bHydroStage(false), bHeatStage(false), bExchangeStage(false), 
 		      eos(0), eosGlass(0), sourceFlag(SourceType::SrcUndef), tauPulse(0.), fluence(0.), deltaSkin(0.), 
 			  zones(0), nZones(0), maxTime(0.), mtd(0), viscFlag(0), CFL(0.), totalSize(0), 
-			  EOSFlag(0), methodFlag(MethodType::nomtd) {}
-	CTask(TaskType _type, bool _bHydroStage, bool _bHeatStage, bool _bExchangeStage, EOSOld* _eos, EOSOld* _eosGlass, SourceType _sourceFlag,
-		  double _tauPulse, double _fluence, double _deltaSkin, Zone* _zones, int _nZones, double _maxTime, CMethodOld* _mtd,
-		  int _viscFlag, double _CFL, int _totalSize, int _EOSFlag, MethodType _methodFlag) :
+			  EOSFlag(0), methodFlag(MethodType::nomtd), roL(0.), uL(0.), pL(0.), roR(0.), uR(0.), pR(0.), xMin(0.), xMax(0.), tMin(0.), tMax(0.), qBound(0.), NX(0) {}
+	CTask(TaskType _type, bool _bHydroStage=true, bool _bHeatStage=false, bool _bExchangeStage=false, EOSOld* _eos=0, EOSOld* _eosGlass=0, SourceType _sourceFlag=SourceType::SrcNone,
+		  double _tauPulse=0., double _fluence=0., double _deltaSkin=0., Zone* _zones=0, int _nZones=2, double _maxTime=0., CMethodOld* _mtd=0,
+		  int _viscFlag=0, double _CFL=0., int _totalSize=0, int _EOSFlag=0, MethodType _methodFlag=MethodType::godunov1) :
 		  type(_type), 
 		  bHydroStage(_bHydroStage), bHeatStage(_bHeatStage), bExchangeStage(_bExchangeStage), 
 		  eos(_eos), eosGlass(_eosGlass),
@@ -94,9 +94,15 @@ public:
 		  zones(_zones), nZones(_nZones), 
 		  maxTime(_maxTime),
 		  mtd(_mtd), viscFlag(_viscFlag), CFL(_CFL), totalSize(_totalSize), 
-		  EOSFlag(_EOSFlag), methodFlag(_methodFlag) {}
+		  EOSFlag(_EOSFlag), methodFlag(_methodFlag), roL(0.), uL(0.), pL(0.), roR(0.), uR(0.), pR(0.), xMin(0.), xMax(0.), tMin(0.), tMax(0.), qBound(0.), NX(0) {}
+    CTask(TaskType type, EOSBin* _eos, double _roL, double _uL, double _pL, double _roR, double _uR, double _pR, double _xMin, double _xMax, double _tMin, double _tMax, 
+		  double _qBound, int _NX, double _CFL, MethodType _methodFlag) : 
+		  roL(_roL), uL(_uL), pL(_pL), roR(_roR), uR(_uR), pR(_pR), xMin(_xMin), xMax(_xMax), tMin(_tMin), tMax(_tMax), qBound(_qBound), NX(_NX), CFL(_CFL), methodFlag(_methodFlag), 
+		  type(TaskType::undef), bHydroStage(false), bHeatStage(false), bExchangeStage(false), 
+		  eos(0), eosGlass(0), sourceFlag(SourceType::SrcUndef), tauPulse(0.), fluence(0.), deltaSkin(0.), 
+		  zones(0), nZones(0), maxTime(0.), mtd(0), viscFlag(0), totalSize(0), EOSFlag(0) {} 
 	~CTask();					
-	void		load(char *fName);		// Считать условие задачи из файла
+	void		load(char *fName);		// Считать условие задачи из файла	
 	void		clear();				// Удалить задачу
 	EOSOld			&getEOS() { return *eos; }	
 	EOSOld			&getEOSGlass() { return *eosGlass; }	
@@ -104,8 +110,8 @@ public:
 	int			getEOSFlag() { return EOSFlag; }
 	CMethodOld		&getMethod() { return *mtd; }	
 	Zone		&getZone(int i) { return zones[i]; }
-	unsigned int getNumZones() { return nZones; }
-	unsigned int getTotalSize() { return totalSize; }
+	int getNumZones() { return nZones; }
+	int getTotalSize() { return totalSize; }
 	bool		getHydroStage() { return bHydroStage; }
 	bool		getHeatStage() { return bHeatStage; }
 	bool		getExchangeStage() { return bExchangeStage; }
@@ -122,7 +128,11 @@ public:
 	double		getCFL() { return CFL; }
 	double		getMaxTime() { return maxTime; }
 	TaskType type;
-	EOSBin  *eosBin;			// Указатель на двучленное УРС, если понадобится
+	EOSBin* eosBin;			// Двучленное УРС, если понадобится
+	const double roL, uL, pL, roR, uR, pR, xMin, xMax, tMin, tMax, qBound; 
+    const int NX;
+	double CFL;   
+	MethodType methodFlag;	
 private:
 	void		buildFileNames(string inputName);
 	const char *readStringParam(FILE *f, const char *name);
@@ -138,14 +148,12 @@ private:
 	double  fluence;			// Флюенс -- энергия, поглощенная единицей поверхности
 	double  deltaSkin;			// Толщина скин-слоя
 	Zone	*zones;				// Указатель на массив зон	
-	unsigned int nZones;				// Количество зон
+	int nZones;				// Количество зон
 	double  maxTime;			// Время, до которого ведется расчет
 	CMethodOld	*mtd;				// Метод расчета - Эйлер/Лагранж
 	int		viscFlag;			// Искусственная вязкость ( 0 - не использовать, 1 - использовать).
-	double  CFL;			// Число Куранта (начальное)
 	int		totalSize;			// Суммарное количество точек во всех зонах
-	int		EOSFlag;			// Для табличного УРС -- тип таблиц (0 - нормальные, 1 - расширенные)
-	MethodType methodFlag;	
+	int		EOSFlag;			// Для табличного УРС -- тип таблиц (0 - нормальные, 1 - расширенные)	
 	string taskName, inputFileName, outputFileName, flowFileName, EOSDirName; // EOSDirName для табличного УРС -- каталог в table_data, в котором лежат таблицы
 };
 

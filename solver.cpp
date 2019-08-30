@@ -80,7 +80,7 @@ void CSolver::goEuler(char* fName) {
 		//if(task.getHydroStage()) calcHydroStageENO2G(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageENO3G(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageMieGruneisen(eos, t, tau);	
-		if(task.getHydroStage()) calcHydroStageGodunovEOSBin(t, tau);		
+		if(task.methodFlag == MethodType::hll) calcHydroStageGodunovEOSBin(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageENO2G(t, tau);		
 		if(handleKeys(t)) break;		
 		// Regular file output
@@ -534,23 +534,28 @@ double CSolver::calcTimeStep(double t) {
 }
 
 
-double CSolver::calcTimeStepEuler(double t) 
-{
-	double v_max = max(fabs(ms[0].v), max(fabs(ms[0].v - ms[0].C), fabs(ms[0].v + ms[0].C))); 
-	
-	double tau_temp1 = (ms[1].x - ms[0].x) / v_max;
-	double tau_temp2 = 0.;
-
-	CMethodOld& method = task.getMethod();
-
-	for(int i=1; i<ms.getSize()-1; i++)
-	{
-		//v_max = max(fabs(ms[i].v), max(fabs(ms[i].v - ms[i].C), fabs(ms[i].v + ms[i].C))); 
-		v_max = fabs(ms[i].v) + ms[i].C;   //, fabs(method.vGrid[i]) +  ms[i].C);
-		tau_temp2 = (ms[i+1].x - ms[i].x) / v_max;
-
-		if(tau_temp1 > tau_temp2)
-			tau_temp1 = tau_temp2;
+double CSolver::calcTimeStepEuler(double t) {	
+	double vMax=0., tauTemp1=0., tauTemp2=0.;
+	double _ro=0., _u=0., _e=0., C=0.;
+	if(task.type!=TaskType::RP1D) {
+		vMax = max(fabs(ms[0].v), max(fabs(ms[0].v - ms[0].C), fabs(ms[0].v + ms[0].C))); 
+		tauTemp1 = (ms[1].x - ms[0].x) / vMax;
+		tauTemp2 = 0.;
+		for(int i=1; i<ms.getSize()-1; i++)	{			
+			vMax = fabs(ms[i].v) + ms[i].C;   
+			tauTemp2 = (ms[i+1].x - ms[i].x) / vMax;
+			if(tauTemp1 > tauTemp2)
+				tauTemp1 = tauTemp2;
+		}
+	} else {
+		EOSBin &eos = *(task.eosBin);
+		int iMin=2, iMax=task.NX+2; 
+		double C = eos.getC(ms[i].W[0], ms[i].W[2]-ms[i]
+		for(int i=iMin; i<iMax; i++) {			
+			vMax = fabs(ms[i].v) + ms[i].C;   //, fabs(method.vGrid[i]) +  ms[i].C);
+			tau_temp2 = (ms[i+1].x - ms[i].x) / v_max;
+			if(tau_temp1 > tau_temp2)
+				tau_temp1 = tau_temp2;
 	}
 
 	return CFL * tau_temp1;
@@ -802,10 +807,9 @@ void CSolver::dumpToFileTestRP(double t, int num) {
 	string fName = OUTPUT_FOLDER + string("out-RP-") + strNum + ".dat";
 	printf("Dump matter to file: %s\n", fName.c_str());
 	EOSType EType = EOSType::none;
-	if(!task.eosBin)
-		EType = task.getEOS().getType();
-	else 
-		EType = EOSType::bin;
+	if(task.type == TaskType::RP1D)	
+		EType = EOSType::bin; else 	
+	EType = task.getEOS().getType();	
 	FILE* f=fopen(fName.c_str(), "w");
 	if(!f) {
 		cout << "Cannot open output file. Sorry." << endl;

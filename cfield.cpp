@@ -23,97 +23,58 @@ CFieldOld::~CFieldOld() {
 
 
 void CFieldOld::initData(CTask *task) {
-	clearData();
-	nSize = task->getTotalSize();
-	nodes = new Node[nSize+1];
+	clearData();	
 	// ”становка начальных условий
 	double dx = 0.;
 	double nextX   = 0.0;
-	unsigned int counter = 0;
-	unsigned int i = 0;
+	int i=0, counter=0;	
 	EOSOld &eos = task->getEOS();
 	EOSOld &eosGlass = task->getEOSGlass();
-	for(i=0; i<task->getNumZones(); i++) {
-		Zone &zone = task->getZone(i);
-		//DEBUG///////////////////////////////
-		//”стран€ю неоднозначность. ѕусть nSize и в коде, и во входном файле будет количество €чеек, а не количество узлов.
-		//dx = zone.l / (zone.n-1);
-		dx = zone.l / (zone.n);
-		/////////////////////////////////////
-		double xInit=nextX;
-		for(int j=0; j<zone.n; j++)	{
-			Node &n = nodes[counter];			
-			n.x = nextX;
-			n.v = zone.v;
-			n.ro = zone.ro;
-			n.dm = n.ro * dx;
-			n.ti = zone.ti;
-			n.te = zone.te;
-			if(!task->eosBin) {
+	EOSBin *eosBin = task->eosBin;
+	int iMin=2, iMax=2+task->NX;
+	double _e=0;
+	if(task->type == TaskType::RP1D) {
+		nSize = task->NX+2+2;
+		nodes = new Node[nSize];
+		dx = (task->xMax-task->xMin)/task->NX;
+		for(i=iMin; i<iMax; i++) {
+			Node &n = nodes[i];
+			n.x = task->xMin + (.5 + i)*dx;
+			if(n.x < task->qBound) {
+				n.W[0] = task->roL;
+				n.W[1] = task->roL*task->uL;
+				_e = eosBin->gete(task->roL, task->pL); 
+				n.W[2] = task->roL*(_e + .5*task->uL*task->uL);				
+			} else {
+				n.W[0] = task->roR;
+				n.W[1] = task->roR*task->uR;
+				_e = eosBin->gete(task->roR, task->pR); 
+				n.W[2] = task->roR*(_e + .5*task->uR*task->uR);
+			}
+			n.W[3] = 0.;	
+			n.W_temp = Vector4::ZERO;
+			n.F = Vector4::ZERO;
+		}		
+		nodes[iMin-1].x = task->xMin + (.5-1)*dx; nodes[iMin-1].W = Vector4(nodes[iMin].W);   nodes[iMin-1].W_temp = Vector4::ZERO; nodes[iMin-1].F = Vector4::ZERO; 
+		nodes[iMin-2].x = task->xMin + (.5-2)*dx; nodes[iMin-2].W = Vector4(nodes[iMin].W);   nodes[iMin-2].W_temp = Vector4::ZERO; nodes[iMin-2].F = Vector4::ZERO; 
+		nodes[iMax].x = task->xMax + .5*dx;       nodes[iMax].W = Vector4(nodes[iMax-1].W);   nodes[iMax].W_temp = Vector4::ZERO;   nodes[iMax].F = Vector4::ZERO; 
+		nodes[iMax+1].x = task->xMax + (.5+1)*dx; nodes[iMax+1].W = Vector4(nodes[iMax-1].W); nodes[iMax+1].W_temp = Vector4::ZERO; nodes[iMax+1].F = Vector4::ZERO; 
+	} else {
+		nSize = task->getTotalSize();
+		nodes = new Node[nSize+1];	
+		for(i=0; i<task->getNumZones(); i++) {
+			Zone &zone = task->getZone(i);
+			dx = zone.l / (zone.n);
+			double xInit=nextX;
+			for(int j=0; j<zone.n; j++)	{
+				Node &n = nodes[counter];			
+				n.x = nextX;
+				n.v = zone.v;
+				n.ro = zone.ro;
+				n.dm = n.ro * dx;
+				n.ti = zone.ti;
+				n.te = zone.te;
 				if( (task->getSourceFlag() == SourceType::SrcGlass) && (i==0) ) {
-					n.pe = eosGlass.getpe(n.ro, n.ti, n.te);
-					n.pi = eosGlass.getpi(n.ro, n.ti);
-					n.p  = eosGlass.getp (n.ro, n.ti, n.te);
-					n.ee = eosGlass.getee(n.ro, n.ti, n.te);
-					n.ei = eosGlass.getei(n.ro, n.ti);
-					n.e  = eosGlass.gete (n.ro, n.ti, n.te);
-					n.ce = eosGlass.getce(n.ro, n.te);
-					n.ci = eosGlass.getci(n.ro, n.ti);
-					n.C  = eos.getC(n.ro, n.ti, n.te);
-					n.Alphaei     = eosGlass.getAlpha(n.ro, n.ti, n.te);
-					n.kappa = eosGlass.getkappa(n.ro, n.ti, n.te);
-				} else if(task->getSourceFlag()==4) {
-					/*if(i==0 || i==2 || i==4) {
-						n.pe = 0.;
-						n.pi = 0.;
-						n.p  = 0.;
-						n.ee = eosCr.getee(n.ro, n.ti, n.te);
-						n.ei = eosCr.getei(n.ro, n.ti);
-						n.e  = eosCr.gete (n.ro, n.ti, n.te);
-						n.ce = eosCr.getce(n.ro, n.te);
-						n.ci = eosCr.getci(n.ro, n.ti);
-						n.C  = eosCr.getC(n.ro, n.ti, n.te);
-						n.Alphaei = eosCr.getAlpha(n.ro, n.ti, n.te);
-						n.kappa   = eosCr.getkappa(n.ro, n.ti, n.te);
-					} else if(i==1 || i==3) {
-						n.pe = 0.;
-						n.pi = 0.;
-						n.p  = 0.;
-						n.ee = eosAu.getee(n.ro, n.ti, n.te);
-						n.ei = eosAu.getei(n.ro, n.ti);
-						n.e  = eosAu.gete (n.ro, n.ti, n.te);
-						n.ce = eosAu.getce(n.ro, n.te);
-						n.ci = eosAu.getci(n.ro, n.ti);
-						n.C  = eosAu.getC(n.ro, n.ti, n.te);
-						n.Alphaei = eosAu.getAlpha(n.ro, n.ti, n.te);
-						n.kappa   = eosAu.getkappa(n.ro, n.ti, n.te);
-					} else {
-						n.pe = 0.;
-						n.pi = 0.;
-						n.p  = 0.;
-						n.ee = eosSi.getee(n.ro, n.ti, n.te);
-						n.ei = eosSi.getei(n.ro, n.ti);
-						n.e  = eosSi.gete (n.ro, n.ti, n.te);
-						n.ce = eosSi.getce(n.ro, n.te);
-						n.ci = eosSi.getci(n.ro, n.ti);
-						n.C  = eosSi.getC(n.ro, n.ti, n.te);
-						n.Alphaei = eosSi.getAlpha(n.ro, n.ti, n.te);
-						n.kappa   = eosSi.getkappa(n.ro, n.ti, n.te);
-					}*/
-				} else if (task->type == TaskType::ruGlass) {  // ѕока не навел пор€док в инфраструктуре, проставл€ю этот флаг руками в CSolver::goGlass()			        
-					if(i==0) {
-						n.pe = eos.getpe(n.ro, n.ti, n.te);
-						n.pi = eos.getpi(n.ro, n.ti);
-						n.p  = eos.getp (n.ro, n.ti, n.te);
-						n.ee = eos.getee(n.ro, n.ti, n.te);
-						n.ei = eos.getei(n.ro, n.ti);
-						n.e  = eos.gete (n.ro, n.ti, n.te);
-						n.ce = eos.getce(n.ro, n.te);
-						n.ci = eos.getci(n.ro, n.ti);
-						n.C  = eos.getC(n.ro, n.ti, n.te);
-						n.Alphaei     = eos.getAlpha(n.ro, n.ti, n.te);
-						n.kappa = eos.getkappa(n.ro, n.ti, n.te);
-					} else {
 						n.pe = eosGlass.getpe(n.ro, n.ti, n.te);
 						n.pi = eosGlass.getpi(n.ro, n.ti);
 						n.p  = eosGlass.getp (n.ro, n.ti, n.te);
@@ -122,11 +83,39 @@ void CFieldOld::initData(CTask *task) {
 						n.e  = eosGlass.gete (n.ro, n.ti, n.te);
 						n.ce = eosGlass.getce(n.ro, n.te);
 						n.ci = eosGlass.getci(n.ro, n.ti);
-						n.C  = eos.getC(n.ro, n.ti, n.te); // сознательно eos, а не EOSGlass, xчтобы не завысить шаг по времени
+						n.C  = eos.getC(n.ro, n.ti, n.te);
 						n.Alphaei     = eosGlass.getAlpha(n.ro, n.ti, n.te);
 						n.kappa = eosGlass.getkappa(n.ro, n.ti, n.te);
-					}				
-				} else if(task->type == TaskType::MieGruneisenProblem) {
+					} 
+				if(task->getSourceFlag()==4) {} 
+				if(task->type == TaskType::ruGlass) {  // ѕока не навел пор€док в инфраструктуре, проставл€ю этот флаг руками в CSolver::goGlass()			        
+						if(i==0) {
+							n.pe = eos.getpe(n.ro, n.ti, n.te);
+							n.pi = eos.getpi(n.ro, n.ti);
+							n.p  = eos.getp (n.ro, n.ti, n.te);
+							n.ee = eos.getee(n.ro, n.ti, n.te);
+							n.ei = eos.getei(n.ro, n.ti);
+							n.e  = eos.gete (n.ro, n.ti, n.te);
+							n.ce = eos.getce(n.ro, n.te);
+							n.ci = eos.getci(n.ro, n.ti);
+							n.C  = eos.getC(n.ro, n.ti, n.te);
+							n.Alphaei     = eos.getAlpha(n.ro, n.ti, n.te);
+							n.kappa = eos.getkappa(n.ro, n.ti, n.te);
+						} else {
+							n.pe = eosGlass.getpe(n.ro, n.ti, n.te);
+							n.pi = eosGlass.getpi(n.ro, n.ti);
+							n.p  = eosGlass.getp (n.ro, n.ti, n.te);
+							n.ee = eosGlass.getee(n.ro, n.ti, n.te);
+							n.ei = eosGlass.getei(n.ro, n.ti);
+							n.e  = eosGlass.gete (n.ro, n.ti, n.te);
+							n.ce = eosGlass.getce(n.ro, n.te);
+							n.ci = eosGlass.getci(n.ro, n.ti);
+							n.C  = eos.getC(n.ro, n.ti, n.te); // сознательно eos, а не EOSGlass, xчтобы не завысить шаг по времени
+							n.Alphaei     = eosGlass.getAlpha(n.ro, n.ti, n.te);
+							n.kappa = eosGlass.getkappa(n.ro, n.ti, n.te);
+						}	
+				}
+				if(task->type == TaskType::MieGruneisenProblem) {
 					n.ee = 0.;
 					n.ei = 0.;
 					n.e  = zone.e;
@@ -138,43 +127,20 @@ void CFieldOld::initData(CTask *task) {
 					n.C  = 0.;
 					n.Alphaei = 0.;
 					n.kappa = 0.;
-				} else {
-					n.pe = eos.getpe(n.ro, n.ti, n.te);
-					n.pi = eos.getpi(n.ro, n.ti);
-					n.p  = eos.getp (n.ro, n.ti, n.te);
-					n.ee = eos.getee(n.ro, n.ti, n.te);
-					n.ei = eos.getei(n.ro, n.ti);
-					n.e  = eos.gete (n.ro, n.ti, n.te);
-					n.ce = eos.getce(n.ro, n.te);
-					n.ci = eos.getci(n.ro, n.ti);
-					n.C  = eos.getC(n.ro, n.ti, n.te);
-					n.Alphaei     = eos.getAlpha(n.ro, n.ti, n.te);
-					n.kappa = eos.getkappa(n.ro, n.ti, n.te);
-				}
-			} else {
-				n.ee = 0.;
-				n.ei = 0.;
-				n.e  = zone.e;
-				n.pe = 0.;
-				n.pi = 0.;
-				n.p  = task->eosBin->getp(n.ro, n.e);
-				n.ce = 0.;
-				n.ci = 0.;
-				n.C  = task->eosBin->getC(n.ro, n.e);
-				n.Alphaei = 0.;
-				n.kappa = 0.;
+				} 				
+				// flow
+				double E = n.e + 0.5*n.v*n.v;
+				n.W = Vector4(n.ro, n.ro*n.v, n.ro*E, 0);
+				n.W_temp = Vector4::ZERO;
+				n.F = Vector4::ZERO;
+				counter++;
+				nextX += dx;
 			}
-			// flow
-			double E = n.e + 0.5*n.v*n.v;
-			n.W = Vector4(n.ro, n.ro*n.v, n.ro*E, 0);
-			n.W_temp = Vector4::ZERO;
-			n.F = Vector4::ZERO;
-			counter++;
-			nextX += dx;
 		}
+	
+		nodes[nSize].x = nodes[nSize-1].x + dx;
+		nodes[nSize].v = nodes[nSize-1].v;
 	}
-	nodes[nSize].x = nodes[nSize-1].x + dx;
-	nodes[nSize].v = nodes[nSize-1].v;
 }
 
 

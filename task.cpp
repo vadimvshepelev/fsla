@@ -30,6 +30,7 @@ CTask::~CTask() {
 }
 
  void CTask::load(char* fName) {
+    if(!fName) return;
 	clear();
 	unsigned int j = 0;
 	EOSFlag = 0;

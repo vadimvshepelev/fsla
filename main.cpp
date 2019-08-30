@@ -72,12 +72,15 @@ int main(int argc, char *argv[]) {
 
 	//s->goEuler("task-LH1D-aux-1.txt"); // Задача LH (стекло-золото-вакуум), левый разрыв стекло-золото
 	//s->goEuler("task-eosbin-test-1.txt"); // Первый тест Глайстера по двучленному уравнению состояния
-	
-
 	// Uncomment for Euler problems
-	s->goEuler("task-eosbin-toro-test-1.txt"); 
+	//s->goEuler("task-eosbin-toro-test-1.txt"); 
 	//s->goEuler("task-test-NB.txt");
-	//delete s;
+	// Uncomment for HLL flux Toro test 
+	EOSBin eos = EOSBin(1.4, 0., 0.);	
+	CTask prHLLTest = CTask(TaskType::RP1D, &eos, 1., .75, 1., .125, 0., 1., 0., 1., 0., .2, .3, 100, .9, MethodType::hll);
+	s->goEuler();
+	//
+	delete s;
 
 	///////////////////////////////////////
 	// Uncomment for convergence rate calculation

@@ -32,7 +32,7 @@ public:
    	// ‘ункции, отвечающие за весь расчет:
 	void go(char* fName);
 	void goAuSpall(char *fName);
-	void goEuler(char* fName);
+	void goEuler(char* fName=0);
 	void goGlass(char* fName);
 	void goEulerMovingMesh(char* fName);
 	// ‘ункци€, выполн€юща€ тест дл€ линейного уравнени€ теплопроводности

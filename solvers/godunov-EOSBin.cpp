@@ -339,23 +339,8 @@ Vector4 CSolver::calcGodunovFluxEOSBin(double roL, double rouL, double roEL, dou
 	double uL = rouL/roL, uR = rouR/roR;
 	double eL = roEL/roL - .5*uL*uL, eR = roER/roR - .5*uR*uR; 
 	double pL = eos.getp(roL, eL), pR = eos.getp(roR, eR);
-	CVectorPrimitive res = calcRPAnalyticalSolutionEOSBin(roL, uL, pL, roR, uR, pR, 0., .01);
-	
-	
-	
-	
-	
-	
-	
-	//CVectorPrimitive res = calcRPAnalyticalSolutionEOSBin(1., -2., .4, 1., 2., .4, 0., .2);
-	
-	
-	
-	
-	
-	
-	
-	
+	CVectorPrimitive res = calcRPAnalyticalSolutionEOSBin(roL, uL, pL, roR, uR, pR, 0., .01);	
+	//CVectorPrimitive res = calcRPAnalyticalSolutionEOSBin(1., -2., .4, 1., 2., .4, 0., .2);	
 	double E = eos.gete(res.ro, res.p) + .5*res.v*res.v;
 	Vector4 FGodunov = Vector4(res.ro*res.v, res.ro*res.v*res.v + res.p, res.v*(res.ro*E+res.p), 0.);
 	return FGodunov;
@@ -364,57 +349,22 @@ Vector4 CSolver::calcGodunovFluxEOSBin(double roL, double rouL, double roEL, dou
 void CSolver::calcHydroStageGodunovEOSBin(double t, double tau) {
 	EOSBin eos = *(task.eosBin);
 	const double gamma = eos.gamma;
-	double E=0., h=ms[1].x-ms[0].x;
-	const int nSize = ms.getSize(); 
+	int iMin=2, iMax=2+task.NX;	
 	int i=0; 	
+	double dt=tau, dx=ms[iMin+1].x - ms[iMin].x;
 	Vector4 L = Vector4::ZERO, R = Vector4::ZERO, D = Vector4::ZERO, V = Vector4::ZERO;	
-	// Значения на границе (в фиктивных ячейках)
-	double roLB=0., vLB = 0., ELB=0., roRB=0., vRB=0., ERB=0.;
-	// Задаем граничные условия
-	// Transmissive left boundary
-	roLB = ms[0].ro; vLB = ms[0].v;	ELB = ms[0].e + .5*ms[0].v*ms[0].v;
-	// Reflective left boundary
-	//roLB = ms[0].ro; vLB = -ms[0].v;	ELB = ms[0].e + .5*ms[0].v*ms[0].v;
-	// Transmissive right boundary
-	roRB = ms[nSize-1].ro; vRB = ms[nSize-1].v; ERB = ms[nSize-1].e + .5*ms[nSize-1].v*ms[nSize-1].v;
-	for(i=0; i<ms.getSize(); i++) {
-		Node &n = ms[i];
-
-
-
-		if(i == 55) {
-			double qq = 0.;
-		}
-
-
-
-
-
-
-		if(i==0)
-			n.F = calcGodunovFluxEOSBin(roLB, roLB*vLB, roLB*ELB, n.W[0], n.W[1], n.W[2]);
-			//n.F = calcHLLFluxEOSBin(roLB, roLB*vLB, roLB*ELB, n.W[0], n.W[1], n.W[2]);
-		else
-			n.F = calcGodunovFluxEOSBin(ms[i-1].W[0], ms[i-1].W[1], ms[i-1].W[2], n.W[0], n.W[1], n.W[2]);	
-			//n.F = calcHLLFluxEOSBin(ms[i-1].W[0], ms[i-1].W[1], ms[i-1].W[2], n.W[0], n.W[1], n.W[2]);	
+	for(i=iMin; i<iMax+1; i++) {		
+		// ms[i].F = calcGodunovFluxEOSBin(ms[i-1].W[0], ms[i-1].W[1], ms[i-1].W[2], ms[i].W[0], ms[i].W[1], ms[i].W[2]);	
+		ms[i].F = calcHLLFluxEOSBin(ms[i-1].W[0], ms[i-1].W[1], ms[i-1].W[2], ms[i].W[0], ms[i].W[1], ms[i].W[2]);	
 	}
-	ms[nSize].F = calcGodunovFluxEOSBin(ms[nSize-1].W[0], ms[nSize-1].W[1], ms[nSize-1].W[2], roRB, roRB*vRB, roRB*ERB);
-	//ms[nSize].F = calcHLLFluxEOSBin(ms[nSize-1].W[0], ms[nSize-1].W[1], ms[nSize-1].W[2], roRB, roRB*vRB, roRB*ERB);
 	// Main cycle
-	for(i=0; i<nSize; i++) {				
-		ms[i].W_temp = ms[i].W - tau/h*(ms[i+1].F-ms[i].F);
+	for(i=iMin; i<iMax; i++) {				
+		ms[i].W_temp = ms[i].W-dt/dx*(ms[i+1].F-ms[i].F);
 	}
-	for(i=0; i<nSize; i++) {
-		// Обновляем консервативные переменные
+	for(i=iMin; i<iMax; i++) {				
 		Node& n=ms[i]; 
-		n.W[0] = n.W_temp[0];
-		n.W[1] = n.W_temp[1];
-		n.W[2] = n.W_temp[2];
-		// Обновляем все переменные
-		n.ro = n.W[0];
-		n.v  = n.W[1]/n.ro;
-		n.e  = n.W[2]/n.ro - 0.5*n.v*n.v;
-		n.p  = eos.getp(n.ro, n.e);
-		n.C  = eos.getC(n.ro, n.e);
-	}
+		n.W = Vector4(n.W_temp);		
+	}	
+	ms[iMin-1].W=Vector4(ms[iMin].W);
+	ms[iMax].W  =Vector4(ms[iMax-1].W);
 }

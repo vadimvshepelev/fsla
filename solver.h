@@ -29,6 +29,7 @@ struct CVectorPrimitive {
 class CSolver {
 public:
 	CSolver();
+	CSolver(CTask& _pr) : task(_pr) {}
    	// Функции, отвечающие за весь расчет:
 	void go(char* fName);
 	void goAuSpall(char *fName);
@@ -59,6 +60,8 @@ public:
 	// Аппарат для точного решения задачи о распаде разрыва с УРС Ми-Грюнайзена 
 	CVectorPrimitive calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double roL, double vL, double pL, double roR, double vR, double pR, double x, double t);	
 	double getdx(); 	
+
+	CTask task;
 private:
 	//double getEntropy(double ro, double ti, double te);
 	double	calcTimeStep(double t);
@@ -148,7 +151,6 @@ private:
 	// Служебная функция для инициализации двух переменных 
 	// солвера уже после загрузки задачи.
 	void initVars(void);
-	CTask task;
 	CFieldOld ms, ms_temp, ms_temp_temp, ms_prev;
 	double	CFL, epsE;
 	int maxIt;

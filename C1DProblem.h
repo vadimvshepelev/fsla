@@ -21,7 +21,10 @@ public:
 	string bcs;
 };
 
+// !!! А вот бы к каждому типу задачи (наследование) приделать функцию setICs, берущую как параметры EOS и CField, 
+// и проставляющую начальные условия, как ей надо !!!
 
 extern C1DProblem prNBtest;
+extern C1DProblem prToro1Idealtest;
 
 #endif

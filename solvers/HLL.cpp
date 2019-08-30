@@ -2,7 +2,7 @@
 #include "..\\EOS\\EOSBin.h"
 
 Vector4 CSolver::calcHLLFluxEOSBin(double roL, double rouL, double roEL, double roR, double rouR, double roER) {
-	EOSBin eos = *(task.eosBin);	
+	EOSBin &eos = (task.eosBin);	
 	const double gamma = eos.gamma;
 	double uL = rouL/roL, uR = rouR/roR;	
 	double eL = roEL/roL - .5*uL*uL, eR = roER/roR - .5*uR*uR; 

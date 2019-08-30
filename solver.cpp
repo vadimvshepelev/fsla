@@ -12,6 +12,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <iostream>
 #include <iomanip>
 #include <complex>
@@ -68,7 +69,8 @@ void CSolver::goEuler(char* fName) {
 		tau = calcTimeStepEuler(t);
 		if(t+tau >tMax) tau = tMax-t;
 		if(counter <=4) tau *=.2;
-		cout << counter << ": " << "t=" << t+tau <<  " tau=" << tau << " CFL=" << getCFL() << endl;
+
+		clock_t start = clock();		
 		//if(task.getHydroStage()) calcHydroStageGodunov(t, tau);
 		//if(task.getHydroStage()) calcHydroStageRoe(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageGPS(t, tau);	
@@ -82,6 +84,10 @@ void CSolver::goEuler(char* fName) {
 		//if(task.getHydroStage()) calcHydroStageMieGruneisen(eos, t, tau);	
 		if(task.methodFlag == MethodType::hll) calcHydroStageGodunovEOSBin(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageENO2G(t, tau);		
+		clock_t end = clock();
+		double seconds = (double)(end - start) / CLOCKS_PER_SEC;
+		cout << "iter=" << counter << " t=" << t+tau <<  " tau=" << tau << " CFL=" << getCFL() << " time=" << seconds << "s" << endl;
+
 		if(handleKeys(t)) break;		
 		// Regular file output
 		t += tau;
@@ -536,7 +542,7 @@ double CSolver::calcTimeStep(double t) {
 
 double CSolver::calcTimeStepEuler(double t) {	
 	double vMax=0., tauTemp1=0., tauTemp2=0.;
-	double _ro=0., _u=0., _e=0., C=0.;
+	double _ro=0., _u=0., _e=0., _c=0.;
 	if(task.type!=TaskType::RP1D) {
 		vMax = max(fabs(ms[0].v), max(fabs(ms[0].v - ms[0].C), fabs(ms[0].v + ms[0].C))); 
 		tauTemp1 = (ms[1].x - ms[0].x) / vMax;
@@ -548,17 +554,25 @@ double CSolver::calcTimeStepEuler(double t) {
 				tauTemp1 = tauTemp2;
 		}
 	} else {
-		EOSBin &eos = *(task.eosBin);
+		EOSBin &eos = task.eosBin;
 		int iMin=2, iMax=task.NX+2; 
-		double C = eos.getC(ms[i].W[0], ms[i].W[2]-ms[i]
+		_ro = ms[0].W[0];
+		_u = ms[0].W[1]/_ro;
+		_e = ms[0].W[2]/_ro - .5*_u*_u;
+		_c = eos.getC(_ro, _e); 
+		vMax = max(fabs(_u), max(fabs(_u-_c), fabs(_u+_c))); 
 		for(int i=iMin; i<iMax; i++) {			
-			vMax = fabs(ms[i].v) + ms[i].C;   //, fabs(method.vGrid[i]) +  ms[i].C);
-			tau_temp2 = (ms[i+1].x - ms[i].x) / v_max;
-			if(tau_temp1 > tau_temp2)
-				tau_temp1 = tau_temp2;
+			_ro = ms[i].W[0];
+			_u = ms[i].W[1]/_ro;
+			_e = ms[i].W[2]/_ro - .5*_u*_u;
+			_c = eos.getC(_ro, _e);
+			vMax = fabs(_u)+_c;   
+			tauTemp2 = (ms[i+1].x - ms[i].x) / vMax;
+			if(tauTemp1 > tauTemp2)
+				tauTemp1 = tauTemp2;
+		}
 	}
-
-	return CFL * tau_temp1;
+	return task.CFL*tauTemp1;
 }
 
 
@@ -835,30 +849,36 @@ void CSolver::dumpToFileTestRP(double t, int num) {
 	if(EType != EOSType::bin)
 		gamma = eos->getGamma();
 	else
-		gamma = task.eosBin->gamma;
-	// If left zone is vacuum zone
-	if(nZones == 1) { 
-		roL = 0.; roR = task.getZone(0).ro;
-		 vL = 0.;  vR = task.getZone(0).v;
-		 pL = 0.;  
-		if(EType != EOSType::bin) 
-			pR = eos->getpi(roR, task.getZone(0).ti);
-		else
-		    pR = task.eosBin->getp(roR, task.getZone(0).e);		 
-		 x0 = 0.;
-	} else {
-	// If two non-vacuum zones are present in IVP (initial value problem)
-		roL = task.getZone(0).ro;				  roR = task.getZone(1).ro;
-		 vL = task.getZone(0).v;				   vR = task.getZone(1).v;
-		if(EType != EOSType::bin) {
-			pL = eos->getpi(roR, task.getZone(0).ti);
-			pR = eos->getpi(roR, task.getZone(1).ti);
+		gamma = task.eosBin.gamma;
+	if(task.type != TaskType::RP1D) {
+		// If left zone is vacuum zone
+		if(nZones == 1) { 
+			roL = 0.; roR = task.getZone(0).ro;
+			 vL = 0.;  vR = task.getZone(0).v;
+			 pL = 0.;  
+			if(EType != EOSType::bin) 
+				pR = eos->getpi(roR, task.getZone(0).ti);
+			else
+			    pR = task.eosBin.getp(roR, task.getZone(0).e);		 
+			 x0 = 0.;
+		} else {
+		// If two non-vacuum zones are present in IVP (initial value problem)
+			roL = task.getZone(0).ro;				  roR = task.getZone(1).ro;
+			 vL = task.getZone(0).v;				   vR = task.getZone(1).v;
+			if(EType != EOSType::bin) {
+				pL = eos->getpi(roR, task.getZone(0).ti);
+				pR = eos->getpi(roR, task.getZone(1).ti);
+			}
+			else {
+			    pL = task.eosBin.getp(roL, task.getZone(0).e);				 
+				pR = task.eosBin.getp(roR, task.getZone(1).e);				 		 
+			}		
+			x0 = task.getZone(0).l;
 		}
-		else {
-		    pL = task.eosBin->getp(roL, task.getZone(0).e);				 
-			pR = task.eosBin->getp(roR, task.getZone(1).e);				 		 
-		}		
-	 	x0 = task.getZone(0).l;
+	} else {
+		roL=task.roL; vL=task.uL; pL=task.pL;
+		roR=task.roR; vR=task.uR; pR=task.pR;
+		x0 = task.qBound;
 	}
 	double x = 0.0, xi = 0., sAn = 0.;
 	for(int i=0; i<ms.getSize(); i++)	{
@@ -879,7 +899,7 @@ void CSolver::dumpToFileTestRP(double t, int num) {
 		}
 		else if (EType == EOSType::bin) {
 			q = calcRPAnalyticalSolutionEOSBin(roL, vL, pL, roR, vR, pR, x-x0, t);
-			e = task.eosBin->gete(q.ro, q.p);
+			e = task.eosBin.gete(q.ro, q.p);
 			fprintf(f, "%e %f %f %f %f %f %f %f %f %e\n", x, n.ro, n.v, n.p, n.e, q.ro, q.v, q.p, e, xi);
 		}
 	}
@@ -3127,14 +3147,13 @@ Vector4 CSolver::calcPhysicalFlux(double ro, double rou, double roE) {
 
 Vector4 CSolver::calcPhysicalFluxEOSBin(double ro, double rou, double roE) {
 	if (ro==0) return Vector4::ZERO; 
-	EOSBin* eos = task.eosBin;
-	double gamma = eos->gamma;
+	EOSBin &eos = task.eosBin;
+	double gamma = eos.gamma;
 	double u = rou/ro;
 	double e = roE/ro-0.5*u*u;
-	double p = eos->getp(ro, e);
+	double p = eos.getp(ro, e);
 	return Vector4(rou, p + ro*u*u, u*(p + roE), 0.);
 }
-
 
 void CSolver::calcHydroStageMccormack(double t, double tau) {
 	EOSOld &eos = task.getEOS();

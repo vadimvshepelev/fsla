@@ -34,19 +34,27 @@ int main(int argc, char *argv[]) {
 	cout << "=======================================================================" << endl;
 	string outputDir = string("output");		
 	// Uncomment for new C1DSimulation class testing
-	/*C1DProblem pr = prNBtest;
-	CEOSMieGruneisen eosNB;
+	// Uncomment for NB EOS test problem
+	// C1DProblem pr = prNBtest;
+	// Uncomment for Toro #1 test problem
+	C1DProblem pr = prToro1Idealtest;
+	// Uncomment for NB EOS
+	// CEOSMieGruneisen eosNB;
+	// Uncomment for ideal EOS
+	CEOSIdeal eos = CEOSIdeal(1.4);
 	C1DField *fldptr = new C1DField(pr);
-	C1DGodunovMethodMillerPuckett mtd;	
-	double _dtt[] = {0., .001, .1};
+	// Uncomment for Miller-Puckett godunov-type approach
+	// C1DGodunovMethodMillerPuckett mtd;	
+	// Uncomment for HLL solver based Godunov-type method
+	C1DGodunovMethod mtd;
+	double _dtt[] = {pr.tmin, pr.tmax};
 	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
 	COutput outp = COutput(pr, outputDir, dtt);
-	C1DSimulation sim = C1DSimulation(pr, eosNB, *fldptr, mtd, outp);
+	C1DSimulation sim = C1DSimulation(pr, eos, *fldptr, mtd, outp);
 	sim.run();
-	delete fldptr;	*/
+	delete fldptr;	
 
 	// Uncomment for metal problems
-	 CSolver* s = new CSolver;	
 	// s->goGlass("task-Ru-glass.txt");
 	//s->goGlass("task-Ru-glass-optic-1000.txt");
 	//s->goGlass("task-Ru-glass-optic-2000.txt");
@@ -76,11 +84,12 @@ int main(int argc, char *argv[]) {
 	//s->goEuler("task-eosbin-toro-test-1.txt"); 
 	//s->goEuler("task-test-NB.txt");
 	// Uncomment for HLL flux Toro test 
-	EOSBin eos = EOSBin(1.4, 0., 0.);	
-	CTask prHLLTest = CTask(TaskType::RP1D, &eos, 1., .75, 1., .125, 0., 1., 0., 1., 0., .2, .3, 100, .9, MethodType::hll);
+	/*EOSBin eos = EOSBin(1.4, 0., 0.);	
+	CTask prHLLTest = CTask(TaskType::RP1D, eos, 1., .75, 1., .125, 0., 1., 0., 1., 0., .2, .3, 100, .9, MethodType::hll);
+    CSolver* s = new CSolver(prHLLTest);	
 	s->goEuler();
 	//
-	delete s;
+	delete s;*/
 
 	///////////////////////////////////////
 	// Uncomment for convergence rate calculation

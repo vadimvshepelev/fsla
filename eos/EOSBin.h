@@ -7,7 +7,6 @@ class EOSBin {
 	// p = (gamma-1)*ro*e + ñ0^2*(ro-ro0)
 	// e = ...(ro,T)
 	//
-	
 public:
 	const double gamma, ro0, c0;
 	EOSBin();

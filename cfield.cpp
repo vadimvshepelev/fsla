@@ -30,7 +30,7 @@ void CFieldOld::initData(CTask *task) {
 	int i=0, counter=0;	
 	EOSOld &eos = task->getEOS();
 	EOSOld &eosGlass = task->getEOSGlass();
-	EOSBin *eosBin = task->eosBin;
+	EOSBin &eosBin = task->eosBin;
 	int iMin=2, iMax=2+task->NX;
 	double _e=0;
 	if(task->type == TaskType::RP1D) {
@@ -43,12 +43,12 @@ void CFieldOld::initData(CTask *task) {
 			if(n.x < task->qBound) {
 				n.W[0] = task->roL;
 				n.W[1] = task->roL*task->uL;
-				_e = eosBin->gete(task->roL, task->pL); 
+				_e = eosBin.gete(task->roL, task->pL); 
 				n.W[2] = task->roL*(_e + .5*task->uL*task->uL);				
 			} else {
 				n.W[0] = task->roR;
 				n.W[1] = task->roR*task->uR;
-				_e = eosBin->gete(task->roR, task->pR); 
+				_e = eosBin.gete(task->roR, task->pR); 
 				n.W[2] = task->roR*(_e + .5*task->uR*task->uR);
 			}
 			n.W[3] = 0.;	

@@ -6,8 +6,8 @@
 RPSolutionPrimitive CSolver::solveRPEOSBin(double roL, double vL, double pL, double roR, double vR, double pR) {
 	// Решаем нелинейное уравнение относительно давления методом касательных Ньютона
 	RPSolutionPrimitive res; 
-	EOSBin* eos = task.eosBin;
-	const double TOL = 1.e-6, gamma = eos->gamma, ro0 = eos->ro0, c0 = eos->c0, p0 = 1./gamma*ro0*c0*c0;
+	EOSBin &eos = task.eosBin;
+	const double TOL = 1.e-6, gamma = eos.gamma, ro0 = eos.ro0, c0 = eos.c0, p0 = 1./gamma*ro0*c0*c0;
 	int itCounter = 0;
 	double p = 0., pPrev = 0., cL = 0., cR = 0.;
 	if(roL!=0.) cL = sqrt(gamma*(pL+p0)/roL);
@@ -100,8 +100,8 @@ RPSolutionPrimitive CSolver::solveRPEOSBin(double roL, double vL, double pL, dou
 
 
 double CSolver::fLEOSBin(double p, double roL, double vL, double pL) {
-	EOSBin* eos = task.eosBin;
-	const double gamma = eos->gamma, ro0 = eos->ro0, c0 = eos->c0, p0 = 1./gamma*ro0*c0*c0;
+	EOSBin &eos = task.eosBin;
+	const double gamma = eos.gamma, ro0 = eos.ro0, c0 = eos.c0, p0 = 1./gamma*ro0*c0*c0;
 	double f = 0.;
 	if(p>pL) {
 		double AL = 2./(gamma+1)/roL;
@@ -116,8 +116,8 @@ double CSolver::fLEOSBin(double p, double roL, double vL, double pL) {
 }
 
 double CSolver::dfLdpEOSBin(double p, double roL, double vL, double pL) {
-    EOSBin* eos = task.eosBin;
-	const double gamma = eos->gamma, ro0 = eos->ro0, c0 = eos->c0, p0 = 1./gamma*ro0*c0*c0;
+    EOSBin &eos = task.eosBin;
+	const double gamma = eos.gamma, ro0 = eos.ro0, c0 = eos.c0, p0 = 1./gamma*ro0*c0*c0;
 	double dfdp = 0.;
 	if (p>pL) {
 		double AL = 2./(gamma+1)/roL;
@@ -133,7 +133,7 @@ double CSolver::dfLdpEOSBin(double p, double roL, double vL, double pL) {
 }
 
 double CSolver::fREOSBin(double p, double roR, double vR, double pR) {
-	const double gamma = task.eosBin->gamma, ro0 = task.eosBin->ro0, c0 = task.eosBin->c0, p0 = 1./gamma*ro0*c0*c0;
+	const double gamma = task.eosBin.gamma, ro0 = task.eosBin.ro0, c0 = task.eosBin.c0, p0 = 1./gamma*ro0*c0*c0;
 	double f = 0.;
 	if(p>pR) {
 		double AR = 2./(gamma+1)/roR;
@@ -148,7 +148,7 @@ double CSolver::fREOSBin(double p, double roR, double vR, double pR) {
 }
 
 double CSolver::dfRdpEOSBin(double p, double roR, double vR, double pR) {
-	const double gamma = task.eosBin->gamma, ro0 = task.eosBin->ro0, c0 = task.eosBin->c0, p0 = 1./gamma*ro0*c0*c0;
+	const double gamma = task.eosBin.gamma, ro0 = task.eosBin.ro0, c0 = task.eosBin.c0, p0 = 1./gamma*ro0*c0*c0;
 	double dfdp = 0.;
 	if (p>pR) {
 		double AR = 2./(gamma+1)/roR;
@@ -190,7 +190,7 @@ CVectorPrimitive CSolver::calcRPAnalyticalSolutionEOSBin(double roL, double vL, 
 	RPSolutionPrimitive res = solveRPEOSBin(roL, vL, pL, roR, vR, pR);
 	// V = (ro, v, p)T
 	CVectorPrimitive V;
-	const double TOL = 1.e-6, gamma = task.eosBin->gamma, ro0 = task.eosBin->ro0, c0 = task.eosBin->c0, p0 = 1./gamma*ro0*c0*c0;
+	const double TOL = 1.e-6, gamma = task.eosBin.gamma, ro0 = task.eosBin.ro0, c0 = task.eosBin.c0, p0 = 1./gamma*ro0*c0*c0;
 	double xi = x/t, cL = 0., cR = 0.;
 	if(roL!=0.) cL = sqrt(gamma*(pL+p0)/roL);
 	if(roR!=0.) cR = sqrt(gamma*(pR+p0)/roR);
@@ -335,7 +335,7 @@ CVectorPrimitive CSolver::calcRPAnalyticalSolutionEOSBin(double roL, double vL, 
 }
 
 Vector4 CSolver::calcGodunovFluxEOSBin(double roL, double rouL, double roEL, double roR, double rouR, double roER) {
-	EOSBin eos = *(task.eosBin);	
+	EOSBin &eos = task.eosBin;	
 	double uL = rouL/roL, uR = rouR/roR;
 	double eL = roEL/roL - .5*uL*uL, eR = roER/roR - .5*uR*uR; 
 	double pL = eos.getp(roL, eL), pR = eos.getp(roR, eR);
@@ -347,7 +347,7 @@ Vector4 CSolver::calcGodunovFluxEOSBin(double roL, double rouL, double roEL, dou
 }
 
 void CSolver::calcHydroStageGodunovEOSBin(double t, double tau) {
-	EOSBin eos = *(task.eosBin);
+	EOSBin &eos = task.eosBin;
 	const double gamma = eos.gamma;
 	int iMin=2, iMax=2+task.NX;	
 	int i=0; 	

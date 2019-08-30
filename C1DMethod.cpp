@@ -137,3 +137,111 @@ CVectorPrimitive C1DGodunovMethodMillerPuckett::calcRPExactMillerPuckett(CEOSMie
 	}
 	return V;
 }
+
+
+double C1DGodunovMethod::calcdt(C1DProblem& pr, CEOSIdeal& eos, C1DField& fld) {
+	vector<vector<double>> U = fld.U; 
+	int imin = fld.imin, imax = fld.imax;
+	double ro = U[imin][0], u = U[imin][1]/ro, e = U[imin][2]/ro-.5*u*u, p=eos.getp(ro,e), c = eos.getc(ro, p);
+	vector<double> x = fld.x;	
+	double umax = max(fabs(u), max(fabs(u-c), fabs(u+c))); 	
+	double dt1 = (x[imin+1]-x[imin])/umax;
+	double dt2 = 0.;
+	for(int i=imin; i<imax; i++) {		
+		ro = U[i][0]; u = U[i][1]/ro; e = U[i][2]/ro-.5*u*u, p=eos.getp(ro,e), c = eos.getc(ro, p); 
+		umax = fabs(u) + c; 
+		dt2 = (x[i+1]-x[i])/umax;
+		if(dt1 > dt2) dt1 = dt2;
+	}
+	return pr.cfl*dt1;
+}
+
+void C1DGodunovMethod::calc(C1DProblem& pr, CEOSIdeal& eos, C1DField& fld) {
+	double roL = 0., uL = 0., eL = 0., pL = 0.,
+		   roR = 0., uR = 0., eR = 0., pR = 0., 
+		   E = 0.;
+	double dx = fld.dx, t = fld.t, dt = fld.dt;
+	int imin = fld.imin, imax = fld.imax;
+	vector<vector<double>> U = fld.U, newU = fld.newU, F = fld.F;
+	// TODO: проверить на скорость выполнения операций, сравнить с реализацией через тип Vector4 -- если не медленнее, то в дальнейшем избавиться от Vector4 везде
+	int i=0;	
+	// Потоки считаем по алгоритму решения задаче о распаде разрыва для УРС Ми-Грюнайзена из работы [Miller, Puckett]
+	for(i=imin; i<=imax; i++) {
+		roL = U[i-1][0]; uL = U[i-1][1]/roL; eL = U[i-1][2]/roL - .5*uL*uL; pL = eos.getp(roL, eL);
+		roR = U[i][0];   uR = U[i][1]/roR;   eR = U[i][2]/roR - .5*uR*uR;   pR = eos.getp(roR, eR);								
+		Vector4 flux = calcFlux(eos, U[i-1][0], U[i-1][1], U[i-1][2], U[i][0], U[i][1], U[i][2]); 
+		double _F[] = {flux[0], flux[1], flux[2]};
+		F[i] = vector<double>(_F, _F+sizeof(_F)/sizeof(_F[0]));		
+		//n.W_temp = n.W - dt/h*(Fp-Fm);
+	}
+	for(i=imin; i<imax; i++) {
+		for(int counter=0; counter<3; counter++) newU[i][counter] = U[i][counter] - dt/dx*(F[i+1][counter] - F[i][counter]);
+	}
+	for(i=imin; i<imax; i++) {
+		for(int counter=0; counter<3; counter++) U[i][counter] = newU[i][counter];
+	}	
+	fld.setbcs(pr);
+}
+
+// HLL flux for ideal EOS
+Vector4 C1DGodunovMethod::calcFlux(CEOSIdeal& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {
+	const double gamma = eos.gamma;
+	double uL = rouL/roL, uR = rouR/roR;	
+	double eL = roEL/roL - .5*uL*uL, eR = roER/roR - .5*uR*uR; 
+	if(roL == 0. || roR == 0.) {
+		cout << "Error: CSolver::calcHLLFluxEOSIdeal(): vacuum is present." << endl;
+		exit(1);	}
+	double cL = eos.getc(roL, eL), cR = eos.getc(roR, eR);
+	double pL = eos.getp(roL, eL), pR = eos.getp(roR, eR);
+	double pMin = min(pL, pR), pMax = max(pL, pR), pStar = 1./(cL+cR)*(cR*pL + cL*pR + cL*cR*(uL-uR));
+	double Q = pMax/pMin, QUser = 2.;
+	double roLRes = 0., roRRes = 0., uRes = 0., pRes = 0.;
+	double qL = 0., qR = 0.;
+	double z = 0., pLR = 0.;
+	double AL = 0., AR = 0., BL = 0., BR = 0., gL = 0., gR = 0., p_0 = 0.;
+	if(Q < QUser && pStar > pMin && pStar > pMax) {
+		// Primitive-variable noniteration solver (PVRS)
+		pRes = pStar;
+		uRes = 1./(cL+cR)*(cL*uL + cL*cR + pL-pR);
+		roLRes  = roL + (pStar-pL)/cL/cL;
+		roRRes  = roR + (pStar-pR)/cR/cR;
+	} else if (pStar < pMin) {
+		// Two-rarefaction Riemann solver (TRRS)	
+		z = (gamma-1.)/2./gamma;
+		pLR = pow(pL/pR, z);
+		pRes = pow( (cL+cR - (gamma-1.)/2.*(uR-uL)) / (cL/pow(pL, z) + cR/pow(pR, z)), 1./z);
+		uRes = (pLR*uL/cL + uR/cR + 2*(pLR-1)/(gamma-1.))/(pLR/cL + 1./cR);
+		roLRes = roL*pow(pRes/pL, 1./gamma);
+		roRRes = roR*pow(pRes/pR, 1./gamma);
+	} else {
+		// Two-shock Riemann solver (TSRS)
+		AL = 2./(gamma+1)/roL; AR = 2./(gamma+1)/roR;
+		BL = (gamma-1.)/(gamma+1)*pL; BR = (gamma-1.)/(gamma+1.)*pR;
+		p_0 = max(0., pStar);
+		gL = sqrt(AL/(p_0+BL)); gR = sqrt(AR/(p_0+BR));
+		pRes = (gL*pL + gR*pR - (uR-uL))/(gL+gR);
+		uRes = 0.5*(uR+uL) + 0.5*((pRes-pR)*gR - (pRes-pL)*gL);
+		roLRes = (pRes/pL + (gamma-1.)/(gamma+1)) / ((gamma-1.)/(gamma+1.)*pRes/pL + 1.);
+		roRRes = (pRes/pR + (gamma-1.)/(gamma+1)) / ((gamma-1.)/(gamma+1.)*pRes/pR + 1.);
+	}
+	if(pRes <= pL) qL = 1.; else qL = sqrt(1. + (gamma+1.)/2./gamma*(pRes/pL-1.));
+	if(pRes <= pR) qR = 1.; else qR = sqrt(1. + (gamma+1.)/2./gamma*(pRes/pR-1.));
+	//double SL = min(uL-cL, uR-cR), SR = max(uL+cL, uR+cR);
+	double SL = uL - cL*qL, SR = uR - cR*qR;
+	double _ro=0, _u=0., _e=0., _p=0.;
+	Vector4 UL = Vector4(roL, rouL, roEL, 0.), UR = Vector4(roR, rouR, roER, 0.);
+	_ro = roL, _u = rouL/roL, _e = roEL/roL-.5*_u*_u, _p=eos.getp(_ro, _e);
+	Vector4 FL = Vector4(rouL, _p + _ro*_u*_u, _u*(_p + roEL), 0.);
+	_ro = roR, _u = rouR/roR, _e = roER/roR-.5*_u*_u, _p=eos.getp(_ro, _e);
+	Vector4 FR = Vector4(rouR, _p + _ro*_u*_u, _u*(_p + roER), 0.); 
+	if(0 <= SL) 
+		return FL;
+	else if (0 >= SR )
+		return FR;
+	else if (SL<=0 && SR >=0) {		
+		return 1./(SR-SL)*(SR*FL - SL*FR - SL*SL*(UR-UL));
+	} else {
+	   cout << "Error: C1DGodunovMethod::calcFlux(): unexpected wave configuration." << endl;
+	   exit(1);	
+	}
+}

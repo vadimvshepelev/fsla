@@ -18,6 +18,7 @@ public:
 	C1DField(C1DProblem& pr);
 	~C1DField();
 	void setics(C1DProblem& pr, CEOSMieGruneisen& eos);
+	void setics(C1DProblem& pr, CEOSIdeal& eos);
 	void setbcs(C1DProblem& pr);
 };
 

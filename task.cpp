@@ -32,7 +32,7 @@ CTask::~CTask() {
  void CTask::load(char* fName) {
     if(!fName) return;
 	clear();
-	unsigned int j = 0;
+	int j = 0;
 	EOSFlag = 0;
 	char task_id[_MAX_PATH];
 	strcpy(task_id, fName);
@@ -111,13 +111,13 @@ CTask::~CTask() {
 
 	else if(!strcmp(eos_type, "test"))		
 		eos = new EOSTest();
-	else if(!strcmp(eos_type, "bin")) {
+	/*else if(!strcmp(eos_type, "bin")) {
 		const double gamma = readFloatParam(f, "gamma");
 		const double ro0 = readFloatParam(f, "ro0");
 		const double c0 = readFloatParam(f, "c0");		
 		eos = 0;
-		eosBin = new EOSBin(gamma, ro0, c0);
-	} else if(!strcmp(eos_type, "MieGruneisenRu")) {
+		eosBin = EOSBin(gamma, ro0, c0);
+	}*/ else if(!strcmp(eos_type, "MieGruneisenRu")) {
 		eos = new EOSMieGruneisenRu();
 		eosGlass = new EOSTable("new", 1, 2700.);
 	} else if(!strcmp(eos_type, "MieGruneisen")) {
@@ -267,8 +267,8 @@ CTask::~CTask() {
 				zones[j].ti = eos->getti(zones[j].ro, _e);
 				zones[j].te = zones[j].ti;
 				zones[j].e = 0.;
-			} else if (eosBin) {
-				double _e = eosBin->gete(zones[j].ro, _p);
+			} else if (eosBin.gamma!=-1) {
+				double _e = eosBin.gete(zones[j].ro, _p);
 				zones[j].ti = 0.;
 				zones[j].te = 0.;
 				zones[j].e = _e;

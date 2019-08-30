@@ -80,10 +80,12 @@ enum MethodType {nomtd, samarskii, godunov1, eno2g, muscl, bgk, eno3g, hll};
 class CTask {
 public:
 	CTask() : type(TaskType::undef), bHydroStage(false), bHeatStage(false), bExchangeStage(false), 
-		      eos(0), eosGlass(0), sourceFlag(SourceType::SrcUndef), tauPulse(0.), fluence(0.), deltaSkin(0.), 
+		      eos(0), eosGlass(0), eosBin(EOSBin(-1., 0., 0.)), sourceFlag(SourceType::SrcUndef), tauPulse(0.), fluence(0.), deltaSkin(0.), 
 			  zones(0), nZones(0), maxTime(0.), mtd(0), viscFlag(0), CFL(0.), totalSize(0), 
-			  EOSFlag(0), methodFlag(MethodType::nomtd), roL(0.), uL(0.), pL(0.), roR(0.), uR(0.), pR(0.), xMin(0.), xMax(0.), tMin(0.), tMax(0.), qBound(0.), NX(0) {}
-	CTask(TaskType _type, bool _bHydroStage=true, bool _bHeatStage=false, bool _bExchangeStage=false, EOSOld* _eos=0, EOSOld* _eosGlass=0, SourceType _sourceFlag=SourceType::SrcNone,
+			  EOSFlag(0), methodFlag(MethodType::nomtd), 
+			  roL(0.), uL(0.), pL(0.), roR(0.), uR(0.), pR(0.), xMin(0.), xMax(0.), tMin(0.), tMax(0.), qBound(0.), NX(0) {}
+	CTask(TaskType _type, bool _bHydroStage=true, bool _bHeatStage=false, bool _bExchangeStage=false, EOSOld* _eos=0, EOSOld* _eosGlass=0, 
+		  SourceType _sourceFlag=SourceType::SrcNone,
 		  double _tauPulse=0., double _fluence=0., double _deltaSkin=0., Zone* _zones=0, int _nZones=2, double _maxTime=0., CMethodOld* _mtd=0,
 		  int _viscFlag=0, double _CFL=0., int _totalSize=0, int _EOSFlag=0, MethodType _methodFlag=MethodType::godunov1) :
 		  type(_type), 
@@ -95,10 +97,11 @@ public:
 		  maxTime(_maxTime),
 		  mtd(_mtd), viscFlag(_viscFlag), CFL(_CFL), totalSize(_totalSize), 
 		  EOSFlag(_EOSFlag), methodFlag(_methodFlag), roL(0.), uL(0.), pL(0.), roR(0.), uR(0.), pR(0.), xMin(0.), xMax(0.), tMin(0.), tMax(0.), qBound(0.), NX(0) {}
-    CTask(TaskType type, EOSBin* _eos, double _roL, double _uL, double _pL, double _roR, double _uR, double _pR, double _xMin, double _xMax, double _tMin, double _tMax, 
+    CTask(TaskType _type, EOSBin _eos, double _roL, double _uL, double _pL, double _roR, double _uR, double _pR, double _xMin, double _xMax, double _tMin, double _tMax, 
 		  double _qBound, int _NX, double _CFL, MethodType _methodFlag) : 
-		  roL(_roL), uL(_uL), pL(_pL), roR(_roR), uR(_uR), pR(_pR), xMin(_xMin), xMax(_xMax), tMin(_tMin), tMax(_tMax), qBound(_qBound), NX(_NX), CFL(_CFL), methodFlag(_methodFlag), 
-		  type(TaskType::undef), bHydroStage(false), bHeatStage(false), bExchangeStage(false), 
+		  type(_type), eosBin(_eos), roL(_roL), uL(_uL), pL(_pL), roR(_roR), uR(_uR), pR(_pR), 
+		  xMin(_xMin), xMax(_xMax), tMin(_tMin), tMax(_tMax), qBound(_qBound), NX(_NX), CFL(_CFL), methodFlag(_methodFlag), 
+		  bHydroStage(false), bHeatStage(false), bExchangeStage(false), 
 		  eos(0), eosGlass(0), sourceFlag(SourceType::SrcUndef), tauPulse(0.), fluence(0.), deltaSkin(0.), 
 		  zones(0), nZones(0), maxTime(0.), mtd(0), viscFlag(0), totalSize(0), EOSFlag(0) {} 
 	~CTask();					
@@ -128,7 +131,7 @@ public:
 	double		getCFL() { return CFL; }
 	double		getMaxTime() { return maxTime; }
 	TaskType type;
-	EOSBin* eosBin;			// Двучленное УРС, если понадобится
+	EOSBin eosBin;			// Двучленное УРС, если понадобится
 	const double roL, uL, pL, roR, uR, pR, xMin, xMax, tMin, tMax, qBound; 
     const int NX;
 	double CFL;   

@@ -75,7 +75,52 @@ int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, CEOSMieGruneisen& e
 	return 1;
 }
 
+int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, CEOSIdeal& eos) {	
+	assert(!dtt.empty());		
+	if (fld.t>=dtt[0]) {
+		ostringstream oss1;
+		oss1 << subDir << "\\" << pr.name << "-" << nDump++ << ".dat"; string fName1 = oss1.str();
+		cout << "Writing to file '" << fName1 << "'...";		
+		dump(pr, fld, eos, fName1);
+		cout << "done!" << endl;		
+		dtt.erase(dtt.begin());		
+	}
+	return 1;
+}
+
 int COutput::dump(C1DProblem& prb, C1DField& fld, CEOSMieGruneisen& eos, string fName) {
+	int i = 0, imin = fld.imin, imax = fld.imax;
+	vector<vector<double>> U = fld.U;
+	vector<double> x = fld.x;
+	double t = fld.t, dx = fld.dx; 
+	double rol = prb.rol, ul = prb.ul, pl = prb.pl, ror = prb.ror, ur = prb.ur, pr = prb.pr, x0 = prb.x0;
+	ofstream ofs(fName);
+	CVectorPrimitive res = CVectorPrimitive();	
+	double e_ex = 0., q=0.;
+	if(!ofs) {
+		cout << "COutput::dump1D() reports error: cannot open output file." << endl;		
+		exit(1);
+	}
+	ofs << "TITLE=\"Riemann Problem 1D slice t=" << t << "\"" << endl;
+	ofs << "VARIABLES=\"x\",\"ro\",\"u\",\"p\",\"e\",\"ro_ex\",\"u_ex\",\"p_ex\",\"e_ex\"" << endl;	
+	ofs << "ZONE T=\"Numerical\", I=" << imax - imin << ", F=POINT" << endl;
+	double mul_x=1., mul_u=1., mul_p=1., mul_e=1.;
+	double _ro = 0., _u = 0., _v = 0., _w = 0., _e = 0., _p = 0.;	
+	for(i = imin; i < imax; i++) {						
+		_ro = U[i][0];
+		_u  = U[i][1]/_ro; 
+		_e  = U[i][2]/_ro - .5*_u*_u;
+		_p  = eos.getp(_ro, _e); 		
+		//res = calcRPAnalyticalSolution (eos, rol, ul, pl, ror, ur, pr, x-x0, t);
+		e_ex = eos.gete(res.ro, res.p) ? res.ro!=0 : 0.;
+		ofs << (fld.x[imin+i]+.5*fld.dx)*mul_x << " " << _ro    << " " << _u*mul_u << " " << _p*mul_p << " " << _e*mul_e << " " << 
+			   res.ro << " " << res.v*mul_u << " " << res.p*mul_p << " " << e_ex*mul_e << endl;				
+	}	
+	ofs.close();	
+	return 1;
+}
+
+int COutput::dump(C1DProblem& prb, C1DField& fld, CEOSIdeal& eos, string fName) {
 	int i = 0, imin = fld.imin, imax = fld.imax;
 	vector<vector<double>> U = fld.U;
 	vector<double> x = fld.x;

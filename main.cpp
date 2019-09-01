@@ -35,9 +35,9 @@ int main(int argc, char *argv[]) {
 	string outputDir = string("output");		
 	// Uncomment for new C1DSimulation class testing
 	// Uncomment for NB EOS test problem
-	// C1DProblem pr = prNBtest;
+	//C1DProblem pr = prNBtest;
 	// Uncomment for Toro #1 test problem
-	C1DProblem pr = prToro1Idealtest;
+	C1DProblem pr = prToro5Idealtest;
 	// Uncomment for NB EOS
 	// CEOSMieGruneisen eosNB;
 	// Uncomment for ideal EOS

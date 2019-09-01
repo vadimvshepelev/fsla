@@ -21,7 +21,7 @@ C1DField::~C1DField() {
 	F.clear();
 }
 
-void C1DField::setics(C1DProblem& pr, CEOSMieGruneisen& eos) {
+/*  Это реликт -- void C1DField::setics(C1DProblem& pr, CEOSMieGruneisen& eos) {
 	// TODO
 	// Идея сделать "задача" = "начальные условия" + "граничные условия". 
 	// Граничные условия реалзиовать тем крутым способом, что уже здесь сделан, но убран из-за пересечений с C1DField, там где они задаются функицей bcs.set(C1DField& fld).
@@ -48,9 +48,9 @@ void C1DField::setics(C1DProblem& pr, CEOSMieGruneisen& eos) {
 	}
 	setbcs(pr);
 	return;
-}
+} */
 
-void C1DField::setics(C1DProblem& pr, CEOSIdeal& eos) {
+void C1DField::setics(C1DProblem& pr, CEOS& eos) {
 	// TODO
 	// Идея сделать "задача" = "начальные условия" + "граничные условия". 
 	// Граничные условия реалзиовать тем крутым способом, что уже здесь сделан, но убран из-за пересечений с C1DField, там где они задаются функицей bcs.set(C1DField& fld).

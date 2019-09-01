@@ -139,7 +139,7 @@ CVectorPrimitive C1DGodunovMethodMillerPuckett::calcRPExactMillerPuckett(CEOSMie
 }
 
 
-double C1DGodunovMethod::calcdt(C1DProblem& pr, CEOSIdeal& eos, C1DField& fld) {
+double C1DGodunovMethod::calcdt(C1DProblem& pr, CEOS& eos, C1DField& fld) {
 	vector<vector<double>> U = fld.U; 
 	int imin = fld.imin, imax = fld.imax;
 	double ro = U[imin][0], u = U[imin][1]/ro, e = U[imin][2]/ro-.5*u*u, p=eos.getp(ro,e), c = eos.getc(ro, p);
@@ -156,7 +156,7 @@ double C1DGodunovMethod::calcdt(C1DProblem& pr, CEOSIdeal& eos, C1DField& fld) {
 	return pr.cfl*dt1;
 }
 
-void C1DGodunovMethod::calc(C1DProblem& pr, CEOSIdeal& eos, C1DField& fld) {
+void C1DGodunovMethod::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) {
 	double roL = 0., uL = 0., eL = 0., pL = 0.,
 		   roR = 0., uR = 0., eR = 0., pR = 0., 
 		   E = 0.;
@@ -184,16 +184,16 @@ void C1DGodunovMethod::calc(C1DProblem& pr, CEOSIdeal& eos, C1DField& fld) {
 }
 
 // HLL flux for ideal EOS
-Vector4 C1DGodunovMethod::calcFlux(CEOSIdeal& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {
-	const double gamma = eos.gamma;
+Vector4 C1DGodunovMethod::calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {
+	double _ro = 0., _u = 0., _e = 0., _p = 0.;
 	double uL = rouL/roL, uR = rouR/roR;	
 	double eL = roEL/roL - .5*uL*uL, eR = roER/roR - .5*uR*uR; 
 	if(roL == 0. || roR == 0.) {
 		cout << "Error: CSolver::calcHLLFluxEOSIdeal(): vacuum is present." << endl;
 		exit(1);	}
-	double cL = eos.getc(roL, eL), cR = eos.getc(roR, eR);
 	double pL = eos.getp(roL, eL), pR = eos.getp(roR, eR);
-	double pMin = min(pL, pR), pMax = max(pL, pR), pStar = 1./(cL+cR)*(cR*pL + cL*pR + cL*cR*(uL-uR));
+	double cL = eos.getc(roL, pL), cR = eos.getc(roR, pR);	
+/*	double pMin = min(pL, pR), pMax = max(pL, pR), pStar = 1./(cL+cR)*(cR*pL + cL*pR + cL*cR*(uL-uR));
 	double Q = pMax/pMin, QUser = 2.;
 	double roLRes = 0., roRRes = 0., uRes = 0., pRes = 0.;
 	double qL = 0., qR = 0.;
@@ -243,5 +243,21 @@ Vector4 C1DGodunovMethod::calcFlux(CEOSIdeal& eos, double roL, double rouL, doub
 	} else {
 	   cout << "Error: C1DGodunovMethod::calcFlux(): unexpected wave configuration." << endl;
 	   exit(1);	
-	}
+	}*/
+	Vector4 UL = Vector4(roL, rouL, roEL, 0.), UR = Vector4(roR, rouR, roER, 0.);
+	_ro = roL, _u = rouL/roL, _e = roEL/roL-.5*_u*_u, _p=eos.getp(_ro, _e);
+	Vector4 FL = Vector4(rouL, _p + _ro*_u*_u, _u*(_p + roEL), 0.);
+	_ro = roR, _u = rouR/roR, _e = roER/roR-.5*_u*_u, _p=eos.getp(_ro, _e);
+	Vector4 FR = Vector4(rouR, _p + _ro*_u*_u, _u*(_p + roER), 0.); 
+	double SL = min(uL - cL, uR - cR), 
+		   SR = max(uR - cR, uR + cR);
+	// Vector4 Uhll = (SR*UR - SL*UL + FL - FR)/(SR - SL);
+	Vector4 Fhll = Vector4::ZERO;
+    if (0. <= SL)  
+		Fhll = FL;
+	else if (SL < 0. && 0 <= SR)
+		Fhll = (SR*FL - SL*FR + SL*SR*(UR - UL))/(SR - SL);
+	else 
+		Fhll = FR;
+	return Fhll;
 }

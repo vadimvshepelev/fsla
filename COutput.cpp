@@ -62,7 +62,7 @@ int COutput::manageScreenOutput(C1DProblem& _prm, int iteration, double t, doubl
 	return 1;
 }
 
-int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, CEOSMieGruneisen& eos) {	
+/*int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, CEOSMieGruneisen& eos) {	
 	assert(!dtt.empty());		
 	if (fld.t>=dtt[0]) {
 		ostringstream oss1;
@@ -74,15 +74,15 @@ int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, CEOSMieGruneisen& e
 	}
 	return 1;
 }
-
-int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, CEOSIdeal& eos) {	
+*/
+int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, CEOS& eos) {	
 	
 
 	
 
-	ostringstream oss;
+/*	ostringstream oss;
 	oss << subDir << "\\" << pr.name << "-100" << ".dat"; string fName = oss.str();
-	dump(pr, fld, eos, fName);
+	dump(pr, fld, eos, fName);*/
 
 
 
@@ -101,7 +101,7 @@ int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, CEOSIdeal& eos) {
 	return 1;
 }
 
-int COutput::dump(C1DProblem& prb, C1DField& fld, CEOSMieGruneisen& eos, string fName) {
+int COutput::dump(C1DProblem& prb, C1DField& fld, CEOS& eos, string fName) {
 	int i = 0, imin = fld.imin, imax = fld.imax;
 	vector<vector<double>> U = fld.U;
 	vector<double> x = fld.x;
@@ -132,7 +132,7 @@ int COutput::dump(C1DProblem& prb, C1DField& fld, CEOSMieGruneisen& eos, string 
 	ofs.close();	
 	return 1;
 }
-
+/*
 int COutput::dump(C1DProblem& prb, C1DField& fld, CEOSIdeal& eos, string fName) {
 	int i = 0, imin = fld.imin, imax = fld.imax;
 	vector<vector<double>> U = fld.U;
@@ -163,4 +163,4 @@ int COutput::dump(C1DProblem& prb, C1DField& fld, CEOSIdeal& eos, string fName) 
 	}	
 	ofs.close();	
 	return 1;
-}
+}*/

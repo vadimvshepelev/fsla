@@ -17,8 +17,7 @@ public:
 	vector<vector<double>> U, newU, F; 	// TODO: попробовать вариант с double ** или vector<CVector4> и сравнить по производительности
 	C1DField(C1DProblem& pr);
 	~C1DField();
-	void setics(C1DProblem& pr, CEOSMieGruneisen& eos);
-	void setics(C1DProblem& pr, CEOSIdeal& eos);
+	void setics(C1DProblem& pr, CEOS& eos);
 	void setbcs(C1DProblem& pr);
 };
 

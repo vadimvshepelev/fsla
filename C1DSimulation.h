@@ -10,14 +10,12 @@
 
 class C1DSimulation {
 	C1DProblem &pr;
-	//CEOSMieGruneisen &eos;
-	CEOSIdeal &eos;
+	CEOS &eos;
 	C1DField &fld;	
 	C1DMethod &mtd;	
 	COutput &outp;
 public:
-	//C1DSimulation(C1DProblem& _pr, CEOSMieGruneisen& _eos, C1DField& _fld, C1DMethod& _mtd, COutput& _outp) : pr(_pr), eos(_eos), fld(_fld), mtd(_mtd), outp(_outp) {}
-	C1DSimulation(C1DProblem& _pr, CEOSIdeal& _eos, C1DField& _fld, C1DMethod& _mtd, COutput& _outp) : pr(_pr), eos(_eos), fld(_fld), mtd(_mtd), outp(_outp) {}
+	C1DSimulation(C1DProblem& _pr, CEOS& _eos, C1DField& _fld, C1DMethod& _mtd, COutput& _outp) : pr(_pr), eos(_eos), fld(_fld), mtd(_mtd), outp(_outp) {}
 	void run();
 };
 

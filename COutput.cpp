@@ -76,6 +76,19 @@ int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, CEOSMieGruneisen& e
 }
 
 int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, CEOSIdeal& eos) {	
+	
+
+	
+
+	ostringstream oss;
+	oss << subDir << "\\" << pr.name << "-100" << ".dat"; string fName = oss.str();
+	dump(pr, fld, eos, fName);
+
+
+
+
+
+	
 	assert(!dtt.empty());		
 	if (fld.t>=dtt[0]) {
 		ostringstream oss1;

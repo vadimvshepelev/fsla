@@ -162,7 +162,7 @@ void C1DGodunovMethod::calc(C1DProblem& pr, CEOSIdeal& eos, C1DField& fld) {
 		   E = 0.;
 	double dx = fld.dx, t = fld.t, dt = fld.dt;
 	int imin = fld.imin, imax = fld.imax;
-	vector<vector<double>> U = fld.U, newU = fld.newU, F = fld.F;
+	vector<vector<double>> &U = fld.U, &newU = fld.newU, &F = fld.F;
 	// TODO: проверить на скорость выполнения операций, сравнить с реализацией через тип Vector4 -- если не медленнее, то в дальнейшем избавиться от Vector4 везде
 	int i=0;	
 	// Потоки считаем по алгоритму решения задаче о распаде разрыва для УРС Ми-Грюнайзена из работы [Miller, Puckett]

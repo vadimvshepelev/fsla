@@ -21,8 +21,8 @@ void C1DSimulation::run() {
 		mtd.calc(pr, eos, fld); 
 		tEnd = clock(); 
 		tCalc = (double)(tEnd - tStart) / CLOCKS_PER_SEC;		
-		outp.manageScreenOutput(pr, counter, fld.t, fld.dt, cfl, tCalc);
 		fld.t += fld.dt;				
+		outp.manageScreenOutput(pr, counter, fld.t, fld.dt, cfl, tCalc);
 		outp.manageFileOutput(pr, fld, eos);
 		counter++;
 	}	

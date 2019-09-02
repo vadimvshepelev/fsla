@@ -83,31 +83,8 @@ CTask::~CTask() {
 		}		
 	} else if(!strcmp(eos_type, "analytic"))	
 		eos = new EOSAnalytic();
-	else if(!strcmp(eos_type, "ideal"))		
-
-
-
-
-
-
-
-
-
-
-
-
-
+	else if(!strcmp(eos_type, "ideal"))	
 		eos = new EOSIdeal(4.8);
-
-
-
-
-
-
-
-
-
-
 
 	else if(!strcmp(eos_type, "test"))		
 		eos = new EOSTest();

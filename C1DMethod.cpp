@@ -255,7 +255,7 @@ Vector4 C1DGodunovMethod::calcFlux(CEOS& eos, double roL, double rouL, double ro
 	Vector4 Fhll = Vector4::ZERO;
     if (0. <= SL)  
 		Fhll = FL;
-	else if (SL < 0. && 0 <= SR)
+	else if (SL <= 0. && 0 <= SR)
 		Fhll = (SR*FL - SL*FR + SL*SR*(UR - UL))/(SR - SL);
 	else 
 		Fhll = FR;

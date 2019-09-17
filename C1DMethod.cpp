@@ -249,8 +249,8 @@ Vector4 C1DGodunovMethod::calcFlux(CEOS& eos, double roL, double rouL, double ro
 	Vector4 FL = Vector4(rouL, _p + _ro*_u*_u, _u*(_p + roEL), 0.);
 	_ro = roR, _u = rouR/roR, _e = roER/roR-.5*_u*_u, _p=eos.getp(_ro, _e);
 	Vector4 FR = Vector4(rouR, _p + _ro*_u*_u, _u*(_p + roER), 0.); 
-	double SL = min(uL - cL, uR - cR), 
-		   SR = max(uR - cR, uR + cR);
+	double SL = min(min(uL - cL, uR - cR), 0.), 
+		   SR = max(max(uL + cL, uR + cR), 0.);
 	// Vector4 Uhll = (SR*UR - SL*UL + FL - FR)/(SR - SL);
 	Vector4 Fhll = Vector4::ZERO;
     if (0. <= SL)  

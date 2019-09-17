@@ -33,20 +33,17 @@ int main(int argc, char *argv[]) {
 	cout << "Author: Vadim V. Shepelev, ICAD RAS, e-mail: vadim.v.shepelev@gmail.com" << endl;
 	cout << "=======================================================================" << endl;
 	string outputDir = string("output");		
-	// Uncomment for new C1DSimulation class testing
 	// Uncomment for NB EOS test problem
-	//C1DProblem pr = prNBtest;
-	// Uncomment for Toro #1 test problem
-	C1DProblem pr = prToro5Idealtest;
-	// Uncomment for NB EOS
-	// CEOSMieGruneisen eosNB;
-	// Uncomment for ideal EOS
-	CEOSIdeal eos = CEOSIdeal(1.4);
+	CEOSMieGruneisen eos = CEOSMieGruneisen();
+	C1DProblem pr = prNBtest;
+	// Uncomment for Toro #1 test problem with ideal EOS
+	//CEOSIdeal eos = CEOSIdeal(1.4);
+	// C1DProblem pr = prToro15Idealtest;	
 	C1DField *fldptr = new C1DField(pr);
-	// Uncomment for Miller-Puckett godunov-type approach
-	// C1DGodunovMethodMillerPuckett mtd;	
 	// Uncomment for HLL solver based Godunov-type method
 	C1DGodunovMethod mtd;
+	// Uncomment for Miller-Puckett godunov-type approach
+	// C1DGodunovMethodMillerPuckett mtd;	
 	double _dtt[] = {pr.tmin, pr.tmax};
 	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
 	COutput outp = COutput(pr, outputDir, dtt);

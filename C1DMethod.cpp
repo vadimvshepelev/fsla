@@ -139,7 +139,7 @@ CVectorPrimitive C1DGodunovMethodMillerPuckett::calcRPExactMillerPuckett(CEOSMie
 }
 
 
-double C1DGodunovMethod::calcdt(C1DProblem& pr, CEOS& eos, C1DField& fld) {
+double C1DGodunovTypeMethod::calcdt(C1DProblem& pr, CEOS& eos, C1DField& fld) {
 	vector<vector<double>> U = fld.U; 
 	int imin = fld.imin, imax = fld.imax;
 	double ro = U[imin][0], u = U[imin][1]/ro, e = U[imin][2]/ro-.5*u*u, p=eos.getp(ro,e), c = eos.getc(ro, p);
@@ -156,7 +156,7 @@ double C1DGodunovMethod::calcdt(C1DProblem& pr, CEOS& eos, C1DField& fld) {
 	return pr.cfl*dt1;
 }
 
-void C1DGodunovMethod::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) {
+void C1DGodunovTypeMethod::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) {
 	double roL = 0., uL = 0., eL = 0., pL = 0.,
 		   roR = 0., uR = 0., eR = 0., pR = 0., 
 		   E = 0.;
@@ -169,7 +169,7 @@ void C1DGodunovMethod::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) {
 	for(i=imin; i<=imax; i++) {
 		roL = U[i-1][0]; uL = U[i-1][1]/roL; eL = U[i-1][2]/roL - .5*uL*uL; pL = eos.getp(roL, eL);
 		roR = U[i][0];   uR = U[i][1]/roR;   eR = U[i][2]/roR - .5*uR*uR;   pR = eos.getp(roR, eR);								
-		Vector4 flux = calcFlux(eos, U[i-1][0], U[i-1][1], U[i-1][2], U[i][0], U[i][1], U[i][2]); 
+		Vector4 flux = rslv.calcFlux(eos, U[i-1][0], U[i-1][1], U[i-1][2], U[i][0], U[i][1], U[i][2]); 
 		double _F[] = {flux[0], flux[1], flux[2]};
 		F[i] = vector<double>(_F, _F+sizeof(_F)/sizeof(_F[0]));		
 		//n.W_temp = n.W - dt/h*(Fp-Fm);
@@ -184,7 +184,7 @@ void C1DGodunovMethod::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) {
 }
 
 // HLL flux for ideal EOS
-Vector4 C1DGodunovMethod::calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {
+Vector4 CHLLRiemannSolver::calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {
 	double _ro = 0., _u = 0., _e = 0., _p = 0.;
 	double uL = rouL/roL, uR = rouR/roR;	
 	double eL = roEL/roL - .5*uL*uL, eR = roER/roR - .5*uR*uR; 

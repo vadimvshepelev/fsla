@@ -34,14 +34,15 @@ int main(int argc, char *argv[]) {
 	cout << "=======================================================================" << endl;
 	string outputDir = string("output");		
 	// Uncomment for NB EOS test problem
-	CEOSMieGruneisen eos = CEOSMieGruneisen();
-	C1DProblem pr = prNBtest;
+	//CEOSMieGruneisen eos = CEOSMieGruneisen();
+	//C1DProblem pr = prNBtest;
 	// Uncomment for Toro #1 test problem with ideal EOS
-	//CEOSIdeal eos = CEOSIdeal(1.4);
-	// C1DProblem pr = prToro15Idealtest;	
+	CEOSIdeal eos = CEOSIdeal(1.4);
+	C1DProblem pr = prToro5Idealtest;	
 	C1DField *fldptr = new C1DField(pr);
 	// Uncomment for HLL solver based Godunov-type method
-	C1DGodunovMethod mtd;
+	CHLLRiemannSolver hll;
+	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hll);
 	// Uncomment for Miller-Puckett godunov-type approach
 	// C1DGodunovMethodMillerPuckett mtd;	
 	double _dtt[] = {pr.tmin, pr.tmax};

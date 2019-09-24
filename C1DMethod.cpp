@@ -183,7 +183,7 @@ void C1DGodunovTypeMethod::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) {
 	fld.setbcs(pr);
 }
 
-// HLL flux for ideal EOS
+// HLL flux for general EOS
 Vector4 CHLLRiemannSolver::calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {
 	double _ro = 0., _u = 0., _e = 0., _p = 0.;
 	double uL = rouL/roL, uR = rouR/roR;	
@@ -193,57 +193,6 @@ Vector4 CHLLRiemannSolver::calcFlux(CEOS& eos, double roL, double rouL, double r
 		exit(1);	}
 	double pL = eos.getp(roL, eL), pR = eos.getp(roR, eR);
 	double cL = eos.getc(roL, pL), cR = eos.getc(roR, pR);	
-/*	double pMin = min(pL, pR), pMax = max(pL, pR), pStar = 1./(cL+cR)*(cR*pL + cL*pR + cL*cR*(uL-uR));
-	double Q = pMax/pMin, QUser = 2.;
-	double roLRes = 0., roRRes = 0., uRes = 0., pRes = 0.;
-	double qL = 0., qR = 0.;
-	double z = 0., pLR = 0.;
-	double AL = 0., AR = 0., BL = 0., BR = 0., gL = 0., gR = 0., p_0 = 0.;
-	if(Q < QUser && pStar > pMin && pStar > pMax) {
-		// Primitive-variable noniteration solver (PVRS)
-		pRes = pStar;
-		uRes = 1./(cL+cR)*(cL*uL + cL*cR + pL-pR);
-		roLRes  = roL + (pStar-pL)/cL/cL;
-		roRRes  = roR + (pStar-pR)/cR/cR;
-	} else if (pStar < pMin) {
-		// Two-rarefaction Riemann solver (TRRS)	
-		z = (gamma-1.)/2./gamma;
-		pLR = pow(pL/pR, z);
-		pRes = pow( (cL+cR - (gamma-1.)/2.*(uR-uL)) / (cL/pow(pL, z) + cR/pow(pR, z)), 1./z);
-		uRes = (pLR*uL/cL + uR/cR + 2*(pLR-1)/(gamma-1.))/(pLR/cL + 1./cR);
-		roLRes = roL*pow(pRes/pL, 1./gamma);
-		roRRes = roR*pow(pRes/pR, 1./gamma);
-	} else {
-		// Two-shock Riemann solver (TSRS)
-		AL = 2./(gamma+1)/roL; AR = 2./(gamma+1)/roR;
-		BL = (gamma-1.)/(gamma+1)*pL; BR = (gamma-1.)/(gamma+1.)*pR;
-		p_0 = max(0., pStar);
-		gL = sqrt(AL/(p_0+BL)); gR = sqrt(AR/(p_0+BR));
-		pRes = (gL*pL + gR*pR - (uR-uL))/(gL+gR);
-		uRes = 0.5*(uR+uL) + 0.5*((pRes-pR)*gR - (pRes-pL)*gL);
-		roLRes = (pRes/pL + (gamma-1.)/(gamma+1)) / ((gamma-1.)/(gamma+1.)*pRes/pL + 1.);
-		roRRes = (pRes/pR + (gamma-1.)/(gamma+1)) / ((gamma-1.)/(gamma+1.)*pRes/pR + 1.);
-	}
-	if(pRes <= pL) qL = 1.; else qL = sqrt(1. + (gamma+1.)/2./gamma*(pRes/pL-1.));
-	if(pRes <= pR) qR = 1.; else qR = sqrt(1. + (gamma+1.)/2./gamma*(pRes/pR-1.));
-	//double SL = min(uL-cL, uR-cR), SR = max(uL+cL, uR+cR);
-	double SL = uL - cL*qL, SR = uR - cR*qR;
-	double _ro=0, _u=0., _e=0., _p=0.;
-	Vector4 UL = Vector4(roL, rouL, roEL, 0.), UR = Vector4(roR, rouR, roER, 0.);
-	_ro = roL, _u = rouL/roL, _e = roEL/roL-.5*_u*_u, _p=eos.getp(_ro, _e);
-	Vector4 FL = Vector4(rouL, _p + _ro*_u*_u, _u*(_p + roEL), 0.);
-	_ro = roR, _u = rouR/roR, _e = roER/roR-.5*_u*_u, _p=eos.getp(_ro, _e);
-	Vector4 FR = Vector4(rouR, _p + _ro*_u*_u, _u*(_p + roER), 0.); 
-	if(0 <= SL) 
-		return FL;
-	else if (0 >= SR )
-		return FR;
-	else if (SL<=0 && SR >=0) {		
-		return 1./(SR-SL)*(SR*FL - SL*FR - SL*SL*(UR-UL));
-	} else {
-	   cout << "Error: C1DGodunovMethod::calcFlux(): unexpected wave configuration." << endl;
-	   exit(1);	
-	}*/
 	Vector4 UL = Vector4(roL, rouL, roEL, 0.), UR = Vector4(roR, rouR, roER, 0.);
 	_ro = roL, _u = rouL/roL, _e = roEL/roL-.5*_u*_u, _p=eos.getp(_ro, _e);
 	Vector4 FL = Vector4(rouL, _p + _ro*_u*_u, _u*(_p + roEL), 0.);
@@ -260,4 +209,41 @@ Vector4 CHLLRiemannSolver::calcFlux(CEOS& eos, double roL, double rouL, double r
 	else 
 		Fhll = FR;
 	return Fhll;
+}
+
+// HLLC flux for general EOS
+Vector4 CHLLCRiemannSolver::calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {
+	double _ro = 0., _u = 0., _e = 0., _p = 0.;
+	double uL = rouL/roL, uR = rouR/roR;	
+	double eL = roEL/roL - .5*uL*uL, eR = roER/roR - .5*uR*uR; 
+	if(roL == 0. || roR == 0.) {
+		cout << "Error: CSolver::calcHLLFluxEOSIdeal(): vacuum is present." << endl;
+		exit(1);	}
+	double pL = eos.getp(roL, eL), pR = eos.getp(roR, eR);
+	double cL = eos.getc(roL, pL), cR = eos.getc(roR, pR);	
+	Vector4 UL = Vector4(roL, rouL, roEL, 0.), UR = Vector4(roR, rouR, roER, 0.);
+	_ro = roL, _u = rouL/roL, _e = roEL/roL-.5*_u*_u, _p=eos.getp(_ro, _e);
+	Vector4 FL = Vector4(rouL, _p + _ro*_u*_u, _u*(_p + roEL), 0.);
+	_ro = roR, _u = rouR/roR, _e = roER/roR-.5*_u*_u, _p=eos.getp(_ro, _e);
+	Vector4 FR = Vector4(rouR, _p + _ro*_u*_u, _u*(_p + roER), 0.); 
+	// Step 1 -- pressure estimate from primitive-variable Riemann solver (PVRS)
+	double roAv = .5*(roL + roR), cAv = .5*(cL + cR), pPVRS = .5*(pL + pR) - .5*(uR - uL)*roAv*cAv;
+	double pStar = max(0., pPVRS);
+	// Step 2 -- wave speed estimates	
+	double SL = min(min(uL - cL, uR - cR), 0.), SR = max(max(uL + cL, uR + cR), 0.);
+	double SStar = (pR - pL + roL*uL*(SL - uL) - roR*uR*(SR - uR))/(roL*(SL - uL) - roR*(SR - uR));
+	// Vector4 Uhll = (SR*UR - SL*UL + FL - FR)/(SR - SL);
+	Vector4 Fhllc = Vector4::ZERO;
+	Vector4 D = Vector4(0., 1., SStar, 0.);
+    Vector4 UStarL = (SL*UL - FL + pStar*D)/(SL - SStar), UStarR = (SR*UR - FR + pStar*D)/(SR - SStar);
+	Vector4 FStarL = FL + SL*(UStarL - UL), FStarR = FR + SR*(UStarR - UR);	
+	if (0. <= SL)  
+		Fhllc = FL;
+	else if (SL <= 0. && 0 <= SStar)
+		Fhllc = FStarL;
+	else if (SStar <= 0. && 0 <= SR)
+		Fhllc = FStarR;
+	else 
+		Fhllc = FR;
+	return Fhllc;
 }

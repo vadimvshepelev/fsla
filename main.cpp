@@ -41,8 +41,8 @@ int main(int argc, char *argv[]) {
 	C1DProblem pr = prToro5Idealtest;	
 	C1DField *fldptr = new C1DField(pr);
 	// Uncomment for HLL solver based Godunov-type method
-	CHLLCRiemannSolver hllc;
-	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hllc);
+	CGPSRiemannSolver gps;
+	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(gps);
 	// Uncomment for Miller-Puckett godunov-type approach
 	// C1DGodunovMethodMillerPuckett mtd;	
 	double _dtt[] = {pr.tmin, pr.tmax};

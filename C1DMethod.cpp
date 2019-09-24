@@ -247,3 +247,27 @@ Vector4 CHLLCRiemannSolver::calcFlux(CEOS& eos, double roL, double rouL, double 
 		Fhllc = FR;
 	return Fhllc;
 }
+
+
+Vector4 CGPSRiemannSolver::calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {
+	double _ro=0., _u=0., _p=0., _e=0., _E=0., _sigma = 0., sigmaL = 0., sigmaR = 0.;
+	double uL = rouL/roL, uR = rouR/roR, EL = roEL/roL, ER = roER/roR, eL = EL - 0.5*uL*uL, eR = ER - 0.5*uR*uR, 
+		   pL = eos.getp(roL, eL), pR = eos.getp(roR, eR), cL = eos.getc(roL, pL), cR = eos.getc(roR, pR);
+	double gamma = cL*cL/(pL/roL);
+	sigmaL = pL/pow(roL, gamma);
+	sigmaR = pR/pow(roR, gamma);
+	if(uL > cL) 
+		return Vector4(roL*uL, pL+roL*uL*uL, uL*(pL+roL*EL), 0.);
+	else if (uR < -cR)
+		return Vector4(roR*uR, pR+roR*uR*uR, uR*(pR+roR*ER), 0.);
+	_p = (pL / roL / cL + pR / roR / cR + uL - uR) / (1. / roL / cL + 1 / roR / cR);
+	_u = (roL * cL * uL + roR * cR * uR + pL - pR) / (roL * cL + roR * cR);
+	if(_u > 0.)
+		_sigma = sigmaL; 
+	else 
+		_sigma = sigmaR;
+	_ro = pow(_p/_sigma, 1./gamma);
+	_e  = eos.gete(_ro, _p);
+	_E  = _e + 0.5*_u*_u;
+	return Vector4(_ro*_u, _p+_ro*_u*_u, _u*(_p+_ro*_E), 0.);
+}

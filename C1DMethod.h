@@ -32,6 +32,14 @@ public:
 };
 
 
+// Godunov-Prokhorov-Safronov simple linearized entropy non-decreasing Riemann solver
+class CGPSRiemannSolver : public CRiemannSolver {
+public: 
+	CGPSRiemannSolver() {}
+	Vector4 calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER);
+};
+
+
 class C1DMethod {
 public:
 	virtual void calc(C1DProblem& pr, CEOS& eos, C1DField& fld)=0;

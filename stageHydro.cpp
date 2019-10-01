@@ -1058,13 +1058,6 @@ RPSolutionPrimitive CSolver::solveRP(double roL, double vL, double pL, double ro
 		res.roL  = roL*(res.p/pL + (gamma-1.)/(gamma+1.))/((gamma-1.)/(gamma+1.)*res.p/pL + 1.);
 		res.roR  = roR*(res.p/pR + (gamma-1.)/(gamma+1.))/((gamma-1.)/(gamma+1.)*res.p/pR + 1.);
 	}
-	//Тестирование (только без вакуума)
-	/*double L =  - fL(p, roL, vL, pL);
-	double R = fR(p, roR, vR, pR) + vR - vL;
-	double delta = fabs((L-R)/0.5/(L+R));
-	double LToro = - fL(res.p, roL, vL, pL);
-	double RToro = fR(res.p, roR, vR, pR) + vR - vL;
-	double deltaToro = fabs((LToro-RToro)/0.5/(LToro+RToro));*/
 	return res;
 }
 

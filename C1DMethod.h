@@ -1,8 +1,25 @@
 #ifndef _C1DMETHOD_H_
 #define _C1DMETHOD_H_
 
+#include"_vector4.h"
 #include"C1Dfield.h"
-#include"solver.h"
+
+
+enum RPWaveConfig {nothing, swrw, rwsw, swsw, rwrw, vacrw, rwvac, rwvacrw};
+
+// Structure for the Riemann problem solution vector of primitive variables -- (roL, roR, u ,p)
+struct RPValues {
+	RPValues() : roL(0.), roR(0.), u(0.), p(0.), type(RPWaveConfig::nothing) {}
+	double roL, roR, u, p;
+	RPWaveConfig type;
+};
+
+struct C1DVectorPrimitive {
+	double ro;
+	double u;
+	double p;
+};
+
 
 
 class CRiemannSolver {
@@ -15,10 +32,17 @@ public:
 
 class CExactRiemannSolver : public CRiemannSolver {
 public:
-	CExactRiemannSolver();
+	CExactRiemannSolver() {}
 	Vector4 calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER);
 	int isSupported(CEOSIdeal& eos) { return 1; }
 	int isSupported(CEOSMieGruneisen& eos) {return 0; }
+private:
+	C1DVectorPrimitive calcSolution(CEOS& eos, double roL, double uL, double pL, double roR, double uR, double pR, double x, double t);
+	RPValues calcVals(CEOS& eos, double roL, double uL, double pL, double roR, double uR, double pR);
+	double fL(CEOS& eos, double p, double roL, double uL, double pL);
+	double dfLdp(CEOS& eos, double p, double roL, double uL, double pL);
+	double fR(CEOS& eos, double p, double roR, double uR, double pR);
+	double dfRdp(CEOS& eos, double p, double roR, double uR, double pR);
 };
 
 
@@ -61,7 +85,7 @@ class C1DGodunovMethodMillerPuckett : public C1DMethod {
 public:
 	void calc(C1DProblem& pr, CEOSMieGruneisen& eos, C1DField& fld);
 	double calcdt(C1DProblem& pr, CEOSMieGruneisen& eos, C1DField& fld);
-	CVectorPrimitive calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double roL, double vL, double pL, double roR, double vR, double pR);
+	C1DVectorPrimitive calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double roL, double vL, double pL, double roR, double vR, double pR);
 };
 
 

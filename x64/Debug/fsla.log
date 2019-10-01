@@ -1,4 +1,4 @@
-﻿Build started 01.10.2019 16:58:23.
+﻿Build started 02.10.2019 2:33:34.
      1>Project "D:\icad\fsla\fsla.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /Od /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt C1DProblem.cpp main.cpp
@@ -51,4 +51,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.87
+Time Elapsed 00:00:02.95

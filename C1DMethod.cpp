@@ -1,4 +1,5 @@
 #include"C1DMethod.h"
+#include"solver.h"
 
 
 void C1DGodunovMethodMillerPuckett::calc(C1DProblem& pr, CEOSMieGruneisen& eos, C1DField& fld) {
@@ -181,6 +182,17 @@ void C1DGodunovTypeMethod::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) {
 		for(int counter=0; counter<3; counter++) U[i][counter] = newU[i][counter];
 	}	
 	fld.setbcs(pr);
+}
+
+// Godunov-exact solver flux
+Vector4 CExactRiemannSolver::calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {
+	const double gamma = eos.getc(1., 1.)*eos.getc(1., 1.);
+	double uL = rouL/roL, uR = rouR/roR;
+	double pL = (gamma-1.)*(roEL - .5*roL*uL*uL), pR = (gamma-1.)*(roER - .5*roR*uR*uR);
+	CVectorPrimitive res = calcRPAnalyticalSolution(roL, uL, pL, roR, uR, pR, 0., .01);
+	double E = res.p/(gamma-1.)/res.ro + .5*res.v*res.v;
+	Vector4 FGodunov = Vector4(res.ro*res.v, res.ro*res.v*res.v + res.p, res.v*(res.ro*E+res.p), 0.);
+	return FGodunov;
 }
 
 // HLL flux for general EOS

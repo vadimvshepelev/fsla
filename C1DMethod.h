@@ -8,6 +8,8 @@
 class CRiemannSolver {
 public: 
 	virtual Vector4 calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) = 0;
+	virtual int isSupported(CEOSIdeal& eos) = 0;
+	virtual int isSupported(CEOSMieGruneisen& eos) = 0;
 };
 
 
@@ -15,6 +17,8 @@ class CExactRiemannSolver : public CRiemannSolver {
 public:
 	CExactRiemannSolver();
 	Vector4 calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER);
+	int isSupported(CEOSIdeal& eos) { return 1; }
+	int isSupported(CEOSMieGruneisen& eos) {return 0; }
 };
 
 
@@ -22,6 +26,8 @@ class CHLLRiemannSolver : public CRiemannSolver {
 public:
 	CHLLRiemannSolver() {}
 	Vector4 calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER);
+	int isSupported(CEOSIdeal& eos) { return 1; }
+	int isSupported(CEOSMieGruneisen& eos) {return 1; }
 };
 
 
@@ -29,6 +35,8 @@ class CHLLCRiemannSolver : public CRiemannSolver {
 public:
 	CHLLCRiemannSolver() {}
 	Vector4 calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER);
+	int isSupported(CEOSIdeal& eos) { return 1; }
+	int isSupported(CEOSMieGruneisen& eos) {return 1; }
 };
 
 
@@ -37,6 +45,8 @@ class CGPSRiemannSolver : public CRiemannSolver {
 public: 
 	CGPSRiemannSolver() {}
 	Vector4 calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER);
+	int isSupported(CEOSIdeal& eos) { return 1; }
+	int isSupported(CEOSMieGruneisen& eos) {return 0; }
 };
 
 

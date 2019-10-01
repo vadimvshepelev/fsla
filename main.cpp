@@ -41,10 +41,10 @@ int main(int argc, char *argv[]) {
 	C1DProblem pr = prToro5Idealtest;	
 	C1DField *fldptr = new C1DField(pr);
 	// Uncomment for HLL solver based Godunov-type method
-	CGPSRiemannSolver gps;
+	CHLLCRiemannSolver gps;
 	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(gps);
 	// Uncomment for Miller-Puckett godunov-type approach
-	// C1DGodunovMethodMillerPuckett mtd;	
+	// C1DGodunovMethodMillerPuckett mtd;
 	double _dtt[] = {pr.tmin, pr.tmax};
 	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
 	COutput outp = COutput(pr, outputDir, dtt);

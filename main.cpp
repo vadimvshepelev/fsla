@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
 	cout << "FSLA1D: hydrocode for numerical simulations in 1D-geometry v.0.1." << endl;
 	cout << "Author: Vadim V. Shepelev, ICAD RAS, e-mail: vadim.v.shepelev@gmail.com" << endl;
 	cout << "=======================================================================" << endl;
-	string outputDir = string("output");		
+	 /*string outputDir = string("output");		
 	// Uncomment for NB EOS test problem
 	//CEOSMieGruneisen eos = CEOSMieGruneisen();
 	//C1DProblem pr = prNBtest;
@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
 	COutput outp = COutput(pr, outputDir, dtt);
 	C1DSimulation sim = C1DSimulation(pr, eos, *fldptr, mtd, outp);
 	sim.run();
-	delete fldptr;	
+	delete fldptr;	*/
 
 	// Uncomment for metal problems
 	// s->goGlass("task-Ru-glass.txt");
@@ -73,7 +73,8 @@ int main(int argc, char *argv[]) {
     //s->goEuler("task-LH1D-p=123GPA.txt"); // Задача LH (стекло-золото-вакуум), одномерное приближение, с более мелкой ступенькой
 	
 	// s->goEuler("task-eosbin-test-2.txt"); // Тест на двучленное УРС от Паши -- он же тест на лазерное облучение объемной мишеги с идеальным УРС
-	//s->goEuler("task-laservt-ideal-test.txt"); // Тест на лазерное облучение идеальной мишени с УРС от Н.А. 
+	CSolver *s = new CSolver;
+	s->goEuler("task-laservt-ideal-test.txt"); // Тест на лазерное облучение идеальной мишени с УРС от Н.А. 
 	//s->goEuler("task-eosbin-toro-test-5.txt"); // Тест на двучленное УРС (при нулевых параметрах должно работать как идеальное)
 
 	//s->goEuler("task-LH1D-aux-1.txt"); // Задача LH (стекло-золото-вакуум), левый разрыв стекло-золото

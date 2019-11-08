@@ -8,6 +8,8 @@ using namespace std;
 
 class C1DProblem {	
 public:
+//	C1DProblem() : name(0), rol(0.), ul(0.), pl(0.), ror(0.), ur(0.), pr(0.),
+//			   xmin(0.), xmax(0.), tmin(0.), tmax(0.), x0(0.), nx(0), cfl(0.), bcs(0) {}
 	C1DProblem(string _name, 
 		       double _rol, double _ul, double _pl, double _ror, double _ur, double _pr, 
 			   double _xmin, double _xmax, double _tmin, double _tmax, double _x0,
@@ -25,10 +27,7 @@ public:
 // и проставл€ющую начальные услови€, как ей надо !!!
 
 extern C1DProblem prNBtest;
-extern C1DProblem prToro1Idealtest;
-extern C1DProblem prToro2Idealtest;
-extern C1DProblem prToro3Idealtest;
-extern C1DProblem prToro4Idealtest;
-extern C1DProblem prToro5Idealtest;
+extern C1DProblem prToro1Idealtest, prToro2Idealtest, prToro3Idealtest, prToro4Idealtest, prToro5Idealtest;
+extern C1DProblem prDenisenko1, prDenisenko2, prDenisenko3;
 
 #endif

@@ -41,11 +41,11 @@ int main(int argc, char *argv[]) {
 	C1DProblem pr[3] = {prDenisenko1, prDenisenko2, prDenisenko3};	
 	// Uncomment for HLLC solver based Godunov-type method
 	CHLLCRiemannSolver hllc;
-	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hllc);
-	double _dtt[] = {pr[0].tmin, pr[0].tmax};
-	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
-	for(int i=0; i<3; i++) {
+	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hllc);	
+	for(int i=1; i<3; i++) {
 		C1DField fld = C1DField(pr[i]);	
+		double _dtt[] = {pr[i].tmin, pr[i].tmax};
+		vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
 		COutput outp = COutput(pr[i], outputDir, dtt);
 		C1DSimulation sim = C1DSimulation(pr[i], eos, fld, mtd, outp);
 		sim.run();

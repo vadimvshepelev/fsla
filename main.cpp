@@ -34,22 +34,22 @@ int main(int argc, char *argv[]) {
 	cout << "=======================================================================" << endl;
 	string outputDir = string("output");		
 	// Uncomment for NB EOS test problem
-	//CEOSMieGruneisen eos = CEOSMieGruneisen();
-	//C1DProblem pr = prNBtest;
+	CEOSMieGruneisen eos = CEOSMieGruneisen();
+	C1DProblem pr = prNBtest;
 	// Uncomment for Toro #1 test problem with ideal EOS
-	CEOSIdeal eos = CEOSIdeal(1.4);
-	C1DProblem pr[3] = {prDenisenko1, prDenisenko2, prDenisenko3};	
+	//CEOSIdeal eos = CEOSIdeal(1.4);
+	//C1DProblem pr[3] = {prDenisenko1, prDenisenko2, prDenisenko3};	
 	// Uncomment for HLLC solver based Godunov-type method
-	CHLLCRiemannSolver hllc;
-	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hllc);	
-	for(int i=1; i<3; i++) {
-		C1DField fld = C1DField(pr[i]);	
-		double _dtt[] = {pr[i].tmin, pr[i].tmax};
+	CHLLRiemannSolver hll;
+	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hll);
+	//for(int i=1; i<3; i++) {
+		C1DField fld = C1DField(pr);	
+		double _dtt[] = {pr.tmin, pr.tmax};
 		vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
-		COutput outp = COutput(pr[i], outputDir, dtt);
-		C1DSimulation sim = C1DSimulation(pr[i], eos, fld, mtd, outp);
+		COutput outp = COutput(pr, outputDir, dtt);
+		C1DSimulation sim = C1DSimulation(pr, eos, fld, mtd, outp);
 		sim.run();
-	}
+	//}
 	// Uncomment for metal problems
 	// s->goGlass("task-Ru-glass.txt");
 	//s->goGlass("task-Ru-glass-optic-1000.txt");

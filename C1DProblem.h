@@ -21,6 +21,8 @@ public:
 	const int nx;
 	double cfl;	
 	string bcs;
+	void setics(CEOS& eos, vector<vector<Vector4>> U);
+	void setbcs(vector<vector<Vector4>> U);
 };
 
 // !!! А вот бы к каждому типу задачи (наследование) приделать функцию setICs, берущую как параметры EOS и CField, 

@@ -141,7 +141,7 @@ C1DVectorPrimitive C1DGodunovMethodMillerPuckett::calcRPExactMillerPuckett(CEOSM
 
 
 // Function finds resulting ro, u, p and wave structure of Riemann problem
-RPValues CExactRiemannSolver::calcVals(CEOS& eos, double roL, double uL, double pL, double roR, double uR, double pR) {
+RPValues CExactRiemannSolver::calcValues(CEOS& eos, double roL, double uL, double pL, double roR, double uR, double pR) {
 	// Решаем нелинейное уравнение относительно давления методом касательных Ньютона
 	RPValues res; 
 	double p = 0., pPrev = 0.;
@@ -287,7 +287,7 @@ double CExactRiemannSolver::dfRdp(CEOS& eos, double p, double roR, double vR, do
 }
 
 C1DVectorPrimitive CExactRiemannSolver::calcSolution(CEOS& eos, double roL, double uL, double pL, double roR, double uR, double pR, double x, double t){
-	RPValues res = calcVals(eos, roL, uL, pL, roR, uR, pR);
+	RPValues res = calcValues(eos, roL, uL, pL, roR, uR, pR);
 	// V = (ro, v, p)T
 	C1DVectorPrimitive V;
 	double xi = x/t;
@@ -297,7 +297,7 @@ C1DVectorPrimitive CExactRiemannSolver::calcSolution(CEOS& eos, double roL, doub
 	if(roR!=0.) cR = eos.getc(roR, pR);;
 	double xiFront=0., xiHead=0., xiTail=0., xiHeadL=0., xiTailL=0., xiHeadR=0., xiTailR=0.;
 	// Если вакуум
-	if(res.type == VacRW) { 
+	if(res.type == RPWaveConfig::vacrw) { 
 		xiHead = uR + cR;
 		xiTail = uR - 2.*cR/(gamma-1.);
 		if(xi<=xiTail) {
@@ -315,7 +315,7 @@ C1DVectorPrimitive CExactRiemannSolver::calcSolution(CEOS& eos, double roL, doub
 		}
 		return V;
 	}
-	if(res.type == RWVac) {
+	if(res.type == RPWaveConfig::rwvac) {
 		xiHead = uL - cL;
 		xiTail = uL + 2.*cL/(gamma-1.);
 		if(xi>=xiTail) {
@@ -333,7 +333,7 @@ C1DVectorPrimitive CExactRiemannSolver::calcSolution(CEOS& eos, double roL, doub
 		}
 		return V;
 	}
-	if(res.type == RWVacRW) {
+	if(res.type ==  RPWaveConfig::rwvacrw) {
 		xiHeadL = uL - cL;
 		xiTailL = uL + 2.*cL/(gamma-1.);
 		xiHeadR = uR + cR;
@@ -364,7 +364,7 @@ C1DVectorPrimitive CExactRiemannSolver::calcSolution(CEOS& eos, double roL, doub
 	double cLLocal = eos.getc(res.roL, res.p), cRLocal = eos.getc(res.roR, res.p);
 	// Если не вакуум. Пусть точка слева от контактного разрыва (xiContact = res.u)
 	if(xi<res.u) {
-		if(res.type == SWSW || res.type == SWRW) { 
+		if(res.type ==  RPWaveConfig::swsw || res.type ==  RPWaveConfig::swrw) { 
 			xiFront = uL - cL*sqrt((gamma+1.)/2./gamma*res.p/pL + (gamma-1.)/2./gamma);
 			if(xi<xiFront) {
 				V.ro = roL;
@@ -375,7 +375,7 @@ C1DVectorPrimitive CExactRiemannSolver::calcSolution(CEOS& eos, double roL, doub
 				V.u = res.u;
 				V.p = res.p;
 			}
-		} else if (res.type == RWSW || res.type == RWRW) {
+		} else if (res.type ==  RPWaveConfig::rwsw || res.type == RPWaveConfig::rwrw) {
 			xiHead = uL-cL;
 			xiTail = res.u-cLLocal;
 			if(xi<=xiHead) {
@@ -394,7 +394,7 @@ C1DVectorPrimitive CExactRiemannSolver::calcSolution(CEOS& eos, double roL, doub
 		} 
 	//Пусть точка справа от контактного разрыва (xiContact = res.v)
 	} else {
-		if(res.type == RWSW || res.type == SWSW) {
+		if(res.type ==  RPWaveConfig::rwsw || res.type ==  RPWaveConfig::swsw) {
 			xiFront = uR + cR*sqrt((gamma+1.)/2./gamma*res.p/pR + (gamma-1.)/2./gamma);
 			if(xi>xiFront) {
 				V.ro = roR;
@@ -405,7 +405,7 @@ C1DVectorPrimitive CExactRiemannSolver::calcSolution(CEOS& eos, double roL, doub
 				V.u  = res.u;
 				V.p  = res.p;
 			}
-		} else if(res.type == RWRW || res.type == SWRW) {
+		} else if(res.type ==  RPWaveConfig::rwrw || res.type ==  RPWaveConfig::swrw) {
 			xiHead = uR + cR;
 			xiTail = res.u + cRLocal;
 			if(xi >= xiHead) {
@@ -479,12 +479,11 @@ void C1DGodunovTypeMethod::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) {
 }
 
 // Godunov-exact solver flux
-Vector4 CExactRiemannSolver::calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {
-	const double gamma = eos.getc(1., 1.)*eos.getc(1., 1.);
+Vector4 CExactRiemannSolver::calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {	
 	double uL = rouL/roL, uR = rouR/roR;
-	double pL = (gamma-1.)*(roEL - .5*roL*uL*uL), pR = (gamma-1.)*(roER - .5*roR*uR*uR);
+	double pL = eos.getp(roL, roEL/roL - .5*uL*uL), pR = eos.getp(roR, roER/roR - .5*uR*uR);
 	C1DVectorPrimitive res = calcSolution(eos, roL, uL, pL, roR, uR, pR, 0., .01);
-	double E = res.p/(gamma-1.)/res.ro + .5*res.u*res.u;
+	double E = eos.gete(res.ro, res.p) + .5*res.u*res.u;
 	Vector4 FGodunov = Vector4(res.ro*res.u, res.ro*res.u*res.u + res.p, res.u*(res.ro*E+res.p), 0.);
 	return FGodunov;
 }

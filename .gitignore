@@ -1,8 +1,10 @@
 *.dat
 debug/*
+x64/debug
 ipch/*
 Release/*
 calc/output/*
+output/*
 *.sdf
 *.suo
 

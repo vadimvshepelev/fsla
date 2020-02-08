@@ -34,8 +34,8 @@ int main(int argc, char *argv[]) {
 	cout << "=======================================================================" << endl;
 	string outputDir = string("output");		
 	// Uncomment for NB EOS test problem
-	//CEOSMieGruneisen eos = CEOSMieGruneisen();
-	//C1DProblem pr = prNBtest;
+	CEOSMieGruneisen eos = CEOSMieGruneisen();
+	C1DProblem pr = prNBtest;
 	// Uncomment for Toro #1 test problem with ideal EOS
 	CEOSIdeal eos = CEOSIdeal(3.9);
 	//CEOSIdeal eosAl = CEOSIdeal(3.9);
@@ -51,7 +51,6 @@ int main(int argc, char *argv[]) {
 	C1DSimulation sim = C1DSimulation(pr, eos, *fldptr, mtd, outp);
 	sim.run();
 	delete fldptr;	
-
 	// Uncomment for metal problems
 	// CSolver s = CSolver();
 	// s->goGlass("task-Ru-glass.txt");
@@ -74,6 +73,7 @@ int main(int argc, char *argv[]) {
     //s->goEuler("task-LH1D-p=123GPA.txt"); // Задача LH (стекло-золото-вакуум), одномерное приближение, с более мелкой ступенькой
 	
 	// s->goEuler("task-eosbin-test-2.txt"); // Тест на двучленное УРС от Паши -- он же тест на лазерное облучение объемной мишеги с идеальным УРС
+	//CSolver *s = new CSolver;
 	//s->goEuler("task-laservt-ideal-test.txt"); // Тест на лазерное облучение идеальной мишени с УРС от Н.А. 
 	//s->goEuler("task-eosbin-toro-test-5.txt"); // Тест на двучленное УРС (при нулевых параметрах должно работать как идеальное)
 

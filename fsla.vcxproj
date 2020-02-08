@@ -72,15 +72,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>C:\local\boost_1_69_0;$(IncludePath)</IncludePath>
   </PropertyGroup>
-<<<<<<< HEAD
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\local\boost_1_70_0;$(IncludePath)</IncludePath>
     <LibraryPath>C:\local\boost_1_70_0\lib64-msvc-11.0;$(LibraryPath)</LibraryPath>
-=======
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\local\boost_1_69_0;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\local\boost_1_69_0\lib32-msvc-11.0;$(LibraryPath)</LibraryPath>
->>>>>>> 129c741af3ad0ce40ba6592c10e9220e9c2d1757
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

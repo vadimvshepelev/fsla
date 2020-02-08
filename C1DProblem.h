@@ -2,6 +2,10 @@
 #define _C1DPROBLEM_H_
 
 #include<string>
+#include<vector>
+
+#include"_vector4.h"
+#include"ceos.h"
 
 using namespace std;
 

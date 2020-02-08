@@ -71,7 +71,7 @@ void CSolver::goEuler(char* fName) {
 		if(counter <=4) tau *=.2;
 
 		clock_t start = clock();		
-		//if(task.getHydroStage()) calcHydroStageGodunov(t, tau);
+		if(task.getHydroStage()) calcHydroStageGodunov(t, tau);
 		//if(task.getHydroStage()) calcHydroStageRoe(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageGPS(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageLaxFriedrichs(t, tau);	
@@ -82,7 +82,7 @@ void CSolver::goEuler(char* fName) {
 		//if(task.getHydroStage()) calcHydroStageENO2G(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageENO3G(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageMieGruneisen(eos, t, tau);	
-		if(task.methodFlag == MethodType::hll) calcHydroStageGodunovEOSBin(t, tau);		
+		//if(task.methodFlag == MethodType::hll) calcHydroStageGodunovEOSBin(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageENO2G(t, tau);		
 		clock_t end = clock();
 		double seconds = (double)(end - start) / CLOCKS_PER_SEC;

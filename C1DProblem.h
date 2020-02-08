@@ -25,10 +25,14 @@ public:
 // и проставл€ющую начальные услови€, как ей надо !!!
 
 extern C1DProblem prNBtest;
+
 extern C1DProblem prToro1Idealtest;
 extern C1DProblem prToro2Idealtest;
 extern C1DProblem prToro3Idealtest;
 extern C1DProblem prToro4Idealtest;
 extern C1DProblem prToro5Idealtest;
+
+extern C1DProblem prLaserVTAlIdealTest1, prLaserVTAlIdealTest2;
+
 
 #endif

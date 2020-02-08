@@ -37,14 +37,14 @@ int main(int argc, char *argv[]) {
 	//CEOSMieGruneisen eos = CEOSMieGruneisen();
 	//C1DProblem pr = prNBtest;
 	// Uncomment for Toro #1 test problem with ideal EOS
-	CEOSIdeal eos = CEOSIdeal(1.4);
-	C1DProblem pr = prToro1Idealtest;	
+	CEOSIdeal eos = CEOSIdeal(3.9);
+	//CEOSIdeal eosAl = CEOSIdeal(3.9);
+	C1DProblem pr = prLaserVTAlIdealTest2;
 	C1DField *fldptr = new C1DField(pr);
-	// Uncomment for HLL solver based Godunov-type method
-	CExactRiemannSolver ex;
-	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(ex);
-	// Uncomment for Miller-Puckett godunov-type approach
-	// C1DGodunovMethodMillerPuckett mtd;
+	// Uncomment for exact solver based Godunov-type method
+	// CExactRiemannSolver ex;
+	CHLLCRiemannSolver hllc;
+	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hllc);
 	double _dtt[] = {pr.tmin, pr.tmax};
 	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
 	COutput outp = COutput(pr, outputDir, dtt);
@@ -53,6 +53,7 @@ int main(int argc, char *argv[]) {
 	delete fldptr;	
 
 	// Uncomment for metal problems
+	// CSolver s = CSolver();
 	// s->goGlass("task-Ru-glass.txt");
 	//s->goGlass("task-Ru-glass-optic-1000.txt");
 	//s->goGlass("task-Ru-glass-optic-2000.txt");
@@ -67,7 +68,7 @@ int main(int argc, char *argv[]) {
 	//s->goGlass("task.txt"); // дл€ железа и вообще
 	//s->go("task-5Si.txt");
 	//s->goAuSpall("task.txt"); // дл€ золота
-	//s->goEuler("task-toro-1.txt"); // дл€ Ёйлеровых задач
+	// s.goEuler("task-toro-1.txt"); // дл€ Ёйлеровых задач
 	//s->goEulerMovingMesh("task.txt"); // дл€ Ёйлеровых задач c движущейс€ сеткой
 	//s->goEuler("task-LH1D.txt");          // «адача LH (стекло-золото-вакуум), одномерное приближение
     //s->goEuler("task-LH1D-p=123GPA.txt"); // «адача LH (стекло-золото-вакуум), одномерное приближение, с более мелкой ступенькой

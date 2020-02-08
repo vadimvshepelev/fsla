@@ -1,0 +1,54 @@
+﻿Build started 08.02.2020 21:16:27.
+     1>Project "D:\icad\fsla\fsla.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc110.pdb" /Gd /TP /errorReport:prompt C1DProblem.cpp
+         C1DProblem.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"D:\icad\fsla\x64\Release\fsla.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\icad\fsla\x64\Release\fsla.pdb" /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\icad\fsla\x64\Release\fsla.lib" /MACHINE:X64 x64\Release\C1DBCs.obj
+         x64\Release\C1DField.obj
+         x64\Release\C1DMethod.obj
+         x64\Release\ceos.obj
+         x64\Release\C1DProblem.obj
+         x64\Release\C1DSimulation.obj
+         x64\Release\COutput.obj
+         x64\Release\CTestToro.obj
+         x64\Release\eosold.obj
+         x64\Release\eosAnalytic.obj
+         x64\Release\eosAnalyticAu.obj
+         x64\Release\eosAnalyticFe.obj
+         x64\Release\eosAnalyticNi.obj
+         x64\Release\eosAnalyticTa.obj
+         x64\Release\eosFigures.obj
+         x64\Release\eosIdeal.obj
+         x64\Release\eosTable.obj
+         x64\Release\eosTableAu.obj
+         x64\Release\eosTableFe.obj
+         x64\Release\eosTableFeAlpha.obj
+         x64\Release\eosTableNi.obj
+         x64\Release\eosTableTa.obj
+         x64\Release\eosTable_scale.obj
+         x64\Release\eosTable_table.obj
+         x64\Release\EOSBin.obj
+         x64\Release\main.obj
+         x64\Release\cfield.obj
+         x64\Release\methodold.obj
+         x64\Release\methodEuler.obj
+         x64\Release\solver.obj
+         x64\Release\ENO.obj
+         "x64\Release\godunov-EOSBin.obj"
+         x64\Release\HLL.obj
+         x64\Release\hllc.obj
+         x64\Release\stageExchange.obj
+         x64\Release\stageHeat.obj
+         x64\Release\stageHydro.obj
+         x64\Release\task.obj
+         x64\Release\_matrix4.obj
+         x64\Release\_vector4.obj
+         Generating code
+         Finished generating code
+         fsla.vcxproj -> D:\icad\fsla\x64\Release\fsla.exe
+     1>Done Building Project "D:\icad\fsla\fsla.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:03.86

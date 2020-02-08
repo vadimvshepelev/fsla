@@ -284,14 +284,14 @@ double CExactRiemannSolver::dfRdp(CEOS& eos, double p, double roR, double vR, do
 		dfdp = cR/pR/gamma*pow(p/pR, -(gamma+1)/2./gamma); 
 		return dfdp;
 	}
-;}
+}
 
 C1DVectorPrimitive CExactRiemannSolver::calcSolution(CEOS& eos, double roL, double uL, double pL, double roR, double uR, double pR, double x, double t){
 	RPValues res = calcVals(eos, roL, uL, pL, roR, uR, pR);
 	// V = (ro, v, p)T
 	C1DVectorPrimitive V;
 	double xi = x/t;
-	double gamma = 1.4;
+	const double gamma = eos.getc(1., 1.)*eos.getc(1., 1.);
 	double cL = 0., cR = 0.;
 	if(roL!=0.) cL = eos.getc(roL, pL);
 	if(roR!=0.) cR = eos.getc(roR, pR);;

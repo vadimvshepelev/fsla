@@ -97,6 +97,25 @@ int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, CEOS& eos) {
 		cout << "done!" << endl;		
 		dtt.erase(dtt.begin());		
 	}
+
+
+
+
+
+	
+	
+	
+	 dump(pr, fld, eos, "test-100.dat");
+
+
+
+
+
+
+
+
+
+
 	return 1;
 }
 

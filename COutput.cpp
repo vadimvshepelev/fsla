@@ -105,7 +105,7 @@ int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, CEOS& eos) {
 	
 	
 	
-	 dump(pr, fld, eos, "test-100.dat");
+	// dump(pr, fld, eos, "test-100.dat");
 
 
 

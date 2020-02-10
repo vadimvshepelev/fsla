@@ -34,8 +34,8 @@ int main(int argc, char *argv[]) {
 	cout << "=======================================================================" << endl;
 	string outputDir = string("output");		
 	// Uncomment for NB EOS test problem
-	CEOSMieGruneisen eos = CEOSMieGruneisen();
-	C1DProblem pr = prNBtest;
+	//CEOSMieGruneisen eos = CEOSMieGruneisen();
+	//C1DProblem pr = prNBtest;
 	// Uncomment for Toro #1 test problem with ideal EOS
 	CEOSIdeal eos = CEOSIdeal(3.9);
 	//CEOSIdeal eosAl = CEOSIdeal(3.9);

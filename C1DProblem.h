@@ -25,12 +25,10 @@ public:
 	const int nx;
 	double cfl;	
 	string bcs;
-	void setics(CEOS& eos, vector<vector<Vector4>> U);
-	void setbcs(vector<vector<Vector4>> U);
+	void setics(CEOS& eos, vector<double>& x, vector<vector<double>>& U);
+	void setbcs(vector<vector<double>>& U);
 };
 
-// !!! А вот бы к каждому типу задачи (наследование) приделать функцию setICs, берущую как параметры EOS и CField, 
-// и проставляющую начальные условия, как ей надо !!!
 
 extern C1DProblem prNBtest;
 extern C1DProblem prToro1Idealtest, prToro2Idealtest, prToro3Idealtest, prToro4Idealtest, prToro5Idealtest;

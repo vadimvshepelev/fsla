@@ -3,7 +3,7 @@
 #include "C1DSimulation.h"
 
 void C1DSimulation::run() {
-	fld.setics(pr, eos);
+	pr.setics(eos, fld.x, fld.U);
 	int counter=0;	
 	clock_t tStart = 0, tEnd = 0;
 	double cfl=0., tCalc=0.;		

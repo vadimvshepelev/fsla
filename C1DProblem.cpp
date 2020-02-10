@@ -1,5 +1,62 @@
 #include "C1DProblem.h"
 
+void C1DProblem::setics(CEOS& eos, vector<double>& x, vector<vector<double>>& U) {
+	// TODO
+	// Идея сделать "задача" = "начальные условия" + "граничные условия". 
+	// Граничные условия реалзиовать тем крутым способом, что уже здесь сделан, но убран из-за пересечений с C1DField, там где они задаются функицей bcs.set(C1DField& fld).
+	// Начальные условия -- инкапсулируют постановку начальных условий, тоже через C1DField. У каждого типа задачи своя функиця set, чтобы избежать ветвлений. 
+	// (Сейчас не так.) (Пока легко, пока делаем просто под задачу Римана.) (А еще кстати каждая задача может и сама себя печатать по своему своей функцией dump().)
+	// Вопрос, зачем тогда нужен класс "задача"? Зачем он нужен в HyperSolver?
+	int i = 0;
+	int imin = 2, imax = imin + nx;
+	double dx = (xmax - xmin)/nx;
+	double E = 0.;
+	for(i=0; i<imax+2+1; i++) {
+		x[i] = (xmin - 2.*dx) + (double)i*dx;
+	}
+	for(i=imin; i<imax; i++) {
+		if(x[i]<x0) {
+			U[i][0] = rol;
+			U[i][1] = rol*ul;
+			E = eos.gete(rol, pl) + .5*ul*ul;
+			U[i][2] = rol*E;
+		} else {
+			U[i][0] = ror;
+			U[i][1] = ror*ur;
+			E = eos.gete(ror, pr) + .5*ur*ur;
+			U[i][2] = ror*E;
+		}
+	}
+	setbcs(U);
+	return;
+}
+
+void C1DProblem::setbcs(vector<vector<double>>& U) {
+	int imin = 2, imax = imin + nx;
+	assert(bcs[0]=='t');
+	switch(bcs[0]) {
+	case 't': 
+		for(int counter=0; counter<3; counter++) {
+			U[imin-1][counter] = U[imin][counter];
+			U[imin-2][counter] = U[imin][counter];
+		}
+		break;
+	}
+	assert(bcs[1]=='t');
+	switch(bcs[1]) {
+	case 't': 
+		for(int counter=0; counter<3; counter++) {
+			U[imax][counter] = U[imax-1][counter];
+			U[imax+1][counter] = U[imax-1][counter];
+		}
+		break;
+	}
+}
+
+
+
+
+
 // Test for non-ideal (Mie-Gruneisen) EOS of Bolotova-Nigmatullin
 C1DProblem prNBtest = C1DProblem("NBtestHLL", 100., 0., 1.e9, 1000., 0., 1.e5, 0., 1., 0., 100.e-6, .7, 1000, .9, "tt"); 
 // 5 Toro tests

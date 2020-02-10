@@ -1,12 +1,15 @@
-<<<<<<< HEAD
-﻿Build started 08.02.2020 21:15:03.
-=======
-﻿Build started 13.01.2020 15:30:01.
->>>>>>> 129c741af3ad0ce40ba6592c10e9220e9c2d1757
+﻿Build started 10.02.2020 18:36:57.
      1>Project "D:\icad\fsla\fsla.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /Od /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt C1DProblem.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /Od /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt C1DBCs.cpp C1DField.cpp C1DMethod.cpp C1DProblem.cpp C1DSimulation.cpp COutput.cpp main.cpp
+         main.cpp
+         COutput.cpp
+         C1DSimulation.cpp
          C1DProblem.cpp
+         C1DMethod.cpp
+         C1DField.cpp
+         C1DBCs.cpp
+         Generating Code...
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"D:\icad\fsla\x64\Debug\fsla.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\local\boost_1_69_0\lib64-msvc-11.0" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\icad\fsla\x64\Debug\fsla.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\icad\fsla\x64\Debug\fsla.lib" /MACHINE:X64 x64\Debug\C1DBCs.obj
          x64\Debug\C1DField.obj
@@ -48,13 +51,10 @@
          x64\Debug\task.obj
          x64\Debug\_matrix4.obj
          x64\Debug\_vector4.obj
+         LINK : D:\icad\fsla\x64\Debug\fsla.exe not found or not built by the last incremental link; performing full link
          fsla.vcxproj -> D:\icad\fsla\x64\Debug\fsla.exe
      1>Done Building Project "D:\icad\fsla\fsla.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-<<<<<<< HEAD
-Time Elapsed 00:00:02.12
-=======
-Time Elapsed 00:00:01.14
->>>>>>> 129c741af3ad0ce40ba6592c10e9220e9c2d1757
+Time Elapsed 00:00:07.28

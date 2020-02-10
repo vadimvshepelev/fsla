@@ -29,7 +29,7 @@ void C1DGodunovMethodMillerPuckett::calc(C1DProblem& pr, CEOSMieGruneisen& eos, 
 	for(i=imin; i<imax; i++) {
 		for(int counter=0; counter<3; counter++) U[i][counter] = newU[i][counter];
 	}	
-	fld.setbcs(pr);
+	pr.setbcs(fld.U);
 }
 
 double C1DGodunovMethodMillerPuckett::calcdt(C1DProblem& pr, CEOSMieGruneisen& eos, C1DField& fld) {
@@ -475,7 +475,7 @@ void C1DGodunovTypeMethod::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) {
 	for(i=imin; i<imax; i++) {
 		for(int counter=0; counter<3; counter++) U[i][counter] = newU[i][counter];
 	}	
-	fld.setbcs(pr);
+	pr.setbcs(fld.U);
 }
 
 // Godunov-exact solver flux

@@ -5,7 +5,7 @@
 #include "defines.h"
 #include "solver.h"
 #include "C1DProblem.h"
-#include "C1DSimulation.h"
+#include "F1DSimulation.h"
 #include "C1DBCs.h"
 
 
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
 	double _dtt[] = {pr.tmin, pr.tmax};
 	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
 	COutput outp = COutput(pr, outputDir, dtt);
-	C1DSimulation sim = C1DSimulation(pr, eos, *fldptr, mtd, outp);
+	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp);
 	sim.run();
 	delete fldptr;	
 	// Uncomment for metal problems

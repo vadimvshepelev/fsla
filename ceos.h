@@ -42,7 +42,6 @@ class CEOSMieGruneisenAl : public CEOS {
 public:
 	const double ro0;
 	CEOSMieGruneisenAl(): ro0(2700.) {}     // ro0 = [kg/m3]
-	CEOSMieGruneisenAl(double _ro0, double _e0) : ro0(_ro0) {}
 	double getp(double ro, double e);
 	double gete(double ro, double p);
 	double getc(double ro, double p);

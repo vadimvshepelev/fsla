@@ -73,6 +73,7 @@ double CEOSMieGruneisen::getc(double ro, double p) {
 	return sqrt(c2);
 }
 
+
 double CEOSMieGruneisen::getGPrime(double ro) {
 	double x = ro/ro0;
 	const double a0 = 2.95, a1 = 2.408, a2 = 12.151;
@@ -143,6 +144,39 @@ double CEOSMieGruneisen::getKSPrime(double ro, double e) {
 	double KSPrime = (ro*dpdro + ro*ro*d2pdro2 + dpdro*dpde + 2.*d2pdrode - p/ro*dpde - p/ro/ro*dpde*dpde + p*p/ro/ro*d2pde2)/KS;
 	return KSPrime;
 }
+
+
+double CEOSMieGruneisenAl::getp(double ro, double e) {
+	const double gamma = 3.9, G = 2., 
+		         B = 76.e9; // Bulk modulus of Al, [Pa];
+	double x = ro/ro0;
+	// p = (pc - G*ec) + G*E
+	// e c = (B/ (gamma (gamma -1 ) )) x^ gamma – (B /( gamma -1 )) x + B/ gamma
+	double p_c = B/gamma * (pow(x, gamma)-1.);
+	double e_c = B/gamma/(gamma-1.)*pow(x, gamma) - B*x/(gamma-1.) + B/gamma;
+	double p  = (p_c-G*e_c) + G*e;
+	return p;
+}
+
+double CEOSMieGruneisenAl::gete(double ro, double p) {
+	const double gamma = 3.9, G = 2., 
+		         B = 76.e9; // Bulk modulus of Al, [Pa];
+	double x = ro/ro0;
+	double p_c = B/gamma * (pow(x, gamma)-1.);
+	double e_c = B/gamma/(gamma-1.)*pow(x, gamma) - B*x/(gamma-1.) + B/gamma;
+	double e = (p-p_c+G*e_c)/G;
+	return e;
+}
+
+double CEOSMieGruneisenAl::getc(double ro, double p) {
+	const double gamma = 3.9, G = 2., 
+		         B = 76.e9; // Bulk modulus of Al, [Pa];
+	double x = ro/ro0;
+	double p_c = B/gamma * (pow(x, gamma)-1.);
+	double c  =sqrt((G+1)*(p-p_c)/ro + B/ro0*pow(x, gamma-1));
+	return c;
+}
+
 
 
 // Значения констант для широкодиапазонных (по-видимому) УРС Ломоносова

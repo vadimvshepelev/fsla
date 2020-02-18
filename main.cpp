@@ -35,20 +35,20 @@ int main(int argc, char *argv[]) {
 	cout << "=======================================================================" << endl;
 	string outputDir = string("output");		
 	// Uncomment for LaserVT test problem
-/*    //CEOSMieGruneisenAl eos = CEOSMieGruneisenAl();
+   //CEOSMieGruneisenAl eos = CEOSMieGruneisenAl();
 	CEOSIdeal eos = CEOSIdeal(3.9);
-	C1DProblem pr = prLaserVTAlIdealTest1;
+	C1DProblem pr = prLaserVTAlIdealTest2;
 	C1DField *fldptr = new C1DField(pr);
-	CHLLCRiemannSolver hllc;
-	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hllc);
+	CExactRiemannSolver ex;
+	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(ex);
 	double _dtt[] = {pr.tmin, pr.tmax};
 	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
 	COutput outp = COutput(pr, outputDir, dtt);
 	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp);
 	sim.run();
-	delete fldptr;	*/
+	delete fldptr;	
 	// Uncomment for Toro #1 test problem with ideal EOS
-	CEOSIdeal eos = CEOSIdeal(1.4);
+/*	CEOSIdeal eos = CEOSIdeal(1.4);
 	C1DProblem pr = prToro1Idealtest;
 	C1DField *fldptr = new C1DField(pr);
 	CHLLCRiemannSolver hllc;
@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
 	COutput outp = COutput(pr, outputDir, dtt);
 	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp);
 	sim.run();
-	delete fldptr;	
+	delete fldptr;*/	
 
 
 	// Uncomment for metal problems

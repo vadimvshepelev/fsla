@@ -39,7 +39,7 @@ void F1DENO2Reconstruction::calc(C1DField& fld) {
 	for(i=imin-1; i<imax+1; i++) {
 
 
-		cout << U[i][0];
+//		cout << U[i][0];
 
 
 

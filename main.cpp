@@ -35,12 +35,12 @@ int main(int argc, char *argv[]) {
 	cout << "=======================================================================" << endl;
 	string outputDir = string("output");		
 	// Uncomment for LaserVT test problem
-   //CEOSMieGruneisenAl eos = CEOSMieGruneisenAl();
-	CEOSIdeal eos = CEOSIdeal(3.9);
-	C1DProblem pr = prLaserVTAlIdealTest2;
+    CEOSMieGruneisenAl eos = CEOSMieGruneisenAl();
+	//CEOSIdeal eos = CEOSIdeal(3.9);
+	C1DProblem pr = prLaserVTAlMGTest1;
 	C1DField *fldptr = new C1DField(pr);
-	CExactRiemannSolver ex;
-	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(ex);
+	CHLLCRiemannSolver hllc;
+	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hllc);
 	double _dtt[] = {pr.tmin, pr.tmax};
 	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
 	COutput outp = COutput(pr, outputDir, dtt);

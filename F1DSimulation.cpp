@@ -1,6 +1,8 @@
 #include<time.h>
-
+#include<assert.h>
 #include "F1DSimulation.h"
+
+
 
 void F1DSimulation::run() {
 	pr.setics(eos, fld.x, fld.U);

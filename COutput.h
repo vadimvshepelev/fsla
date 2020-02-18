@@ -23,6 +23,7 @@ class COutput {
 	CVectorPrimitive calcRPAnalyticalSolution(CEOS& eos, double roL, double vL, double pL, double roR, double vR, double pR, double x, double t);
 public:
 	COutput(C1DProblem& _pr, string _subdir, vector<double> _dtt);
+
 	//int manageFileOutput(C1DProblem& pr, C1DField& fld, CEOSMieGruneisen& eos);
 	int manageFileOutput(C1DProblem& pr, C1DField& fld, CEOS& eos);
 	int manageScreenOutput(C1DProblem& pr, int iteration, double t, double dt, double cfl, double tCalc);

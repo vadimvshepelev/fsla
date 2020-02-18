@@ -1,11 +1,13 @@
 #ifndef _C1DMETHOD_H_
 #define _C1DMETHOD_H_
 
-#include"_vector4.h"
-#include"C1Dfield.h"
+#include "_vector4.h"
+#include "C1Dfield.h"
+#include "F1DReconstruction.h"
 
 
 enum RPWaveConfig {nothing, swrw, rwsw, swsw, rwrw, vacrw, rwvac, rwvacrw};
+
 
 // Structure for the Riemann problem solution vector of primitive variables -- (roL, roR, u ,p)
 struct RPValues {
@@ -14,12 +16,12 @@ struct RPValues {
 	RPWaveConfig type;
 };
 
+
 struct C1DVectorPrimitive {
 	double ro;
 	double u;
 	double p;
 };
-
 
 
 class CRiemannSolver {
@@ -96,6 +98,14 @@ public:
 	C1DGodunovTypeMethod(CRiemannSolver& _rslv) : rslv(_rslv) {}
 	void calc(C1DProblem& pr, CEOS& eos, C1DField& fld);
 	double calcdt(C1DProblem& pr, CEOS& eos, C1DField& fld);	
+};
+
+
+class C1D2ndOrderMethod : public C1DGodunovTypeMethod {
+public:
+	C1D2ndOrderMethod(CRiemannSolver& _rslv, F1DReconstruction& _rec) : C1DGodunovTypeMethod(_rslv), rec(_rec) {} 
+	F1DReconstruction& rec;
+	void calc(C1DProblem& pr, CEOS& eos, C1DField& fld);
 };
 
 

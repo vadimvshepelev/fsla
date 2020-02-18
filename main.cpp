@@ -7,6 +7,7 @@
 #include "C1DProblem.h"
 #include "F1DSimulation.h"
 #include "C1DBCs.h"
+#include "F1DReconstruction.h"
 
 
 
@@ -33,25 +34,34 @@ int main(int argc, char *argv[]) {
 	cout << "Author: Vadim V. Shepelev, ICAD RAS, e-mail: vadim.v.shepelev@gmail.com" << endl;
 	cout << "=======================================================================" << endl;
 	string outputDir = string("output");		
-	// Uncomment for NB EOS test problem
-	CEOSMieGruneisenAl eos = CEOSMieGruneisenAl();
-	//C1DProblem pr = prNBtest;
-	// Uncomment for Toro #1 test problem with ideal EOS
-	//CEOSIdeal eos = CEOSIdeal(3.9);
-	//CEOSIdeal eosAl = CEOSIdeal(3.9);
-	C1DProblem pr = prLaserVTAlMGTest1;
+	// Uncomment for LaserVT test problem
+/*    //CEOSMieGruneisenAl eos = CEOSMieGruneisenAl();
+	CEOSIdeal eos = CEOSIdeal(3.9);
+	C1DProblem pr = prLaserVTAlIdealTest1;
 	C1DField *fldptr = new C1DField(pr);
-	// Uncomment for exact solver based Godunov-type method
-	// CExactRiemannSolver ex;
 	CHLLCRiemannSolver hllc;
-	// CHLLRiemannSolver hll;
 	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hllc);
 	double _dtt[] = {pr.tmin, pr.tmax};
 	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
 	COutput outp = COutput(pr, outputDir, dtt);
 	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp);
 	sim.run();
+	delete fldptr;	*/
+	// Uncomment for Toro #1 test problem with ideal EOS
+	CEOSIdeal eos = CEOSIdeal(1.4);
+	C1DProblem pr = prToro1Idealtest;
+	C1DField *fldptr = new C1DField(pr);
+	CHLLCRiemannSolver hllc;
+	F1DENO2Reconstruction eno2rec=F1DENO2Reconstruction(*fldptr);
+	C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hllc, eno2rec);
+	double _dtt[] = {pr.tmin, pr.tmax};
+	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
+	COutput outp = COutput(pr, outputDir, dtt);
+	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp);
+	sim.run();
 	delete fldptr;	
+
+
 	// Uncomment for metal problems
 	// CSolver s = CSolver();
 	// s->goGlass("task-Ru-glass.txt");

@@ -34,27 +34,24 @@ int main(int argc, char *argv[]) {
 	cout << "Author: Vadim V. Shepelev, ICAD RAS, e-mail: vadim.v.shepelev@gmail.com" << endl;
 	cout << "=======================================================================" << endl;
 	string outputDir = string("output");		
-<<<<<<< HEAD
 	// Uncomment for NB EOS test problem
 	//CEOSMieGruneisenAl eos = CEOSMieGruneisenAl();
 	//C1DProblem pr = prNBtest;
 	// Uncomment for Toro #1 test problem with ideal EOS
-	CEOSIdeal eos = CEOSIdeal(3.9);
+	//CEOSIdeal eos = CEOSIdeal(3.9);
 	//CEOSIdeal eosAl = CEOSIdeal(3.9); 
-	C1DProblem pr = prLaserVTAlIdealTest1;
-	C1DField *fldptr = new C1DField(pr);
+	//C1DProblem pr = prLaserVTAlIdealTest1;
+	//C1DField *fldptr = new C1DField(pr);
 	// Uncomment for exact solver based Godunov-type method
-	CExactRiemannSolver ex;
-	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(ex);
-=======
+	//CExactRiemannSolver ex;
+	//C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(ex);
 	// Uncomment for LaserVT test problem
     CEOSMieGruneisenAl eos = CEOSMieGruneisenAl();
 	//CEOSIdeal eos = CEOSIdeal(3.9);
-	C1DProblem pr = prLaserVTAlMGTest1;
+	C1DProblem pr = prLaserVTAlMGTestNum1;
 	C1DField *fldptr = new C1DField(pr);
 	CHLLCRiemannSolver hllc;
 	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hllc);
->>>>>>> 1b46f5f2bfc494b53cc2e7f99b9eb15c452097f9
 	double _dtt[] = {pr.tmin, pr.tmax};
 	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
 	COutput outp = COutput(pr, outputDir, dtt);

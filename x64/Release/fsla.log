@@ -1,25 +1,55 @@
-﻿Build started 08.02.2020 22:28:42.
+﻿Build started 18.02.2020 3:04:46.
      1>Project "D:\icad\fsla\fsla.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc110.pdb" /Gd /TP /errorReport:prompt C1DField.cpp C1DMethod.cpp C1DSimulation.cpp main.cpp
-         C1DField.cpp
-         C1DMethod.cpp
-     1>C1DMethod.cpp(32): error C2039: 'setbcs' : is not a member of 'C1DField'
-                 d:\icad\fsla\C1Dfield.h(11) : see declaration of 'C1DField'
-     1>C1DMethod.cpp(478): error C2039: 'setbcs' : is not a member of 'C1DField'
-                 d:\icad\fsla\C1Dfield.h(11) : see declaration of 'C1DField'
-         C1DSimulation.cpp
-     1>C1DSimulation.cpp(6): error C2039: 'setics' : is not a member of 'C1DField'
-                 d:\icad\fsla\c1dfield.h(11) : see declaration of 'C1DField'
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc110.pdb" /Gd /TP /errorReport:prompt C1DProblem.cpp main.cpp
+         C1DProblem.cpp
          main.cpp
-     1>main.cpp(40): error C2371: 'eos' : redefinition; different basic types
-                 main.cpp(37) : see declaration of 'eos'
-     1>main.cpp(42): error C2374: 'pr' : redefinition; multiple initialization
-                 main.cpp(38) : see declaration of 'pr'
-     1>main.cpp(50): error C2512: 'COutput' : no appropriate default constructor available
-     1>main.cpp(51): error C2512: 'C1DSimulation' : no appropriate default constructor available
-     1>Done Building Project "D:\icad\fsla\fsla.vcxproj" (Build target(s)) -- FAILED.
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"D:\icad\fsla\x64\Release\fsla.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\icad\fsla\x64\Release\fsla.pdb" /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\icad\fsla\x64\Release\fsla.lib" /MACHINE:X64 x64\Release\C1DBCs.obj
+         x64\Release\C1DField.obj
+         x64\Release\C1DMethod.obj
+         x64\Release\ceos.obj
+         x64\Release\C1DProblem.obj
+         x64\Release\F1DSimulation.obj
+         x64\Release\COutput.obj
+         x64\Release\CTestToro.obj
+         x64\Release\eosold.obj
+         x64\Release\eosAnalytic.obj
+         x64\Release\eosAnalyticAu.obj
+         x64\Release\eosAnalyticFe.obj
+         x64\Release\eosAnalyticNi.obj
+         x64\Release\eosAnalyticTa.obj
+         x64\Release\eosFigures.obj
+         x64\Release\eosIdeal.obj
+         x64\Release\eosTable.obj
+         x64\Release\eosTableAu.obj
+         x64\Release\eosTableFe.obj
+         x64\Release\eosTableFeAlpha.obj
+         x64\Release\eosTableNi.obj
+         x64\Release\eosTableTa.obj
+         x64\Release\eosTable_scale.obj
+         x64\Release\eosTable_table.obj
+         x64\Release\EOSBin.obj
+         x64\Release\main.obj
+         x64\Release\cfield.obj
+         x64\Release\methodold.obj
+         x64\Release\methodEuler.obj
+         x64\Release\solver.obj
+         x64\Release\ENO.obj
+         "x64\Release\godunov-EOSBin.obj"
+         x64\Release\HLL.obj
+         x64\Release\hllc.obj
+         x64\Release\stageExchange.obj
+         x64\Release\stageHeat.obj
+         x64\Release\stageHydro.obj
+         x64\Release\task.obj
+         x64\Release\_matrix4.obj
+         x64\Release\_vector4.obj
+         Generating code
+         Finished generating code
+         fsla.vcxproj -> D:\icad\fsla\x64\Release\fsla.exe
+     1>Done Building Project "D:\icad\fsla\fsla.vcxproj" (Build target(s)).
 
-Build FAILED.
+Build succeeded.
 
-Time Elapsed 00:00:02.84
+Time Elapsed 00:00:04.86

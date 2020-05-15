@@ -34,18 +34,16 @@ int main(int argc, char *argv[]) {
 	cout << "=======================================================================" << endl;
 	string outputDir = string("output");		
 	// Uncomment for NB EOS test problem
-	CEOSMieGruneisenAl eos = CEOSMieGruneisenAl();
+	//CEOSMieGruneisenAl eos = CEOSMieGruneisenAl();
 	//C1DProblem pr = prNBtest;
 	// Uncomment for Toro #1 test problem with ideal EOS
-	//CEOSIdeal eos = CEOSIdeal(3.9);
-	//CEOSIdeal eosAl = CEOSIdeal(3.9);
-	C1DProblem pr = prLaserVTAlMGTest1;
+	CEOSIdeal eos = CEOSIdeal(3.9);
+	//CEOSIdeal eosAl = CEOSIdeal(3.9); 
+	C1DProblem pr = prLaserVTAlIdealTest1;
 	C1DField *fldptr = new C1DField(pr);
 	// Uncomment for exact solver based Godunov-type method
-	// CExactRiemannSolver ex;
-	CHLLCRiemannSolver hllc;
-	// CHLLRiemannSolver hll;
-	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hllc);
+	CExactRiemannSolver ex;
+	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(ex);
 	double _dtt[] = {pr.tmin, pr.tmax};
 	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
 	COutput outp = COutput(pr, outputDir, dtt);

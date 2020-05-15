@@ -8,8 +8,10 @@ Adapted from Ogre3D
 #define __Vector4_H__
 
 #include <iostream>
+#include <vector>
 #include <assert.h>
 
+using namespace std;
 
 /** 4-dimensional homogeneous vector.
 */
@@ -37,6 +39,8 @@ public:
         , w( scalar )
     {
     }
+
+	inline Vector4(vector<double> V) : x(V[0]), y(V[1]), z(V[2]), w(V[3]) {}
 
 	inline double operator [] ( const size_t i ) const
     {

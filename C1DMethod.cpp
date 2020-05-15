@@ -462,8 +462,6 @@ void C1DGodunovTypeMethod::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) {
 	int i=0;	
 	// Потоки считаем по алгоритму решения задаче о распаде разрыва для УРС Ми-Грюнайзена из работы [Miller, Puckett]
 	for(i=imin; i<=imax; i++) {
-		roL = U[i-1][0]; uL = U[i-1][1]/roL; eL = U[i-1][2]/roL - .5*uL*uL; pL = eos.getp(roL, eL);
-		roR = U[i][0];   uR = U[i][1]/roR;   eR = U[i][2]/roR - .5*uR*uR;   pR = eos.getp(roR, eR);								
 		Vector4 flux = rslv.calcFlux(eos, U[i-1][0], U[i-1][1], U[i-1][2], U[i][0], U[i][1], U[i][2]); 
 		double _F[] = {flux[0], flux[1], flux[2]};
 		F[i] = vector<double>(_F, _F+sizeof(_F)/sizeof(_F[0]));		
@@ -575,4 +573,27 @@ Vector4 CGPSRiemannSolver::calcFlux(CEOS& eos, double roL, double rouL, double r
 	_e  = eos.gete(_ro, _p);
 	_E  = _e + 0.5*_u*_u;
 	return Vector4(_ro*_u, _p+_ro*_u*_u, _u*(_p+_ro*_E), 0.);
+}
+
+
+void C1D2ndOrderMethod::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) {
+	double roL = 0., uL = 0., eL = 0., pL = 0., roR = 0., uR = 0., eR = 0., pR = 0., E = 0.;
+	double dx = fld.dx, t = fld.t, dt = fld.dt;
+	int i=0, imin = fld.imin, imax = fld.imax;
+	vector<vector<double>> &U = fld.U, &newU = fld.newU, &F = fld.F;
+	vector<vector<double>> &ULx = rec.ULx, &URx = rec.URx;
+	// TODO: проверить на скорость выполнения операций, сравнить с реализацией через тип Vector4 -- если не медленнее, то в дальнейшем избавиться от Vector4 везде
+	rec.calc(fld);
+	for(i=imin; i<=imax; i++) {								
+		Vector4 flux = rslv.calcFlux(eos, URx[i-1][0], URx[i-1][1], URx[i-1][2], ULx[i][0], ULx[i][1], ULx[i][2]); 
+		double _F[] = {flux[0], flux[1], flux[2]};
+		F[i] = vector<double>(_F, _F+sizeof(_F)/sizeof(_F[0]));		
+	}
+	for(i=imin; i<imax; i++) {
+		for(int counter=0; counter<3; counter++) newU[i][counter] = U[i][counter] - dt/dx*(F[i+1][counter] - F[i][counter]);
+	}
+	for(i=imin; i<imax; i++) {
+		for(int counter=0; counter<3; counter++) U[i][counter] = newU[i][counter];
+	}	
+	pr.setbcs(fld.U);
 }

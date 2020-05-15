@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ﻿Build started 18.02.2020 2:51:05.
+=======
+﻿Build started 18.02.2020 17:12:41.
+>>>>>>> 1b46f5f2bfc494b53cc2e7f99b9eb15c452097f9
      1>Project "D:\icad\fsla\fsla.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /Od /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt C1DProblem.cpp
@@ -9,6 +13,7 @@
          x64\Debug\C1DMethod.obj
          x64\Debug\ceos.obj
          x64\Debug\C1DProblem.obj
+         x64\Debug\F1DReconstruction.obj
          x64\Debug\F1DSimulation.obj
          x64\Debug\COutput.obj
          x64\Debug\CTestToro.obj
@@ -49,4 +54,8 @@
 
 Build succeeded.
 
+<<<<<<< HEAD
 Time Elapsed 00:00:02.30
+=======
+Time Elapsed 00:00:01.12
+>>>>>>> 1b46f5f2bfc494b53cc2e7f99b9eb15c452097f9

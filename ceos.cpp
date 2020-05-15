@@ -153,8 +153,8 @@ double CEOSMieGruneisenAl::getp(double ro, double e) {
 	// p = (pc - G*ec) + G*E
 	// e c = (B/ (gamma (gamma -1 ) )) x^ gamma – (B /( gamma -1 )) x + B/ gamma
 	double p_c = B/gamma * (pow(x, gamma)-1.);
-	double e_c = B/gamma/(gamma-1.)*pow(x, gamma) - B*x/(gamma-1.) + B/gamma;
-	double p  = (p_c-G*e_c) + G*e;
+	double e_c = (B/gamma/(gamma-1.)*pow(x, gamma) - B*x/(gamma-1.) + B/gamma)/ro;
+	double p  = (p_c-G*ro*e_c) + G*ro*e;
 	return p;
 }
 
@@ -163,8 +163,8 @@ double CEOSMieGruneisenAl::gete(double ro, double p) {
 		         B = 76.e9; // Bulk modulus of Al, [Pa];
 	double x = ro/ro0;
 	double p_c = B/gamma * (pow(x, gamma)-1.);
-	double e_c = B/gamma/(gamma-1.)*pow(x, gamma) - B*x/(gamma-1.) + B/gamma;
-	double e = (p-p_c+G*e_c)/G;
+	double e_c = (B/gamma/(gamma-1.)*pow(x, gamma) - B*x/(gamma-1.) + B/gamma)/ro;
+	double e = (p-p_c+G*ro*e_c)/G/ro;
 	return e;
 }
 

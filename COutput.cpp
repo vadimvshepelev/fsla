@@ -14,7 +14,7 @@
 using namespace std;
 
  COutput::COutput(C1DProblem& pr, string _subdir, vector<double> _dtt) : 
-	              subDir(_subdir), dtt(_dtt), tUnit(""), tMul(1.), nDump(0), tPrecision(4), dtPrecision(2) {
+	              subDir(_subdir), dtt(_dtt), tUnit("ps"), tMul(1.e9), nDump(0), tPrecision(4), dtPrecision(2) {
     // Разбираемся с каталогом и создаем новый, если его нет	
 	cout << "Creating subdirectory ";
 	boost::filesystem::path outputPath(subDir);
@@ -75,19 +75,6 @@ int COutput::manageScreenOutput(C1DProblem& _prm, int iteration, double t, doubl
 }
 */
 int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, CEOS& eos) {	
-	
-
-	
-
-/*	ostringstream oss;
-	oss << subDir << "\\" << pr.name << "-100" << ".dat"; string fName = oss.str();
-	dump(pr, fld, eos, fName);*/
-
-
-
-
-
-	
 	assert(!dtt.empty());		
 	if (fld.t>=dtt[0]) {
 		ostringstream oss1;
@@ -97,25 +84,6 @@ int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, CEOS& eos) {
 		cout << "done!" << endl;		
 		dtt.erase(dtt.begin());		
 	}
-
-
-
-
-
-	
-	
-	
-	 dump(pr, fld, eos, "test-100.dat");
-
-
-
-
-
-
-
-
-
-
 	return 1;
 }
 
@@ -133,9 +101,9 @@ int COutput::dump(C1DProblem& prb, C1DField& fld, CEOS& eos, string fName) {
 		exit(1);
 	}
 	ofs << "TITLE=\"Riemann Problem 1D slice t=" << t << "\"" << endl;
-	ofs << "VARIABLES=\"x\",\"ro\",\"u\",\"p\",\"e\",\"ro_ex\",\"u_ex\",\"p_ex\",\"e_ex\"" << endl;	
+	ofs << "VARIABLES=\"x[nm]\",\"ro[kg/m3]\",\"u[m/s]\",\"p[GPa]\",\"e[MJ/kg]\",\"ro_ex\",\"u_ex\",\"p_ex\",\"e_ex\"" << endl;	
 	ofs << "ZONE T=\"Numerical\", I=" << imax - imin << ", F=POINT" << endl;
-	double mul_x=1., mul_u=1., mul_p=1., mul_e=1.;
+	double mul_x=1.e9, mul_u=1., mul_p=1.e-9, mul_e=1.e-6;
 	double _ro = 0., _u = 0., _v = 0., _w = 0., _e = 0., _p = 0.;	
 	for(i = imin; i < imax; i++) {						
 		_ro = U[i][0];

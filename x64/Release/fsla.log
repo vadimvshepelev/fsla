@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿Build started 18.02.2020 3:04:46.
      1>Project "D:\icad\fsla\fsla.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
@@ -6,10 +7,23 @@
          main.cpp
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"D:\icad\fsla\x64\Release\fsla.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\icad\fsla\x64\Release\fsla.pdb" /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\icad\fsla\x64\Release\fsla.lib" /MACHINE:X64 x64\Release\C1DBCs.obj
+=======
+﻿Build started 18.02.2020 12:39:04.
+     1>Project "D:\icad\fsla\fsla.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc110.pdb" /Gd /TP /errorReport:prompt C1DProblem.cpp
+         C1DProblem.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"D:\icad\fsla\x64\Release\fsla.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\icad\fsla\x64\Release\fsla.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\icad\fsla\x64\Release\fsla.lib" /MACHINE:X64 x64\Release\C1DBCs.obj
+>>>>>>> 1b46f5f2bfc494b53cc2e7f99b9eb15c452097f9
          x64\Release\C1DField.obj
          x64\Release\C1DMethod.obj
          x64\Release\ceos.obj
          x64\Release\C1DProblem.obj
+<<<<<<< HEAD
+=======
+         x64\Release\F1DReconstruction.obj
+>>>>>>> 1b46f5f2bfc494b53cc2e7f99b9eb15c452097f9
          x64\Release\F1DSimulation.obj
          x64\Release\COutput.obj
          x64\Release\CTestToro.obj
@@ -52,4 +66,8 @@
 
 Build succeeded.
 
+<<<<<<< HEAD
 Time Elapsed 00:00:04.86
+=======
+Time Elapsed 00:00:03.95
+>>>>>>> 1b46f5f2bfc494b53cc2e7f99b9eb15c452097f9

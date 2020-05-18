@@ -35,6 +35,6 @@ extern C1DProblem prToro1Idealtest, prToro2Idealtest, prToro3Idealtest, prToro4I
 extern C1DProblem prDenisenko1, prDenisenko2, prDenisenko3;
 extern C1DProblem prLaserVTAlIdealTest1, prLaserVTAlIdealTest2;
 extern C1DProblem prLaserVTAlMGTest1, prLaserVTAlMGTestNum1, prLaserVTAlMGTest2;
-
+extern C1DProblem prIdealVacTest;
 
 #endif

@@ -1,8 +1,18 @@
-﻿Build started 16.05.2020 23:12:56.
+﻿Build started 17.05.2020 22:15:31.
      1>Project "D:\icad\fsla\fsla.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /Od /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt main.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /Od /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt C1DBCs.cpp C1DField.cpp C1DMethod.cpp C1DProblem.cpp COutput.cpp F1DReconstruction.cpp F1DSimulation.cpp main.cpp
          main.cpp
+         C1DProblem.cpp
+         C1DMethod.cpp
+         Generating Code...
+         Compiling...
+         F1DSimulation.cpp
+         F1DReconstruction.cpp
+         COutput.cpp
+         C1DField.cpp
+         C1DBCs.cpp
+         Generating Code...
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"D:\icad\fsla\x64\Debug\fsla.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\local\boost_1_69_0\lib64-msvc-11.0" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\icad\fsla\x64\Debug\fsla.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\icad\fsla\x64\Debug\fsla.lib" /MACHINE:X64 x64\Debug\C1DBCs.obj
          x64\Debug\C1DField.obj
@@ -45,9 +55,10 @@
          x64\Debug\task.obj
          x64\Debug\_matrix4.obj
          x64\Debug\_vector4.obj
-         fsla.vcxproj -> D:\icad\fsla\x64\Debug\fsla.exe
-     1>Done Building Project "D:\icad\fsla\fsla.vcxproj" (Build target(s)).
+     1>main.obj : error LNK2019: unresolved external symbol "public: __cdecl C1DGodunovTypeMethodVacuum::C1DGodunovTypeMethodVacuum(void)" (??0C1DGodunovTypeMethodVacuum@@QEAA@XZ) referenced in function main
+     1>D:\icad\fsla\x64\Debug\fsla.exe : fatal error LNK1120: 1 unresolved externals
+     1>Done Building Project "D:\icad\fsla\fsla.vcxproj" (Build target(s)) -- FAILED.
 
-Build succeeded.
+Build FAILED.
 
-Time Elapsed 00:00:01.86
+Time Elapsed 00:00:09.58

@@ -427,13 +427,6 @@ C1DVectorPrimitive CExactRiemannSolver::calcSolution(CEOS& eos, double roL, doub
 }
 
 
-
-
-
-
-
-
-
 double C1DGodunovTypeMethod::calcdt(C1DProblem& pr, CEOS& eos, C1DField& fld) {
 	vector<vector<double>> U = fld.U; 
 	int imin = fld.imin, imax = fld.imax;
@@ -475,6 +468,88 @@ void C1DGodunovTypeMethod::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) {
 	}	
 	pr.setbcs(fld.U);
 }
+
+
+double C1DGodunovTypeMethodVacuum::calcdt(C1DProblem& pr, CEOS& eos, C1DField& fld) {
+	vector<vector<double>> U = fld.U; 
+	int imin = fld.imin, imax = fld.imax;
+	double ro = U[imin][0], u = U[imin][1]/ro, e = U[imin][2]/ro-.5*u*u, p=eos.getp(ro,e), c = eos.getc(ro, p);
+	vector<double> x = fld.x;	
+	double umax = max(fabs(u), max(fabs(u-c), fabs(u+c))); 	
+	double dt1 = (x[imin+1]-x[imin])/umax;
+	double dt2 = 0.;
+	for(int i=imin; i<imax; i++) {		
+		ro = U[i][0]; u = U[i][1]/ro; e = U[i][2]/ro-.5*u*u, p=eos.getp(ro,e), c = eos.getc(ro, p); 
+		umax = fabs(u) + c; 
+		dt2 = (x[i+1]-x[i])/umax;
+		if(dt1 > dt2) dt1 = dt2;
+	}
+	return pr.cfl*dt1;
+}
+
+void C1DGodunovTypeMethodVacuum::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) {
+	double roL = 0., uL = 0., eL = 0., pL = 0.,
+		   roR = 0., uR = 0., eR = 0., pR = 0., 
+		   E = 0.;
+	double dx = fld.dx, t = fld.t, dt = fld.dt;
+	int imin = fld.imin, imax = fld.imax;
+	vector<vector<double>> &U = fld.U, &newU = fld.newU, &F = fld.F;
+	vector<double> &x = fld.x;
+	int i=0;
+	// Considering only "gas-vacuum" configuration, i.e. gas fills the left side of the simulation segment
+	const double eps = .01;
+	double uvac = 0.;
+	// Calculating the n+1-time-layer x coordinate of gas-vacuum boundary
+	for(i=imin; i<=imax; i++) {
+		// Is it interface cell?
+		Vector4 flux = Vector4::ZERO;
+		if(U[i-1][0] == 0.)
+			if(U[i][0] != 0.) {
+				double gamma = eos.getc(1., 1)*eos.getc(1., 1),
+					   _ro = U[0][i],
+					   _u = U[i][1]/_ro, 
+					   _e = U[i][2]/_ro - .5*_u*_u,
+					   _p = eos.getp(_ro, _e),
+					   _c = eos.getc(_ro, _p);
+				uvac = _u + 2./(gamma - 1.)*_c;
+				xbnd += uvac*dt;
+				if(x[i]-xbnd > eps*dx) {
+					if (_u > _c)
+						// поток от начального условия F(U[0])
+					else 
+					    // поток F(U[i])
+						flux = rslv.calcFlux(eos, U[i-1][0], U[i-1][1], U[i-1][2], U[i][0], U[i][1], U[i][2]); 
+				}
+			}
+
+
+			/*
+	CSolver::calcPhysicalFlux(double ro, double rou, double roE) {
+	if (ro==0) return Vector4::ZERO; 
+	EOSOld& eos = task.getEOS();
+	double gamma = eos.getGamma();
+	double u = rou/ro;
+	double E = roE/ro;
+	double p = (gamma-1.)*ro*(E-.5*u*u);
+	return Vector4(rou, p + ro*u*u, u*(p + roE), 0.);
+*/
+
+
+		Vector4 flux = rslv.calcFlux(eos, U[i-1][0], U[i-1][1], U[i-1][2], U[i][0], U[i][1], U[i][2]); 
+		double _F[] = {flux[0], flux[1], flux[2]};
+		F[i] = vector<double>(_F, _F+sizeof(_F)/sizeof(_F[0]));		
+	}
+	for(i=imin; i<imax; i++) {
+		for(int counter=0; counter<3; counter++) newU[i][counter] = U[i][counter] - dt/dx*(F[i+1][counter] - F[i][counter]);
+	}
+	for(i=imin; i<imax; i++) {
+		for(int counter=0; counter<3; counter++) U[i][counter] = newU[i][counter];
+	}	
+	pr.setbcs(fld.U);
+}
+
+
+
 
 // Godunov-exact solver flux
 Vector4 CExactRiemannSolver::calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {	

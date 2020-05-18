@@ -79,3 +79,5 @@ C1DProblem prLaserVTAlMGTest1 = C1DProblem("LaserVTAl1-MG-1nm", 2700., 0., 300.e
 C1DProblem prLaserVTAlMGTest2 = C1DProblem("LaserVTAl2-MG-1nm", 2700., 0., 19.4872e9, 2700., 0., 300.e9, -100.e-9, 0., 0., 1.e-12, -50.e-9, 100, .9, "tt");
 // 16.05.2020 We restarted the test of Riemann problem for Mie-Gruneisen EOS -- just shifted test prLaserVTAlMGTest2
 C1DProblem prLaserVTAlMGTestNum1 = C1DProblem("LaserVTAlNum1-MG-1nm-hll", 2700., 0., 19.4872e9, 2700., 0., 300.e9, 0., 100.e-9, 0., 2.e-12, 50.e-9, 100, .9, "tt");
+// 17.05.2020 I modified Godunov method in C1DGodunovTypeMethodVacuum class for metal-vacuum border tracking
+C1DProblem prIdealVacTest = C1DProblem("IdealVac", 0., 0., 0., 1., 0., 1., 0., 1., 0., .1, .5, 100, .9, "tt");

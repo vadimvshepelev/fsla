@@ -101,6 +101,16 @@ public:
 };
 
 
+class C1DGodunovTypeMethodVacuum : public C1DMethod {
+public:
+	CRiemannSolver& rslv;
+	C1DGodunovTypeMethodVacuum();  
+	C1DGodunovTypeMethodVacuum(CRiemannSolver& _rslv, double _xbnd) : rslv(_rslv), xbnd(_xbnd) {}
+	double xbnd;
+	void calc(C1DProblem& pr, CEOS& eos, C1DField& fld);
+	double calcdt(C1DProblem& pr, CEOS& eos, C1DField& fld);	
+};
+
 class C1D2ndOrderMethod : public C1DGodunovTypeMethod {
 public:
 	C1D2ndOrderMethod(CRiemannSolver& _rslv, F1DReconstruction& _rec) : C1DGodunovTypeMethod(_rslv), rec(_rec) {} 

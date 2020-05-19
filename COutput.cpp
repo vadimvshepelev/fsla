@@ -75,7 +75,22 @@ int COutput::manageScreenOutput(C1DProblem& _prm, int iteration, double t, doubl
 }
 */
 int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, CEOS& eos) {	
-	assert(!dtt.empty());		
+	assert(!dtt.empty());	
+	
+	
+	
+	
+	
+	///
+	ostringstream oss1;
+	oss1 << subDir << "\\" << pr.name << "-" << 100 << ".dat"; string fName1 = oss1.str();
+	dump(pr, fld, eos, fName1);
+	///
+
+
+
+
+
 	if (fld.t>=dtt[0]) {
 		ostringstream oss1;
 		oss1 << subDir << "\\" << pr.name << "-" << nDump++ << ".dat"; string fName1 = oss1.str();
@@ -107,8 +122,13 @@ int COutput::dump(C1DProblem& prb, C1DField& fld, CEOS& eos, string fName) {
 	double _ro = 0., _u = 0., _v = 0., _w = 0., _e = 0., _p = 0.;	
 	for(i = imin; i < imax; i++) {						
 		_ro = U[i][0];
-		_u  = U[i][1]/_ro; 
-		_e  = U[i][2]/_ro - .5*_u*_u;
+		if(_ro!=0) {
+			_u  = U[i][1]/_ro; 
+			_e  = U[i][2]/_ro - .5*_u*_u;
+		} else {
+			_u = 0.;
+			_e = 0.;
+		}
 		_p  = eos.getp(_ro, _e); 		
 		res = calcRPAnalyticalSolution(eos, rol, ul, pl, ror, ur, pr, x[i]+.5*dx-x0, t);
 		ro_ex = res.ro;
@@ -157,9 +177,10 @@ CVectorPrimitive COutput::calcRPAnalyticalSolution(CEOS& eos, double roL, double
 	RPSolutionPrimitive res = solveRP(eos, roL, vL, pL, roR, vR, pR);
 	// V = (ro, v, p)T
 	CVectorPrimitive V;
-	double xi = x/t;
+	double xi = 0.;
+    if (t != 0.) xi = x/t; else xi = 0.;
 	double cL = eos.getc(roL, pL), cR = eos.getc(roR, pR);
-	const double gamma = roL*cL*cL/pL;
+	const double gamma = eos.getc(1., 1.)*eos.getc(1., 1.);
 	double xiFront=0., xiHead=0., xiTail=0., xiHeadL=0., xiTailL=0., xiHeadR=0., xiTailR=0.;
 	// Если вакуум
 	if(res.type == VacRW) { 
@@ -297,7 +318,7 @@ RPSolutionPrimitive COutput::solveRP(CEOS& eos, double roL, double vL, double pL
 	double p = 0., pPrev = 0.;
 	double TOL = 1.e-6;
     double cL = eos.getc(roL, pL), cR = eos.getc(roR, pR);
-	const double gamma = roL*cL*cL/pL;
+	const double gamma = eos.getc(1., 1.)*eos.getc(1., 1.);
 	int itCounter = 0;	
 	// Пытаюсь определить возможную конфигурацию решения, чтобы вернее выставить начальное приближение
 	// Похоже, итерации нужны только в случаях "УВ+УВ" и "УВ + ВР", т.к. в случае ВР+ВР и ВР+вакуум есть 

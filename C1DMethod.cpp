@@ -473,13 +473,16 @@ void C1DGodunovTypeMethod::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) {
 double C1DGodunovTypeMethodVacuum::calcdt(C1DProblem& pr, CEOS& eos, C1DField& fld) {
 	vector<vector<double>> U = fld.U; 
 	int imin = fld.imin, imax = fld.imax;
-	double ro = U[imin][0], u = U[imin][1]/ro, e = U[imin][2]/ro-.5*u*u, p=eos.getp(ro,e), c = eos.getc(ro, p);
+	double ro = U[imax-1][0], u = U[imax-1][1]/ro, e = U[imax-1][2]/ro-.5*u*u, p=eos.getp(ro,e), c = eos.getc(ro, p);
 	vector<double> x = fld.x;	
-	double umax = max(fabs(u), max(fabs(u-c), fabs(u+c))); 	
-	double dt1 = (x[imin+1]-x[imin])/umax;
+	const double gamma = eos.getc(1., 1.)*eos.getc(1., 1.);
+	double umax = max(2./(gamma - 1.)*c, max(fabs(u-c), fabs(u+c))); 	
+	double dt1 = (x[imax]-x[imax-1])/umax;
 	double dt2 = 0.;
-	for(int i=imin; i<imax; i++) {		
+	for(int i=imin; i<imax; i++) {
 		ro = U[i][0]; u = U[i][1]/ro; e = U[i][2]/ro-.5*u*u, p=eos.getp(ro,e), c = eos.getc(ro, p); 
+		if(ro == 0.) 
+			continue;
 		umax = fabs(u) + c; 
 		dt2 = (x[i+1]-x[i])/umax;
 		if(dt1 > dt2) dt1 = dt2;
@@ -503,41 +506,52 @@ void C1DGodunovTypeMethodVacuum::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) 
 	for(i=imin; i<=imax; i++) {
 		// Is it interface cell?
 		Vector4 flux = Vector4::ZERO;
-		if(U[i-1][0] == 0.)
+		if(U[i-1][0] == 0.) {
 			if(U[i][0] != 0.) {
 				double gamma = eos.getc(1., 1)*eos.getc(1., 1),
-					   _ro = U[0][i],
+					   _ro = U[i][0],
 					   _u = U[i][1]/_ro, 
 					   _e = U[i][2]/_ro - .5*_u*_u,
 					   _p = eos.getp(_ro, _e),
 					   _c = eos.getc(_ro, _p);
-				uvac = _u + 2./(gamma - 1.)*_c;
+				uvac = _u - 2./(gamma - 1.)*_c;
 				xbnd += uvac*dt;
 				if(x[i]-xbnd > eps*dx) {
-					if (_u > _c)
-						// поток от начального условия F(U[0])
-					else 
+					if (fabs(_u) > _c) {
+						// поток от начального условия F(U[0](t))
+						double gamma = eos.getc(1., 1)*eos.getc(1., 1);
+						double _ro = U[i][0];
+						double _u = U[i][1]/_ro;
+						double _e = U[i][2]/_ro-.5*_u*_u;
+						double _p = eos.getp(_ro, _e);
+						double _c = eos.getc(_ro, _p);
+						double _x = (x[i] + x[i+1])/2.;
+						double _u_res = ((gamma-1.)*pr.ur + 2.*(_x/t + _c)) / (gamma+1.);
+						double _ro_res = pow((_x/t - _u_res)*(_x/t-_u_res)*pow(pr.ror, gamma)/gamma/pr.pr, 1./(gamma-1.));
+						double _p_res = pow(_ro_res, gamma)/pr.ror*pr.pr;
+						// flux = calcPhysicalFlux(eos, pr.ror, pr.ur, pr.pr);
+						flux = calcPhysicalFlux(eos, _ro_res, _u_res, _p_res);
+					} else {
 					    // поток F(U[i])
-						flux = rslv.calcFlux(eos, U[i-1][0], U[i-1][1], U[i-1][2], U[i][0], U[i][1], U[i][2]); 
+						double _ro = U[i][0], 
+							    _u = U[i][1]/_ro,
+								_e = U[i][2]/_ro - .5*_u*_u,
+								_p = eos.getp(_ro, _e);
+						// flux = calcPhysicalFlux(eos, _ro, _u, _p);
+						flux = rslv.calcFlux(eos, 0., 0., 0., U[i][0], U[i][1], U[i][2]); 
+				    }
+			    } else {
+					flux = Vector4::ZERO;
 				}
-			}
 
-
-			/*
-	CSolver::calcPhysicalFlux(double ro, double rou, double roE) {
-	if (ro==0) return Vector4::ZERO; 
-	EOSOld& eos = task.getEOS();
-	double gamma = eos.getGamma();
-	double u = rou/ro;
-	double E = roE/ro;
-	double p = (gamma-1.)*ro*(E-.5*u*u);
-	return Vector4(rou, p + ro*u*u, u*(p + roE), 0.);
-*/
-
-
-		Vector4 flux = rslv.calcFlux(eos, U[i-1][0], U[i-1][1], U[i-1][2], U[i][0], U[i][1], U[i][2]); 
+		    } else {
+		        flux = Vector4::ZERO;
+		    }
+		} else {
+			flux = rslv.calcFlux(eos, U[i-1][0], U[i-1][1], U[i-1][2], U[i][0], U[i][1], U[i][2]); 
+		}
 		double _F[] = {flux[0], flux[1], flux[2]};
-		F[i] = vector<double>(_F, _F+sizeof(_F)/sizeof(_F[0]));		
+		F[i] = vector<double>(_F, _F+sizeof(_F)/sizeof(_F[0]));				
 	}
 	for(i=imin; i<imax; i++) {
 		for(int counter=0; counter<3; counter++) newU[i][counter] = U[i][counter] - dt/dx*(F[i+1][counter] - F[i][counter]);
@@ -549,12 +563,23 @@ void C1DGodunovTypeMethodVacuum::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) 
 }
 
 
-
+Vector4 calcPhysicalFlux(CEOS& eos, double ro, double u, double p) {
+	if (ro==0) return Vector4::ZERO; 
+	double e = eos.gete(ro, p);
+	return Vector4(ro*u, p + ro*u*u, u*(p + ro*(e + .5*u*u)), 0.);
+}
 
 // Godunov-exact solver flux
 Vector4 CExactRiemannSolver::calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {	
-	double uL = rouL/roL, uR = rouR/roR;
-	double pL = eos.getp(roL, roEL/roL - .5*uL*uL), pR = eos.getp(roR, roER/roR - .5*uR*uR);
+	double uL = 0., uR = 0., pL = 0., pR = 0.;
+	if(roL!=0.) {
+	    uL = rouL/roL;
+		pL = eos.getp(roL, roEL/roL - .5*uL*uL);
+	}
+	if(roR!=0.) {
+		uR = rouR/roR;
+		pR = eos.getp(roR, roER/roR - .5*uR*uR);
+	}
 	C1DVectorPrimitive res = calcSolution(eos, roL, uL, pL, roR, uR, pR, 0., .01);
 	double E = eos.gete(res.ro, res.p) + .5*res.u*res.u;
 	Vector4 FGodunov = Vector4(res.ro*res.u, res.ro*res.u*res.u + res.p, res.u*(res.ro*E+res.p), 0.);

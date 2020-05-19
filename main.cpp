@@ -64,6 +64,7 @@ int main(int argc, char *argv[]) {
 	C1DField *fldptr = new C1DField(pr);
 	CExactRiemannSolver exrslv;
 	C1DGodunovTypeMethodVacuum gdn = C1DGodunovTypeMethodVacuum(exrslv, pr.x0);
+	// C1DGodunovTypeMethod gdn = C1DGodunovTypeMethod(exrslv);
 	double _dtt[] = {pr.tmin, pr.tmax};
 	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
 	COutput outp = COutput(pr, outputDir, dtt);

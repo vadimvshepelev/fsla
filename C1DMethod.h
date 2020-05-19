@@ -23,6 +23,7 @@ struct C1DVectorPrimitive {
 	double p;
 };
 
+Vector4 calcPhysicalFlux(CEOS& eos, double ro, double u, double p);
 
 class CRiemannSolver {
 public: 

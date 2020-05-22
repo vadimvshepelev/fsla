@@ -39,14 +39,15 @@ public:
 	Vector4 calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER);
 	int isSupported(CEOSIdeal& eos) { return 1; }
 	int isSupported(CEOSMieGruneisen& eos) {return 0; }
-private:
-	C1DVectorPrimitive calcSolution(CEOS& eos, double roL, double uL, double pL, double roR, double uR, double pR, double x, double t);
-	RPValues calcValues(CEOS& eos, double roL, double uL, double pL, double roR, double uR, double pR);
-	double fL(CEOS& eos, double p, double roL, double uL, double pL);
-	double dfLdp(CEOS& eos, double p, double roL, double uL, double pL);
-	double fR(CEOS& eos, double p, double roR, double uR, double pR);
-	double dfRdp(CEOS& eos, double p, double roR, double uR, double pR);
 };
+
+C1DVectorPrimitive calcSolution(CEOS& eos, double roL, double uL, double pL, double roR, double uR, double pR, double x, double t);
+RPValues calcValues(CEOS& eos, double roL, double uL, double pL, double roR, double uR, double pR);
+double fL(CEOS& eos, double p, double roL, double uL, double pL);
+double dfLdp(CEOS& eos, double p, double roL, double uL, double pL);
+double fR(CEOS& eos, double p, double roR, double uR, double pR);
+double dfRdp(CEOS& eos, double p, double roR, double uR, double pR);
+
 
 
 class CHLLRiemannSolver : public CRiemannSolver {

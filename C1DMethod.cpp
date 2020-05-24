@@ -476,7 +476,7 @@ double C1DGodunovTypeMethodVacuum::calcdt(C1DProblem& pr, CEOS& eos, C1DField& f
 	double ro = U[imax-1][0], u = U[imax-1][1]/ro, e = U[imax-1][2]/ro-.5*u*u, p=eos.getp(ro,e), c = eos.getc(ro, p);
 	vector<double> x = fld.x;	
 	const double gamma = eos.getc(1., 1.)*eos.getc(1., 1.);
-	double umax = max(2./(gamma - 1.)*c, max(fabs(u-c), fabs(u+c))); 	
+	double umax = max(fabs(u), max(fabs(u-c), fabs(u+c))); 	
 	double dt1 = (x[imax]-x[imax-1])/umax;
 	double dt2 = 0.;
 	for(int i=imin; i<imax; i++) {
@@ -521,6 +521,26 @@ void C1DGodunovTypeMethodVacuum::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) 
 		}
 	}
 	for(i=imin; i<=imax; i++) {
+		
+		
+		
+		
+		
+		
+		if (i==52) {
+
+			double qq = 0.;
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		// Is it interface cell?
 		Vector4 flux = Vector4::ZERO;
 		if(U[i-1][0] == 0.) {
@@ -578,7 +598,7 @@ void C1DGodunovTypeMethodVacuum::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) 
 						// flux = rslv.calcFlux(eos, 0., 0., 0., U[i][0], U[i][1], U[i][2]); 
 						double ro0 = pr.ror, u0 = pr.ur, p0 = pr.pr, E0 = eos.gete(pr.ror, pr.pr) + .5*u0*u0;
 						double c0 = eos.getc(ro0, p0);
-						Vector4 _flux = rslv.calcFlux(eos, 0., 0., 0., ro0, ro0*u0, ro0*E0);
+						//Vector4 _flux = rslv.calcFlux(eos, 0., 0., 0., ro0, ro0*u0, ro0*E0);
 						double gamma = eos.getc(1., 1)*eos.getc(1., 1);
 						double _u = ((gamma-1.)*u0 - 2*c0)/(gamma+1.);
 						double _ro = pow(_u*_u*pow(ro0, gamma)/(gamma/p0), 1./(gamma-1.));

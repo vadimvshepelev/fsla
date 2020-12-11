@@ -72,7 +72,7 @@ C1DProblem prDenisenko3 = C1DProblem("Denisenko-3-8100", 3., 4., 2., 2., 2., 1.,
 // 08.02.2020 First Riemann problem test for laser volume target problem for Al with ideal EOS
 C1DProblem prLaserVTAlIdealTest1 = C1DProblem("LaserVTAl1-ideal-2000", 2700., 0., 300.e9, 2., 0., 19.4872e9, -50.e-9, 50e-9, 0., 2.e-12, 0., 2000, .9, "tt");
 // 08.02.2020 Second Riemann problem test for laser volume target problem for Al with ideal EOS
-C1DProblem prLaserVTAlIdealTest2 = C1DProblem("LaserVTAl2-ideal-2000", 2700., 0., 19.4872e9, 2700., 0., 300.e9, -100.e-9, 0., 0., 2.e-12, -50.e-9, 2000, .9, "tt");
+C1DProblem prLaserVTAlIdealTest2 = C1DProblem("LaserVTAl2-ideal-1000", 2700., 0., 19.4872e9, 2700., 0., 300.e9, -100.e-9, 0., 0., 2.e-12, -50.e-9, 1000, .9, "tt");
 // 15.02.2020 First Riemann problem test for laser VT problem with Mie-Gruneisen EOS
 C1DProblem prLaserVTAlMGTest1 = C1DProblem("LaserVTAl1-MG-1nm", 2700., 0., 300.e9, 2., 0., 194872.e9, -50.e-9, 50.e-9, 0., 1.e-13, 0., 100, .9, "tt");
 // 16.02.2020 Second Riemann problem test for laserVT problem with Mie-Gruneisen EOS

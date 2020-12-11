@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
 	delete fldptr;	*/
 	// Uncomment for ideal gas vs vacuum test
 	CEOSIdeal eos = CEOSIdeal(1.4);
-	C1DProblem pr = prIdealVacTest;
+	C1DProblem pr =  prLaserVTAlIdealTest2; //prIdealVacTest;
 	C1DField *fldptr = new C1DField(pr);
 	CExactRiemannSolver exrslv;
 	C1DGodunovTypeMethodVacuum gdn = C1DGodunovTypeMethodVacuum(exrslv, pr.x0);

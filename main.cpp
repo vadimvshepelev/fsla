@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 	cout << "=======================================================================" << endl;
 	string outputDir = string("output");		
 	// Uncomment for NB EOS test problem
-	//CEOSMieGruneisenAl eos = CEOSMieGruneisenAl();
+	// CEOSMieGruneisenAl eos = CEOSMieGruneisenAl();
 	//C1DProblem pr = prNBtest;
 	// Uncomment for Toro #1 test problem with ideal EOS
 	//CEOSIdeal eos = CEOSIdeal(3.9);
@@ -45,10 +45,11 @@ int main(int argc, char *argv[]) {
 	// Uncomment for exact solver based Godunov-type method
 	//CExactRiemannSolver ex;
 	//C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(ex);
+
 	// Uncomment for LaserVT test problem
-    /*CEOSMieGruneisenAl eos = CEOSMieGruneisenAl();
+    FEOSMieGruneisenAl eos = FEOSMieGruneisenAl();
 	//CEOSIdeal eos = CEOSIdeal(3.9);
-	C1DProblem pr = prLaserVTAlMGTestNum1;
+	C1DProblem pr = prVTAlMGTest2;  //prLaserVTAlMGTestNum1;
 	C1DField *fldptr = new C1DField(pr);
 	CHLLRiemannSolver hll;
 	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hll);
@@ -57,9 +58,10 @@ int main(int argc, char *argv[]) {
 	COutput outp = COutput(pr, outputDir, dtt);
 	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp);
 	sim.run();
-	delete fldptr;	*/
+	delete fldptr;
 	// Uncomment for ideal gas vs vacuum test
-	CEOSIdeal eos = CEOSIdeal(1.4);
+	/* //CEOSIdeal eos = CEOSIdeal(3.9);
+	CEOSIdeal eos = CEOSIdeal(2.5);
 	C1DProblem pr =  prLaserVTAlIdealTest2; //prIdealVacTest;
 	C1DField *fldptr = new C1DField(pr);
 	CExactRiemannSolver exrslv;
@@ -70,7 +72,7 @@ int main(int argc, char *argv[]) {
 	COutput outp = COutput(pr, outputDir, dtt);
 	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, gdn, outp);
 	sim.run();
-	delete fldptr;	
+	delete fldptr;	*/
 
 	// Uncomment for Toro #1 test problem with ideal EOS
 /*	CEOSIdeal eos = CEOSIdeal(1.4);

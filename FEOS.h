@@ -1,7 +1,7 @@
 #ifndef _CEOS_H_
 #define _CEOS_H_
 
-class CEOS {
+class FEOS {
 public:
 	virtual double getp(double ro, double e) = 0;
 	virtual double gete(double ro, double p) = 0;
@@ -9,21 +9,21 @@ public:
 };
 
 
-class CEOSIdeal : public CEOS {
+class FEOSIdeal : public FEOS {
 public:
 	const double gamma, R;
-	CEOSIdeal(double _gamma) : gamma(_gamma), R(8.31) {}
+	FEOSIdeal(double _gamma) : gamma(_gamma), R(8.31) {}
 	double getp(double ro, double e) { return (gamma-1.)*ro*e; }
 	double gete(double ro, double p) { if(ro!=0.) return p/(gamma-1.)/ro; else return 0.; }
 	double getc(double ro, double p) { if(ro!=0.) return sqrt(gamma*p/ro); else return 0.;}
 };
 
 
-class CEOSMieGruneisen : public CEOS {
+class FEOSMieGruneisen : public FEOS {
 public:
 	const double ro0;
-	CEOSMieGruneisen(): ro0(998.2) {}     // ro0 = [kg/m3]
-	CEOSMieGruneisen(double _ro0, double _e0) : ro0(_ro0) {}
+	FEOSMieGruneisen(): ro0(998.2) {}     // ro0 = [kg/m3]
+	FEOSMieGruneisen(double _ro0, double _e0) : ro0(_ro0) {}
 	double getp(double ro, double e);
 	double gete(double ro, double p);
 	double getc(double ro, double p);
@@ -38,14 +38,31 @@ public:
 };
 
 
-class CEOSMieGruneisenAl : public CEOS {
+class FEOSMieGruneisenAl : public FEOS {
 public:
 	const double ro0;
-	CEOSMieGruneisenAl(): ro0(2700.) {}     // ro0 = [kg/m3]
+	FEOSMieGruneisenAl(): ro0(2700.) {}     // ro0 = [kg/m3]
 	double getp(double ro, double e);
 	double gete(double ro, double p);
 	double getc(double ro, double p);
 };
+
+
+class FEOSMGAlPrecise : public FEOS {
+	const double rho0, p0, a, b;
+	double G(double x);
+	double GPrime(double x);
+	double Gx1(double x); 
+	double Gx2(double x);
+	double pCold(double rho);
+	double eCold(double rho);
+public:
+	FEOSMGAlPrecise() : rho0(2700.), p0(560.964e9), a(1.12657), b(0.975511) {}
+	double getp(double rho, double e);
+	double gete(double rho, double p);
+	double getc(double rho, double p);
+};
+
 
 // Constants set for 22 materials of Lomonosov (presumeably wide-range, not pure Mie-Gruneisen) EOS
 extern double __V0[22], __E0[22], __DX[22], __GM[22], __CMN[22], __GN[22], __ES[22], __GC[22], __QS[22], __SM[22], __RS[22], 

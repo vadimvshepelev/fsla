@@ -23,48 +23,48 @@ struct C1DVectorPrimitive {
 	double p;
 };
 
-Vector4 calcPhysicalFlux(CEOS& eos, double ro, double u, double p);
+Vector4 calcPhysicalFlux(FEOS& eos, double ro, double u, double p);
 
 class CRiemannSolver {
 public: 
-	virtual Vector4 calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) = 0;
-	virtual int isSupported(CEOSIdeal& eos) = 0;
-	virtual int isSupported(CEOSMieGruneisen& eos) = 0;
+	virtual Vector4 calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) = 0;
+	virtual int isSupported(FEOSIdeal& eos) = 0;
+	virtual int isSupported(FEOSMieGruneisen& eos) = 0;
 };
 
 
 class CExactRiemannSolver : public CRiemannSolver {
 public:
 	CExactRiemannSolver() {}
-	Vector4 calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER);
-	int isSupported(CEOSIdeal& eos) { return 1; }
-	int isSupported(CEOSMieGruneisen& eos) {return 0; }
+	Vector4 calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER);
+	int isSupported(FEOSIdeal& eos) { return 1; }
+	int isSupported(FEOSMieGruneisen& eos) {return 0; }
 };
 
-C1DVectorPrimitive calcSolution(CEOS& eos, double roL, double uL, double pL, double roR, double uR, double pR, double x, double t);
-RPValues calcValues(CEOS& eos, double roL, double uL, double pL, double roR, double uR, double pR);
-double fL(CEOS& eos, double p, double roL, double uL, double pL);
-double dfLdp(CEOS& eos, double p, double roL, double uL, double pL);
-double fR(CEOS& eos, double p, double roR, double uR, double pR);
-double dfRdp(CEOS& eos, double p, double roR, double uR, double pR);
+C1DVectorPrimitive calcSolution(FEOS& eos, double roL, double uL, double pL, double roR, double uR, double pR, double x, double t);
+RPValues calcValues(FEOS& eos, double roL, double uL, double pL, double roR, double uR, double pR);
+double fL(FEOS& eos, double p, double roL, double uL, double pL);
+double dfLdp(FEOS& eos, double p, double roL, double uL, double pL);
+double fR(FEOS& eos, double p, double roR, double uR, double pR);
+double dfRdp(FEOS& eos, double p, double roR, double uR, double pR);
 
 
 
 class CHLLRiemannSolver : public CRiemannSolver {
 public:
 	CHLLRiemannSolver() {}
-	Vector4 calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER);
-	int isSupported(CEOSIdeal& eos) { return 1; }
-	int isSupported(CEOSMieGruneisen& eos) {return 1; }
+	Vector4 calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER);
+	int isSupported(FEOSIdeal& eos) { return 1; }
+	int isSupported(FEOSMieGruneisen& eos) {return 1; }
 };
 
 
 class CHLLCRiemannSolver : public CRiemannSolver {
 public:
 	CHLLCRiemannSolver() {}
-	Vector4 calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER);
-	int isSupported(CEOSIdeal& eos) { return 1; }
-	int isSupported(CEOSMieGruneisen& eos) {return 1; }
+	Vector4 calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER);
+	int isSupported(FEOSIdeal& eos) { return 1; }
+	int isSupported(FEOSMieGruneisen& eos) {return 1; }
 };
 
 
@@ -72,24 +72,24 @@ public:
 class CGPSRiemannSolver : public CRiemannSolver {
 public: 
 	CGPSRiemannSolver() {}
-	Vector4 calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER);
-	int isSupported(CEOSIdeal& eos) { return 1; }
-	int isSupported(CEOSMieGruneisen& eos) {return 0; }
+	Vector4 calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER);
+	int isSupported(FEOSIdeal& eos) { return 1; }
+	int isSupported(FEOSMieGruneisen& eos) {return 0; }
 };
 
 
 class C1DMethod {
 public:
-	virtual void calc(C1DProblem& pr, CEOS& eos, C1DField& fld)=0;
-	virtual double calcdt(C1DProblem& pr, CEOS& eos, C1DField& fld)=0;	
+	virtual void calc(C1DProblem& pr, FEOS& eos, C1DField& fld)=0;
+	virtual double calcdt(C1DProblem& pr, FEOS& eos, C1DField& fld)=0;	
 };
 
 
 class C1DGodunovMethodMillerPuckett : public C1DMethod {
 public:
-	void calc(C1DProblem& pr, CEOSMieGruneisen& eos, C1DField& fld);
-	double calcdt(C1DProblem& pr, CEOSMieGruneisen& eos, C1DField& fld);
-	C1DVectorPrimitive calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double roL, double vL, double pL, double roR, double vR, double pR);
+	void calc(C1DProblem& pr, FEOSMieGruneisen& eos, C1DField& fld);
+	double calcdt(C1DProblem& pr, FEOSMieGruneisen& eos, C1DField& fld);
+	C1DVectorPrimitive calcRPExactMillerPuckett(FEOSMieGruneisen& eos, double roL, double vL, double pL, double roR, double vR, double pR);
 };
 
 
@@ -98,8 +98,8 @@ public:
 	CRiemannSolver& rslv;
 	C1DGodunovTypeMethod();  
 	C1DGodunovTypeMethod(CRiemannSolver& _rslv) : rslv(_rslv) {}
-	void calc(C1DProblem& pr, CEOS& eos, C1DField& fld);
-	double calcdt(C1DProblem& pr, CEOS& eos, C1DField& fld);	
+	void calc(C1DProblem& pr, FEOS& eos, C1DField& fld);
+	double calcdt(C1DProblem& pr, FEOS& eos, C1DField& fld);	
 };
 
 
@@ -109,15 +109,15 @@ public:
 	C1DGodunovTypeMethodVacuum();  
 	C1DGodunovTypeMethodVacuum(CRiemannSolver& _rslv, double _xbnd) : rslv(_rslv), xbnd(_xbnd) {}
 	double xbnd;
-	void calc(C1DProblem& pr, CEOS& eos, C1DField& fld);
-	double calcdt(C1DProblem& pr, CEOS& eos, C1DField& fld);	
+	void calc(C1DProblem& pr, FEOS& eos, C1DField& fld);
+	double calcdt(C1DProblem& pr, FEOS& eos, C1DField& fld);	
 };
 
 class C1D2ndOrderMethod : public C1DGodunovTypeMethod {
 public:
 	C1D2ndOrderMethod(CRiemannSolver& _rslv, F1DReconstruction& _rec) : C1DGodunovTypeMethod(_rslv), rec(_rec) {} 
 	F1DReconstruction& rec;
-	void calc(C1DProblem& pr, CEOS& eos, C1DField& fld);
+	void calc(C1DProblem& pr, FEOS& eos, C1DField& fld);
 };
 
 

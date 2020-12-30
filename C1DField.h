@@ -3,7 +3,7 @@
 
 #include<vector>
 #include"C1DProblem.h"
-#include"ceos.h"
+#include"feos.h"
 
 using namespace std;
 

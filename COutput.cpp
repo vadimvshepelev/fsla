@@ -74,7 +74,7 @@ int COutput::manageScreenOutput(C1DProblem& _prm, int iteration, double t, doubl
 	return 1;
 }
 */
-int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, CEOS& eos) {	
+int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, FEOS& eos) {	
 	assert(!dtt.empty());	
 	
 	
@@ -102,7 +102,7 @@ int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, CEOS& eos) {
 	return 1;
 }
 
-int COutput::dump(C1DProblem& prb, C1DField& fld, CEOS& eos, string fName) {
+int COutput::dump(C1DProblem& prb, C1DField& fld, FEOS& eos, string fName) {
 	int i = 0, imin = fld.imin, imax = fld.imax;
 	vector<vector<double>> U = fld.U;
 	vector<double> x = fld.x;
@@ -173,7 +173,7 @@ int COutput::dump(C1DProblem& prb, C1DField& fld, CEOSIdeal& eos, string fName) 
 	return 1;
 }*/
 
-CVectorPrimitive COutput::calcRPAnalyticalSolution(CEOS& eos, double roL, double vL, double pL, double roR, double vR, double pR, double x, double t){
+CVectorPrimitive COutput::calcRPAnalyticalSolution(FEOS& eos, double roL, double vL, double pL, double roR, double vR, double pR, double x, double t){
 	RPSolutionPrimitive res = solveRP(eos, roL, vL, pL, roR, vR, pR);
 	// V = (ro, v, p)T
 	CVectorPrimitive V;
@@ -312,7 +312,7 @@ CVectorPrimitive COutput::calcRPAnalyticalSolution(CEOS& eos, double roL, double
 	return V;
 }
 
-RPSolutionPrimitive COutput::solveRP(CEOS& eos, double roL, double vL, double pL, double roR, double vR, double pR) {
+RPSolutionPrimitive COutput::solveRP(FEOS& eos, double roL, double vL, double pL, double roR, double vR, double pR) {
 	// Решаем нелинейное уравнение относительно давления методом касательных Ньютона
 	RPSolutionPrimitive res; res.roL = 0.; res.roR=0.; res.v = 0.; res.p = 0.;
 	double p = 0., pPrev = 0.;
@@ -395,7 +395,7 @@ RPSolutionPrimitive COutput::solveRP(CEOS& eos, double roL, double vL, double pL
 }
 
 
-double COutput::fL(CEOS& eos, double p, double roL, double vL, double pL) {
+double COutput::fL(FEOS& eos, double p, double roL, double vL, double pL) {
 	double cL = eos.getc(roL, pL);	
 	const double gamma = roL*cL*cL/pL;
 	double f = 0.;
@@ -410,7 +410,7 @@ double COutput::fL(CEOS& eos, double p, double roL, double vL, double pL) {
 	}
 }
 
-double COutput::dfLdp(CEOS& eos, double p, double roL, double vL, double pL) {
+double COutput::dfLdp(FEOS& eos, double p, double roL, double vL, double pL) {
 	double cL = eos.getc(roL, pL);	
 	const double gamma = roL*cL*cL/pL;
 	double dfdp = 0.;
@@ -426,7 +426,7 @@ double COutput::dfLdp(CEOS& eos, double p, double roL, double vL, double pL) {
 	}
 }
 
-double COutput::fR(CEOS& eos, double p, double roR, double vR, double pR) {
+double COutput::fR(FEOS& eos, double p, double roR, double vR, double pR) {
 	double cR = eos.getc(roR, pR);	
 	const double gamma = roR*cR*cR/pR;
 	double f = 0.;
@@ -442,7 +442,7 @@ double COutput::fR(CEOS& eos, double p, double roR, double vR, double pR) {
 	}
 }
 
-double COutput::dfRdp(CEOS& eos, double p, double roR, double vR, double pR) {
+double COutput::dfRdp(FEOS& eos, double p, double roR, double vR, double pR) {
 	double cR = eos.getc(roR, pR);	
 	const double gamma = roR*cR*cR/pR;
 	double dfdp = 0.;

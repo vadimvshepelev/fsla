@@ -4,7 +4,7 @@
 #include<vector>
 
 #include "task.h"
-#include "ceos.h"
+#include "feos.h"
 
 
 using namespace std;
@@ -58,7 +58,7 @@ public:
 	double fREOSBin(double p, double roR, double vR, double pR);
 	double dfRdpEOSBin(double p, double roR, double vR, double pR);
 	// Аппарат для точного решения задачи о распаде разрыва с УРС Ми-Грюнайзена 
-	CVectorPrimitive calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double roL, double vL, double pL, double roR, double vR, double pR, double x, double t);	
+	CVectorPrimitive calcRPExactMillerPuckett(FEOSMieGruneisen& eos, double roL, double vL, double pL, double roR, double vR, double pR, double x, double t);	
 	double getdx(); 	
 
 	CTask task;
@@ -94,7 +94,7 @@ private:
 	void	calcHydroStageENO3G(double t, double tau);
 	void	calcHydroStageENO2G(double t, double tau);
 	void	calcHydroStageLaxFriedrichs(double t, double tau);
-	void calcHydroStageMieGruneisen(CEOSMieGruneisen& eos, double t, double tau);
+	void calcHydroStageMieGruneisen(FEOSMieGruneisen& eos, double t, double tau);
 	double calcInterpolationPolynomialDerivative3(double xim32, double xim12, double xip12, double xip32, double fim32, double fim12, double fip12, double fip32, double x);
 	// Limiters
 	Vector4 calcMinmodSlope(Vector4 deltaMinus, Vector4 deltaplus);

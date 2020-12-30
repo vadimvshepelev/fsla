@@ -1,6 +1,6 @@
 #include "C1DProblem.h"
 
-void C1DProblem::setics(CEOS& eos, vector<double>& x, vector<vector<double>>& U) {
+void C1DProblem::setics(FEOS& eos, vector<double>& x, vector<vector<double>>& U) {
 	// TODO
 	// Идея сделать "задача" = "начальные условия" + "граничные условия". 
 	// Граничные условия реалзиовать тем крутым способом, что уже здесь сделан, но убран из-за пересечений с C1DField, там где они задаются функицей bcs.set(C1DField& fld).
@@ -72,12 +72,16 @@ C1DProblem prDenisenko3 = C1DProblem("Denisenko-3-8100", 3., 4., 2., 2., 2., 1.,
 // 08.02.2020 First Riemann problem test for laser volume target problem for Al with ideal EOS
 C1DProblem prLaserVTAlIdealTest1 = C1DProblem("LaserVTAl1-ideal-2000", 2700., 0., 300.e9, 2., 0., 19.4872e9, -50.e-9, 50e-9, 0., 2.e-12, 0., 2000, .9, "tt");
 // 08.02.2020 Second Riemann problem test for laser volume target problem for Al with ideal EOS
-C1DProblem prLaserVTAlIdealTest2 = C1DProblem("LaserVTAl2-ideal-1000", 2700., 0., 19.4872e9, 2700., 0., 300.e9, -100.e-9, 0., 0., 2.e-12, -50.e-9, 1000, .9, "tt");
+C1DProblem prLaserVTAlIdealTest2 = C1DProblem("LaserVTAl2-ideal-100-corr20201226", 2700., 0., 19.4872e9, 2700., 0., 300.e9, -100.e-9, 0., 0., 2.e-12, -50.e-9, 100, .9, "tt");
 // 15.02.2020 First Riemann problem test for laser VT problem with Mie-Gruneisen EOS
 C1DProblem prLaserVTAlMGTest1 = C1DProblem("LaserVTAl1-MG-1nm", 2700., 0., 300.e9, 2., 0., 194872.e9, -50.e-9, 50.e-9, 0., 1.e-13, 0., 100, .9, "tt");
 // 16.02.2020 Second Riemann problem test for laserVT problem with Mie-Gruneisen EOS
 C1DProblem prLaserVTAlMGTest2 = C1DProblem("LaserVTAl2-MG-1nm", 2700., 0., 19.4872e9, 2700., 0., 300.e9, -100.e-9, 0., 0., 1.e-12, -50.e-9, 100, .9, "tt");
 // 16.05.2020 We restarted the test of Riemann problem for Mie-Gruneisen EOS -- just shifted test prLaserVTAlMGTest2
-C1DProblem prLaserVTAlMGTestNum1 = C1DProblem("LaserVTAlNum1-MG-1nm-hll", 2700., 0., 19.4872e9, 2700., 0., 300.e9, 0., 100.e-9, 0., 2.e-12, 50.e-9, 100, .9, "tt");
+C1DProblem prLaserVTAlMGTestNum1 = C1DProblem("vtAlNum1-MG-1nm-hll", 2700., 0., 19.4872e9, 2700., 0., 300.e9, 0., 100.e-9, 0., 2.e-12, 50.e-9, 100, .9, "tt");
 // 17.05.2020 I modified Godunov method in C1DGodunovTypeMethodVacuum class for metal-vacuum border tracking
 C1DProblem prIdealVacTest = C1DProblem("IdealVac", 0., 0., 0., 1., 0., 1., 0., 1., 0., .1, .5, 100, .9, "tt");
+// 30.12.2020 modified tests with new precise MG EOS
+C1DProblem prVTAlMGTest1 = C1DProblem("vtAl1MG-1nm-hllc", 2700., 0., 20.e9, 2700., 0., 300.e9, -100.e-9, 0., 0., 2.e-12, -50.e-9, 100, .9, "tt");
+C1DProblem prVTAlMGTest2 = C1DProblem("vtAl2MG-1nm-hll", 2700., 0., 300.e9, 2., 0., 20.e9, -50.e-9, 50.e-9, 0., 1.5e-13, 0., 100, .9, "tt");
+

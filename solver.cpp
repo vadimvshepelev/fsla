@@ -7,7 +7,7 @@
 #include "task.h"
 #include "node.h"
 #include "methodEuler.h"
-#include "ceos.h"
+#include "feos.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -64,7 +64,7 @@ void CSolver::goEuler(char* fName) {
 		timesArray[i] = (tMax-tInit)/(nTimes-1)*i;
 	}
 	// For Mie-Gruneisen Riemann solver tests
-	CEOSMieGruneisen eos;
+	FEOSMieGruneisen eos;
 	for(;;)	{
 		tau = calcTimeStepEuler(t);
 		if(t+tau >tMax) tau = tMax-t;

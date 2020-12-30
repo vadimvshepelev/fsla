@@ -1264,7 +1264,7 @@ CVectorPrimitive CSolver::calcRPAnalyticalSolution(double roL, double vL, double
 
 
 // Точный Римановский солвер для (предположительно, произвольного) УРС в форме Ми-Грюнайзена [Miller, Puckett JoCP 1996]
-CVectorPrimitive CSolver::calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double roL, double uL, double pL, double roR, double uR, double pR, double x=0., double t=1.) {
+CVectorPrimitive CSolver::calcRPExactMillerPuckett(FEOSMieGruneisen& eos, double roL, double uL, double pL, double roR, double uR, double pR, double x=0., double t=1.) {
 	CVectorPrimitive V;
 	const double gammaL = eos.getG(roL), gammaR = eos.getG(roR);
 	const double c0 = eos.getc(eos.ro0, eos.getp0(eos.ro0));
@@ -1355,7 +1355,7 @@ CVectorPrimitive CSolver::calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double
 
 
 
-void CSolver::calcHydroStageMieGruneisen(CEOSMieGruneisen& eos, double t, double tau) {
+void CSolver::calcHydroStageMieGruneisen(FEOSMieGruneisen& eos, double t, double tau) {
 	double roL = 0., uL = 0., eL = 0., pL = 0.,
 		   roR = 0., uR = 0., eR = 0., pR = 0., 
 		   E = 0.;

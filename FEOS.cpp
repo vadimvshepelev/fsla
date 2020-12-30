@@ -5,10 +5,10 @@
 
 using namespace std;
 
-#include "ceos.h"
+#include "feos.h"
 
 
-double CEOSMieGruneisen::getG(double ro) {
+double FEOSMieGruneisen::getG(double ro) {
 	double x = ro/ro0;
 	const double a0 = 2.95, a1 = 2.408, a2 = 12.151;
 	const double M = 18.;     // [g/mole]
@@ -21,7 +21,7 @@ double CEOSMieGruneisen::getG(double ro) {
  	return G;
 }
 
-double CEOSMieGruneisen::getp0(double ro) {
+double FEOSMieGruneisen::getp0(double ro) {
 	const double A = .6726e9; // [Pa]
 	const double b = 11.55;   	
 	const double K = 1.15e9;  // [Pa]
@@ -33,7 +33,7 @@ double CEOSMieGruneisen::getp0(double ro) {
 	return p0;
 }
 
-double CEOSMieGruneisen::gete0(double ro) {
+double FEOSMieGruneisen::gete0(double ro) {
 	const double A = .6726e9; // [Pa]
 	const double b = 11.55;   	
 	const double K = 1.15e9;  // [Pa]
@@ -45,7 +45,7 @@ double CEOSMieGruneisen::gete0(double ro) {
 	return e0;
 }
 
-double CEOSMieGruneisen::getp(double ro, double e) {
+double FEOSMieGruneisen::getp(double ro, double e) {
 	double x = ro/ro0;
 	double p0 = getp0(ro);
 	double e0 = gete0(ro);
@@ -54,7 +54,7 @@ double CEOSMieGruneisen::getp(double ro, double e) {
 	return p;
 }
 
-double CEOSMieGruneisen::gete(double ro, double p) {
+double FEOSMieGruneisen::gete(double ro, double p) {
 	double x = ro/ro0;
 	double p0 = getp0(ro);
 	double e0 = gete0(ro);
@@ -63,7 +63,7 @@ double CEOSMieGruneisen::gete(double ro, double p) {
 	return e;
 }
 
-double CEOSMieGruneisen::getc(double ro, double p) {
+double FEOSMieGruneisen::getc(double ro, double p) {
 	double x = ro/ro0;
 	double G = getG(ro);
 	double p0 = getp0(ro);
@@ -74,7 +74,7 @@ double CEOSMieGruneisen::getc(double ro, double p) {
 }
 
 
-double CEOSMieGruneisen::getGPrime(double ro) {
+double FEOSMieGruneisen::getGPrime(double ro) {
 	double x = ro/ro0;
 	const double a0 = 2.95, a1 = 2.408, a2 = 12.151;
 	const double M = 18.;     // [g/mole]
@@ -92,7 +92,7 @@ double CEOSMieGruneisen::getGPrime(double ro) {
 	return GPrime;
 }
 	
-double CEOSMieGruneisen::getp0Prime(double ro) {
+double FEOSMieGruneisen::getp0Prime(double ro) {
 	const double A = .7626e9; // [Pa]
 	const double b = 11.55;   	
 	const double K = 1.15e9;  // [Pa]
@@ -110,7 +110,7 @@ double CEOSMieGruneisen::getp0Prime(double ro) {
 	return p0Prime;
 }
 
-double CEOSMieGruneisen::getKSPrime(double ro, double e) {
+double FEOSMieGruneisen::getKSPrime(double ro, double e) {
 	double p = getp(ro, e), c = getc(ro, p), KS = ro*c*c, G = getG(ro), x = ro/ro0; 
 	// Partial derivatives
 	// G'(ro)
@@ -146,7 +146,7 @@ double CEOSMieGruneisen::getKSPrime(double ro, double e) {
 }
 
 
-double CEOSMieGruneisenAl::getp(double ro, double e) {
+double FEOSMieGruneisenAl::getp(double ro, double e) {
 	const double gamma = 3.9, G = 2., 
 		         B = 76.e9; // Bulk modulus of Al, [Pa];
 	double x = ro/ro0;
@@ -158,7 +158,7 @@ double CEOSMieGruneisenAl::getp(double ro, double e) {
 	return p;
 }
 
-double CEOSMieGruneisenAl::gete(double ro, double p) {
+double FEOSMieGruneisenAl::gete(double ro, double p) {
 	const double gamma = 3.9, G = 2., 
 		         B = 76.e9; // Bulk modulus of Al, [Pa];
 	double x = ro/ro0;
@@ -168,7 +168,7 @@ double CEOSMieGruneisenAl::gete(double ro, double p) {
 	return e;
 }
 
-double CEOSMieGruneisenAl::getc(double ro, double p) {
+double FEOSMieGruneisenAl::getc(double ro, double p) {
 	const double gamma = 3.9, G = 2., 
 		         B = 76.e9; // Bulk modulus of Al, [Pa];
 	double x = ro/ro0;
@@ -176,6 +176,88 @@ double CEOSMieGruneisenAl::getc(double ro, double p) {
 	double c  =sqrt((G+1)*(p-p_c)/ro + B/ro0*pow(x, gamma-1));
 	return c;
 }
+
+
+double FEOSMGAlPrecise::G(double x) {
+	if(x > 1.) 
+		return 1./3. + .5*(a*(a+1.)*pow(x, a) - b*(b+1.)*pow(x, b))/((a+1.)*pow(x, a) - (b+1.)*pow(x, b));
+	double B0 = a + b + 1./3., 
+		   B1 = -(a+1.)*(b+1.)/(a+b+1.), 
+		   B2 = a*b+a+b+2.-a*a*b*b/(a+b+1.)/(a+b+1.);
+	double g1 = 3.*B0 + (B0 + 2./3.)*(-2.*B1+(B1*B1 + B2)/2.),
+		   g2 = -3.*B0- + (B0+2./3.)*(3.*B1-B1*B1-B2),
+		   g3 = B0 - (B0+2./3.)*(B1-(B1*B1+B2)/2.);
+	return 2./3. + .5*(g1*x + g2*x*x + g3*x*x*x);
+}
+
+double FEOSMGAlPrecise::Gx1(double x) {
+	double B0 = a + b + 1./3., 
+		   B1 = -(a+1.)*(b+1.)/(a+b+1.), 
+		   B2 = a*b+a+b+2.-a*a*b*b/(a+b+1.)/(a+b+1.);
+	double g1 = 3.*B0 + (B0 + 2./3.)*(-2.*B1+(B1*B1 + B2)/2.),
+		   g2 = -3.*B0- + (B0+2./3.)*(3.*B1-B1*B1-B2),
+		   g3 = B0 - (B0+2./3.)*(B1-(B1*B1+B2)/2.);
+	return .5*(3.*g3*x*x + 2.*g2*x + g1);
+}
+
+double FEOSMGAlPrecise::Gx2(double x) {
+	return 1./2./x * (a*a*(a+1.)*pow(x,a) - b*b*(b+1.)*pow(x,b)) / ((a+1.)*pow(x,a) - (b+1.)*pow(x,b)-
+		   ( (a*(a+1.)*pow(x,a)-b*(b+1.)*pow(x,b))/((a+1.)*pow(x,a)-(b+1)*pow(x,b)))*
+		   ( (a*(a+1.)*pow(x,a)-b*(b+1.)*pow(x,b))/((a+1.)*pow(x,a)-(b+1)*pow(x,b))) );
+}
+
+double FEOSMGAlPrecise::GPrime(double x) {
+	if(x>1.)
+		return Gx1(x);
+	else
+		return Gx2(x);
+}
+
+double FEOSMGAlPrecise::pCold(double rho) {
+	double x = rho/rho0;
+	return p0*x*(pow(x,a)-pow(x,b));
+}
+
+double FEOSMGAlPrecise::eCold(double rho) {
+	double x = rho/rho0;
+	return p0*(pow(x,a)/a-pow(x,b)/b);
+}
+
+
+double FEOSMGAlPrecise::getp(double rho, double e) {
+	double x = rho/rho0;
+	return pCold(rho)+G(x)*rho*(e-eCold(rho));
+}
+
+double FEOSMGAlPrecise::gete(double rho, double p) {
+	double x = rho/rho0;
+	return eCold(rho)+1./rho/G(x)*(p-pCold(rho));
+}
+
+double FEOSMGAlPrecise::getc(double rho, double p) {
+	double x = rho/rho0, c02 = p0/rho0;
+	return c02*( (a+1.)*pow(x,a)-(b+1.)*pow(x,b)+(p/p0-(pow(x,a+1.)-pow(x,b+1.)))*(G(x)+x*G(x)+G(x)*G(x))/x/G(x) );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

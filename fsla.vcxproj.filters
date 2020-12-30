@@ -108,9 +108,6 @@
     <ClCompile Include="solvers\HLL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ceos.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="eosold.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -140,6 +137,9 @@
     </ClCompile>
     <ClCompile Include="F1DReconstruction.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FEOS.cpp">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -221,9 +221,6 @@
     <ClInclude Include="eos\EOSBin.h">
       <Filter>EOSBin</Filter>
     </ClInclude>
-    <ClInclude Include="ceos.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="eosold.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -252,6 +249,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="F1DReconstruction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FEOS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -134,7 +134,7 @@
     <ClCompile Include="C1DBCs.cpp" />
     <ClCompile Include="C1DField.cpp" />
     <ClCompile Include="C1DMethod.cpp" />
-    <ClCompile Include="ceos.cpp" />
+    <ClCompile Include="FEOS.cpp" />
     <ClCompile Include="C1DProblem.cpp" />
     <ClCompile Include="F1DReconstruction.cpp" />
     <ClCompile Include="F1DSimulation.cpp" />
@@ -176,7 +176,7 @@
   <ItemGroup>
     <ClInclude Include="C1DField.h" />
     <ClInclude Include="C1DMethod.h" />
-    <ClInclude Include="ceos.h" />
+    <ClInclude Include="FEOS.h" />
     <ClInclude Include="C1DProblem.h" />
     <ClInclude Include="F1DSimulation.h" />
     <ClInclude Include="COutput.h" />

@@ -17,7 +17,7 @@
 
 #include "methodEuler.h"
 
-#include "ceos.h"
+#include "feos.h"
 
 #include<stdlib.h>
 #include<string.h>
@@ -251,7 +251,7 @@ CTask::~CTask() {
 				zones[j].e = _e;
 			}   else if(type == TaskType::MieGruneisenProblem) {
 				// —овершенно адска€ зќплатка, никогда так больше не делай!!!
-				CEOSMieGruneisen eos;
+				FEOSMieGruneisen eos;
 				zones[j].ti = 0.;
 				zones[j].te = 0.;
 				zones[j].e = eos.gete(zones[j].ro, _p);

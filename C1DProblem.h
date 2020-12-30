@@ -5,7 +5,7 @@
 #include<vector>
 
 #include"_vector4.h"
-#include"ceos.h"
+#include"feos.h"
 
 using namespace std;
 
@@ -25,7 +25,7 @@ public:
 	const int nx;
 	double cfl;	
 	string bcs;
-	void setics(CEOS& eos, vector<double>& x, vector<vector<double>>& U);
+	void setics(FEOS& eos, vector<double>& x, vector<vector<double>>& U);
 	void setbcs(vector<vector<double>>& U);
 };
 
@@ -36,5 +36,6 @@ extern C1DProblem prDenisenko1, prDenisenko2, prDenisenko3;
 extern C1DProblem prLaserVTAlIdealTest1, prLaserVTAlIdealTest2;
 extern C1DProblem prLaserVTAlMGTest1, prLaserVTAlMGTestNum1, prLaserVTAlMGTest2;
 extern C1DProblem prIdealVacTest;
+extern C1DProblem prVTAlMGTest1, prVTAlMGTest2;
 
 #endif

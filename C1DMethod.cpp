@@ -2,7 +2,7 @@
 #include"solver.h"
 
 
-void C1DGodunovMethodMillerPuckett::calc(C1DProblem& pr, CEOSMieGruneisen& eos, C1DField& fld) {
+void C1DGodunovMethodMillerPuckett::calc(C1DProblem& pr, FEOSMieGruneisen& eos, C1DField& fld) {
 	double roL = 0., uL = 0., eL = 0., pL = 0.,
 		   roR = 0., uR = 0., eR = 0., pR = 0., 
 		   E = 0.;
@@ -32,7 +32,7 @@ void C1DGodunovMethodMillerPuckett::calc(C1DProblem& pr, CEOSMieGruneisen& eos, 
 	pr.setbcs(fld.U);
 }
 
-double C1DGodunovMethodMillerPuckett::calcdt(C1DProblem& pr, CEOSMieGruneisen& eos, C1DField& fld) {
+double C1DGodunovMethodMillerPuckett::calcdt(C1DProblem& pr, FEOSMieGruneisen& eos, C1DField& fld) {
 	vector<vector<double>> U = fld.U; 
 	int imin = fld.imin, imax = fld.imax;
 	double ro = U[imin][0], u = U[imin][1]/ro, e = U[imin][2]/ro-.5*u*u, p=eos.getp(ro,e), c = eos.getc(ro, p);
@@ -49,7 +49,7 @@ double C1DGodunovMethodMillerPuckett::calcdt(C1DProblem& pr, CEOSMieGruneisen& e
 	return pr.cfl*dt1;
 }
 
-C1DVectorPrimitive C1DGodunovMethodMillerPuckett::calcRPExactMillerPuckett(CEOSMieGruneisen& eos, double roL, double uL, double pL, double roR, double uR, double pR) {
+C1DVectorPrimitive C1DGodunovMethodMillerPuckett::calcRPExactMillerPuckett(FEOSMieGruneisen& eos, double roL, double uL, double pL, double roR, double uR, double pR) {
 	C1DVectorPrimitive V;
 	const double gammaL = eos.getG(roL), gammaR = eos.getG(roR);
 	// Первое замечание по физике: почему нет "нормального" нулевого давления? То давление, которое "должно" быть нулевым по логике вещей, существенно отрицательно.
@@ -141,7 +141,7 @@ C1DVectorPrimitive C1DGodunovMethodMillerPuckett::calcRPExactMillerPuckett(CEOSM
 
 
 // Function finds resulting ro, u, p and wave structure of Riemann problem
-RPValues calcValues(CEOS& eos, double roL, double uL, double pL, double roR, double uR, double pR) {
+RPValues calcValues(FEOS& eos, double roL, double uL, double pL, double roR, double uR, double pR) {
 	// Решаем нелинейное уравнение относительно давления методом касательных Ньютона
 	RPValues res; 
 	double p = 0., pPrev = 0.;
@@ -225,7 +225,7 @@ RPValues calcValues(CEOS& eos, double roL, double uL, double pL, double roR, dou
 	return res;
 }
 
-double fL(CEOS& eos, double p, double roL, double uL, double pL) {
+double fL(FEOS& eos, double p, double roL, double uL, double pL) {
 	const double gamma = eos.getc(1., 1.)*eos.getc(1.,1.);
 	double f = 0.;
 	if(p>pL) {
@@ -240,7 +240,7 @@ double fL(CEOS& eos, double p, double roL, double uL, double pL) {
 	}
 }
 
-double dfLdp(CEOS& eos, double p, double roL, double vL, double pL) {
+double dfLdp(FEOS& eos, double p, double roL, double vL, double pL) {
 	const double gamma = eos.getc(1., 1.)*eos.getc(1.,1.);
 	double dfdp = 0.;
 	if (p>pL) {
@@ -256,7 +256,7 @@ double dfLdp(CEOS& eos, double p, double roL, double vL, double pL) {
 	}
 }
 
-double fR(CEOS& eos, double p, double roR, double vR, double pR) {
+double fR(FEOS& eos, double p, double roR, double vR, double pR) {
 	const double gamma = eos.getc(1., 1.)*eos.getc(1.,1.);
 	double f = 0.;
 	if(p>pR) {
@@ -271,7 +271,7 @@ double fR(CEOS& eos, double p, double roR, double vR, double pR) {
 	}
 }
 
-double dfRdp(CEOS& eos, double p, double roR, double vR, double pR) {
+double dfRdp(FEOS& eos, double p, double roR, double vR, double pR) {
 	const double gamma = eos.getc(1., 1.)*eos.getc(1.,1.);
 	double dfdp = 0.;
 	if (p>pR) {
@@ -286,7 +286,7 @@ double dfRdp(CEOS& eos, double p, double roR, double vR, double pR) {
 	}
 }
 
-C1DVectorPrimitive calcSolution(CEOS& eos, double roL, double uL, double pL, double roR, double uR, double pR, double x, double t){
+C1DVectorPrimitive calcSolution(FEOS& eos, double roL, double uL, double pL, double roR, double uR, double pR, double x, double t){
 	RPValues res = calcValues(eos, roL, uL, pL, roR, uR, pR);
 	// V = (ro, v, p)T
 	C1DVectorPrimitive V;
@@ -427,7 +427,7 @@ C1DVectorPrimitive calcSolution(CEOS& eos, double roL, double uL, double pL, dou
 }
 
 
-double C1DGodunovTypeMethod::calcdt(C1DProblem& pr, CEOS& eos, C1DField& fld) {
+double C1DGodunovTypeMethod::calcdt(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 	vector<vector<double>> U = fld.U; 
 	int imin = fld.imin, imax = fld.imax;
 	double ro = U[imin][0], u = U[imin][1]/ro, e = U[imin][2]/ro-.5*u*u, p=eos.getp(ro,e), c = eos.getc(ro, p);
@@ -444,7 +444,7 @@ double C1DGodunovTypeMethod::calcdt(C1DProblem& pr, CEOS& eos, C1DField& fld) {
 	return pr.cfl*dt1;
 }
 
-void C1DGodunovTypeMethod::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) {
+void C1DGodunovTypeMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 	double roL = 0., uL = 0., eL = 0., pL = 0.,
 		   roR = 0., uR = 0., eR = 0., pR = 0., 
 		   E = 0.;
@@ -470,7 +470,7 @@ void C1DGodunovTypeMethod::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) {
 }
 
 
-double C1DGodunovTypeMethodVacuum::calcdt(C1DProblem& pr, CEOS& eos, C1DField& fld) {
+double C1DGodunovTypeMethodVacuum::calcdt(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 	vector<vector<double>> U = fld.U; 
 	int imin = fld.imin, imax = fld.imax;
 	double ro = U[imax-1][0], u = U[imax-1][1]/ro, e = U[imax-1][2]/ro-.5*u*u, p=eos.getp(ro,e), c = eos.getc(ro, p);
@@ -490,7 +490,7 @@ double C1DGodunovTypeMethodVacuum::calcdt(C1DProblem& pr, CEOS& eos, C1DField& f
 	return pr.cfl*dt1;
 }
 
-void C1DGodunovTypeMethodVacuum::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) {
+void C1DGodunovTypeMethodVacuum::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 	double roL = 0., uL = 0., eL = 0., pL = 0.,
 		   roR = 0., uR = 0., eR = 0., pR = 0., 
 		   E = 0.;
@@ -630,14 +630,14 @@ void C1DGodunovTypeMethodVacuum::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) 
 }
 
 
-Vector4 calcPhysicalFlux(CEOS& eos, double ro, double u, double p) {
+Vector4 calcPhysicalFlux(FEOS& eos, double ro, double u, double p) {
 	if (ro==0) return Vector4::ZERO; 
 	double e = eos.gete(ro, p);
 	return Vector4(ro*u, p + ro*u*u, u*(p + ro*(e + .5*u*u)), 0.);
 }
 
 // Godunov-exact solver flux
-Vector4 CExactRiemannSolver::calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {	
+Vector4 CExactRiemannSolver::calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {	
 	double uL = 0., uR = 0., pL = 0., pR = 0.;
 	if(roL!=0.) {
 	    uL = rouL/roL;
@@ -654,7 +654,7 @@ Vector4 CExactRiemannSolver::calcFlux(CEOS& eos, double roL, double rouL, double
 }
 
 // HLL flux for general EOS
-Vector4 CHLLRiemannSolver::calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {
+Vector4 CHLLRiemannSolver::calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {
 	double _ro = 0., _u = 0., _e = 0., _p = 0.;
 	double uL = rouL/roL, uR = rouR/roR;	
 	double eL = roEL/roL - .5*uL*uL, eR = roER/roR - .5*uR*uR; 
@@ -682,7 +682,7 @@ Vector4 CHLLRiemannSolver::calcFlux(CEOS& eos, double roL, double rouL, double r
 }
 
 // HLLC flux for general EOS
-Vector4 CHLLCRiemannSolver::calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {
+Vector4 CHLLCRiemannSolver::calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {
 	double _ro = 0., _u = 0., _e = 0., _p = 0.;
 	double uL = rouL/roL, uR = rouR/roR;	
 	double eL = roEL/roL - .5*uL*uL, eR = roER/roR - .5*uR*uR; 
@@ -719,7 +719,7 @@ Vector4 CHLLCRiemannSolver::calcFlux(CEOS& eos, double roL, double rouL, double 
 }
 
 
-Vector4 CGPSRiemannSolver::calcFlux(CEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {
+Vector4 CGPSRiemannSolver::calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {
 	double _ro=0., _u=0., _p=0., _e=0., _E=0., _sigma = 0., sigmaL = 0., sigmaR = 0.;
 	double uL = rouL/roL, uR = rouR/roR, EL = roEL/roL, ER = roER/roR, eL = EL - 0.5*uL*uL, eR = ER - 0.5*uR*uR, 
 		   pL = eos.getp(roL, eL), pR = eos.getp(roR, eR), cL = eos.getc(roL, pL), cR = eos.getc(roR, pR);
@@ -743,7 +743,7 @@ Vector4 CGPSRiemannSolver::calcFlux(CEOS& eos, double roL, double rouL, double r
 }
 
 
-void C1D2ndOrderMethod::calc(C1DProblem& pr, CEOS& eos, C1DField& fld) {
+void C1D2ndOrderMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 	double roL = 0., uL = 0., eL = 0., pL = 0., roR = 0., uR = 0., eR = 0., pR = 0., E = 0.;
 	double dx = fld.dx, t = fld.t, dt = fld.dt;
 	int i=0, imin = fld.imin, imax = fld.imax;

@@ -76,21 +76,6 @@ int COutput::manageScreenOutput(C1DProblem& _prm, int iteration, double t, doubl
 */
 int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, FEOS& eos) {	
 	assert(!dtt.empty());	
-	
-	
-	
-	
-	
-	///
-	ostringstream oss1;
-	oss1 << subDir << "\\" << pr.name << "-" << 100 << ".dat"; string fName1 = oss1.str();
-	dump(pr, fld, eos, fName1);
-	///
-
-
-
-
-
 	if (fld.t>=dtt[0]) {
 		ostringstream oss1;
 		oss1 << subDir << "\\" << pr.name << "-" << nDump++ << ".dat"; string fName1 = oss1.str();

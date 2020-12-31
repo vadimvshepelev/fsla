@@ -6,6 +6,7 @@ public:
 	virtual double getp(double ro, double e) = 0;
 	virtual double gete(double ro, double p) = 0;
 	virtual double getc(double ro, double p) = 0;
+	virtual string gettype(void) = 0;
 };
 
 
@@ -16,6 +17,7 @@ public:
 	double getp(double ro, double e) { return (gamma-1.)*ro*e; }
 	double gete(double ro, double p) { if(ro!=0.) return p/(gamma-1.)/ro; else return 0.; }
 	double getc(double ro, double p) { if(ro!=0.) return sqrt(gamma*p/ro); else return 0.;}
+	string gettype(void) {return string("ideal"); }
 };
 
 
@@ -35,6 +37,7 @@ public:
 	// Cold components, Born-Meyer potential 
 	double getp0(double ro);
 	double gete0(double ro);
+	string gettype(void) {return string("mg"); }
 };
 
 
@@ -45,6 +48,7 @@ public:
 	double getp(double ro, double e);
 	double gete(double ro, double p);
 	double getc(double ro, double p);
+	string gettype(void) {return string("mg"); }
 };
 
 
@@ -61,6 +65,7 @@ public:
 	double getp(double rho, double e);
 	double gete(double rho, double p);
 	double getc(double rho, double p);
+	string gettype(void) {return string("mg"); }
 };
 
 
@@ -75,6 +80,7 @@ public:
 	double getp(double ro, double e);
 	double gete(double ro, double p);
 	double getc(double ro, double e);
+	string gettype(void) {return string("lomonosov"); }
 private:
 	void EOSE5(double ro, double e, double& P, double& C, double& g, bool& nonPhysical);
 

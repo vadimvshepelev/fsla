@@ -49,9 +49,11 @@ int main(int argc, char *argv[]) {
 	// Uncomment for LaserVT test problem
     FEOSMieGruneisenAl eos = FEOSMieGruneisenAl();
 	//CEOSIdeal eos = CEOSIdeal(3.9);
-	C1DProblem pr = prVTAlMGTest2;  //prLaserVTAlMGTestNum1;
+	C1DProblem pr = prVTAlMGTest1;  //prLaserVTAlMGTestNum1;
 	C1DField *fldptr = new C1DField(pr);
 	CHLLRiemannSolver hll;
+	//F1DENO2Reconstruction eno2rec=F1DENO2Reconstruction(*fldptr);
+	//C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hll, eno2rec);	
 	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hll);
 	double _dtt[] = {pr.tmin, pr.tmax};
 	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));

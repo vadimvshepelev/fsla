@@ -47,7 +47,8 @@ int main(int argc, char *argv[]) {
 	//C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(ex);
 
 	// Uncomment for LaserVT test problem
-    FEOSMGAlPrecise eos = FEOSMGAlPrecise();
+    //FEOSMGAlPrecise eos = FEOSMGAlPrecise();
+	FEOSMieGruneisenAl eos;
 	//CEOSIdeal eos = CEOSIdeal(3.9);
 	C1DProblem pr = prVTAlMGTest1;  //prLaserVTAlMGTestNum1;
 	C1DField *fldptr = new C1DField(pr);

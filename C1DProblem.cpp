@@ -83,5 +83,5 @@ C1DProblem prLaserVTAlMGTestNum1 = C1DProblem("vtAlNum1-MG-1nm-hll", 2700., 0., 
 C1DProblem prIdealVacTest = C1DProblem("IdealVac", 0., 0., 0., 1., 0., 1., 0., 1., 0., .1, .5, 100, .9, "tt");
 // 30.12.2020 modified tests with new precise MG EOS
 C1DProblem prVTAlMGTest1 = C1DProblem("vtAl1MG-1nm-hll", 2700., 0., 0., 2700., 0., 300.e9, -100.e-9, 0., 0., 2.e-12, -50.e-9, 100, .9, "tt");
-C1DProblem prVTAlMGTest2 = C1DProblem("vtAl2MG-1nm-hllc", 2700., 0., 300.e9, 2., 0., 0., -50.e-9, 50.e-9, 0., 1.5e-13, 0., 100, .9, "tt");
+C1DProblem prVTAlMGTest2 = C1DProblem("vtAl2MG-1nm-hllc", 2700., 0., 300.e9, 2., 0., 0., -50.e-9, 50.e-9, 0., 1.5e-13, 0., 100, .5, "tt");
 

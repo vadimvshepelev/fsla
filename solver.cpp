@@ -2763,31 +2763,6 @@ void CSolver::calcHydroStageMHM(double t, double tau) {
 		cout << "31:" << slope[31+nOrder]<<endl;
 	}
 
-	// Vizualizing MUSCL linear data reconstruction
-	/*string fName = string("reconstr.dat");
-	ofstream ofs;
-	ofs.open(fName, ios::out);
-	double lTotal = h*nSize;
-	int j=0, nZoom = 10;
-	int nDetSize = nSize*nZoom;
-	double hDet = lTotal/nDetSize;
-	double _x_i = 0., _x=0., _ro=0., _rou=0., _roE=0.;
-	for(i=0; i<nSize; i++) {
-		_x_i = h*i + h/2.;
-		for(j=0; j<nZoom; j++) {
-			_x = _x_i - h/2. + hDet/2. + j*hDet;
-			_ro = ms[i].ro + (_x-_x_i)/h*slope[i+2][0];
-			_rou = ms[i].ro*ms[i].v + (_x-_x_i)/h*slope[i+2][1];
-			_roE = ms[i].ro*(ms[i].e+0.5*ms[i].v*ms[i].v) + (_x-_x_i)/h*slope[i+2][2];
-			ofs.setf(ios::scientific);
-			ofs << _x << " " << _ro << " " << _rou << " " << _roE << endl;
-		}
-	}
-
-	ofs.close();*/
-	///
-
-
 	// Data evolution
 	for(i=0; i<nSize+nOrder+nOrder; i++) {
 		Vector4 FL = calcPhysicalFlux(_U_L[i][0], _U_L[i][1], _U_L[i][2]),
@@ -2797,15 +2772,8 @@ void CSolver::calcHydroStageMHM(double t, double tau) {
 	}
 	// Godunov flux, based on exact RP solution
 	for(i=0; i<nSize; i++) {
-		////
-		if(i==80) {
-		    double qq=0.;	
-		}
-		////
-		
 		ms[i].F = calcGodunovFlux(_U_R[i-1+nOrder][0], _U_R[i-1+nOrder][1], _U_R[i-1+nOrder][2], 
 			                      _U_L[i+nOrder][0], _U_L[i+nOrder][1], _U_L[i+nOrder][2]);
-
 	}
 	i = nSize;
 	ms[i].F = calcGodunovFlux(_U_R[i-1+nOrder][0], _U_R[i-1+nOrder][1], _U_R[i-1+nOrder][2], 
@@ -2813,22 +2781,8 @@ void CSolver::calcHydroStageMHM(double t, double tau) {
 	// Riemann problem		
 	// Main cycle
 	for(i=0; i<nSize; i++) {				
-		
-		
-		
-		////
-		if(i==80) {
-		    double qq=0.;	
-		}
-		////
-
-
-
-		
-		
 		ms[i].W_temp = ms[i].W - tau/h*(ms[i+1].F-ms[i].F);
 	}
-
 	for(i=0; i<nSize; i++) {
 		// Обновляем консервативные переменные
 		Node& n=ms[i]; 

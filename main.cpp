@@ -72,18 +72,18 @@ int main(int argc, char *argv[]) {
 
 
 	// Uncomment for LaserVT test problem
-   // FEOSMGAlPrecise6 eos;
-	//FEOSMieGruneisenAl eos;
-	FEOSIdeal eos = FEOSIdeal(3.9);
+    FEOSMGAlPrecise6 eos;
+	// FEOSMieGruneisenAl eos;
+	// FEOSIdeal eos = FEOSIdeal(3.9);
 	C1DProblem pr = prVTAlMGTest2_2;  
 
-	/*double _rho = 2413.,_p = 1.e9;
+	double _rho = 2413.,_p = 1.e9;
 	double _e = eos.gete(_rho, _p);
-	double _pro = eos.getdpdro(_rho, _p);
+	double _pro = eos.getdpdrho(_rho, _p);
 	double _pe = eos.getdpde(_rho, _e);
 	double c1 = eos.getc(_rho, _p);
 
-	double c2 = sqrt(_p*_pe/_rho/_rho + _pro); */
+	double c2 = sqrt(_p*_pe/_rho/_rho + _pro);
 
 
 	C1DField *fldptr = new C1DField(pr);

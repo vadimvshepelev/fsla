@@ -1,6 +1,7 @@
 *.dat
 debug/*
-x64/debug
+x64/debug/*
+x64/Release/*
 ipch/*
 Release/*
 calc/output/*

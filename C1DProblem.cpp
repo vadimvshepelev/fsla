@@ -15,19 +15,6 @@ void C1DProblem::setics(FEOS& eos, vector<double>& x, vector<vector<double>>& U)
 		x[i] = (xmin - 2.*dx) + (double)i*dx;
 	}
 	for(i=imin; i<imax; i++) {
-
-
-
-
-		if(i == 52) {
-
-			double q  = 1.;
-		}
-
-
-
-
-
 		if(x[i] < x0 && fabs(x[i] - x0) > 1.e-5*dx ) {
 			U[i][0] = rol;
 			U[i][1] = rol*ul;

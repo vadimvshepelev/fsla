@@ -354,10 +354,12 @@ double FEOSMGAlPrecise6::eColdPrime(double rho) {
 
 double FEOSMGAlPrecise6::getdpdrho(double rho, double e) {
 	double _G = G(rho/rho0);
+	double _pc = pCold(rho);
 	double _pcx = pColdPrime(rho);
 	double _ec = eCold(rho);
-	double _ecx = eColdPrime(rho);
-	return _pcx/rho0 + _G*(e-_ec) - rho*_G*_ecx/rho0; 
+	// double _ecx = eColdPrime(rho);
+	// return _pcx/rho0 + _G*(e-_ec) - rho*_G*_ecx/rho0; 
+	return _pcx/rho0 + _G*(e-_ec) - _G/rho*_pc; 
 }
 
 

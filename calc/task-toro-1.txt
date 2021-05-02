@@ -1,6 +1,6 @@
 EOSType = ideal
-Method = godunov1
-CFL = .9
+Method = bgk
+CFL = .5
 maxTime = .2
 nZones = 2
 

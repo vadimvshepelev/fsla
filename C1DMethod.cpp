@@ -2,6 +2,8 @@
 #include"solver.h"
 
 
+CExactRiemannSolver exrslv;
+
 void C1DGodunovMethodMillerPuckett::calc(C1DProblem& pr, FEOSMieGruneisen& eos, C1DField& fld) {
 	double roL = 0., uL = 0., eL = 0., pL = 0.,
 		   roR = 0., uR = 0., eR = 0., pR = 0., 
@@ -455,6 +457,25 @@ void C1DGodunovTypeMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 	int i=0;	
 	// Потоки считаем по алгоритму решения задаче о распаде разрыва для УРС Ми-Грюнайзена из работы [Miller, Puckett]
 	for(i=imin; i<=imax; i++) {
+		
+		
+		
+		
+		
+		if( i == 53 )
+		{ 
+			
+			
+			double q = 1.;
+		
+		
+		}
+		
+		
+		
+		
+		
+		
 		Vector4 flux = rslv.calcFlux(eos, U[i-1][0], U[i-1][1], U[i-1][2], U[i][0], U[i][1], U[i][2]); 
 		double _F[] = {flux[0], flux[1], flux[2]};
 		F[i] = vector<double>(_F, _F+sizeof(_F)/sizeof(_F[0]));		
@@ -657,19 +678,29 @@ Vector4 CExactRiemannSolver::calcFlux(FEOS& eos, double roL, double rouL, double
 Vector4 CHLLRiemannSolver::calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {
 	double _ro = 0., _u = 0., _e = 0., _p = 0.;
 	double uL = rouL/roL, uR = rouR/roR;	
+	double EL = roEL/roL, ER = roER/roR;
 	double eL = roEL/roL - .5*uL*uL, eR = roER/roR - .5*uR*uR; 
 	if(roL == 0. || roR == 0.) {
 		cout << "Error: CSolver::calcHLLFluxEOSIdeal(): vacuum is present." << endl;
 		exit(1);	}
 	double pL = eos.getp(roL, eL), pR = eos.getp(roR, eR);
+	double HL = EL + pL/roL, HR = ER + pR/roR;
 	double cL = eos.getc(roL, pL), cR = eos.getc(roR, pR);	
 	Vector4 UL = Vector4(roL, rouL, roEL, 0.), UR = Vector4(roR, rouR, roER, 0.);
 	_ro = roL, _u = rouL/roL, _e = roEL/roL-.5*_u*_u, _p=eos.getp(_ro, _e);
 	Vector4 FL = Vector4(rouL, _p + _ro*_u*_u, _u*(_p + roEL), 0.);
 	_ro = roR, _u = rouR/roR, _e = roER/roR-.5*_u*_u, _p=eos.getp(_ro, _e);
 	Vector4 FR = Vector4(rouR, _p + _ro*_u*_u, _u*(_p + roER), 0.); 
-	double SL = min(min(uL - cL, uR - cR), 0.), 
-		   SR = max(max(uL + cL, uR + cR), 0.);
+
+	// Roe averaging
+	double roAv = sqrt(roL*roR);
+	double uAv = (uL*sqrt(roL) + uR*sqrt(roR))/(sqrt(roL)+sqrt(roR));
+	double HAv = (HL*sqrt(roL) + HR*sqrt(roR))/(sqrt(roL)+sqrt(roR));
+	double EAv = (EL*sqrt(roL) + ER*sqrt(roR))/(sqrt(roL)+sqrt(roR));
+	double pAv = (HAv - EAv) * roAv;
+	double cAv = eos.getc(roAv, pAv);
+	double SL = uAv-cAv, SR = uAv+cAv;
+
 	// Vector4 Uhll = (SR*UR - SL*UL + FL - FR)/(SR - SL);
 	Vector4 Fhll = Vector4::ZERO;
     if (0. <= SL)  
@@ -685,11 +716,13 @@ Vector4 CHLLRiemannSolver::calcFlux(FEOS& eos, double roL, double rouL, double r
 Vector4 CHLLCRiemannSolver::calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {
 	double _ro = 0., _u = 0., _e = 0., _p = 0.;
 	double uL = rouL/roL, uR = rouR/roR;	
+	double EL = roEL/roL, ER = roER/roR;
 	double eL = roEL/roL - .5*uL*uL, eR = roER/roR - .5*uR*uR; 
 	if(roL == 0. || roR == 0.) {
 		cout << "Error: CSolver::calcHLLFluxEOSIdeal(): vacuum is present." << endl;
 		exit(1);	}
 	double pL = eos.getp(roL, eL), pR = eos.getp(roR, eR);
+	double HL = EL + pL/roL, HR = ER + pR/roR;
 	double cL = eos.getc(roL, pL), cR = eos.getc(roR, pR);	
 	Vector4 UL = Vector4(roL, rouL, roEL, 0.), UR = Vector4(roR, rouR, roER, 0.);
 	_ro = roL, _u = rouL/roL, _e = roEL/roL-.5*_u*_u, _p=eos.getp(_ro, _e);
@@ -698,9 +731,25 @@ Vector4 CHLLCRiemannSolver::calcFlux(FEOS& eos, double roL, double rouL, double 
 	Vector4 FR = Vector4(rouR, _p + _ro*_u*_u, _u*(_p + roER), 0.); 
 	// Step 1 -- pressure estimate from primitive-variable Riemann solver (PVRS)
 	double roAv = .5*(roL + roR), cAv = .5*(cL + cR), pPVRS = .5*(pL + pR) - .5*(uR - uL)*roAv*cAv;
-	double pStar = max(0., pPVRS);
+	//double pStar = max(0., pPVRS);
+	double pStar = max(-15.e9, pPVRS);
+	
+	
+	
+	
+	
 	// Step 2 -- wave speed estimates	
-	double SL = min(min(uL - cL, uR - cR), 0.), SR = max(max(uL + cL, uR + cR), 0.);
+	// Roe averaging
+	double _roAv = sqrt(roL*roR);
+	double _uAv = (uL*sqrt(roL) + uR*sqrt(roR))/(sqrt(roL)+sqrt(roR));
+	double _HAv = (HL*sqrt(roL) + HR*sqrt(roR))/(sqrt(roL)+sqrt(roR));
+	double _EAv = (EL*sqrt(roL) + ER*sqrt(roR))/(sqrt(roL)+sqrt(roR));
+	double _pAv = (_HAv - _EAv) * _roAv;
+	double _cAv = eos.getc(_roAv, _pAv);
+	double SL = _uAv-_cAv, SR = _uAv+_cAv;
+	//double SL = min(min(uL - cL, uR - cR), 0.), SR = max(max(uL + cL, uR + cR), 0.);
+	
+	
 	double SStar = (pR - pL + roL*uL*(SL - uL) - roR*uR*(SR - uR))/(roL*(SL - uL) - roR*(SR - uR));
 	// Vector4 Uhll = (SR*UR - SL*UL + FL - FR)/(SR - SL);
 	Vector4 Fhllc = Vector4::ZERO;
@@ -743,6 +792,15 @@ Vector4 CGPSRiemannSolver::calcFlux(FEOS& eos, double roL, double rouL, double r
 }
 
 
+Vector4 CLFRiemannSolver::calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER, double dx, double dt) {
+	Vector4 UL = Vector4(roL, rouL, roEL, 0.), UR = Vector4(roR, rouR, roER, 0.); 
+	Vector4 FL = calcPhysicalFlux(eos, roL, rouL, roEL), FR = calcPhysicalFlux(eos, roR, rouR, roER); 
+	Vector4 F = .5*(FL + FR) - 0.5*dx/dt*(UR - UL);
+	return F;
+}
+
+
+
 void C1D2ndOrderMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 	double roL = 0., uL = 0., eL = 0., pL = 0., roR = 0., uR = 0., eR = 0., pR = 0., E = 0.;
 	double dx = fld.dx, t = fld.t, dt = fld.dt;
@@ -763,4 +821,296 @@ void C1D2ndOrderMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 		for(int counter=0; counter<3; counter++) U[i][counter] = newU[i][counter];
 	}	
 	pr.setbcs(fld.U);
+}
+
+
+void C1DBGKMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
+	double roL = 0., uL = 0., eL = 0., pL = 0., roR = 0., uR = 0., eR = 0., pR = 0., E = 0.;
+	double dx = fld.dx, t = fld.t, dt = fld.dt;
+	int i=0, imin = fld.imin, imax = fld.imax;
+	vector<vector<double>> &U = fld.U, &newU = fld.newU, &F = fld.F;
+	for(i=imin-1; i<imax; i++) {		
+
+
+
+
+
+
+
+		if( i == 31 )
+		{ 
+			
+			
+			double q = 1.;
+		
+		
+		}
+
+
+
+
+		Vector4 _Um = Vector4(U[i-1][0],U[i-1][1],U[i-1][2],0.);
+		Vector4 _U = Vector4(U[i][0],U[i][1],U[i][2],0.);
+		Vector4 _Up = Vector4(U[i+1][0],U[i+1][1],U[i+1][2],0.);
+		Vector4 _Upp = Vector4(U[i+2][0],U[i+2][1],U[i+2][2],0.);
+		Vector4 flux = bgk.calcFlux(eos, _Um, _U, _Up, _Upp, dx, dt);
+		double _F[] = {flux[0], flux[1], flux[2]};
+		F[i] = vector<double>(_F, _F+sizeof(_F)/sizeof(_F[0]));		
+	}
+	for(i=imin; i<imax; i++) {
+		for(int counter=0; counter<3; counter++) newU[i][counter] = U[i][counter] - dt/dx*(F[i][counter] - F[i-1][counter]);
+	}
+	for(i=imin; i<imax; i++) {
+		for(int counter=0; counter<3; counter++) U[i][counter] = newU[i][counter];
+	}	
+	pr.setbcs(fld.U);
+}
+
+void C1DLFMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
+	double roL = 0., uL = 0., eL = 0., pL = 0.,
+		   roR = 0., uR = 0., eR = 0., pR = 0., 
+		   E = 0.;
+	double dx = fld.dx, t = fld.t, dt = fld.dt;
+	int imin = fld.imin, imax = fld.imax;
+	vector<vector<double>> &U = fld.U, &newU = fld.newU, &F = fld.F;
+	// TODO: проверить на скорость выполнения операций, сравнить с реализацией через тип Vector4 -- если не медленнее, то в дальнейшем избавиться от Vector4 везде
+	int i=0;	
+	// Потоки считаем по алгоритму решения задаче о распаде разрыва для УРС Ми-Грюнайзена из работы [Miller, Puckett]
+	for(i=imin; i<=imax; i++) {
+		Vector4 flux = lfrslv.calcFlux(eos, U[i-1][0], U[i-1][1], U[i-1][2], U[i][0], U[i][1], U[i][2], dx, dt); 
+		double _F[] = {flux[0], flux[1], flux[2]};
+		F[i] = vector<double>(_F, _F+sizeof(_F)/sizeof(_F[0]));		
+		//n.W_temp = n.W - dt/h*(Fp-Fm);
+	}
+	for(i=imin; i<imax; i++) {
+		for(int counter=0; counter<3; counter++) newU[i][counter] = U[i][counter] - dt/dx*(F[i+1][counter] - F[i][counter]);
+	}
+	for(i=imin; i<imax; i++) {
+		for(int counter=0; counter<3; counter++) U[i][counter] = newU[i][counter];
+	}	
+	pr.setbcs(fld.U);
+}
+
+Vector4 CRoeRiemannSolver::calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {
+	double uL = rouL/roL, eL = roEL/roL - 0.5*uL*uL, uR = rouR/roR, eR = roER/roR - 0.5*uR*uR;
+	double pL = eos.getp(roL,eL), pR = eos.getp(roR,eR), cL = eos.getc(roL,pL), cR = eos.getc(roR,pR);
+	double EL = roEL/roL, ER = roER/roR, HL = (roEL + pL)/roL, HR = (roER + pR)/roR;
+	double roAv = sqrt(roL*roR);
+	double sqroL = sqrt(roL), sqroR = sqrt(roR);
+	double uAv = (sqroL*uL + sqroR*uR)/(sqroL+sqroR), 
+		   HAv = (sqroL*HL + sqroR*HR)/(sqroL+sqroR),
+		   EAv = (sqroL*EL + sqroR*ER)/(sqroL+sqroR);	
+	double pAv = (HAv - EAv) * roAv;
+	double cAv = eos.getc(roAv,pAv);			
+	// Ideal version to compare:	
+	/*double _gam = 5./3.;
+	cAv = sqrt((HAv-.5*uAv*uAv)*(_gam-1.));*/
+	Vector4 Lambda = Vector4(uAv - cAv, uAv, uAv + cAv, 0.),
+		        K0 = Vector4(1., uAv-cAv, HAv-uAv*cAv, 0.),
+			    K1 = Vector4(1., uAv,     uAv*uAv/2.,  0.),
+				K2 = Vector4(1., uAv+cAv, HAv+uAv*cAv, 0.);
+	Vector4 Alpha = Vector4::ZERO;
+	// For ideal gas: 
+	// Alpha[1] = (gamma-1.)/cAv/cAv * ((HAv-uAv*uAv)*(roR-roL) + uAv*(rouR-rouL) - (roER-roEL));
+	// Using cAv2 = (gamma-1) * (HAv-.5*uAv2), (gamma-1)/cAv2 = 1/(HAv-.5uAv2) 
+	Alpha[1] = 1./(HAv-.5*uAv*uAv) * ((HAv-uAv*uAv)*(roR-roL) + uAv*(rouR-rouL) - (roER-roEL));
+	Alpha[0] = 1./2./cAv * ((roR-roL)*(uAv+cAv) - (rouR-rouL) - cAv*Alpha[1]);
+	Alpha[2] = (roR-roL) - Alpha[0] - Alpha[1];
+	Vector4 FL = Vector4(roL*uL, pL+roL*uL*uL, uL*(pL+roEL), 0.);
+	Vector4 FR = Vector4(roR*uR, pR+roR*uR*uR, uR*(pR+roER), 0.);
+	double delta=0.;
+	delta = max(0., 4.*((uR-cR)-(uL-cL)) );
+    if (fabs(Lambda[0]) < 0.5*delta) Lambda[0] = Lambda[0]*Lambda[0]/delta + .25*delta;
+    delta = max(0., 4.*((uR+cR)-(uL+cL)) );
+    if (fabs(Lambda[2]) < 0.5*delta) Lambda[2] = Lambda[2]*Lambda[2]/delta + .25*delta;
+	Vector4 FRoe = 0.5*(FL + FR) - 0.5*(Alpha[0]*fabs(Lambda[0])*K0 + 
+		                                Alpha[1]*fabs(Lambda[1])*K1 + 
+										Alpha[2]*fabs(Lambda[2])*K2);
+	return FRoe;
+}
+
+
+// According to [T.Glaister, JoCP, 72, 382-408 (1988)]
+Vector4 CRoeGeneralRiemannSolver::calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {
+	double uL = rouL/roL, eL = roEL/roL - 0.5*uL*uL, uR = rouR/roR, eR = roER/roR - 0.5*uR*uR;
+	double pL = eos.getp(roL,eL), pR = eos.getp(roR,eR), cL = eos.getc(roL,pL), cR = eos.getc(roR,pR);
+	double EL = roEL/roL, ER = roER/roR, HL = (roEL + pL)/roL, HR = (roER + pR)/roR;
+	double roAv = sqrt(roL*roR);
+	double sqroL = sqrt(roL), sqroR = sqrt(roR);
+	double uAv = (sqroL*uL + sqroR*uR)/(sqroL+sqroR), 
+		   HAv = (sqroL*HL + sqroR*HR)/(sqroL+sqroR),
+		   eAv = (sqroL*eL + sqroR*eR)/(sqroL+sqroR);	
+	double pAv = (HAv - eAv - .5*uAv*uAv) * roAv;
+	double dpdrhoAv = 0., dpdeAv = 0.;
+	if(eL != eR)
+		dpdeAv = (.5*(pR + eos.getp(roL, eR)) - .5*(eos.getp(roR, eL)+pL))/(eR-eL);
+	else 
+		dpdeAv = .5*(eos.getdpde(roL, eL)+eos.getdpde(roR, eR));
+	if(roL!=roR)
+		dpdrhoAv = (.5*(pR + eos.getp(roR, eL)) - .5*(eos.getp(roL, eR)+pL))/(roR-roL);
+	else
+		dpdrhoAv = .5*(eos.getdpdrho(roL, eL)+eos.getdpdrho(roR, eR));
+    double cAv = sqrt(pAv*dpdeAv/roAv/roAv + dpdrhoAv);
+	
+	
+	
+	
+//	double _c = eos.getc(roAv, pAv);
+	
+	
+
+
+	// Ideal version to compare:	
+	/*double _gam = 5./3.;
+	cAv = sqrt((HAv-.5*uAv*uAv)*(_gam-1.));*/
+	Vector4 Lambda = Vector4(uAv - cAv, uAv, uAv + cAv, 0.),
+		        K0 = Vector4(1., uAv-cAv, HAv-uAv*cAv, 0.),
+			    K1 = Vector4(1., uAv,     uAv*uAv/2.,  0.),
+				K2 = Vector4(1., uAv+cAv, HAv+uAv*cAv, 0.);
+	Vector4 Alpha = Vector4::ZERO;
+	// For ideal gas: 
+	// Alpha[1] = (gamma-1.)/cAv/cAv * ((HAv-uAv*uAv)*(roR-roL) + uAv*(rouR-rouL) - (roER-roEL));
+	// Using cAv2 = (gamma-1) * (HAv-.5*uAv2), (gamma-1)/cAv2 = 1/(HAv-.5uAv2) 
+	Alpha[1] = 1./(HAv-.5*uAv*uAv) * ((HAv-uAv*uAv)*(roR-roL) + uAv*(rouR-rouL) - (roER-roEL));
+	Alpha[0] = 1./2./cAv * ((roR-roL)*(uAv+cAv) - (rouR-rouL) - cAv*Alpha[1]);
+	Alpha[2] = (roR-roL) - Alpha[0] - Alpha[1];
+	Vector4 FL = Vector4(roL*uL, pL+roL*uL*uL, uL*(pL+roEL), 0.);
+	Vector4 FR = Vector4(roR*uR, pR+roR*uR*uR, uR*(pR+roER), 0.);
+	double delta=0.;
+	delta = max(0., 4.*((uR-cR)-(uL-cL)) );
+    if (fabs(Lambda[0]) < 0.5*delta) Lambda[0] = Lambda[0]*Lambda[0]/delta + .25*delta;
+    delta = max(0., 4.*((uR+cR)-(uL+cL)) );
+    if (fabs(Lambda[2]) < 0.5*delta) Lambda[2] = Lambda[2]*Lambda[2]/delta + .25*delta;
+	Vector4 FRoe = 0.5*(FL + FR) - 0.5*(Alpha[0]*fabs(Lambda[0])*K0 + 
+		                                Alpha[1]*fabs(Lambda[1])*K1 + 
+										Alpha[2]*fabs(Lambda[2])*K2);
+	return FRoe;
+}
+
+
+Matrix4 CBGKRiemannSolver::getOmega(FEOS& eos, Vector4 parameter) {
+	const double gamma = eos.getc(1.,1.)*eos.getc(1.,1.);
+	//double _rho = U[0], _u = U[1]/_rho, _E = U[2]/_rho, _e = _E-_u*_u/2., _p=eos.getp(_rho,_e), _c = eos.getc(_rho,_p);
+	double _rho = parameter[0], _u = parameter[1], _H = parameter[2], _c = parameter[3];	
+	
+	/*double _H
+	double _c = sqrt((gamma-1.)*(_H-.5*_u*_u));*/
+	
+	
+	
+	
+	
+	double dpdroE = gamma-1.;
+/*	double _Eprho = _E + _p/_rho; 
+	return Matrix4(
+		1.,			  1.,		           1.,			   0.,
+		_u-_c,		  _u,				   _u+_c,		   0.,
+		_Eprho-_u*_c, _Eprho-_c*_c/dpdroE, _Eprho+_u*_c,   0.,
+		0.,			  0.,				   0.0,			   1. ); */
+
+	
+	return Matrix4(
+		1.,		  1.,	    1.,		  0.,
+		_u-_c,	  _u,		_u+_c,	  0.,
+		_H-_u*_c, .5*_u*_u, _H+_u*_c, 0.,
+		0.,		  0.,		0.,		  1. );
+}
+
+Matrix4 CBGKRiemannSolver::getOmegaInv(FEOS& eos, Vector4 U) {
+	const double gamma = eos.getc(1.,1.)*eos.getc(1.,1.);
+	double _rho = U[0], _u = U[1]/_rho, _E = U[2]/_rho, _e = _E-_u*_u/2., _p=eos.getp(_rho,_e), _c = eos.getc(_rho,_p);
+	double dpdro  = .5*(gamma-1.)*_u*_u;
+	double dpdrov = -(gamma-1.)*_u;
+	double dpdroE = gamma-1.;
+	double cc = 1./2./_c/_c;
+	return Matrix4(
+			cc*(dpdro + _u*_c),	   cc*(dpdrov - _c), cc*(dpdroE),	   0.0,
+			cc*(2.*(_c*_c-dpdro)), cc*(-2.*dpdrov),  cc*(-2.*dpdroE),  0.0,
+			cc*(dpdro - _u*_c),	   cc*(dpdrov +_c),  cc*(dpdroE),	   0.0,
+			0.0,				   0.0,				 0.0,		       1.0
+		);
+}
+
+void CBGKRiemannSolver::fillLambda(Vector4 Fm, Vector4 F, Vector4 Fp, Vector4 Fpp, Vector4 L, double step) {
+	double curant = 0.;
+	double criteria = 0.;  
+	for(int i=0; i<4; i++) 	{
+		curant   = fabs(L[i]) * step;
+		criteria = L[i] * (fabs(Fpp[i]-Fp[i]) - fabs(F[i]-Fm[i]));
+		fillLambdaComponent(i, L[i], criteria, curant);
+	}
+}
+
+void CBGKRiemannSolver::fillLambdaComponent(int i, double lambda, double criteria, double curant) {
+	double alpha, beta, gamma, delta;
+	if( criteria >= 0 && lambda >= 0 ) {
+		alpha = -0.5 * (1.0-curant);
+		 beta =  1.0 - alpha;
+		gamma =  0.0; 
+		delta =  0.0;
+	}
+	else if( criteria >= 0 && lambda < 0 ) {
+		alpha =  0.0;
+		 beta =  0.0;
+		delta = -0.5 * (1.0-curant);
+		gamma =  1.0 - delta; 
+	}
+	else if( criteria < 0 && lambda >= 0 ) {
+		alpha =  0.0;
+		gamma =  0.5 * (1.0-curant);
+		 beta =  1.0 - gamma;
+		delta =  0.0;
+	}
+	else {
+		alpha =  0.0;
+		 beta =  0.5 * (1.0-curant);
+		gamma =  1.0 - beta;
+		delta =  0.0;
+	} 
+	La[i] = alpha*lambda;
+	Lb[i] =  beta*lambda;
+	Lg[i] = gamma*lambda;
+	Ld[i] = delta*lambda;
+}
+
+Vector4 CBGKRiemannSolver::calcFlux(FEOS& eos, Vector4 Um, Vector4 U, Vector4 Up, Vector4 Upp, double dx, double dt) {
+	const double gamma = eos.getc(1.,1.)*eos.getc(1.,1.);
+	Vector4 Fm  = getOmegaInv(eos, Um)*Um;
+	Vector4 F   = getOmegaInv(eos, U)*U;
+	Vector4 Fp  = getOmegaInv(eos, Up)*Up;
+	Vector4 Fpp = getOmegaInv(eos, Upp)*Upp;
+	Matrix4 O, OI;
+	Vector4 L;
+    Vector4 V1 = Vector4::ZERO, V2 = Vector4::ZERO, V3 = Vector4::ZERO, V4 = Vector4::ZERO;
+	//Averaging
+	// First use aryphmetic mean, then use Roe averaging, it'll be cool
+	double rhoL = U[0], rhoR = Up[0]; 
+	double uL = U[1]/rhoL, uR = Up[1]/rhoR;
+	double EL = U[2]/rhoL, eL = EL - .5*uL*uL, ER = Up[2]/rhoR, eR = ER - .5*uR*uR;
+	double pL = eos.getp(rhoL,eL), pR = eos.getp(rhoR,eR);
+	double HL = EL +pL/rhoL, HR = ER + pR/rhoR;
+	
+	
+	// Uncomment for aryphmetical mean averaging -- simply doesn't work on large discontinuities
+/*	double _rho=.5*(rhoL+rhoR), _u=.5*(rhoL*uL+rhoR*uR)/_rho, _e=.5*(rhoL*eL+rhoR*eR), _p=eos.getp(_rho,_e), _c=eos.getc(_rho,_p),
+		   _E = _rho*(_e+.5*_u*_u);
+	Vector4 UAv = Vector4(_rho,_rho*_u,_rho*(_e+.5*_u*_u),0.); */
+// Uncomment for Roe averaging	
+	double _rho = sqrt(rhoL*rhoR);
+	double _u = (uL*sqrt(rhoL) + uR*sqrt(rhoR))/(sqrt(rhoL)+sqrt(rhoR));
+	double _H = (HL*sqrt(rhoL) + HR*sqrt(rhoR))/(sqrt(rhoL)+sqrt(rhoR));
+	double _E = (EL*sqrt(rhoL) + ER*sqrt(rhoR))/(sqrt(rhoL)+sqrt(rhoR));
+	double _p = (_H - _E) * _rho;	
+	double _c = sqrt((gamma-1.)*(_H-.5*_u*_u));
+//	double _c = eos.getc(_rho, _p);
+	Vector4 UAv = Vector4(_rho,_rho*_u,_rho*_E,0.); 
+	Vector4 parameter = Vector4(_rho, _u, _H, _c);
+
+	O = getOmega(eos, parameter);
+	OI = getOmegaInv(eos, UAv);
+	L = Vector4(_u-_c,_u,_u+_c,0.);
+	fillLambda(Fm, F, Fp, Fpp, L, dt/dx);
+	Vector4 FBGK = Vector4::ZERO;
+	FBGK = O*(La*(OI*Um)) + O*(Lb*(OI*U)) + O*(Lg*(OI*Up)) + O*(Ld*(OI*Upp));
+    return FBGK;
 }

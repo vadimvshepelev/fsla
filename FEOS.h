@@ -1,12 +1,18 @@
 #ifndef _CEOS_H_
 #define _CEOS_H_
 
+#include<string>
+
+using namespace std;
+
 class FEOS {
 public:
 	virtual double getp(double ro, double e) = 0;
 	virtual double gete(double ro, double p) = 0;
 	virtual double getc(double ro, double p) = 0;
 	virtual string gettype(void) = 0;
+	virtual double getdpdrho(double rho, double e) = 0;
+	virtual double getdpde(double rho, double e) = 0;
 };
 
 
@@ -18,6 +24,8 @@ public:
 	double gete(double ro, double p) { if(ro!=0.) return p/(gamma-1.)/ro; else return 0.; }
 	double getc(double ro, double p) { if(ro!=0.) return sqrt(gamma*p/ro); else return 0.;}
 	string gettype(void) {return string("ideal"); }
+	double getdpdrho(double rho, double e) {return (gamma-1.)*e;}
+	double getdpde(double rho, double e) {return (gamma-1.)*rho;}
 };
 
 
@@ -38,6 +46,8 @@ public:
 	double getp0(double ro);
 	double gete0(double ro);
 	string gettype(void) {return string("mg"); }
+	double getdpdrho(double rho, double e) {return 0.;}
+	double getdpde(double rho, double e) {return 0.;}
 };
 
 
@@ -60,11 +70,34 @@ class FEOSMGAlPrecise : public FEOS {
 	double Gx2(double x);
 	double pCold(double rho);
 	double eCold(double rho);
+	double pColdPrime(double rho);
 public:
-	FEOSMGAlPrecise() : rho0(2700.), p0(560.964e9), a(1.12657), b(0.975511) {}
+	FEOSMGAlPrecise() : rho0(2750.), p0(560.964e9), a(1.12657), b(0.975511) {}
 	double getp(double rho, double e);
 	double gete(double rho, double p);
 	double getc(double rho, double p);
+	string gettype(void) {return string("mg"); }
+};
+
+
+class FEOSMGAlPrecise6 : public FEOS {
+	const double rho0, p0, a, b, ph;
+	double G(double x);
+	double GPrime(double x);
+	double Gx1(double x); 
+	double Gx2(double x);
+	double pCold(double rho);
+	double pColdPrime(double rho);
+	double eCold(double rho);
+	double eColdPrime(double rho);
+public:	
+	FEOSMGAlPrecise6() : rho0(2750.), p0(560.964e9), a(1.12657), b(0.975511), ph(15.e9) {}
+	double getp(double rho, double e);
+	double gete(double rho, double p);
+	double getc(double rho, double p);
+	double gets(double rho, double p); // Entropy
+	double getdpdrho(double rho, double e);
+	double getdpde(double rho, double e);
 	string gettype(void) {return string("mg"); }
 };
 

@@ -84,6 +84,20 @@ int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, FEOS& eos) {
 		cout << "done!" << endl;		
 		dtt.erase(dtt.begin());		
 	}
+
+
+
+	
+	
+	
+/*	ostringstream oss2;
+	oss2 << subDir << "\\" << pr.name << "-" << 100 << ".dat"; string fName1 = oss2.str();
+	cout << "Writing to file '" << fName1 << "'...";		
+	dump(pr, fld, eos, fName1);
+	cout << "done!" << endl;		*/
+	
+
+
 	return 1;
 }
 

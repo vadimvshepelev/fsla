@@ -339,6 +339,18 @@ void CSolver::calcHydroStageGushchinIdealSimple(double t, double tau) {
 	double dx = ms[1].x-ms[0].x;
 	for(i=0; i<ms.getSize(); i++) {
 		Node &n = ms[i];
+
+
+
+
+		// Patch for BGK Toro test
+		n.ei = eos.getei(n.ro, n.ti);
+		n.e = n.ei;
+
+
+
+
+
 		E = n.e + 0.5*n.v*n.v;
 		n.W = Vector4(n.ro, n.ro*n.v, n.ro*E, 0);
 		n.F = method.getOmegaInv(n) * n.W;
@@ -356,7 +368,22 @@ void CSolver::calcHydroStageGushchinIdealSimple(double t, double tau) {
 	Matrix4 O, OI;
 	Vector4 Fp, Fm;
 	Vector4 L;
-	Node	nav;
+
+
+
+
+
+
+	// Patch for BGK Toro test
+	Node* nav_ptr = new(Node);
+	Node	nav = *nav_ptr;
+
+
+
+
+
+
+
 	int j=0, nSize=ms.getSize(); //nSize это количество узлов сетки (и количество промежутков плюс один)
 	Vector4 V1 = Vector4::ZERO, V2 = Vector4::ZERO, V3 = Vector4::ZERO, V4 = Vector4::ZERO;
 	// А вот это хорошо бы брать из УРС
@@ -365,6 +392,18 @@ void CSolver::calcHydroStageGushchinIdealSimple(double t, double tau) {
 	for(i=0; i<ms.getSize(); i++)
 	{
 		// F(i+1/2) flow
+
+
+
+
+		if (i==29) {
+
+			double qq = 1.;
+		}
+
+
+
+
 		j = i;
 		if(i!=nSize-1) 
 			method.averageNode(ms[j], ms[j+1], nav);
@@ -505,6 +544,18 @@ void CSolver::calcHydroStageGushchinIdealSimple(double t, double tau) {
 		n.p  = (gam-1.) * n.ro * n.e;
 		n.C  = sqrt(gam*n.p/n.ro);
 	}
+
+
+
+
+
+
+
+	//////////////////// patch for bgk Toro test
+	delete nav_ptr;
+
+
+
 }
 
 

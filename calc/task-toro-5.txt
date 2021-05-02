@@ -1,19 +1,7 @@
 EOSType = ideal
-Method = euler
-HydroStage = 1
-HeatStage = 0
-ExchangeStage = 0
-
-source = no
-tauPulse = 100.0e-15
-fluence = 0.0 
-deltaSkin = 1.0
-
-courant = .5
-viscosity = 0
-
+Method = bgk
+CFL = .5
 maxTime = 0.012
-
 nZones = 2
 
 l = .8
@@ -21,11 +9,10 @@ nSize = 80
 ro = 1.
 v = -19.59745
 p = 1000. 
-exp = 0.
 
 l = .2
 nSize = 20
 ro = 1.
 v = -19.59745
 p = .01
-exp = 0.
+

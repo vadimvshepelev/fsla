@@ -2,6 +2,7 @@
 #define _C1DMETHOD_H_
 
 #include "_vector4.h"
+#include "_matrix4.h"
 #include "C1Dfield.h"
 #include "F1DReconstruction.h"
 
@@ -41,6 +42,9 @@ public:
 	int isSupported(FEOSMieGruneisen& eos) {return 0; }
 };
 
+extern CExactRiemannSolver exrslv;
+
+
 C1DVectorPrimitive calcSolution(FEOS& eos, double roL, double uL, double pL, double roR, double uR, double pR, double x, double t);
 RPValues calcValues(FEOS& eos, double roL, double uL, double pL, double roR, double uR, double pR);
 double fL(FEOS& eos, double p, double roL, double uL, double pL);
@@ -67,7 +71,6 @@ public:
 	int isSupported(FEOSMieGruneisen& eos) {return 1; }
 };
 
-
 // Godunov-Prokhorov-Safronov simple linearized entropy non-decreasing Riemann solver
 class CGPSRiemannSolver : public CRiemannSolver {
 public: 
@@ -75,6 +78,50 @@ public:
 	Vector4 calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER);
 	int isSupported(FEOSIdeal& eos) { return 1; }
 	int isSupported(FEOSMieGruneisen& eos) {return 0; }
+};
+
+// Lax-Friedrichs Riemann solver
+class CLFRiemannSolver : public CRiemannSolver {
+public: 
+	CLFRiemannSolver() {}
+	Vector4 calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER, double dx, double dt);
+	Vector4 calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) { return Vector4::ZERO; }
+	int isSupported(FEOSIdeal& eos) { return 1; }
+	int isSupported(FEOSMieGruneisen& eos) {return 1; }
+};
+
+
+// BGK Riemann solver including 2nd order monotone reconstruction 
+class CBGKRiemannSolver : public CRiemannSolver {
+	Vector4 La, Lb, Lg, Ld;
+	Matrix4 getOmegaInv(FEOS& eos, Vector4 U);
+	Matrix4 getOmega(FEOS& eos, Vector4 U);
+	void fillLambda(Vector4 Fm, Vector4 F, Vector4 Fp, Vector4 Fpp, Vector4 L, double step);
+	void fillLambdaComponent(int i, double lambda, double criteria, double curant);
+public: 
+	CBGKRiemannSolver() {}
+	Vector4 calcFlux(FEOS& eos, Vector4 Um, Vector4 U, Vector4 Up, Vector4 Upp, double dx, double dt);
+	Vector4 calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) { return Vector4::ZERO; }
+	int isSupported(FEOSIdeal& eos) { return 1; }
+	int isSupported(FEOSMieGruneisen& eos) {return 1; }
+};
+
+
+class CRoeRiemannSolver : public CRiemannSolver {
+public: 
+	CRoeRiemannSolver() {}
+	Vector4 calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER);
+	int isSupported(FEOSIdeal& eos) { return 1; }
+	int isSupported(FEOSMieGruneisen& eos) {return 0; }
+};
+
+
+class CRoeGeneralRiemannSolver : public CRiemannSolver {
+public: 
+	CRoeGeneralRiemannSolver() {}
+	Vector4 calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER);
+	int isSupported(FEOSIdeal& eos) { return 1; }
+	int isSupported(FEOSMieGruneisen& eos) {return 1; }
 };
 
 
@@ -96,11 +143,21 @@ public:
 class C1DGodunovTypeMethod : public C1DMethod {
 public:
 	CRiemannSolver& rslv;
-	C1DGodunovTypeMethod();  
+	C1DGodunovTypeMethod() : rslv(exrslv) {}  
 	C1DGodunovTypeMethod(CRiemannSolver& _rslv) : rslv(_rslv) {}
 	void calc(C1DProblem& pr, FEOS& eos, C1DField& fld);
 	double calcdt(C1DProblem& pr, FEOS& eos, C1DField& fld);	
 };
+
+
+class C1DLFMethod : public C1DGodunovTypeMethod {
+	CLFRiemannSolver& lfrslv;
+public:
+	C1DLFMethod();  
+	C1DLFMethod(CLFRiemannSolver& _lfrslv) : lfrslv(_lfrslv) {}
+	void calc(C1DProblem& pr, FEOS& eos, C1DField& fld);
+};
+
 
 
 class C1DGodunovTypeMethodVacuum : public C1DMethod {
@@ -117,6 +174,15 @@ class C1D2ndOrderMethod : public C1DGodunovTypeMethod {
 public:
 	C1D2ndOrderMethod(CRiemannSolver& _rslv, F1DReconstruction& _rec) : C1DGodunovTypeMethod(_rslv), rec(_rec) {} 
 	F1DReconstruction& rec;
+	void calc(C1DProblem& pr, FEOS& eos, C1DField& fld);
+};
+
+
+class C1DBGKMethod : public C1DGodunovTypeMethod {
+	CBGKRiemannSolver &bgk;	
+public:
+	C1DBGKMethod();
+	C1DBGKMethod(CBGKRiemannSolver& _bgk): bgk(_bgk) {}
 	void calc(C1DProblem& pr, FEOS& eos, C1DField& fld);
 };
 

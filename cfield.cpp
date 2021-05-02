@@ -74,6 +74,19 @@ void CFieldOld::initData(CTask *task) {
 				n.dm = n.ro * dx;
 				n.ti = zone.ti;
 				n.te = zone.te;
+
+
+
+
+
+				////////////// Patch for Toro test via BGK scheme
+				n.C = eos.getC(n.ro, n.ti, n.te);
+				///////////////////////////////////////////////////
+
+
+
+
+
 				if( (task->getSourceFlag() == SourceType::SrcGlass) && (i==0) ) {
 						n.pe = eosGlass.getpe(n.ro, n.ti, n.te);
 						n.pi = eosGlass.getpi(n.ro, n.ti);

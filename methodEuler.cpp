@@ -321,15 +321,6 @@ void CMethodEuler::averageNode(Node &n1, Node &n2, Node &nav)
 	nav.ei = nav.ro ? (n1.ro*n1.ei + n2.ro*n2.ei) / 2 / nav.ro : 0;
 	
 	updateNode(nav);
-
-	//////////////////////DEBUG///////////////
-	// ¬озможно, энтропи€ на границе падает потому, что мы неверно усредн€ем скорость C
-
-	// if (n1.ro==0.) 
-	//	nav.C = (n1.C + n2.C)/2.;
-
-	//////////////////////////////////////////
-
 }
 
 

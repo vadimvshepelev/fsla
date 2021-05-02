@@ -66,18 +66,19 @@ void CSolver::goEuler(char* fName) {
 	// For Mie-Gruneisen Riemann solver tests
 	FEOSMieGruneisen eos;
 	for(;;)	{
-		tau = calcTimeStepEuler(t);
+		// tau = calcTimeStepEuler(t);
+		tau = calcTimeStep(t);
 		if(t+tau >tMax) tau = tMax-t;
 		if(counter <=4) tau *=.2;
 
 		clock_t start = clock();		
-		if(task.getHydroStage()) calcHydroStageGodunov(t, tau);
+		//if(task.getHydroStage()) calcHydroStageGodunov(t, tau);
 		//if(task.getHydroStage()) calcHydroStageRoe(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageGPS(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageLaxFriedrichs(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageMccormack(t, tau);		
 		//if(task.getHydroStage()) calcHydroStageMHM(t, tau);		
-		//if(task.getHydroStage()) calcHydroStageGushchinIdealSimple(t, tau);
+		if(task.getHydroStage()) calcHydroStageGushchinIdealSimple(t, tau);
 	    //if(task.getHydroStage()) calcHydroStageG2(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageENO2G(t, tau);	
 		//if(task.getHydroStage()) calcHydroStageENO3G(t, tau);	
@@ -520,6 +521,16 @@ double CSolver::getEntropy(double ro, double ti, double te) {
 }*/
 
 double CSolver::calcTimeStep(double t) {
+
+	
+	
+	
+	
+	
+	
+	/* I commented this to patch for Euler Toro tests
+
+
 	if( task.getSourceFlag()==2 && (tauPulse<1.e-12) && (t<5.0e-12)) {
 		return 1.0e-15;
 	} else if( task.getSourceFlag()==1 && (tauPulse<1.e-12) && (t<5.0e-12)) {
@@ -527,7 +538,20 @@ double CSolver::calcTimeStep(double t) {
 		  return 1.0e-15;
 		else
 		  return .5e-15;
-	}
+	} else {
+
+	} */
+
+
+
+
+
+
+
+
+
+
+
 	double tau_temp1 = (ms[1].x - ms[0].x) / ms[0].C;
 	double tau_temp2;
 	for(int i=1; i<ms.getSize()-1; i++)

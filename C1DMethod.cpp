@@ -746,10 +746,35 @@ Vector4 CHLLCRiemannSolver::calcFlux(FEOS& eos, double roL, double rouL, double 
 	double _EAv = (EL*sqrt(roL) + ER*sqrt(roR))/(sqrt(roL)+sqrt(roR));
 	double _pAv = (_HAv - _EAv) * _roAv;
 	double _cAv = eos.getc(_roAv, _pAv);
+	/*double _roAv = sqrt(roL*roR);
+	double sqroL = sqrt(roL), sqroR = sqrt(roR);
+	double _uAv = (sqroL*uL + sqroR*uR)/(sqroL+sqroR), 
+		   _HAv = (sqroL*HL + sqroR*HR)/(sqroL+sqroR),
+		   _eAv = (sqroL*eL + sqroR*eR)/(sqroL+sqroR);	
+	double _pAv = (_HAv - _eAv - .5*_uAv*_uAv) * _roAv;
+	double dpdrhoAv = 0., dpdeAv = 0.;
+	if(eL != eR)
+		dpdeAv = (.5*(pR + eos.getp(roL, eR)) - .5*(eos.getp(roR, eL)+pL))/(eR-eL);
+	else 
+		dpdeAv = .5*(eos.getdpde(roL, eL)+eos.getdpde(roR, eR));
+	if(roL!=roR)
+		dpdrhoAv = (.5*(pR + eos.getp(roR, eL)) - .5*(eos.getp(roL, eR)+pL))/(roR-roL);
+	else
+		dpdrhoAv = .5*(eos.getdpdrho(roL, eL)+eos.getdpdrho(roR, eR));
+    double _cAv = sqrt(_pAv*dpdeAv/_roAv/_roAv + dpdrhoAv); */
+
+
+
 	double SL = _uAv-_cAv, SR = _uAv+_cAv;
+
+
+
+
+
+
+
+
 	//double SL = min(min(uL - cL, uR - cR), 0.), SR = max(max(uL + cL, uR + cR), 0.);
-	
-	
 	double SStar = (pR - pL + roL*uL*(SL - uL) - roR*uR*(SR - uR))/(roL*(SL - uL) - roR*(SR - uR));
 	// Vector4 Uhll = (SR*UR - SL*UL + FL - FR)/(SR - SL);
 	Vector4 Fhllc = Vector4::ZERO;
@@ -1017,11 +1042,21 @@ Matrix4 CBGKRiemannSolver::getOmega(FEOS& eos, Vector4 parameter) {
 }
 
 Matrix4 CBGKRiemannSolver::getOmegaInv(FEOS& eos, Vector4 U) {
-	const double gamma = eos.getc(1.,1.)*eos.getc(1.,1.);
 	double _rho = U[0], _u = U[1]/_rho, _E = U[2]/_rho, _e = _E-_u*_u/2., _p=eos.getp(_rho,_e), _c = eos.getc(_rho,_p);
+	
+/* // Uncomment for ideal gas values
+	const double gamma = eos.getc(1.,1.)*eos.getc(1.,1.);
 	double dpdro  = .5*(gamma-1.)*_u*_u;
 	double dpdrov = -(gamma-1.)*_u;
 	double dpdroE = gamma-1.;
+	*/
+
+	double _prho = eos.getdpdrho(_rho,_e);
+	double _pe = eos.getdpde(_rho,_e);
+	double dpdro = _prho-(_e-.5*_u*_u)/_rho*_pe;
+	double dpdrov = -_u/_rho*_pe;
+	double dpdroE = 1./_rho*_pe;
+
 	double cc = 1./2./_c/_c;
 	return Matrix4(
 			cc*(dpdro + _u*_c),	   cc*(dpdrov - _c), cc*(dpdroE),	   0.0,

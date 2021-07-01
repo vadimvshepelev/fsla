@@ -37,18 +37,9 @@ void F1DENO2Reconstruction::calc(C1DField& fld) {
 	Vector4 diffPlus=Vector4::ZERO, diffMinus=Vector4::ZERO;			 
 	int stencilIndex[]={0, 0, 0, 0};
 	for(i=imin-1; i<imax+1; i++) {
-
-
-//		cout << U[i][0];
-
-
-
-
-
-
-	    diffPlus = Vector4(U[i+1][0], U[i+1][1], U[i+1][2], U[i+1][3])-Vector4(U[i][0], U[i][1], U[i][2], U[i][3]);
-        diffMinus = Vector4(U[i][0], U[i][1], U[i][2], U[i][3])-Vector4(U[i-1][0], U[i-1][1], U[i-1][2], U[i-1][3]);
-		for(n=0; n<nComp; n++) {
+	    diffPlus = Vector4(U[i+1][0], U[i+1][1], U[i+1][2], 0.)-Vector4(U[i][0], U[i][1], U[i][2], 0.);
+        diffMinus = Vector4(U[i][0], U[i][1], U[i][2], 0.)-Vector4(U[i-1][0], U[i-1][1], U[i-1][2], 0.);
+		for(n=0; n<nComp-1; n++) {
 		    // Choose stencil
 			if(fabs(diffMinus[n])<=fabs(diffPlus[n])) stencilIndex[n] = i-1; else stencilIndex[n] = i;
 			// Calculate ENO-2 approximations themselves

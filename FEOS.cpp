@@ -304,10 +304,10 @@ double FEOSMGAlPrecise6::eCold(double rho) {  // [J/kg]
 	double x = rho/rho0;
 	double ec = 0.;
 	if(x>=1.) 
-		ec = 2.03987e8*(pow(x,a)/a-pow(x,b)/b-(1./a-1./b)); 		
+		ec = 2.03987e8*(pow(x,a)/a-pow(x,b)/b); 		
 	else {
 		double n = p0*(a-b)/ph;
-		ec = 2.03987e17/p0*(a-b)*(1./n*(pow(x,n-1.)/(n-1.)+1./x) - 1./(n-1.) - 1./a/b);    ;
+		ec = 2.03987e8*(a-b)*(1./n*(pow(x,n-1.)/(n-1.)+1./x) - 1./(n-1.) - 1./a/b);    ;
 	}
 	return ec;
 }
@@ -320,16 +320,22 @@ double FEOSMGAlPrecise6::getp(double rho, double e) {
 
 double FEOSMGAlPrecise6::gete(double rho, double p) {
 	double x = rho/rho0;
-	return eCold(rho)+1./rho/G(x)*(p-pCold(rho));
+	double _ec = eCold(rho);
+	double _pc = pCold(rho);
+	return _ec + 1./rho/G(x)*(p-_pc);
 }
 
 double FEOSMGAlPrecise6::getc(double rho, double p) {
-	double x = rho/rho0;
+/*	double x = rho/rho0;
 	double _G = G(x);
 	double G_x = GPrime(x);
 	double pc = pCold(rho)/1.e9;
 	double pcx = pColdPrime(rho)/1.e9;
-	double c2 = 10.e9/rho0*((p/1.e9 - pc)/(x*G(x))*(_G+_G*_G+x*G_x) + pcx);
+	double c2 = 10.e9/rho0*((p/1.e9 - pc)/(x*G(x))*(_G+_G*_G+x*G_x) + pcx); */
+	double _e = gete(rho,p);
+	double _prho = getdpdrho(rho,_e); 
+	double _pe = getdpde(rho,_e);
+	double c2 = p*_pe/rho/rho + _prho;
 	return sqrt(c2);
 }
 
@@ -353,17 +359,18 @@ double FEOSMGAlPrecise6::eColdPrime(double rho) {
 }
 
 double FEOSMGAlPrecise6::getdpdrho(double rho, double e) {
-	double _G = G(rho/rho0);
+	double x = rho/rho0;
+	double _G = G(x);
 	double _pc = pCold(rho);
 	double _pcx = pColdPrime(rho);
 	double _ec = eCold(rho);
 	// double _ecx = eColdPrime(rho);
 	// return _pcx/rho0 + _G*(e-_ec) - rho*_G*_ecx/rho0; 
-	return _pcx/rho0 + _G*(e-_ec) - _G/rho*_pc; 
+	return 1./rho0*(_pcx + _G*rho0*(e-_ec) - _G/x*_pc); 
 }
 
 
-double FEOSMGAlPrecise6::getdpde(double rho, double p) {
+double FEOSMGAlPrecise6::getdpde(double rho, double e) {
 	double _G = G(rho/rho0);
 	return rho*_G;
 }

@@ -116,9 +116,9 @@ int COutput::dump(C1DProblem& prb, C1DField& fld, FEOS& eos, string fName) {
 	}
 	if(eos.gettype() == "ideal") {
 		ofs << "TITLE=\"Riemann Problem 1D slice t=" << t << "\"" << endl;
-		ofs << "VARIABLES=\"x[nm]\",\"ro[kg/m3]\",\"u[m/s]\",\"p[GPa]\",\"e[MJ/kg]\",\"ro_ex\",\"u_ex\",\"p_ex\",\"e_ex\"" << endl;	
+		ofs << "VARIABLES=\"x\",\"rho\",\"u\",\"p\",\"e\",\"rho_ex\",\"u_ex\",\"p_ex\",\"e_ex\"" << endl;	
 		ofs << "ZONE T=\"Numerical\", I=" << imax - imin << ", F=POINT" << endl;
-		double mul_x=1.e9, mul_u=1., mul_p=1.e-9, mul_e=1.e-6;
+		double mul_x=1., mul_u=1., mul_p=1., mul_e=1.;
 		double _ro = 0., _u = 0., _v = 0., _w = 0., _e = 0., _p = 0.;	
 		for(i = imin; i < imax; i++) {						
 			_ro = U[i][0];

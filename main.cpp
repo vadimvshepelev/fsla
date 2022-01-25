@@ -72,10 +72,11 @@ int main(int argc, char *argv[]) {
 
 
 	// Uncomment for LaserVT test problem
-    FEOSMGAlPrecise6 eos;
+    // FEOSMGAlPrecise6 eos;
 	// FEOSMieGruneisenAl eos;
 	// FEOSIdeal eos = FEOSIdeal(3.9);
-	C1DProblem pr = prVTAlMGTest2_2;  
+	// C1DProblem pr = prVTAlMGTest2_2;  
+	FEOSIdeal eos = FEOSIdeal(1.4);
 
 	double _rho = 2413.,_p = 1.e9;
 	double _e = eos.gete(_rho, _p);
@@ -85,22 +86,26 @@ int main(int argc, char *argv[]) {
 
 	double c2 = sqrt(_p*_pe/_rho/_rho + _pro);
 
+	C1DProblem pr = prToro1Idealtest;
 
 	C1DField *fldptr = new C1DField(pr);
-	// CHLLRiemannSolver hll;
+	CHLLRiemannSolver hll;
 	CHLLCRiemannSolver hllc;
 	CLFRiemannSolver lf;
 	CGPSRiemannSolver gps;
 	CRoeRiemannSolver roe;
 	CRoeGeneralRiemannSolver roegen;
 	CBGKRiemannSolver bgk;
+	CExactRiemannSolver ex;
 	//F1DENO2Reconstruction eno2rec=F1DENO2Reconstruction(*fldptr);
 	//C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hll, eno2rec);	
-	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(roegen);
+	//C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(roegen);
 	//C1DBGKMethod mtd = C1DBGKMethod(bgk);
-	
-	//C1DLFMethod mtd = C1DLFMethod(lf);
+	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hll);
+	// C1DLFMethod mtd = C1DLFMethod(lf);
 	double _dtt[] = {pr.tmin, pr.tmax};
+
+
 	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
 	COutput outp = COutput(pr, outputDir, dtt);
 	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp);

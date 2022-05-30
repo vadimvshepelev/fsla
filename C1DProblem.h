@@ -25,8 +25,22 @@ public:
 	const int nx;
 	double cfl;	
 	string bcs;
-	void setics(FEOS& eos, vector<double>& x, vector<vector<double>>& U);
+	virtual void setics(FEOS& eos, vector<double>& x, vector<vector<double>>& U);
 	void setbcs(vector<vector<double>>& U);
+};
+
+class C1DLaserProblem : public C1DProblem {	
+public:
+	C1DLaserProblem(string _name, 
+		       double _rol, double _ul, double _pl,
+			   double _rom, double _um, double _pm, 
+			   double _ror, double _ur, double _pr, 
+			   double _xmin, double _xmax, double _tmin, double _tmax, double _x0, double _x1,
+			   int _nx, double _cfl, string _bcs) : rom(_rom), um(_um), pm(_pm), x1(_x1),
+			   C1DProblem(_name, _rol, _ul, _pl, _ror, _ur, _pr, _xmin, _xmax, _tmin, _tmax, _x0, _nx, _cfl, _bcs) {} 
+	const double rom, um, pm;
+	const double x1;
+	void setics(FEOS& eos, vector<double>& x, vector<vector<double>>& U);
 };
 
 
@@ -37,5 +51,15 @@ extern C1DProblem prLaserVTAlIdealTest1, prLaserVTAlIdealTest2;
 extern C1DProblem prLaserVTAlMGTest1, prLaserVTAlMGTestNum1, prLaserVTAlMGTest2;
 extern C1DProblem prIdealVacTest;
 extern C1DProblem prVTAlMGTest1, prVTAlMGTest2, prVTAlMGTest2_2;
+
+extern C1DLaserProblem prHoles;
+
+
+
+
+
+
+
+
 
 #endif

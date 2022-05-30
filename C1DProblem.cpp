@@ -54,6 +54,35 @@ void C1DProblem::setbcs(vector<vector<double>>& U) {
 }
 
 
+void C1DLaserProblem::setics(FEOS& eos, vector<double>& x, vector<vector<double>>& U) {
+	int i = 0;
+	int imin = 2, imax = imin + nx;
+	double dx = (xmax - xmin)/nx;
+	double E = 0.;
+	for(i=0; i<imax+2+1; i++) {
+		x[i] = (xmin - 2.*dx) + (double)i*dx;
+	}
+	for(i=imin; i<imax; i++) {
+		if(x[i] < x0 && fabs(x[i] - x0) > 1.e-5*dx ) {
+			U[i][0] = rol;
+			U[i][1] = rol*ul;
+			E = eos.gete(rol, pl) + .5*ul*ul;
+			U[i][2] = rol*E;
+		} else if (x[i] < x1 && fabs(x[i] - x1) > 1.e-5*dx ) {
+			U[i][0] = rom;
+			U[i][1] = rom*um;
+			E = eos.gete(rom, pm) + .5*um*um;
+			U[i][2] = rom*E;
+		} else {
+			U[i][0] = ror;
+			U[i][1] = ror*ur;
+			E = eos.gete(ror, pr) + .5*ur*ur;
+			U[i][2] = ror*E;
+		}
+	}
+	setbcs(U);
+	return;
+}
 
 
 
@@ -87,4 +116,9 @@ C1DProblem prVTAlMGTest2 = C1DProblem("vtAl2MG-1nm-hllc", 2700., 0., 300.e9, 2.,
 // 29.03.2021 modified test#2 with cold metal and vacuum -- result is non-moving (stable) contact boundary because of equal pressures
 C1DProblem prVTAlMGTest2_2 = C1DProblem("vtAl2MG-1nm-roegen", 2413., 0., 20.e9, 2., 0., 20.e9, -50.e-9, 50.e-9, 0., 1.e-12, 0., 100, .9, "tt");
 
+// 30.05.2022 problem for synchronizing with Baer-Nunziato model and Petr Chuprov
+C1DLaserProblem prHoles = C1DLaserProblem("holes",  
+										  2230., 0., 100.e9, 19300., 0., 1000.e9, 2., 0., 100.e9, 
+										  -1250.e-9, 1000.e-9, 0., 10.e-12, -50.e-9, 0., 
+										  2250, .9, "tt");
 

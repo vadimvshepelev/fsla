@@ -114,7 +114,7 @@ int COutput::dump(C1DProblem& prb, C1DField& fld, FEOS& eos, string fName) {
 		cout << "COutput::dump1D() reports error: cannot open output file." << endl;		
 		exit(1);
 	}
-	if(eos.gettype() == "ideal") {
+	if(eos.gettype() == "ideal" && prb.name != "holes") {
 		ofs << "TITLE=\"Riemann Problem 1D slice t=" << t << "\"" << endl;
 		ofs << "VARIABLES=\"x\",\"rho\",\"u\",\"p\",\"e\",\"rho_ex\",\"u_ex\",\"p_ex\",\"e_ex\"" << endl;	
 		ofs << "ZONE T=\"Numerical\", I=" << imax - imin << ", F=POINT" << endl;
@@ -138,7 +138,7 @@ int COutput::dump(C1DProblem& prb, C1DField& fld, FEOS& eos, string fName) {
 				   res.ro << " " << res.v*mul_u << " " << res.p*mul_p << " " << e_ex*mul_e << endl;				
 		}	
 	} else {
-		ofs << "TITLE=\"1D Riemann problem, t=" << t << "\"" << endl;
+		ofs << "TITLE=\"Laser problem, t=" << t << "\"" << endl;
 		ofs << "VARIABLES=\"x[nm]\",\"ro[kg/m3]\",\"u[m/s]\",\"p[GPa]\",\"e[MJ/kg]\"" << endl;	
 		ofs << "ZONE T=\"Numerical\", I=" << imax - imin << ", F=POINT" << endl;
 		double mul_x=1.e9, mul_u=1., mul_p=1.e-9, mul_e=1.e-6;

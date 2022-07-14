@@ -740,21 +740,20 @@ Vector4 CHLLCRiemannSolver::calcFlux(FEOS& eos, double roL, double rouL, double 
 	
 	// Step 2 -- wave speed estimates	
 	// Uncomment for Roe averaging. Works quite well for Mie-Gruneisen EOS but fails on Toro test 1 at rarefaction wave (imposes the discontinuity)
-	/*double _roAv = sqrt(roL*roR);
+	double _roAv = sqrt(roL*roR);
 	double _uAv = (uL*sqrt(roL) + uR*sqrt(roR))/(sqrt(roL)+sqrt(roR));
 	double _HAv = (HL*sqrt(roL) + HR*sqrt(roR))/(sqrt(roL)+sqrt(roR));
 	double _EAv = (EL*sqrt(roL) + ER*sqrt(roR))/(sqrt(roL)+sqrt(roR));
 	double _pAv = (_HAv - _EAv) * _roAv;
 	double _cAv = eos.getc(_roAv, _pAv);
-<<<<<<< HEAD
-	double SL = _uAv-_cAv, SR = _uAv+_cAv;*/
+
+	double SL = _uAv-_cAv, SR = _uAv+_cAv;
 
 	// Uncomment for naive estimate from Toro. Works pretty on Toro tests but thigs go not so well with Mie-Gruneien EOS
-	double SL = min(min(uL - cL, uR - cR), 0.), SR = max(max(uL + cL, uR + cR), 0.);
+	// double SL = min(min(uL - cL, uR - cR), 0.), SR = max(max(uL + cL, uR + cR), 0.);
 	
 	
-=======
-	/*double _roAv = sqrt(roL*roR);
+/*  double _roAv = sqrt(roL*roR);
 	double sqroL = sqrt(roL), sqroR = sqrt(roR);
 	double _uAv = (sqroL*uL + sqroR*uR)/(sqroL+sqroR), 
 		   _HAv = (sqroL*HL + sqroR*HR)/(sqroL+sqroR),
@@ -773,7 +772,7 @@ Vector4 CHLLCRiemannSolver::calcFlux(FEOS& eos, double roL, double rouL, double 
 
 
 
-	double SL = _uAv-_cAv, SR = _uAv+_cAv;
+	// double SL = _uAv-_cAv, SR = _uAv+_cAv;
 
 
 
@@ -783,7 +782,7 @@ Vector4 CHLLCRiemannSolver::calcFlux(FEOS& eos, double roL, double rouL, double 
 
 
 	//double SL = min(min(uL - cL, uR - cR), 0.), SR = max(max(uL + cL, uR + cR), 0.);
->>>>>>> fd608748a9456c8d53d14d87b287afce35a43a29
+
 	double SStar = (pR - pL + roL*uL*(SL - uL) - roR*uR*(SR - uR))/(roL*(SL - uL) - roR*(SR - uR));
 	// Vector4 Uhll = (SR*UR - SL*UL + FL - FR)/(SR - SL);
 	Vector4 Fhllc = Vector4::ZERO;

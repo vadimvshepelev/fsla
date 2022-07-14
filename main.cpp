@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
 
 
 	// Uncomment for LaserVT test problem
-<<<<<<< HEAD
+
     /*FEOSMGAlPrecise6 eos;
 	FEOSMieGruneisenAl eos;
 	FEOSIdeal eos = FEOSIdeal(3.9);
@@ -91,31 +91,10 @@ int main(int argc, char *argv[]) {
 
 	C1DField *fldptr = new C1DField(pr);
 	CHLLRiemannSolver hll;
-=======
-    // FEOSMGAlPrecise6 eos;
-	// FEOSMieGruneisenAl eos;
-	// FEOSIdeal eos = FEOSIdeal(3.9);
-	FEOSIdeal eos = FEOSIdeal(1.4);
-	C1DProblem pr = prDenisenko;
-	C1DField *fldptr = new C1DField(pr);
-    CHLLRiemannSolver hll;
->>>>>>> fd608748a9456c8d53d14d87b287afce35a43a29
-	CHLLCRiemannSolver hllc;
-	CLFRiemannSolver lf;
-	CGPSRiemannSolver gps;
-	CRoeRiemannSolver roe;
-	CRoeGeneralRiemannSolver roegen;
-	CBGKRiemannSolver bgk;
-	CExactRiemannSolver ex;
-<<<<<<< HEAD
-	//F1DENO2Reconstruction eno2rec=F1DENO2Reconstruction(*fldptr);
-	//C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hll, eno2rec);	
-	//C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(roegen);
-=======
+
 	F1DENO2Reconstruction eno2rec=F1DENO2Reconstruction(*fldptr);
 	C1D2ndOrderMethod mtd = C1D2ndOrderMethod(roe, eno2rec);	
 	//C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(ex);
->>>>>>> fd608748a9456c8d53d14d87b287afce35a43a29
 	//C1DBGKMethod mtd = C1DBGKMethod(bgk);
 	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hll);
 	// C1DLFMethod mtd = C1DLFMethod(lf);
@@ -127,8 +106,8 @@ int main(int argc, char *argv[]) {
 	delete fldptr; */
 
 	// Uncomment for SW-induced mechanism of holes formation
-	C1DLaserProblem pr = prHoles;  
-	FEOSIdeal eos = FEOSIdeal(3.);
+	C1DProblem pr = prFedorAl;  
+	FEOSIdeal eos = FEOSIdeal(1.4);
 	C1DField *fldptr = new C1DField(pr);
 	CHLLRiemannSolver hll;
 	CHLLCRiemannSolver hllc;
@@ -144,7 +123,7 @@ int main(int argc, char *argv[]) {
 	//C1DBGKMethod mtd = C1DBGKMethod(bgk);
 	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(ex);
 	// C1DLFMethod mtd = C1DLFMethod(lf);
-	double _dtt[] = {0., .5e-13, 1.e-12, 2.e-12, 5.e-12, 10.e-12};
+	double _dtt[] = {pr.tmin, pr.tmax};
 	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
 	COutput outp = COutput(pr, outputDir, dtt);
 	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp);

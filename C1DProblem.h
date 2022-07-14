@@ -55,6 +55,7 @@ extern C1DProblem prDenisenko;
 
 extern C1DLaserProblem prHoles;
 
+extern C1DProblem prFedorAl;
 
 
 

@@ -114,7 +114,6 @@ C1DProblem prIdealVacTest = C1DProblem("IdealVac", 0., 0., 0., 1., 0., 1., 0., 1
 C1DProblem prVTAlMGTest1 = C1DProblem("vtAl1MG-1nm-hll", 2700., 0., 0., 2700., 0., 300.e9, -100.e-9, 0., 0., 2.e-12, -50.e-9, 100, .9, "tt");
 C1DProblem prVTAlMGTest2 = C1DProblem("vtAl2MG-1nm-hllc", 2700., 0., 300.e9, 2., 0., 0., -50.e-9, 50.e-9, 0., 1.5e-13, 0., 100, .5, "tt");
 // 29.03.2021 modified test#2 with cold metal and vacuum -- result is non-moving (stable) contact boundary because of equal pressures
-<<<<<<< HEAD
 C1DProblem prVTAlMGTest2_2 = C1DProblem("vtAl2MG-1nm-roegen", 2413., 0., 20.e9, 2., 0., 20.e9, -50.e-9, 50.e-9, 0., 1.e-12, 0., 100, .9, "tt");
 
 // 30.05.2022 problem for synchronizing with Baer-Nunziato model and Petr Chuprov
@@ -123,8 +122,8 @@ C1DLaserProblem prHoles = C1DLaserProblem("holes",
 										  -1250.e-9, 1000.e-9, 0., 10.e-12, -50.e-9, 0., 
 										  2250, .9, "tt");
 
-=======
-C1DProblem prVTAlMGTest2_2 = C1DProblem("vtAl2MG-.2nm-hllc-eno2", 2413., 0., 0., 2., 0., 0., -50.e-9, 50.e-9, 0., 1.e-12, 0., 500, .05, "tt");
 // 30.06.2021 Vova shockwave
 C1DProblem prDenisenko = C1DProblem("denisenko-roe-eno2", 1.2714, .2928, 1.4017, 1., 0., 1., 0., 1., 0., .4, .2, 100, .3, "tt");
->>>>>>> fd608748a9456c8d53d14d87b287afce35a43a29
+
+C1DProblem prFedorAl = C1DProblem("FedorAl", 1., 1., 1., .1, 0., .125, 0., 1., 0., .2, .3, 100, .9, "tt");
+

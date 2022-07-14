@@ -72,6 +72,7 @@ int main(int argc, char *argv[]) {
 
 
 	// Uncomment for LaserVT test problem
+<<<<<<< HEAD
     /*FEOSMGAlPrecise6 eos;
 	FEOSMieGruneisenAl eos;
 	FEOSIdeal eos = FEOSIdeal(3.9);
@@ -90,6 +91,15 @@ int main(int argc, char *argv[]) {
 
 	C1DField *fldptr = new C1DField(pr);
 	CHLLRiemannSolver hll;
+=======
+    // FEOSMGAlPrecise6 eos;
+	// FEOSMieGruneisenAl eos;
+	// FEOSIdeal eos = FEOSIdeal(3.9);
+	FEOSIdeal eos = FEOSIdeal(1.4);
+	C1DProblem pr = prDenisenko;
+	C1DField *fldptr = new C1DField(pr);
+    CHLLRiemannSolver hll;
+>>>>>>> fd608748a9456c8d53d14d87b287afce35a43a29
 	CHLLCRiemannSolver hllc;
 	CLFRiemannSolver lf;
 	CGPSRiemannSolver gps;
@@ -97,9 +107,15 @@ int main(int argc, char *argv[]) {
 	CRoeGeneralRiemannSolver roegen;
 	CBGKRiemannSolver bgk;
 	CExactRiemannSolver ex;
+<<<<<<< HEAD
 	//F1DENO2Reconstruction eno2rec=F1DENO2Reconstruction(*fldptr);
 	//C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hll, eno2rec);	
 	//C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(roegen);
+=======
+	F1DENO2Reconstruction eno2rec=F1DENO2Reconstruction(*fldptr);
+	C1D2ndOrderMethod mtd = C1D2ndOrderMethod(roe, eno2rec);	
+	//C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(ex);
+>>>>>>> fd608748a9456c8d53d14d87b287afce35a43a29
 	//C1DBGKMethod mtd = C1DBGKMethod(bgk);
 	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hll);
 	// C1DLFMethod mtd = C1DLFMethod(lf);

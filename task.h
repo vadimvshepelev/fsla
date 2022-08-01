@@ -8,7 +8,7 @@
 #include "methodold.h"
 #include "eosold.h"
 #include "CTestToro.h"
-#include "eos\\EOSBin.h"
+#include "eos/EOSBin.h"
 #include "cfieldold.h"
 
 //#include "eosTableFeAlpha.h"

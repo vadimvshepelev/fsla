@@ -4,7 +4,7 @@
 #include<vector>
 
 #include "task.h"
-#include "feos.h"
+#include "FEOS.h"
 
 
 using namespace std;

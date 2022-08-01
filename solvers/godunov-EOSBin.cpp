@@ -1,5 +1,5 @@
-#include "..\\solver.h"
-#include "..\\EOS\\EOSBin.h"
+#include "../solver.h"
+#include "../eos/EOSBin.h"
 
 
 // Function finds the solution of Riemann problem for ideal gas with binary EOS

@@ -1,4 +1,4 @@
-#include "..\\solver.h"
+#include "../solver.h"
 #include <vector>
 #include <fstream>
 

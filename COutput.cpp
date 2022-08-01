@@ -5,8 +5,8 @@
 #include <iomanip>
 #include <sstream>
 
-#include"coutput.h"
-#include<boost\\filesystem.hpp>
+#include"COutput.h"
+#include <boost/filesystem.hpp>
 
 #define BOOST_LIB_DIAGNOSTIC
 #define BOOST_SYSTEM_NO_DEPRECATED

@@ -5,7 +5,7 @@
 
 using namespace std;
 
-#include "feos.h"
+#include "FEOS.h"
 
 
 double FEOSMieGruneisen::getG(double ro) {

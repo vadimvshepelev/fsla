@@ -13,11 +13,11 @@
 #include "eosTableFe.h"
 #include "eosTableFeAlpha.h"
 #include "eosTableAu.h"
-#include "eos\\EOSBin.h"
+#include "eos/EOSBin.h"
 
 #include "methodEuler.h"
 
-#include "feos.h"
+#include "FEOS.h"
 
 #include<stdlib.h>
 #include<string.h>

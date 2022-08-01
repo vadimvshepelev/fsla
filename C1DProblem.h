@@ -5,7 +5,7 @@
 #include<vector>
 
 #include"_vector4.h"
-#include"feos.h"
+#include"FEOS.h"
 
 using namespace std;
 

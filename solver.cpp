@@ -44,10 +44,10 @@ CSolver::CSolver() {
 }
 
 void CSolver::goEuler(char* fName) {
-	// Загрузка входного файла, инициализация объекта task типа CTask
+	// Р—Р°РіСЂСѓР·РєР° РІС…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р°, РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РѕР±СЉРµРєС‚Р° task С‚РёРїР° CTask
 	task.load(fName);
 	CFL = task.getCFL();
-	// Наполнение объектов ms, ms_temp данными на по начальным и граничным условиям из task
+	// РќР°РїРѕР»РЅРµРЅРёРµ РѕР±СЉРµРєС‚РѕРІ ms, ms_temp РґР°РЅРЅС‹РјРё РЅР° РїРѕ РЅР°С‡Р°Р»СЊРЅС‹Рј Рё РіСЂР°РЅРёС‡РЅС‹Рј СѓСЃР»РѕРІРёСЏРј РёР· task
 	ms.initData(&task);
 	ms_temp.initData(&task);
 	const int nSize = ms.getSize();
@@ -103,14 +103,14 @@ void CSolver::goEuler(char* fName) {
 		}
 		counter++;
 	}
-	// Удаляем динамический массив времен выдачи
+	// РЈРґР°Р»СЏРµРј РґРёРЅР°РјРёС‡РµСЃРєРёР№ РјР°СЃСЃРёРІ РІСЂРµРјРµРЅ РІС‹РґР°С‡Рё
 	delete[] timesArray;
 }
 
 void CSolver::goEulerMovingMesh(char* fName) {
-	// Загрузка входного файла, инициализация объекта task типа CTask
+	// Р—Р°РіСЂСѓР·РєР° РІС…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р°, РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РѕР±СЉРµРєС‚Р° task С‚РёРїР° CTask
 	task.load(fName);
-	// Наполнение объектов ms, ms_temp данными на по начальным и граничным условиям из task
+	// РќР°РїРѕР»РЅРµРЅРёРµ РѕР±СЉРµРєС‚РѕРІ ms, ms_temp РґР°РЅРЅС‹РјРё РЅР° РїРѕ РЅР°С‡Р°Р»СЊРЅС‹Рј Рё РіСЂР°РЅРёС‡РЅС‹Рј СѓСЃР»РѕРІРёСЏРј РёР· task
 	ms.initData(&task);
 	ms_temp.initData(&task);
 	initVars();
@@ -129,13 +129,13 @@ void CSolver::goEulerMovingMesh(char* fName) {
 	for(i=0; i<nTimes; i++) {
 		timesArray[i] = (tMax-tInit)/(nTimes-1)*i;
 	}
-	// Протестируем последовательность, на строгое возрастание (выход за границу мы не контролируем)
+	// РџСЂРѕС‚РµСЃС‚РёСЂСѓРµРј РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ, РЅР° СЃС‚СЂРѕРіРѕРµ РІРѕР·СЂР°СЃС‚Р°РЅРёРµ (РІС‹С…РѕРґ Р·Р° РіСЂР°РЅРёС†Сѓ РјС‹ РЅРµ РєРѕРЅС‚СЂРѕР»РёСЂСѓРµРј)
 	for(i = 0; i<nTimes-1; i++)
 		if(timesArray[i+1] <= timesArray[i]) {
 			cout << "CSolver::go() error: Time points unordered in timesArray." << endl;
 			exit(1);
 		}
-	// Начинаем счет
+	// РќР°С‡РёРЅР°РµРј СЃС‡РµС‚
 	for(;;)	{
 		tau = calcTimeStepEuler(t);
 
@@ -163,10 +163,10 @@ void CSolver::goEulerMovingMesh(char* fName) {
 	}
 
 	cout << endl << "Calculation finished!" << endl;
-	// Удаляем сетку
+	// РЈРґР°Р»СЏРµРј СЃРµС‚РєСѓ
 	delete[] method.vGrid;
 	delete[] method.X;
-	// Удаляем динамический массив времен выдачи
+	// РЈРґР°Р»СЏРµРј РґРёРЅР°РјРёС‡РµСЃРєРёР№ РјР°СЃСЃРёРІ РІСЂРµРјРµРЅ РІС‹РґР°С‡Рё
 	delete[] timesArray;
 
 }
@@ -174,9 +174,9 @@ void CSolver::goEulerMovingMesh(char* fName) {
 
 
 void CSolver::go(char* fName) {
-	// Загрузка входного файла, инициализация объекта task типа CTask
+	// Р—Р°РіСЂСѓР·РєР° РІС…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р°, РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РѕР±СЉРµРєС‚Р° task С‚РёРїР° CTask
 	task.load(fName);
-	// Наполнение объектов ms, ms_temp данными на по начальным и граничным условиям из task
+	// РќР°РїРѕР»РЅРµРЅРёРµ РѕР±СЉРµРєС‚РѕРІ ms, ms_temp РґР°РЅРЅС‹РјРё РЅР° РїРѕ РЅР°С‡Р°Р»СЊРЅС‹Рј Рё РіСЂР°РЅРёС‡РЅС‹Рј СѓСЃР»РѕРІРёСЏРј РёР· task
 	ms.initData(&task);
 	ms_temp.initData(&task);
 	initVars();
@@ -226,10 +226,10 @@ void CSolver::go(char* fName) {
 
 	/* Cutting
 	/////////////////DEBUG////////////////////////////////////////////////
-	// Здесь отрезаем nCut ячеек и считаем дальше с другим УРС
+	// Р—РґРµСЃСЊ РѕС‚СЂРµР·Р°РµРј nCut СЏС‡РµРµРє Рё СЃС‡РёС‚Р°РµРј РґР°Р»СЊС€Рµ СЃ РґСЂСѓРіРёРј РЈР РЎ
 	if(! (task.getMethodFlag() == 0) ) {
 		cout << endl << "Calculation finished!" << endl;
-		// Если метод Эйлеров, то надо удалить сетку
+		// Р•СЃР»Рё РјРµС‚РѕРґ Р­Р№Р»РµСЂРѕРІ, С‚Рѕ РЅР°РґРѕ СѓРґР°Р»РёС‚СЊ СЃРµС‚РєСѓ
 		if(task.getMethodFlag() == 1)
 			(task.getMethod()).deleteGrid();
 		exit(1);
@@ -237,10 +237,10 @@ void CSolver::go(char* fName) {
 
 	cout << "Now cutting calculation region and changing EOS to fe_alpha" << endl;
 	cout << "New left node is node number " << nCut << endl;
-	// Устанавливаем новый УРС
+	// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РЅРѕРІС‹Р№ РЈР РЎ
 	EOS* newEOS = new EOSTableFeAlpha("fe_alpha", 1, 7874.);
 	task.setEOS(newEOS);
-	// Устанавливаем новый nSize, новый ms
+	// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РЅРѕРІС‹Р№ nSize, РЅРѕРІС‹Р№ ms
 	ms.loadData("ms-alpha.dat", nCut);
 	ms_temp.loadData("ms-alpha.dat", nCut);
 	for(;;) {
@@ -309,20 +309,20 @@ void CSolver::go(char* fName) {
 	*/
 
 	cout << endl << "Calculation finished!" << endl;
-	// Если метод Эйлеров, то надо удалить сетку
+	// Р•СЃР»Рё РјРµС‚РѕРґ Р­Р№Р»РµСЂРѕРІ, С‚Рѕ РЅР°РґРѕ СѓРґР°Р»РёС‚СЊ СЃРµС‚РєСѓ
 	if(task.getMethodFlag() == 1)
 		(task.getMethod()).deleteGrid();
 }
 
 void CSolver::goAuSpall(char *fName) {
-	// Сначала отсекаем все лишние конфигурации нам нужно только золото, только лагранжева сетка и схема Самарского
+	// РЎРЅР°С‡Р°Р»Р° РѕС‚СЃРµРєР°РµРј РІСЃРµ Р»РёС€РЅРёРµ РєРѕРЅС„РёРіСѓСЂР°С†РёРё РЅР°Рј РЅСѓР¶РЅРѕ С‚РѕР»СЊРєРѕ Р·РѕР»РѕС‚Рѕ, С‚РѕР»СЊРєРѕ Р»Р°РіСЂР°РЅР¶РµРІР° СЃРµС‚РєР° Рё СЃС…РµРјР° РЎР°РјР°СЂСЃРєРѕРіРѕ
 	if(task.getMethodFlag()!= 0) {
 		cout << "goAuSpall() error: only lagrangian coordinates are avilable." << endl;
 		cout << "Change \'method\' parameter to \'euler\' in task.txt file or use another go...() function for your simulation. " << endl;
 		exit(1);
 	}
 	task.load(fName);
-	// Если УРС не табличное, нам тоже не сюда.
+	// Р•СЃР»Рё РЈР РЎ РЅРµ С‚Р°Р±Р»РёС‡РЅРѕРµ, РЅР°Рј С‚РѕР¶Рµ РЅРµ СЃСЋРґР°.
 	if(task.getEOS().getType()!=table) {
 		cout << "goAuSpall() error: only table EOS is available.";
 	}
@@ -342,7 +342,7 @@ void CSolver::goAuSpall(char *fName) {
 
 	int nTimes = 14;
 	int timesCounter = 0;
-	// Протестируем последовательность, на строгое возрастание (выход за границу мы не контролируем)
+	// РџСЂРѕС‚РµСЃС‚РёСЂСѓРµРј РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ, РЅР° СЃС‚СЂРѕРіРѕРµ РІРѕР·СЂР°СЃС‚Р°РЅРёРµ (РІС‹С…РѕРґ Р·Р° РіСЂР°РЅРёС†Сѓ РјС‹ РЅРµ РєРѕРЅС‚СЂРѕР»РёСЂСѓРµРј)
 	for(int i = 0; i<nTimes-1; i++)
 		if(timesArray[i+1] <= timesArray[i]) {
 			cout << "CSolver::go() error: Time points unordered in timesArray." << endl;
@@ -378,8 +378,8 @@ void CSolver::goAuSpall(char *fName) {
 	double tCut = 300.e-12;
 	for(;;)
 	{
-		// Заметки на полях. При первой же генеральной уборке кода. Cписок вот тут в комментариях: CSolver::solveti()
-		// Вот этот фрагмент кода включаем, если считаем лагранжевым методом.
+		// Р—Р°РјРµС‚РєРё РЅР° РїРѕР»СЏС…. РџСЂРё РїРµСЂРІРѕР№ Р¶Рµ РіРµРЅРµСЂР°Р»СЊРЅРѕР№ СѓР±РѕСЂРєРµ РєРѕРґР°. CРїРёСЃРѕРє РІРѕС‚ С‚СѓС‚ РІ РєРѕРјРјРµРЅС‚Р°СЂРёСЏС…: CSolver::solveti()
+		// Р’РѕС‚ СЌС‚РѕС‚ С„СЂР°РіРјРµРЅС‚ РєРѕРґР° РІРєР»СЋС‡Р°РµРј, РµСЃР»Рё СЃС‡РёС‚Р°РµРј Р»Р°РіСЂР°РЅР¶РµРІС‹Рј РјРµС‚РѕРґРѕРј.
 		tau = calcTimeStep(t);
 		cout << counter << ": " << "t=" << t <<  " tau=" << tau << " courant=" << getCFL() << endl;
 		if(task.getHydroStage()) calcHydroStage(t, tau);
@@ -455,10 +455,10 @@ void CSolver::goAuSpall(char *fName) {
 }
 
 void CSolver::goGlass(char* fName) {
-	// Загрузка входного файла, инициализация объекта task типа CTask
-	// task.type = TaskType::RuGlass; // Пока не навел порядок в инфраструктуре, проставляю этот флаг руками
+	// Р—Р°РіСЂСѓР·РєР° РІС…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р°, РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РѕР±СЉРµРєС‚Р° task С‚РёРїР° CTask
+	// task.type = TaskType::RuGlass; // РџРѕРєР° РЅРµ РЅР°РІРµР» РїРѕСЂСЏРґРѕРє РІ РёРЅС„СЂР°СЃС‚СЂСѓРєС‚СѓСЂРµ, РїСЂРѕСЃС‚Р°РІР»СЏСЋ СЌС‚РѕС‚ С„Р»Р°Рі СЂСѓРєР°РјРё
 	task.load(fName);
-	// Наполнение объектов ms, ms_temp данными на по начальным и граничным условиям из task
+	// РќР°РїРѕР»РЅРµРЅРёРµ РѕР±СЉРµРєС‚РѕРІ ms, ms_temp РґР°РЅРЅС‹РјРё РЅР° РїРѕ РЅР°С‡Р°Р»СЊРЅС‹Рј Рё РіСЂР°РЅРёС‡РЅС‹Рј СѓСЃР»РѕРІРёСЏРј РёР· task
 	assert(task.getMethodFlag() == MethodType::samarskii);
 	ms.initData(&task);
 	ms_temp.initData(&task);
@@ -1056,7 +1056,7 @@ void CSolver::saveSolution(const char* fName, double t) {
 }
 
 
-// Эту функцию надо переписать под новый saveSolution()
+// Р­С‚Сѓ С„СѓРЅРєС†РёСЋ РЅР°РґРѕ РїРµСЂРµРїРёСЃР°С‚СЊ РїРѕРґ РЅРѕРІС‹Р№ saveSolution()
 double CSolver::loadSolution(char* fName)
 {
 	printf("Loading solution from file: %s\n", fName);
@@ -1552,7 +1552,7 @@ int CSolver::calcHydroStageGlass(double t, double tau) {
 					ms[i].kappa = eos.getkappa(ms[i].ro, ms[i].ti, ms[i].te);
 					ms[i].ce    = eos.getce(ms[i].ro, ms[i].te);
 				} else {
-					ms[i].C     = eos.getC(ms[i].ro, ms[i].ti, ms[i].te); // 'eos', а не 'eosGlass' сознательно, чтобы не уменьшить шаг по времени случайно
+					ms[i].C     = eos.getC(ms[i].ro, ms[i].ti, ms[i].te); // 'eos', Р° РЅРµ 'eosGlass' СЃРѕР·РЅР°С‚РµР»СЊРЅРѕ, С‡С‚РѕР±С‹ РЅРµ СѓРјРµРЅСЊС€РёС‚СЊ С€Р°Рі РїРѕ РІСЂРµРјРµРЅРё СЃР»СѓС‡Р°Р№РЅРѕ
 					ms[i].Alphaei	    = eosGlass.getAlpha(ms[i].ro, ms[i].ti, ms[i].te);
 					ms[i].kappa = eosGlass.getkappa(ms[i].ro, ms[i].ti, ms[i].te);
 					ms[i].ce    = eosGlass.getce(ms[i].ro, ms[i].te);
@@ -1563,7 +1563,7 @@ int CSolver::calcHydroStageGlass(double t, double tau) {
 			ms[i].kappa = eos.getkappa(ms[i].ro, ms[i].ti, ms[i].te);
 			ms[i].ce    = eos.getce(ms[i].ro, ms[i].te);
 		} else {
-			ms[i].C     = eos.getC(ms[i].ro, ms[i].ti, ms[i].te); // 'eos', а не 'eosGlass' сознательно, чтобы не уменьшить шаг по времени случайно
+			ms[i].C     = eos.getC(ms[i].ro, ms[i].ti, ms[i].te); // 'eos', Р° РЅРµ 'eosGlass' СЃРѕР·РЅР°С‚РµР»СЊРЅРѕ, С‡С‚РѕР±С‹ РЅРµ СѓРјРµРЅСЊС€РёС‚СЊ С€Р°Рі РїРѕ РІСЂРµРјРµРЅРё СЃР»СѓС‡Р°Р№РЅРѕ
 			ms[i].Alphaei	    = eosGlass.getAlpha(ms[i].ro, ms[i].ti, ms[i].te);
 			ms[i].kappa = eosGlass.getkappa(ms[i].ro, ms[i].ti, ms[i].te);
 			ms[i].ce    = eosGlass.getce(ms[i].ro, ms[i].te);
@@ -1832,10 +1832,10 @@ void CSolver::calcHydroStageNoElectron(double t, double tau) {
 		ms_temp[j].x  = ms[j].x;
 		ms_temp[j].v  = ms[j].v;
 
-	// О, ахтунг! В верхних трех строчках может крыться небольшая ошибка, влияющая
-	// на точность.
-	// Везде мы приравниваем мс_прев мс_темпу, а в конечной точке мс_темп мс'у.
-	// Т.е., мс_прев в конечной точке отпущен на волю случая.
+	// Рћ, Р°С…С‚СѓРЅРі! Р’ РІРµСЂС…РЅРёС… С‚СЂРµС… СЃС‚СЂРѕС‡РєР°С… РјРѕР¶РµС‚ РєСЂС‹С‚СЊСЃСЏ РЅРµР±РѕР»СЊС€Р°СЏ РѕС€РёР±РєР°, РІР»РёСЏСЋС‰Р°СЏ
+	// РЅР° С‚РѕС‡РЅРѕСЃС‚СЊ.
+	// Р’РµР·РґРµ РјС‹ РїСЂРёСЂР°РІРЅРёРІР°РµРј РјСЃ_РїСЂРµРІ РјСЃ_С‚РµРјРїСѓ, Р° РІ РєРѕРЅРµС‡РЅРѕР№ С‚РѕС‡РєРµ РјСЃ_С‚РµРјРї РјСЃ'Сѓ.
+	// Рў.Рµ., РјСЃ_РїСЂРµРІ РІ РєРѕРЅРµС‡РЅРѕР№ С‚РѕС‡РєРµ РѕС‚РїСѓС‰РµРЅ РЅР° РІРѕР»СЋ СЃР»СѓС‡Р°СЏ.
 
 
 		for(i=0; i<=nSize; i++)
@@ -1843,9 +1843,9 @@ void CSolver::calcHydroStageNoElectron(double t, double tau) {
 			if(i==0)
 			{
 
-				// Эта аппроксимация граничных условий на давление, быть может,
-				// чуть менее точна на автомодельной ВР в идеальном газе, но гораздо
-				// монотоннее на алюминии (не порождает жутких осцилляций на границе).
+				// Р­С‚Р° Р°РїРїСЂРѕРєСЃРёРјР°С†РёСЏ РіСЂР°РЅРёС‡РЅС‹С… СѓСЃР»РѕРІРёР№ РЅР° РґР°РІР»РµРЅРёРµ, Р±С‹С‚СЊ РјРѕР¶РµС‚,
+				// С‡СѓС‚СЊ РјРµРЅРµРµ С‚РѕС‡РЅР° РЅР° Р°РІС‚РѕРјРѕРґРµР»СЊРЅРѕР№ Р’Р  РІ РёРґРµР°Р»СЊРЅРѕРј РіР°Р·Рµ, РЅРѕ РіРѕСЂР°Р·РґРѕ
+				// РјРѕРЅРѕС‚РѕРЅРЅРµРµ РЅР° Р°Р»СЋРјРёРЅРёРё (РЅРµ РїРѕСЂРѕР¶РґР°РµС‚ Р¶СѓС‚РєРёС… РѕСЃС†РёР»Р»СЏС†РёР№ РЅР° РіСЂР°РЅРёС†Рµ).
 
 				p_next_plus  = ms_prev[i].p;
 				p_next_minus = 0.0; //-ms_prev[i].p;
@@ -1928,8 +1928,8 @@ void CSolver::calcHydroStageNoElectron(double t, double tau) {
 
 			src=fluence/sqrt(3.14159)/deltaSkin/tauPulse/ms[i].ro*expX*expT;
 
-/*		// Здесь о том, что какая-то часть импульса все же поглащается
-		// в стекле у границы "стекло-алюминий". Спросить у Н.А.
+/*		// Р—РґРµСЃСЊ Рѕ С‚РѕРј, С‡С‚Рѕ РєР°РєР°СЏ-С‚Рѕ С‡Р°СЃС‚СЊ РёРјРїСѓР»СЊСЃР° РІСЃРµ Р¶Рµ РїРѕРіР»Р°С‰Р°РµС‚СЃСЏ
+		// РІ СЃС‚РµРєР»Рµ Сѓ РіСЂР°РЅРёС†С‹ "СЃС‚РµРєР»Рѕ-Р°Р»СЋРјРёРЅРёР№". РЎРїСЂРѕСЃРёС‚СЊ Сѓ Рќ.Рђ.
 
 			if ((task.getSourceFlag() == 2) && (i<=i_pulse_min))
 			{
@@ -2290,15 +2290,15 @@ double CSolver::solveteSource(double t, double tau, int i, double ro_temp, doubl
 void CSolver::testHeatStage(char* inputFileName, char* outputFileName)
 {
 	/***************************************************************
-		Тест для линейного модельного уравнения теплопроводности.
-		Для осуществления теста требуется:
+		РўРµСЃС‚ РґР»СЏ Р»РёРЅРµР№РЅРѕРіРѕ РјРѕРґРµР»СЊРЅРѕРіРѕ СѓСЂР°РІРЅРµРЅРёСЏ С‚РµРїР»РѕРїСЂРѕРІРѕРґРЅРѕСЃС‚Рё.
+		Р”Р»СЏ РѕСЃСѓС‰РµСЃС‚РІР»РµРЅРёСЏ С‚РµСЃС‚Р° С‚СЂРµР±СѓРµС‚СЃСЏ:
 
-  1. Входной файл \input_files\input_lagrange_heat_test.txt.
-  2. Функция getce() в табличном уравлении состояния
-	 должны возвращать единицу.
-  3. Функция getkappa() в табличном уравнении состояния должна возвращать 1e-8.
-  4. Должно быть задано гауссово (~exp(-x2)) начальное условие --
-	 задается в коде ниже.
+  1. Р’С…РѕРґРЅРѕР№ С„Р°Р№Р» \input_files\input_lagrange_heat_test.txt.
+  2. Р¤СѓРЅРєС†РёСЏ getce() РІ С‚Р°Р±Р»РёС‡РЅРѕРј СѓСЂР°РІР»РµРЅРёРё СЃРѕСЃС‚РѕСЏРЅРёСЏ
+	 РґРѕР»Р¶РЅС‹ РІРѕР·РІСЂР°С‰Р°С‚СЊ РµРґРёРЅРёС†Сѓ.
+  3. Р¤СѓРЅРєС†РёСЏ getkappa() РІ С‚Р°Р±Р»РёС‡РЅРѕРј СѓСЂР°РІРЅРµРЅРёРё СЃРѕСЃС‚РѕСЏРЅРёСЏ РґРѕР»Р¶РЅР° РІРѕР·РІСЂР°С‰Р°С‚СЊ 1e-8.
+  4. Р”РѕР»Р¶РЅРѕ Р±С‹С‚СЊ Р·Р°РґР°РЅРѕ РіР°СѓСЃСЃРѕРІРѕ (~exp(-x2)) РЅР°С‡Р°Р»СЊРЅРѕРµ СѓСЃР»РѕРІРёРµ --
+	 Р·Р°РґР°РµС‚СЃСЏ РІ РєРѕРґРµ РЅРёР¶Рµ.
 
 	****************************************************************/
 
@@ -2314,7 +2314,7 @@ void CSolver::testHeatStage(char* inputFileName, char* outputFileName)
 	double kappa = 0.0;
 	int i =0;
 
-	// Задаем начальное условие (п.4 требований к тесту)
+	// Р—Р°РґР°РµРј РЅР°С‡Р°Р»СЊРЅРѕРµ СѓСЃР»РѕРІРёРµ (Рї.4 С‚СЂРµР±РѕРІР°РЅРёР№ Рє С‚РµСЃС‚Сѓ)
 
 	for(i=0; i<ms.getSize(); i++)
 	{
@@ -2351,13 +2351,13 @@ void CSolver::testHeatStage(char* inputFileName, char* outputFileName)
 void CSolver::testExchangeStage(char* inputFileName, char* outputFileName)
 {
 	/***************************************************************
-		Тест для линейной модельной системы уравнений обмена.
-		Для осуществления теста требуется:
+		РўРµСЃС‚ РґР»СЏ Р»РёРЅРµР№РЅРѕР№ РјРѕРґРµР»СЊРЅРѕР№ СЃРёСЃС‚РµРјС‹ СѓСЂР°РІРЅРµРЅРёР№ РѕР±РјРµРЅР°.
+		Р”Р»СЏ РѕСЃСѓС‰РµСЃС‚РІР»РµРЅРёСЏ С‚РµСЃС‚Р° С‚СЂРµР±СѓРµС‚СЃСЏ:
 
-  1. Входной файл \input_files\input_lagrange_exchange_test.txt.
-  2. Функции getce(), getci() в табличном уравлении состояния
-	 должны возвращать единицу.
-  3. Функция getAlpha() в табличном уравнении состояния должна возвращать -1.
+  1. Р’С…РѕРґРЅРѕР№ С„Р°Р№Р» \input_files\input_lagrange_exchange_test.txt.
+  2. Р¤СѓРЅРєС†РёРё getce(), getci() РІ С‚Р°Р±Р»РёС‡РЅРѕРј СѓСЂР°РІР»РµРЅРёРё СЃРѕСЃС‚РѕСЏРЅРёСЏ
+	 РґРѕР»Р¶РЅС‹ РІРѕР·РІСЂР°С‰Р°С‚СЊ РµРґРёРЅРёС†Сѓ.
+  3. Р¤СѓРЅРєС†РёСЏ getAlpha() РІ С‚Р°Р±Р»РёС‡РЅРѕРј СѓСЂР°РІРЅРµРЅРёРё СЃРѕСЃС‚РѕСЏРЅРёСЏ РґРѕР»Р¶РЅР° РІРѕР·РІСЂР°С‰Р°С‚СЊ -1.
 
 	****************************************************************/
 
@@ -2412,7 +2412,7 @@ void CSolver::sweep(double *u, double *A, double *B, double *C, double *F, int s
 		 beta[i+1] = (A[i]*beta[i]+F[i]) / (C[i]-A[i]*alpha[i]);
 	}
 
-	// Обратная прогонка
+	// РћР±СЂР°С‚РЅР°СЏ РїСЂРѕРіРѕРЅРєР°
 
 //	teR = (AR/CR*betaR + FR/CR) / (1.0 - AR/CR*alphaR);
 
@@ -2437,16 +2437,16 @@ void CSolver::calcHydroStageGodunov(double t, double tau) {
 	double h = ms[1].x-ms[0].x;
 	double gamma=eos.getGamma();
 	int i=0;
-	// Векторы W уже заполнены
+	// Р’РµРєС‚РѕСЂС‹ W СѓР¶Рµ Р·Р°РїРѕР»РЅРµРЅС‹
 	CVectorPrimitive res;
-	// Потоки считаем по решению задачи Римана о распаде разрыва между ячейками
+	// РџРѕС‚РѕРєРё СЃС‡РёС‚Р°РµРј РїРѕ СЂРµС€РµРЅРёСЋ Р·Р°РґР°С‡Рё Р РёРјР°РЅР° Рѕ СЂР°СЃРїР°РґРµ СЂР°Р·СЂС‹РІР° РјРµР¶РґСѓ СЏС‡РµР№РєР°РјРё
 	for(i=0; i<nSize; i++) {
 		Node& n=ms[i];
 		if(i!=0) {
 			Node& nm=ms[i-1];
 			res = calcRPAnalyticalSolution(nm.ro, nm.v, nm.p, n.ro, n.v, n.p, 0., tau);
 		} else
-			// Левое граничное условие -- прозрачная граница
+			// Р›РµРІРѕРµ РіСЂР°РЅРёС‡РЅРѕРµ СѓСЃР»РѕРІРёРµ -- РїСЂРѕР·СЂР°С‡РЅР°СЏ РіСЂР°РЅРёС†Р°
 			res = calcRPAnalyticalSolution(n.ro, n.v, n.p, n.ro, n.v, n.p, 0., tau);
 		if(res.ro!=0.) E = res.p/(gamma-1.)/res.ro + 0.5*res.v*res.v; else E=0.;
 		Fm = Vector4(res.ro*res.v, res.ro*res.v*res.v + res.p, res.v*(res.ro*E+res.p), 0.);
@@ -2454,13 +2454,13 @@ void CSolver::calcHydroStageGodunov(double t, double tau) {
 			Node& np=ms[i+1];
 			res = calcRPAnalyticalSolution(n.ro, n.v, n.p, np.ro, np.v, np.p, 0., tau);
 		} else
-			// Правое граничное условие -- прозрачная граница
+			// РџСЂР°РІРѕРµ РіСЂР°РЅРёС‡РЅРѕРµ СѓСЃР»РѕРІРёРµ -- РїСЂРѕР·СЂР°С‡РЅР°СЏ РіСЂР°РЅРёС†Р°
 			res = calcRPAnalyticalSolution(n.ro, n.v, n.p, n.ro, n.v, n.p, 0., tau);
 		if(res.ro!=0.) E = res.p/(gamma-1.)/res.ro + 0.5*res.v*res.v; else E=0.;
 		Fp = Vector4(res.ro*res.v, res.ro*res.v*res.v + res.p, res.v*(res.ro*E+res.p), 0.);
 		n.W_temp = n.W - tau/h*(Fp-Fm);
 	}
-	// Тест решения
+	// РўРµСЃС‚ СЂРµС€РµРЅРёСЏ
 /*	CVectorPrimitive Um, Up;
 	double Em=0., Ep=0.;
 	double L0=0., R0=0., L1 = 0., L2=0., L3=0., R1 = 0., R2=0., R3=0.;
@@ -2509,7 +2509,7 @@ void CSolver::calcHydroStageGodunov(double t, double tau) {
 
 void CSolver::calcHydroStageGodunovMovingMesh(double t, double tau)
 {
-	// Версия солвера метода Годунова 1-го порядка на подвижной однородной сетке
+	// Р’РµСЂСЃРёСЏ СЃРѕР»РІРµСЂР° РјРµС‚РѕРґР° Р“РѕРґСѓРЅРѕРІР° 1-РіРѕ РїРѕСЂСЏРґРєР° РЅР° РїРѕРґРІРёР¶РЅРѕР№ РѕРґРЅРѕСЂРѕРґРЅРѕР№ СЃРµС‚РєРµ
 	double E = 0.;
 	Vector4 Fm = Vector4::ZERO, Fp = Vector4::ZERO;
 	int nSize = ms.getSize();
@@ -2521,30 +2521,30 @@ void CSolver::calcHydroStageGodunovMovingMesh(double t, double tau)
 	/// DEBUG ///
 	double s=0., sNew=0., sTemp=0., sFluxM=0., sFluxP=0.;
 	/////////////
-	// Векторы W уже заполнены
+	// Р’РµРєС‚РѕСЂС‹ W СѓР¶Рµ Р·Р°РїРѕР»РЅРµРЅС‹
 	CVectorPrimitive res;
 	res.ro = 0.; res.v = 0.; res.p = 0.;
-	// Считаем скорости узлов сетки
+	// РЎС‡РёС‚Р°РµРј СЃРєРѕСЂРѕСЃС‚Рё СѓР·Р»РѕРІ СЃРµС‚РєРё
 	CMethodOld &method = task.getMethod();
-	// Два варианта: либо константа из начальных условий (скорость левой границы, "хвоста" волны разрежения), либо обновлять на каждом шаге по времени из ВР между крайней ячейкой и вакуумом.
-	// Первый вариант
+	// Р”РІР° РІР°СЂРёР°РЅС‚Р°: Р»РёР±Рѕ РєРѕРЅСЃС‚Р°РЅС‚Р° РёР· РЅР°С‡Р°Р»СЊРЅС‹С… СѓСЃР»РѕРІРёР№ (СЃРєРѕСЂРѕСЃС‚СЊ Р»РµРІРѕР№ РіСЂР°РЅРёС†С‹, "С…РІРѕСЃС‚Р°" РІРѕР»РЅС‹ СЂР°Р·СЂРµР¶РµРЅРёСЏ), Р»РёР±Рѕ РѕР±РЅРѕРІР»СЏС‚СЊ РЅР° РєР°Р¶РґРѕРј С€Р°РіРµ РїРѕ РІСЂРµРјРµРЅРё РёР· Р’Р  РјРµР¶РґСѓ РєСЂР°Р№РЅРµР№ СЏС‡РµР№РєРѕР№ Рё РІР°РєСѓСѓРјРѕРј.
+	// РџРµСЂРІС‹Р№ РІР°СЂРёР°РЅС‚
 	Zone z = task.getZone(0);
 	double vLeft = z.v - 2.*sqrt(gamma*eos.getpi(z.ro, z.ti)/z.ro)/(gamma-1.);
 
 
-	// Второй вариант
+	// Р’С‚РѕСЂРѕР№ РІР°СЂРёР°РЅС‚
 	//double vLeft = ms[0].v - 2.*sqrt(gamma*ms[0].p/ms[0].ro)/(gamma-1.);
-	// Третий вариант: решать задачу о распаде разрыва и давать скорость левой границы
+	// РўСЂРµС‚РёР№ РІР°СЂРёР°РЅС‚: СЂРµС€Р°С‚СЊ Р·Р°РґР°С‡Сѓ Рѕ СЂР°СЃРїР°РґРµ СЂР°Р·СЂС‹РІР° Рё РґР°РІР°С‚СЊ СЃРєРѕСЂРѕСЃС‚СЊ Р»РµРІРѕР№ РіСЂР°РЅРёС†С‹
 	// ???
-	// Значения сеточных координат и скоростей на новом временном слое
+	// Р—РЅР°С‡РµРЅРёСЏ СЃРµС‚РѕС‡РЅС‹С… РєРѕРѕСЂРґРёРЅР°С‚ Рё СЃРєРѕСЂРѕСЃС‚РµР№ РЅР° РЅРѕРІРѕРј РІСЂРµРјРµРЅРЅРѕРј СЃР»РѕРµ
 	for(i=0; i<nSize+1; i++) {
 		method.vGrid[i] = vLeft*(1.0-double(i)/double(nSize));
 		method.X[i] = ms[i].x + method.vGrid[i]*tau;
 	}
 
 	/// DEBUG ///
-	// Переинтерполяция узлов сетки
-	// Авантюра?
+	// РџРµСЂРµРёРЅС‚РµСЂРїРѕР»СЏС†РёСЏ СѓР·Р»РѕРІ СЃРµС‚РєРё
+	// РђРІР°РЅС‚СЋСЂР°?
 	/*Vector4 lTerm=Vector4::ZERO, rTerm=Vector4::ZERO;
 	for(i=0; i<nSize; i++){
 		Node& n = ms[i];
@@ -2556,11 +2556,11 @@ void CSolver::calcHydroStageGodunovMovingMesh(double t, double tau)
 
 	/////////////
 
-	// Использую метод Munz
+	// РСЃРїРѕР»СЊР·СѓСЋ РјРµС‚РѕРґ Munz
 	xVacBound += vLeft*tau;
 	double eps = 0.01;
 
-	// Потоки считаем по решению задачи Римана о распаде разрыва между ячейками
+	// РџРѕС‚РѕРєРё СЃС‡РёС‚Р°РµРј РїРѕ СЂРµС€РµРЅРёСЋ Р·Р°РґР°С‡Рё Р РёРјР°РЅР° Рѕ СЂР°СЃРїР°РґРµ СЂР°Р·СЂС‹РІР° РјРµР¶РґСѓ СЏС‡РµР№РєР°РјРё
 	for(i=0; i<nSize; i++) {
 		h    = ms[i+1].x - ms[i].x;
 		hNew = method.X[i+1]-method.X[i];
@@ -2575,12 +2575,12 @@ void CSolver::calcHydroStageGodunovMovingMesh(double t, double tau)
 			sFluxM = res.ro * s * (res.v-method.vGrid[i]);
 			/////////////
 		} else {
-			// Левое граничное условие -- прозрачная граница
-			// Один из двух вариантов -- либо нулевой поток всегда, либо решение задачи о распаде разрыва, во втором случае поток зависит от скорости левой границы сетки
-			// Первый вариант
+			// Р›РµРІРѕРµ РіСЂР°РЅРёС‡РЅРѕРµ СѓСЃР»РѕРІРёРµ -- РїСЂРѕР·СЂР°С‡РЅР°СЏ РіСЂР°РЅРёС†Р°
+			// РћРґРёРЅ РёР· РґРІСѓС… РІР°СЂРёР°РЅС‚РѕРІ -- Р»РёР±Рѕ РЅСѓР»РµРІРѕР№ РїРѕС‚РѕРє РІСЃРµРіРґР°, Р»РёР±Рѕ СЂРµС€РµРЅРёРµ Р·Р°РґР°С‡Рё Рѕ СЂР°СЃРїР°РґРµ СЂР°Р·СЂС‹РІР°, РІРѕ РІС‚РѕСЂРѕРј СЃР»СѓС‡Р°Рµ РїРѕС‚РѕРє Р·Р°РІРёСЃРёС‚ РѕС‚ СЃРєРѕСЂРѕСЃС‚Рё Р»РµРІРѕР№ РіСЂР°РЅРёС†С‹ СЃРµС‚РєРё
+			// РџРµСЂРІС‹Р№ РІР°СЂРёР°РЅС‚
 			//Fm = Vector4::ZERO;
 			/// DEBUG ///
-			// Второй вариант
+			// Р’С‚РѕСЂРѕР№ РІР°СЂРёР°РЅС‚
 			res = calcRPAnalyticalSolution(0., vLeft, 0., n.ro, n.v, n.p, method.X[i]-ms[i].x, tau);
 			//res = calcRPAnalyticalSolution(n.ro, /*vLeft*/n.v, n.p, n.ro, n.v, n.p, method.X[i]-ms[i].x, tau);
 			if(res.ro!=0.) E = res.p/(gamma-1.)/res.ro + 0.5*res.v*res.v; else E=0.;
@@ -2603,7 +2603,7 @@ void CSolver::calcHydroStageGodunovMovingMesh(double t, double tau)
 
 			/// DEBUG ///
 			//Fm = Vector4(res.ro*(res.v-method.vGrid[i]), res.ro*res.v*(res.v-method.vGrid[i]) + res.p, res.ro*E*(res.v-method.vGrid[i])+res.p*res.v, 0.);
-			// Энтропия и поток энтропии
+			// Р­РЅС‚СЂРѕРїРёСЏ Рё РїРѕС‚РѕРє СЌРЅС‚СЂРѕРїРёРё
 			//s=eos.getEntropy(res.ro, eos.getti(res.ro, res.p/(gamma-1.)/res.ro), 0.);
 			//sFluxM = res.ro *s* (res.v-method.vGrid[i]);
 			/////////////
@@ -2616,13 +2616,13 @@ void CSolver::calcHydroStageGodunovMovingMesh(double t, double tau)
 			Node& np=ms[i+1];
 			res = calcRPAnalyticalSolution(n.ro, n.v, n.p, np.ro, np.v, np.p, method.X[i+1]-ms[i+1].x, tau);
 		} else
-			// Правое граничное условие -- прозрачная граница
+			// РџСЂР°РІРѕРµ РіСЂР°РЅРёС‡РЅРѕРµ СѓСЃР»РѕРІРёРµ -- РїСЂРѕР·СЂР°С‡РЅР°СЏ РіСЂР°РЅРёС†Р°
 			res = calcRPAnalyticalSolution(n.ro, n.v, n.p, n.ro, n.v, n.p, method.X[i+1]-ms[i+1].x, tau);
 		if(res.ro!=0.) E = res.p/(gamma-1.)/res.ro + 0.5*res.v*res.v; else E=0.;
 		Fp = Vector4(res.ro*(res.v-method.vGrid[i+1]), res.ro*res.v*(res.v-method.vGrid[i+1]) + res.p, res.ro*E*(res.v-method.vGrid[i+1])+res.p*res.v, 0.);
 		n.W_temp   = (h*n.W - tau*(Fp-Fm))/hNew;
 	}
-	// Тест решения
+	// РўРµСЃС‚ СЂРµС€РµРЅРёСЏ
 /*	CVectorPrimitive Um, Up;
 	double Em=0., Ep=0.;
 	double L0=0., R0=0., L1 = 0., L2=0., L3=0., R1 = 0., R2=0., R3=0.;
@@ -2648,7 +2648,7 @@ void CSolver::calcHydroStageGodunovMovingMesh(double t, double tau)
 		if(fabs((L2-R2)/0.5/(L2+R2))>eps && L2 != 0. && R2 != 0. && fabs(L2-R2)>epsAbs)
 			cout << "calcHydroStageGodunov() test not passed: mesh conversion law #2 not satisfied in node " << i << endl;
 	}*/
-	// Тест закона сохранения энергии на сетке
+	// РўРµСЃС‚ Р·Р°РєРѕРЅР° СЃРѕС…СЂР°РЅРµРЅРёСЏ СЌРЅРµСЂРіРёРё РЅР° СЃРµС‚РєРµ
 /*	i=17;
 	double G=0., G_plus=0.;
 	double roL=0., vL=0., pL=0., roR=0., vR=0., pR=0.;
@@ -2675,7 +2675,7 @@ void CSolver::calcHydroStageGodunovMovingMesh(double t, double tau)
 			cout << "I found it! I waited so long! -- i=" << i << endl;
 	}*/
 
-	// Значения на новом временнОм слое
+	// Р—РЅР°С‡РµРЅРёСЏ РЅР° РЅРѕРІРѕРј РІСЂРµРјРµРЅРЅРћРј СЃР»РѕРµ
 	for(i=0; i<nSize; i++)
 	{
 		Node& n=ms[i];
@@ -2707,7 +2707,7 @@ void CSolver::calcHydroStageGodunovMovingMesh(double t, double tau)
 			n.C  = eos.getC(n.ro, n.ti, n.te);
 	}
 
-	// И проставляем новые координаты узлов сетки
+	// Р РїСЂРѕСЃС‚Р°РІР»СЏРµРј РЅРѕРІС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ СѓР·Р»РѕРІ СЃРµС‚РєРё
 	for(i=0; i<nSize+1; i++){
 		ms[i].x = method.X[i];
 	}
@@ -2722,12 +2722,12 @@ void CSolver::calcHydroStageMHM(double t, double tau) {
 	double h=ms[1].x-ms[0].x;
 	Vector4 L = Vector4::ZERO, R = Vector4::ZERO, D = Vector4::ZERO, V = Vector4::ZERO;
 	double gamma = eos.getGamma();
-	// Значения на границе (в фиктивных ячейках)
+	// Р—РЅР°С‡РµРЅРёСЏ РЅР° РіСЂР°РЅРёС†Рµ (РІ С„РёРєС‚РёРІРЅС‹С… СЏС‡РµР№РєР°С…)
 	double roLB=0., vLB = 0., ELB=0., roRB=0., vRB=0., ERB=0.;
 	// Transmissive b.c.s
 	Vector4 _W_LEFT= ms[0].W, _W_RIGHT = ms[nSize-1].W;
 	// Data reconstruction
-	// Не забываем, что координатная таблица наклонов "сдвинута" на 2 ячейки (порядок схемы = количество фиктивных ячеек)
+	// РќРµ Р·Р°Р±С‹РІР°РµРј, С‡С‚Рѕ РєРѕРѕСЂРґРёРЅР°С‚РЅР°СЏ С‚Р°Р±Р»РёС†Р° РЅР°РєР»РѕРЅРѕРІ "СЃРґРІРёРЅСѓС‚Р°" РЅР° 2 СЏС‡РµР№РєРё (РїРѕСЂСЏРґРѕРє СЃС…РµРјС‹ = РєРѕР»РёС‡РµСЃС‚РІРѕ С„РёРєС‚РёРІРЅС‹С… СЏС‡РµРµРє)
 	int nOrder = 2;
 	double omega = .5;
 	double r = 0.;
@@ -2806,12 +2806,12 @@ void CSolver::calcHydroStageMHM(double t, double tau) {
 		ms[i].W_temp = ms[i].W - tau/h*(ms[i+1].F-ms[i].F);
 	}
 	for(i=0; i<nSize; i++) {
-		// Обновляем консервативные переменные
+		// РћР±РЅРѕРІР»СЏРµРј РєРѕРЅСЃРµСЂРІР°С‚РёРІРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ
 		Node& n=ms[i];
 		n.W[0] = n.W_temp[0];
 		n.W[1] = n.W_temp[1];
 		n.W[2] = n.W_temp[2];
-		// Обновляем все переменные
+		// РћР±РЅРѕРІР»СЏРµРј РІСЃРµ РїРµСЂРµРјРµРЅРЅС‹Рµ
 		n.ro = n.W[0];
 		n.v  = n.W[1]/n.ro;
 		n.e  = n.W[2]/n.ro - 0.5*n.v*n.v;
@@ -2832,7 +2832,7 @@ void CSolver::calcHydroStageG2(double t, double tau) {
 	double h=ms[1].x-ms[0].x;
 	double _x = 0.;
 	Vector4 L = Vector4::ZERO, R = Vector4::ZERO, D = Vector4::ZERO, V = Vector4::ZERO;
-	// Значения на границе (в фиктивных ячейках)
+	// Р—РЅР°С‡РµРЅРёСЏ РЅР° РіСЂР°РЅРёС†Рµ (РІ С„РёРєС‚РёРІРЅС‹С… СЏС‡РµР№РєР°С…)
 	double roim1=0., uim1=0., Eim1=0., roim2=0., uim2=0., Eim2=0.,
 		   roip1=0., uip1=0., Eip1=0., roip2=0., uip2=0., Eip2=0.;
 	Vector4 slopeim1=Vector4::ZERO, slopeip1=Vector4::ZERO;
@@ -2915,12 +2915,12 @@ void CSolver::calcHydroStageG2(double t, double tau) {
 		ms[i].W_temp = ms[i].W - tau/h*(ms[i+1].F-ms[i].F);
 	}
 	for(i=0; i<nSize; i++) {
-		// Обновляем консервативные переменные
+		// РћР±РЅРѕРІР»СЏРµРј РєРѕРЅСЃРµСЂРІР°С‚РёРІРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ
 		Node& n=ms[i];
 		n.W[0] = n.W_temp[0];
 		n.W[1] = n.W_temp[1];
 		n.W[2] = n.W_temp[2];
-		// Обновляем все переменные
+		// РћР±РЅРѕРІР»СЏРµРј РІСЃРµ РїРµСЂРµРјРµРЅРЅС‹Рµ
 		n.ro = n.W[0];
 		n.v  = n.W[1]/n.ro;
 		n.e  = n.W[2]/n.ro - 0.5*n.v*n.v;
@@ -2938,9 +2938,9 @@ void CSolver::calcHydroStageLaxFriedrichs(double t, double tau) {
 	const double h=ms[1].x-ms[0].x;
 	Vector4 UL = Vector4::ZERO, UR = Vector4::ZERO, FL = Vector4::ZERO, FR = Vector4::ZERO;
 	const double gamma = eos.getGamma();
-	// Значения на границе (в фиктивных ячейках)
+	// Р—РЅР°С‡РµРЅРёСЏ РЅР° РіСЂР°РЅРёС†Рµ (РІ С„РёРєС‚РёРІРЅС‹С… СЏС‡РµР№РєР°С…)
 	double roLB=0., vLB = 0., ELB=0., roRB=0., vRB=0., ERB=0.;
-	// Задаем граничные условия
+	// Р—Р°РґР°РµРј РіСЂР°РЅРёС‡РЅС‹Рµ СѓСЃР»РѕРІРёСЏ
 	// Transmissive left boundary
 	roLB = ms[0].ro; vLB = ms[0].v;	ELB = ms[0].e + .5*ms[0].v*ms[0].v;
 	// Transmissive right boundary
@@ -2963,12 +2963,12 @@ void CSolver::calcHydroStageLaxFriedrichs(double t, double tau) {
 		ms[i].W_temp = ms[i].W - tau/h*(ms[i+1].F-ms[i].F);
 	}
 	for(i=0; i<nSize; i++) {
-		// Обновляем консервативные переменные
+		// РћР±РЅРѕРІР»СЏРµРј РєРѕРЅСЃРµСЂРІР°С‚РёРІРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ
 		Node& n=ms[i];
 		n.W[0] = n.W_temp[0];
 		n.W[1] = n.W_temp[1];
 		n.W[2] = n.W_temp[2];
-		// Обновляем все переменные
+		// РћР±РЅРѕРІР»СЏРµРј РІСЃРµ РїРµСЂРµРјРµРЅРЅС‹Рµ
 		n.ro = n.W[0];
 		n.v  = n.W[1]/n.ro;
 		n.e  = n.W[2]/n.ro - 0.5*n.v*n.v;
@@ -3150,12 +3150,12 @@ void CSolver::calcHydroStageMccormack(double t, double tau) {
 		n_temp_temp.W = Vector4(n.ro, n.ro*n.v, n.ro*E, 0);
 	}
 	Vector4 Fp=Vector4::ZERO, Fm=Vector4::ZERO, Fp_temp=Vector4::ZERO, Fm_temp=Vector4::ZERO;
-	int nSize=ms.getSize(); //nSize это количество узлов сетки (и количество промежутков плюс один)
+	int nSize=ms.getSize(); //nSize СЌС‚Рѕ РєРѕР»РёС‡РµСЃС‚РІРѕ СѓР·Р»РѕРІ СЃРµС‚РєРё (Рё РєРѕР»РёС‡РµСЃС‚РІРѕ РїСЂРѕРјРµР¶СѓС‚РєРѕРІ РїР»СЋСЃ РѕРґРёРЅ)
 
-	// Предиктор
+	// РџСЂРµРґРёРєС‚РѕСЂ
 	for(i=0; i<nSize; i++) {
 		Node &n = ms[i], &n_temp = ms_temp[i];
-		// Прозрачная граница
+		// РџСЂРѕР·СЂР°С‡РЅР°СЏ РіСЂР°РЅРёС†Р°
 		if(i==nSize-1)
 			Fp = calcF(n.ro, n.v, n.p, n.e);
 		else {
@@ -3164,17 +3164,17 @@ void CSolver::calcHydroStageMccormack(double t, double tau) {
 		}
 		Fm = calcF(n.ro, n.v, n.p, n.e);
 		n_temp.W = n.W - tau/h*(Fp-Fm);
-		// Обновляем значения плотности, скорости, давления, энергии n_temp
+		// РћР±РЅРѕРІР»СЏРµРј Р·РЅР°С‡РµРЅРёСЏ РїР»РѕС‚РЅРѕСЃС‚Рё, СЃРєРѕСЂРѕСЃС‚Рё, РґР°РІР»РµРЅРёСЏ, СЌРЅРµСЂРіРёРё n_temp
 		n_temp.ro = n_temp.W[0];
 		n_temp.v  = n_temp.W[1]/n_temp.ro;
 		n_temp.e  = n_temp.W[2]/n_temp.ro - 0.5*n_temp.v*n_temp.v;
 		n_temp.p  = (gamma-1.) * n_temp.ro* n_temp.e;
 	}
-	// Корректор
+	// РљРѕСЂСЂРµРєС‚РѕСЂ
 	for(i=0; i<nSize; i++) {
 		Node &n = ms[i], &n_temp = ms_temp[i], &n_temp_temp = ms_temp_temp[i];
 		Fp_temp = calcF(n_temp.ro, n_temp.v, n_temp.p, n_temp.e);
-		// Прозрачная граница
+		// РџСЂРѕР·СЂР°С‡РЅР°СЏ РіСЂР°РЅРёС†Р°
 		if(i==0)
 			Fm_temp = calcF(n_temp.ro, n_temp.v, n_temp.p, n_temp.e);
 		else {
@@ -3182,32 +3182,32 @@ void CSolver::calcHydroStageMccormack(double t, double tau) {
 			Fm_temp = calcF(nm_temp.ro, nm_temp.v, nm_temp.p, nm_temp.e);
 		}
 		n_temp_temp.W = 0.5*(n.W + n_temp.W) - tau/2.0/h*(Fp_temp-Fm_temp);
-		// Обновляем значения плотности, скорости, давления, энергии n_temp
+		// РћР±РЅРѕРІР»СЏРµРј Р·РЅР°С‡РµРЅРёСЏ РїР»РѕС‚РЅРѕСЃС‚Рё, СЃРєРѕСЂРѕСЃС‚Рё, РґР°РІР»РµРЅРёСЏ, СЌРЅРµСЂРіРёРё n_temp
 		n_temp_temp.ro = n_temp_temp.W[0];
 		n_temp_temp.v  = n_temp_temp.W[1]/n_temp_temp.ro;
 		n_temp_temp.e  = n_temp_temp.W[2]/n_temp_temp.ro - 0.5*n_temp_temp.v*n_temp_temp.v;
 		n_temp_temp.p  = (gamma-1.) * n_temp_temp.ro* n_temp_temp.e;
 	}
-	// Искусственная вязкость
+	// РСЃРєСѓСЃСЃС‚РІРµРЅРЅР°СЏ РІСЏР·РєРѕСЃС‚СЊ
 	Vector4 Qminus = Vector4::ZERO, Q=Vector4::ZERO, Qplus=Vector4::ZERO;
 	double mu = 0.01;
 	for(i=0; i<nSize; i++) {
 		Node &n_temp_temp = ms_temp_temp[i];
 		Q = n_temp_temp.W;
-		// Прозрачная левая граница
+		// РџСЂРѕР·СЂР°С‡РЅР°СЏ Р»РµРІР°СЏ РіСЂР°РЅРёС†Р°
 		if(i==0)
 			Qminus = ms_temp_temp[0].W;
 		else
 			Qminus = ms_temp_temp[i-1].W;
-		// Прозрачная правая граница
+		// РџСЂРѕР·СЂР°С‡РЅР°СЏ РїСЂР°РІР°СЏ РіСЂР°РЅРёС†Р°
 		if(i==nSize-1)
 			Qplus = ms_temp_temp[nSize-1].W;
 		else
 			Qplus = ms_temp_temp[i+1].W;
 		ms_temp_temp[i].W_temp = mu * (Qminus - 2.*Q + Qplus);
 	}
-	// Тест законов сохранения
-	// Тестируем предиктор
+	// РўРµСЃС‚ Р·Р°РєРѕРЅРѕРІ СЃРѕС…СЂР°РЅРµРЅРёСЏ
+	// РўРµСЃС‚РёСЂСѓРµРј РїСЂРµРґРёРєС‚РѕСЂ
 	for(i=0; i<nSize; i++) {
 		L = 1./tau * (ms_temp[i].W - ms[i].W);
 		if(i!=nSize-1)
@@ -3233,7 +3233,7 @@ void CSolver::calcHydroStageMccormack(double t, double tau) {
 		if(fabs(D[2]/L[2]) > epsilon && fabs(D[2]) > epsilon)
 			cout << "i=" << i << ": Conservation law on predictor step violated in eq.#3" << endl;
 	}
-	// Тестируем корректор и искусственную вязкость
+	// РўРµСЃС‚РёСЂСѓРµРј РєРѕСЂСЂРµРєС‚РѕСЂ Рё РёСЃРєСѓСЃСЃС‚РІРµРЅРЅСѓСЋ РІСЏР·РєРѕСЃС‚СЊ
 	for(i=0; i<nSize; i++) {
 
 		// Fp 				x	0.82565114466347900	double
@@ -3282,7 +3282,7 @@ void CSolver::calcHydroStageMccormack(double t, double tau) {
 							  ms_temp[i].v*(ms_temp[i].p + ms_temp[i].ro*(ms_temp[i].e + 0.5*ms_temp[i].v*ms_temp[i].v)),
 							  0.);
 		R = - 1./h/2. * (Fp_temp - Fm_temp);
-		// Искусственная вязкость
+		// РСЃРєСѓСЃСЃС‚РІРµРЅРЅР°СЏ РІСЏР·РєРѕСЃС‚СЊ
 		if(i==0) Qminus = ms_temp_temp[0].W; else Qminus = ms_temp_temp[i-1].W;
 		if(i==nSize-1) Qplus = ms_temp_temp[nSize-1].W; else Qplus = ms_temp_temp[i+1].W;
 		Q = ms_temp_temp[i].W;
@@ -3296,17 +3296,17 @@ void CSolver::calcHydroStageMccormack(double t, double tau) {
 		if(fabs(D[2]/L[2]) > epsilon && fabs(D[2]) > epsilon)
 			cout << "i=" << i << ": Conservation law on corrector step violated in eq.#3" << endl;
 	}
-	// Присваиваем текущему временнОму слою рассчитанные значения
+	// РџСЂРёСЃРІР°РёРІР°РµРј С‚РµРєСѓС‰РµРјСѓ РІСЂРµРјРµРЅРЅРћРјСѓ СЃР»РѕСЋ СЂР°СЃСЃС‡РёС‚Р°РЅРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ
 	for(i=0; i<nSize; i++)
 	{
-		// Добавляем искусственную вязкость
+		// Р”РѕР±Р°РІР»СЏРµРј РёСЃРєСѓСЃСЃС‚РІРµРЅРЅСѓСЋ РІСЏР·РєРѕСЃС‚СЊ
 		ms_temp_temp[i].W += ms_temp_temp[i].W_temp;
-		// Обновляем консервативные переменные
+		// РћР±РЅРѕРІР»СЏРµРј РєРѕРЅСЃРµСЂРІР°С‚РёРІРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ
 		Node& n=ms[i], &n_temp_temp=ms_temp_temp[i];
 		n.W[0] = n_temp_temp.W[0];
 		n.W[1] = n_temp_temp.W[1];
 		n.W[2] = n_temp_temp.W[2];
-		// Обновляем все переменные
+		// РћР±РЅРѕРІР»СЏРµРј РІСЃРµ РїРµСЂРµРјРµРЅРЅС‹Рµ
 		n.ro = n.W[0];
 		n.v  = n.W[1]/n.ro;
 		n.e  = n.W[2]/n.ro - 0.5*n.v*n.v;
@@ -3324,9 +3324,9 @@ void CSolver::calcHydroStageRoe(double t, double tau) {
 	double h=ms[1].x-ms[0].x;
 	Vector4 L = Vector4::ZERO, R = Vector4::ZERO, D = Vector4::ZERO, V = Vector4::ZERO;
 	double gamma = eos.getGamma();
-	// Значения на границе (в фиктивных ячейках)
+	// Р—РЅР°С‡РµРЅРёСЏ РЅР° РіСЂР°РЅРёС†Рµ (РІ С„РёРєС‚РёРІРЅС‹С… СЏС‡РµР№РєР°С…)
 	double roLB=0., vLB = 0., ELB=0., roRB=0., vRB=0., ERB=0.;
-	// Задаем граничные условия
+	// Р—Р°РґР°РµРј РіСЂР°РЅРёС‡РЅС‹Рµ СѓСЃР»РѕРІРёСЏ
 	// Transmissive left boundary
 	roLB = ms[0].ro; vLB = ms[0].v;	ELB = ms[0].e + .5*ms[0].v*ms[0].v;
 	// Transmissive right boundary
@@ -3345,12 +3345,12 @@ void CSolver::calcHydroStageRoe(double t, double tau) {
 		ms[i].W_temp = ms[i].W - tau/h*(ms[i+1].F-ms[i].F);
 	}
 	for(i=0; i<nSize; i++) {
-		// Обновляем консервативные переменные
+		// РћР±РЅРѕРІР»СЏРµРј РєРѕРЅСЃРµСЂРІР°С‚РёРІРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ
 		Node& n=ms[i];
 		n.W[0] = n.W_temp[0];
 		n.W[1] = n.W_temp[1];
 		n.W[2] = n.W_temp[2];
-		// Обновляем все переменные
+		// РћР±РЅРѕРІР»СЏРµРј РІСЃРµ РїРµСЂРµРјРµРЅРЅС‹Рµ
 		n.ro = n.W[0];
 		n.v  = n.W[1]/n.ro;
 		n.e  = n.W[2]/n.ro - 0.5*n.v*n.v;
@@ -3467,12 +3467,12 @@ double CSolver::getdx() {
 	return ms[1].x-ms[0].x;
 }
 
-// ТРЭШ -- убираем мусор пока под комментарии
+// РўР Р­РЁ -- СѓР±РёСЂР°РµРј РјСѓСЃРѕСЂ РїРѕРєР° РїРѕРґ РєРѕРјРјРµРЅС‚Р°СЂРёРё
 
-/* Это не вполне верная реализация Годуновской схемы -- вместо решения
-   задачи о распаде разрыва между ячейками для подсчета потоков, я
-   тупо беру полусуммы. Тем не менее, она почему-то как-то сходится
-   к решению. :)
+/* Р­С‚Рѕ РЅРµ РІРїРѕР»РЅРµ РІРµСЂРЅР°СЏ СЂРµР°Р»РёР·Р°С†РёСЏ Р“РѕРґСѓРЅРѕРІСЃРєРѕР№ СЃС…РµРјС‹ -- РІРјРµСЃС‚Рѕ СЂРµС€РµРЅРёСЏ
+   Р·Р°РґР°С‡Рё Рѕ СЂР°СЃРїР°РґРµ СЂР°Р·СЂС‹РІР° РјРµР¶РґСѓ СЏС‡РµР№РєР°РјРё РґР»СЏ РїРѕРґСЃС‡РµС‚Р° РїРѕС‚РѕРєРѕРІ, СЏ
+   С‚СѓРїРѕ Р±РµСЂСѓ РїРѕР»СѓСЃСѓРјРјС‹. РўРµРј РЅРµ РјРµРЅРµРµ, РѕРЅР° РїРѕС‡РµРјСѓ-С‚Рѕ РєР°Рє-С‚Рѕ СЃС…РѕРґРёС‚СЃСЏ
+   Рє СЂРµС€РµРЅРёСЋ. :)
 
 
 void CSolver::calcHydroStageGodunov(double t, double tau)
@@ -3492,9 +3492,9 @@ void CSolver::calcHydroStageGodunov(double t, double tau)
 
 	// W = ( 1/ro v E )T
 
-	// ВНИМАНИЕ!!! Граничное условие: P=0, как справа, так и слева!!!
+	// Р’РќРРњРђРќРР•!!! Р“СЂР°РЅРёС‡РЅРѕРµ СѓСЃР»РѕРІРёРµ: P=0, РєР°Рє СЃРїСЂР°РІР°, С‚Р°Рє Рё СЃР»РµРІР°!!!
 
-	// Первый компонент (1/ro)
+	// РџРµСЂРІС‹Р№ РєРѕРјРїРѕРЅРµРЅС‚ (1/ro)
 
 	for(int i=0; i<nSize; i++)
 	{
@@ -3502,7 +3502,7 @@ void CSolver::calcHydroStageGodunov(double t, double tau)
 					   (1.0/ms[i].ro + (tau/ms[i].dm)*(ms[i+1].v-ms[i].v));
 	}
 
-	// Второй компонент (v) и сразу же x
+	// Р’С‚РѕСЂРѕР№ РєРѕРјРїРѕРЅРµРЅС‚ (v) Рё СЃСЂР°Р·Сѓ Р¶Рµ x
 
 	for(int i=0; i<nSize; i++)
 	{
@@ -3540,7 +3540,7 @@ void CSolver::calcHydroStageGodunov(double t, double tau)
 
 	///////////////
 
-	// Третий компонент (E)
+	// РўСЂРµС‚РёР№ РєРѕРјРїРѕРЅРµРЅС‚ (E)
 
 	for(int i=0; i<nSize; i++)
 	{
@@ -3570,7 +3570,7 @@ void CSolver::calcHydroStageGodunov(double t, double tau)
 		ms_temp[i].ei = E_temp - v_av_temp*v_av_temp/2.0;
 	}
 
-	// Остальные величины
+	// РћСЃС‚Р°Р»СЊРЅС‹Рµ РІРµР»РёС‡РёРЅС‹
 
 	for(int i=0; i<nSize; i++)
 	{
@@ -3586,7 +3586,7 @@ void CSolver::calcHydroStageGodunov(double t, double tau)
 		ms_temp[i].p  = eos.getp(ms_temp[i].ro, ms_temp[i].ti, ms_temp[i].te);
 	}
 
-	// Копируем темповые массивы в оригинальные
+	// РљРѕРїРёСЂСѓРµРј С‚РµРјРїРѕРІС‹Рµ РјР°СЃСЃРёРІС‹ РІ РѕСЂРёРіРёРЅР°Р»СЊРЅС‹Рµ
 
 	for(int i=0; i<nSize; i++)
 	{
@@ -3616,11 +3616,11 @@ void CSolver::calcHydroStageGodunov(double t, double tau)
 }
 */
 
-/* Это реализация "обычной" схемы Самарского, той, которая
-приведена для примера в книге Самарского и Попова. Плюс,
-искусственная вязкость почти наверняка работает неправильно,
-потому что в процессе программирования этой схемы я с трудом
-представлял себе, что это такое. :)
+/* Р­С‚Рѕ СЂРµР°Р»РёР·Р°С†РёСЏ "РѕР±С‹С‡РЅРѕР№" СЃС…РµРјС‹ РЎР°РјР°СЂСЃРєРѕРіРѕ, С‚РѕР№, РєРѕС‚РѕСЂР°СЏ
+РїСЂРёРІРµРґРµРЅР° РґР»СЏ РїСЂРёРјРµСЂР° РІ РєРЅРёРіРµ РЎР°РјР°СЂСЃРєРѕРіРѕ Рё РџРѕРїРѕРІР°. РџР»СЋСЃ,
+РёСЃРєСѓСЃСЃС‚РІРµРЅРЅР°СЏ РІСЏР·РєРѕСЃС‚СЊ РїРѕС‡С‚Рё РЅР°РІРµСЂРЅСЏРєР° СЂР°Р±РѕС‚Р°РµС‚ РЅРµРїСЂР°РІРёР»СЊРЅРѕ,
+РїРѕС‚РѕРјСѓ С‡С‚Рѕ РІ РїСЂРѕС†РµСЃСЃРµ РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёСЏ СЌС‚РѕР№ СЃС…РµРјС‹ СЏ СЃ С‚СЂСѓРґРѕРј
+РїСЂРµРґСЃС‚Р°РІР»СЏР» СЃРµР±Рµ, С‡С‚Рѕ СЌС‚Рѕ С‚Р°РєРѕРµ. :)
 
 
 void CSolver::calcHydroStageSamarskii(double t, double tau)
@@ -3641,8 +3641,8 @@ void CSolver::calcHydroStageSamarskii(double t, double tau)
 	EOS &eos = task.getEOS();
 	int nSize = ms.getSize();
 
-// Первое уравнение ((2.7) из книжки Самарского и Попова)
-// Граничное условие с обеих сторон -- нулевое давление (вакуум)
+// РџРµСЂРІРѕРµ СѓСЂР°РІРЅРµРЅРёРµ ((2.7) РёР· РєРЅРёР¶РєРё РЎР°РјР°СЂСЃРєРѕРіРѕ Рё РџРѕРїРѕРІР°)
+// Р“СЂР°РЅРёС‡РЅРѕРµ СѓСЃР»РѕРІРёРµ СЃ РѕР±РµРёС… СЃС‚РѕСЂРѕРЅ -- РЅСѓР»РµРІРѕРµ РґР°РІР»РµРЅРёРµ (РІР°РєСѓСѓРј)
 
 	for(int i=0; i<nSize-1; i++)
 	{
@@ -3659,13 +3659,13 @@ void CSolver::calcHydroStageSamarskii(double t, double tau)
 
 	/////////////////DEBUG//////////////////
 	//ms_temp[nSize-1].v = (tau/ms[nSize-1].dm)*(ms[nSize-2].p-0.0)+ms[nSize-1].v;
-	// Живет, пока не автоматизируем граничные условия
+	// Р–РёРІРµС‚, РїРѕРєР° РЅРµ Р°РІС‚РѕРјР°С‚РёР·РёСЂСѓРµРј РіСЂР°РЅРёС‡РЅС‹Рµ СѓСЃР»РѕРІРёСЏ
 		ms_temp[nSize-1].v = 0.0;
 	///////////////////////////////
 
 	ms_temp[nSize-1].x = ms[nSize-1].x + ms_temp[nSize-1].v*tau;
 
-//Уравнение (2.9) из книжки Самарского и Попова (массив v_temp уже вычислен полностью)
+//РЈСЂР°РІРЅРµРЅРёРµ (2.9) РёР· РєРЅРёР¶РєРё РЎР°РјР°СЂСЃРєРѕРіРѕ Рё РџРѕРїРѕРІР° (РјР°СЃСЃРёРІ v_temp СѓР¶Рµ РІС‹С‡РёСЃР»РµРЅ РїРѕР»РЅРѕСЃС‚СЊСЋ)
 
 	for(int i=0; i<nSize-1; i++)
 	{
@@ -3673,7 +3673,7 @@ void CSolver::calcHydroStageSamarskii(double t, double tau)
 					   (1.0/ms[i].ro + (tau/ms[i].dm)*(ms_temp[i+1].v-ms_temp[i].v));
 
 		////////////DEBUG////////////////
-		//Исключительно для борьбы с антисанитарией в схеме.
+		//РСЃРєР»СЋС‡РёС‚РµР»СЊРЅРѕ РґР»СЏ Р±РѕСЂСЊР±С‹ СЃ Р°РЅС‚РёСЃР°РЅРёС‚Р°СЂРёРµР№ РІ СЃС…РµРјРµ.
 
 	//	if (ms_temp[i].ro > 3000.0)
 	//		ms_temp[i].ro = 3000.0;
@@ -3684,14 +3684,14 @@ void CSolver::calcHydroStageSamarskii(double t, double tau)
 
 	}
 
-// Энергия
+// Р­РЅРµСЂРіРёСЏ
 
 	for(int i=0; i<nSize-1; i++)
 	{
 
-// Закон сохранения ионной энергии. В однотемпературном случае
-// является законом сохранения полной внутренней энергии (2.11)
-// (без кинетической)
+// Р—Р°РєРѕРЅ СЃРѕС…СЂР°РЅРµРЅРёСЏ РёРѕРЅРЅРѕР№ СЌРЅРµСЂРіРёРё. Р’ РѕРґРЅРѕС‚РµРјРїРµСЂР°С‚СѓСЂРЅРѕРј СЃР»СѓС‡Р°Рµ
+// СЏРІР»СЏРµС‚СЃСЏ Р·Р°РєРѕРЅРѕРј СЃРѕС…СЂР°РЅРµРЅРёСЏ РїРѕР»РЅРѕР№ РІРЅСѓС‚СЂРµРЅРЅРµР№ СЌРЅРµСЂРіРёРё (2.11)
+// (Р±РµР· РєРёРЅРµС‚РёС‡РµСЃРєРѕР№)
 
 
 		///////////////////////DEBUG///////////////////
@@ -3706,9 +3706,9 @@ void CSolver::calcHydroStageSamarskii(double t, double tau)
 		ms_temp[i].ei = eos.getei(ms_temp[i].ro, ms_temp[i].ti);
 		ms_temp[i].pi = eos.getpi(ms_temp[i].ro, ms_temp[i].ti);
 
-// Закон сохранения для электронной энергии (равносильно закону
-// сохранения для полной энергии (2.11), но в двухтемпературном
-// случае)
+// Р—Р°РєРѕРЅ СЃРѕС…СЂР°РЅРµРЅРёСЏ РґР»СЏ СЌР»РµРєС‚СЂРѕРЅРЅРѕР№ СЌРЅРµСЂРіРёРё (СЂР°РІРЅРѕСЃРёР»СЊРЅРѕ Р·Р°РєРѕРЅСѓ
+// СЃРѕС…СЂР°РЅРµРЅРёСЏ РґР»СЏ РїРѕР»РЅРѕР№ СЌРЅРµСЂРіРёРё (2.11), РЅРѕ РІ РґРІСѓС…С‚РµРјРїРµСЂР°С‚СѓСЂРЅРѕРј
+// СЃР»СѓС‡Р°Рµ)
 
 		ms_temp[i].te = solvete(t, tau, i, ms_temp[i].ro, ms_temp[i+1].v-ms_temp[i].v,
 										ms_temp[i].ti);
@@ -3720,7 +3720,7 @@ void CSolver::calcHydroStageSamarskii(double t, double tau)
 		ms_temp[i].p  = eos.getp(ms_temp[i].ro, ms_temp[i].ti, ms_temp[i].te);
 	}
 
-// Искусственная вязкость. Протестирована на ударной волне у А.М.
+// РСЃРєСѓСЃСЃС‚РІРµРЅРЅР°СЏ РІСЏР·РєРѕСЃС‚СЊ. РџСЂРѕС‚РµСЃС‚РёСЂРѕРІР°РЅР° РЅР° СѓРґР°СЂРЅРѕР№ РІРѕР»РЅРµ Сѓ Рђ.Рњ.
 
 	if(task.getViscFlag())
 	{
@@ -3784,9 +3784,9 @@ void CSolver::calcHydroStageSamarskii(double t, double tau)
 */
 
 
-/* Это то же самое, что и calcHydroStageSamarskii(), но добавлен
-источниковый член для учета поглощения лазерного излучения.
-Искусственная вязкость тоже не работает.
+/* Р­С‚Рѕ С‚Рѕ Р¶Рµ СЃР°РјРѕРµ, С‡С‚Рѕ Рё calcHydroStageSamarskii(), РЅРѕ РґРѕР±Р°РІР»РµРЅ
+РёСЃС‚РѕС‡РЅРёРєРѕРІС‹Р№ С‡Р»РµРЅ РґР»СЏ СѓС‡РµС‚Р° РїРѕРіР»РѕС‰РµРЅРёСЏ Р»Р°Р·РµСЂРЅРѕРіРѕ РёР·Р»СѓС‡РµРЅРёСЏ.
+РСЃРєСѓСЃСЃС‚РІРµРЅРЅР°СЏ РІСЏР·РєРѕСЃС‚СЊ С‚РѕР¶Рµ РЅРµ СЂР°Р±РѕС‚Р°РµС‚.
 
 
 
@@ -3808,8 +3808,8 @@ void CSolver::calcHydroStageSamarskiiSource(double t, double tau)
 	EOS &eos = task.getEOS();
 	int nSize = ms.getSize();
 
-// Первое уравнение ((2.7) из книжки Самарского и Попова)
-// Граничное условие с обеих сторон -- нулевое давление (вакуум)
+// РџРµСЂРІРѕРµ СѓСЂР°РІРЅРµРЅРёРµ ((2.7) РёР· РєРЅРёР¶РєРё РЎР°РјР°СЂСЃРєРѕРіРѕ Рё РџРѕРїРѕРІР°)
+// Р“СЂР°РЅРёС‡РЅРѕРµ СѓСЃР»РѕРІРёРµ СЃ РѕР±РµРёС… СЃС‚РѕСЂРѕРЅ -- РЅСѓР»РµРІРѕРµ РґР°РІР»РµРЅРёРµ (РІР°РєСѓСѓРј)
 
 	for(int i=0; i<nSize-1; i++)
 	{
@@ -3827,13 +3827,13 @@ void CSolver::calcHydroStageSamarskiiSource(double t, double tau)
 
 	/////////////////DEBUG//////////////////
 	//ms_temp[nSize-1].v = (tau/ms[nSize-1].dm)*(ms[nSize-2].p-0.0)+ms[nSize-1].v;
-	// Живет, пока не автоматизируем граничные условия
+	// Р–РёРІРµС‚, РїРѕРєР° РЅРµ Р°РІС‚РѕРјР°С‚РёР·РёСЂСѓРµРј РіСЂР°РЅРёС‡РЅС‹Рµ СѓСЃР»РѕРІРёСЏ
 		ms_temp[nSize-1].v = 0.0;
 	///////////////////////////////
 
 	ms_temp[nSize-1].x = ms[nSize-1].x + ms_temp[nSize-1].v*tau;
 
-//Уравнение (2.9) из книжки Самарского и Попова (массив v_temp уже вычислен полностью)
+//РЈСЂР°РІРЅРµРЅРёРµ (2.9) РёР· РєРЅРёР¶РєРё РЎР°РјР°СЂСЃРєРѕРіРѕ Рё РџРѕРїРѕРІР° (РјР°СЃСЃРёРІ v_temp СѓР¶Рµ РІС‹С‡РёСЃР»РµРЅ РїРѕР»РЅРѕСЃС‚СЊСЋ)
 
 	for(int i=0; i<nSize-1; i++)
 	{
@@ -3842,22 +3842,22 @@ void CSolver::calcHydroStageSamarskiiSource(double t, double tau)
 
 	}
 
-// Энергия
+// Р­РЅРµСЂРіРёСЏ
 
 	for(int i=0; i<nSize-1; i++)
 	{
 
-// Закон сохранения ионной энергии. В однотемпературном случае
-// является законом сохранения полной внутренней энергии (2.11)
-// (без кинетической)
+// Р—Р°РєРѕРЅ СЃРѕС…СЂР°РЅРµРЅРёСЏ РёРѕРЅРЅРѕР№ СЌРЅРµСЂРіРёРё. Р’ РѕРґРЅРѕС‚РµРјРїРµСЂР°С‚СѓСЂРЅРѕРј СЃР»СѓС‡Р°Рµ
+// СЏРІР»СЏРµС‚СЃСЏ Р·Р°РєРѕРЅРѕРј СЃРѕС…СЂР°РЅРµРЅРёСЏ РїРѕР»РЅРѕР№ РІРЅСѓС‚СЂРµРЅРЅРµР№ СЌРЅРµСЂРіРёРё (2.11)
+// (Р±РµР· РєРёРЅРµС‚РёС‡РµСЃРєРѕР№)
 
 		ms_temp[i].ti = solveti(tau, i, ms_temp[i].ro, ms_temp[i+1].v-ms_temp[i].v);
 		ms_temp[i].ei = eos.getei(ms_temp[i].ro, ms_temp[i].ti);
 		ms_temp[i].pi = eos.getpi(ms_temp[i].ro, ms_temp[i].ti);
 
-// Закон сохранения для электронной энергии (равносильно закону
-// сохранения для полной энергии (2.11), но в двухтемпературном
-// случае)
+// Р—Р°РєРѕРЅ СЃРѕС…СЂР°РЅРµРЅРёСЏ РґР»СЏ СЌР»РµРєС‚СЂРѕРЅРЅРѕР№ СЌРЅРµСЂРіРёРё (СЂР°РІРЅРѕСЃРёР»СЊРЅРѕ Р·Р°РєРѕРЅСѓ
+// СЃРѕС…СЂР°РЅРµРЅРёСЏ РґР»СЏ РїРѕР»РЅРѕР№ СЌРЅРµСЂРіРёРё (2.11), РЅРѕ РІ РґРІСѓС…С‚РµРјРїРµСЂР°С‚СѓСЂРЅРѕРј
+// СЃР»СѓС‡Р°Рµ)
 
 		ms_temp[i].te = solveteSource(t, tau, i, ms_temp[i].ro, ms_temp[i+1].v-ms_temp[i].v,
 										ms_temp[i].ti);
@@ -3869,7 +3869,7 @@ void CSolver::calcHydroStageSamarskiiSource(double t, double tau)
 		ms_temp[i].p  = eos.getp(ms_temp[i].ro, ms_temp[i].ti, ms_temp[i].te);
 	}
 
-// Искусственная вязкость. Протестирована на ударной волне у А.М.
+// РСЃРєСѓСЃСЃС‚РІРµРЅРЅР°СЏ РІСЏР·РєРѕСЃС‚СЊ. РџСЂРѕС‚РµСЃС‚РёСЂРѕРІР°РЅР° РЅР° СѓРґР°СЂРЅРѕР№ РІРѕР»РЅРµ Сѓ Рђ.Рњ.
 
 	if(task.getViscFlag())
 	{
@@ -3956,7 +3956,7 @@ void CSolver::testSaveSolution(char *inputFileName)
 		dumpToFile(t);
 	}
 
-////////Дописать сюда сохранение и восстановление//////////
+////////Р”РѕРїРёСЃР°С‚СЊ СЃСЋРґР° СЃРѕС…СЂР°РЅРµРЅРёРµ Рё РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ//////////
 
 	for(int i=0; i<50; i++)
 	{

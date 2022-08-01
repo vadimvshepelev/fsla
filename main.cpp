@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
 
 /*
 	CSolver *s = new CSolver;
-	s->goEuler("task-toro-5.txt"); // ‰Îˇ ›ÈÎÂÓ‚˚ı Á‡‰‡˜
+	s->goEuler("task-toro-5.txt"); // –¥–ª—è –≠–π–ª–µ—Ä–æ–≤—ã—Ö –∑–∞–¥–∞—á
 	delete s; 
 	*/
 
@@ -173,21 +173,21 @@ int main(int argc, char *argv[]) {
 	//s->goGlass("task-Au-water-vacuum.txt");
 	
 	//s->goGlass("task - Ni.txt");
-	//s->goGlass("task.txt"); // ‰Îˇ ÊÂÎÂÁ‡ Ë ‚ÓÓ·˘Â
+	//s->goGlass("task.txt"); // –¥–ª—è –∂–µ–ª–µ–∑–∞ –∏ –≤–æ–æ–±—â–µ
 	//s->go("task-5Si.txt");
-	//s->goAuSpall("task.txt"); // ‰Îˇ ÁÓÎÓÚ‡
-	// s.goEuler("task-toro-1.txt"); // ‰Îˇ ›ÈÎÂÓ‚˚ı Á‡‰‡˜
-	//s->goEulerMovingMesh("task.txt"); // ‰Îˇ ›ÈÎÂÓ‚˚ı Á‡‰‡˜ c ‰‚ËÊÛ˘ÂÈÒˇ ÒÂÚÍÓÈ
-	//s->goEuler("task-LH1D.txt");          // «‡‰‡˜‡ LH (ÒÚÂÍÎÓ-ÁÓÎÓÚÓ-‚‡ÍÛÛÏ), Ó‰ÌÓÏÂÌÓÂ ÔË·ÎËÊÂÌËÂ
-    //s->goEuler("task-LH1D-p=123GPA.txt"); // «‡‰‡˜‡ LH (ÒÚÂÍÎÓ-ÁÓÎÓÚÓ-‚‡ÍÛÛÏ), Ó‰ÌÓÏÂÌÓÂ ÔË·ÎËÊÂÌËÂ, Ò ·ÓÎÂÂ ÏÂÎÍÓÈ ÒÚÛÔÂÌ¸ÍÓÈ
+	//s->goAuSpall("task.txt"); // –¥–ª—è –∑–æ–ª–æ—Ç–∞
+	// s.goEuler("task-toro-1.txt"); // –¥–ª—è –≠–π–ª–µ—Ä–æ–≤—ã—Ö –∑–∞–¥–∞—á
+	//s->goEulerMovingMesh("task.txt"); // –¥–ª—è –≠–π–ª–µ—Ä–æ–≤—ã—Ö –∑–∞–¥–∞—á c –¥–≤–∏–∂—É—â–µ–π—Å—è —Å–µ—Ç–∫–æ–π
+	//s->goEuler("task-LH1D.txt");          // –ó–∞–¥–∞—á–∞ LH (—Å—Ç–µ–∫–ª–æ-–∑–æ–ª–æ—Ç–æ-–≤–∞–∫—É—É–º), –æ–¥–Ω–æ–º–µ—Ä–Ω–æ–µ –ø—Ä–∏–±–ª–∏–∂–µ–Ω–∏–µ
+    //s->goEuler("task-LH1D-p=123GPA.txt"); // –ó–∞–¥–∞—á–∞ LH (—Å—Ç–µ–∫–ª–æ-–∑–æ–ª–æ—Ç–æ-–≤–∞–∫—É—É–º), –æ–¥–Ω–æ–º–µ—Ä–Ω–æ–µ –ø—Ä–∏–±–ª–∏–∂–µ–Ω–∏–µ, —Å –±–æ–ª–µ–µ –º–µ–ª–∫–æ–π —Å—Ç—É–ø–µ–Ω—å–∫–æ–π
 	
-	// s->goEuler("task-eosbin-test-2.txt"); // “ÂÒÚ Ì‡ ‰‚Û˜ÎÂÌÌÓÂ ”–— ÓÚ œ‡¯Ë -- ÓÌ ÊÂ ÚÂÒÚ Ì‡ Î‡ÁÂÌÓÂ Ó·ÎÛ˜ÂÌËÂ Ó·˙ÂÏÌÓÈ ÏË¯Â„Ë Ò Ë‰Â‡Î¸Ì˚Ï ”–—
+	// s->goEuler("task-eosbin-test-2.txt"); // –¢–µ—Å—Ç –Ω–∞ –¥–≤—É—á–ª–µ–Ω–Ω–æ–µ –£–†–° –æ—Ç –ü–∞—à–∏ -- –æ–Ω –∂–µ —Ç–µ—Å—Ç –Ω–∞ –ª–∞–∑–µ—Ä–Ω–æ–µ –æ–±–ª—É—á–µ–Ω–∏–µ –æ–±—ä–µ–º–Ω–æ–π –º–∏—à–µ–≥–∏ —Å –∏–¥–µ–∞–ª—å–Ω—ã–º –£–†–°
 	//CSolver *s = new CSolver;
-	//s->goEuler("task-laservt-ideal-test.txt"); // “ÂÒÚ Ì‡ Î‡ÁÂÌÓÂ Ó·ÎÛ˜ÂÌËÂ Ë‰Â‡Î¸ÌÓÈ ÏË¯ÂÌË Ò ”–— ÓÚ Õ.¿. 
-	//s->goEuler("task-eosbin-toro-test-5.txt"); // “ÂÒÚ Ì‡ ‰‚Û˜ÎÂÌÌÓÂ ”–— (ÔË ÌÛÎÂ‚˚ı Ô‡‡ÏÂÚ‡ı ‰ÓÎÊÌÓ ‡·ÓÚ‡Ú¸ Í‡Í Ë‰Â‡Î¸ÌÓÂ)
+	//s->goEuler("task-laservt-ideal-test.txt"); // –¢–µ—Å—Ç –Ω–∞ –ª–∞–∑–µ—Ä–Ω–æ–µ –æ–±–ª—É—á–µ–Ω–∏–µ –∏–¥–µ–∞–ª—å–Ω–æ–π –º–∏—à–µ–Ω–∏ —Å –£–†–° –æ—Ç –ù.–ê. 
+	//s->goEuler("task-eosbin-toro-test-5.txt"); // –¢–µ—Å—Ç –Ω–∞ –¥–≤—É—á–ª–µ–Ω–Ω–æ–µ –£–†–° (–ø—Ä–∏ –Ω—É–ª–µ–≤—ã—Ö –ø–∞—Ä–∞–º–µ—Ç—Ä–∞—Ö –¥–æ–ª–∂–Ω–æ —Ä–∞–±–æ—Ç–∞—Ç—å –∫–∞–∫ –∏–¥–µ–∞–ª—å–Ω–æ–µ)
 
-	//s->goEuler("task-LH1D-aux-1.txt"); // «‡‰‡˜‡ LH (ÒÚÂÍÎÓ-ÁÓÎÓÚÓ-‚‡ÍÛÛÏ), ÎÂ‚˚È ‡Á˚‚ ÒÚÂÍÎÓ-ÁÓÎÓÚÓ
-	//s->goEuler("task-eosbin-test-1.txt"); // œÂ‚˚È ÚÂÒÚ √Î‡ÈÒÚÂ‡ ÔÓ ‰‚Û˜ÎÂÌÌÓÏÛ Û‡‚ÌÂÌË˛ ÒÓÒÚÓˇÌËˇ
+	//s->goEuler("task-LH1D-aux-1.txt"); // –ó–∞–¥–∞—á–∞ LH (—Å—Ç–µ–∫–ª–æ-–∑–æ–ª–æ—Ç–æ-–≤–∞–∫—É—É–º), –ª–µ–≤—ã–π —Ä–∞–∑—Ä—ã–≤ —Å—Ç–µ–∫–ª–æ-–∑–æ–ª–æ—Ç–æ
+	//s->goEuler("task-eosbin-test-1.txt"); // –ü–µ—Ä–≤—ã–π —Ç–µ—Å—Ç –ì–ª–∞–π—Å—Ç–µ—Ä–∞ –ø–æ –¥–≤—É—á–ª–µ–Ω–Ω–æ–º—É —É—Ä–∞–≤–Ω–µ–Ω–∏—é —Å–æ—Å—Ç–æ—è–Ω–∏—è
 	// Uncomment for Euler problems
 	//s->goEuler("task-eosbin-toro-test-1.txt"); 
 	//s->goEuler("task-test-NB.txt");
@@ -214,32 +214,32 @@ int main(int argc, char *argv[]) {
 	double h[] = {.01, .01/2., .01/4., .01/8., .01/16., .01/32.}; 
 	unsigned counter = 0;
 	CSolver *s = new CSolver;
-	s->goEuler("task-toro-1.txt"); // ‰Îˇ ›ÈÎÂÓ‚˚ı Á‡‰‡˜
+	s->goEuler("task-toro-1.txt"); // –¥–ª—è –≠–π–ª–µ—Ä–æ–≤—ã—Ö –∑–∞–¥–∞—á
 	ofs << s->getdx() << " " << s->calcProblemL1NormRo() << " " << s->calcProblemL2NormRo() << " " << s->convIntegral << endl;
 	f[counter++] = s->convIntegral;
 	delete s;
 	s = new CSolver;
-	s->goEuler("task-toro-1-2.txt"); // ‰Îˇ ›ÈÎÂÓ‚˚ı Á‡‰‡˜
+	s->goEuler("task-toro-1-2.txt"); // –¥–ª—è –≠–π–ª–µ—Ä–æ–≤—ã—Ö –∑–∞–¥–∞—á
 	ofs << s->getdx() << " " << s->calcProblemL1NormRo() << " " << s->calcProblemL2NormRo() << " " << s->convIntegral << endl;
 	f[counter++] = s->convIntegral;
 	delete s;
 	s = new CSolver;
-	s->goEuler("task-toro-1-4.txt"); // ‰Îˇ ›ÈÎÂÓ‚˚ı Á‡‰‡˜
+	s->goEuler("task-toro-1-4.txt"); // –¥–ª—è –≠–π–ª–µ—Ä–æ–≤—ã—Ö –∑–∞–¥–∞—á
 	ofs << s->getdx() << " " << s->calcProblemL1NormRo() << " " << s->calcProblemL2NormRo() << " " << s->convIntegral << endl;
 	f[counter++] = s->convIntegral;
 	delete s;
 	s = new CSolver;
-	s->goEuler("task-toro-1-8.txt"); // ‰Îˇ ›ÈÎÂÓ‚˚ı Á‡‰‡˜
+	s->goEuler("task-toro-1-8.txt"); // –¥–ª—è –≠–π–ª–µ—Ä–æ–≤—ã—Ö –∑–∞–¥–∞—á
 	ofs << s->getdx() << " " << s->calcProblemL1NormRo() << " " << s->calcProblemL2NormRo() << " " << s->convIntegral << endl;
 	f[counter++] = s->convIntegral;
 	delete s;
 	s = new CSolver;
-	s->goEuler("task-toro-1-16.txt"); // ‰Îˇ ›ÈÎÂÓ‚˚ı Á‡‰‡˜
+	s->goEuler("task-toro-1-16.txt"); // –¥–ª—è –≠–π–ª–µ—Ä–æ–≤—ã—Ö –∑–∞–¥–∞—á
 	ofs << s->getdx() << " " << s->calcProblemL1NormRo() << " " << s->calcProblemL2NormRo() << " " << s->convIntegral << endl;
 	f[counter++] = s->convIntegral;
 	delete s;
 	s = new CSolver;
-	s->goEuler("task-toro-1-32.txt"); // ‰Îˇ ›ÈÎÂÓ‚˚ı Á‡‰‡˜
+	s->goEuler("task-toro-1-32.txt"); // –¥–ª—è –≠–π–ª–µ—Ä–æ–≤—ã—Ö –∑–∞–¥–∞—á
 	ofs << s->getdx() << " " << s->calcProblemL1NormRo() << " " << s->calcProblemL2NormRo() << " " << s->convIntegral << endl;
 	f[counter++] = s->convIntegral;
 	delete s;

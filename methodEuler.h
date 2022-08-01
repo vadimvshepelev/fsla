@@ -28,13 +28,13 @@ public:
 	void	fillLambdaComponent(int i, double lambda, double criteria, double curant);
 	Vector4 calcFlux(Matrix4 Omega, Matrix4 OmegaInv, Vector4 W_j_m, Vector4 W_j, Vector4 W_j_p, Vector4 W_j_p_p);
 	Vector4 calcApprRPFlux(Vector4 W_j, Vector4 W_j_p, Node &n);
-	// Производная dp/dro при постоянных ro*v и ro*E
+	// РџСЂРѕРёР·РІРѕРґРЅР°СЏ dp/dro РїСЂРё РїРѕСЃС‚РѕСЏРЅРЅС‹С… ro*v Рё ro*E
 	double getdpdro_rov_roE(double ro, double ti, double te, double v);
 
-	// Производная dp/drov при постоянных ro и ro*E
+	// РџСЂРѕРёР·РІРѕРґРЅР°СЏ dp/drov РїСЂРё РїРѕСЃС‚РѕСЏРЅРЅС‹С… ro Рё ro*E
 	double getdpdrov_ro_roE(double ro, double ti, double te, double v);
 
-	// Производная dp/droE при постоянных ro и ro*v
+	// РџСЂРѕРёР·РІРѕРґРЅР°СЏ dp/droE РїСЂРё РїРѕСЃС‚РѕСЏРЅРЅС‹С… ro Рё ro*v
 	double getdpdroE_ro_rov(double ro, double ti, double te, double v);
 };
 

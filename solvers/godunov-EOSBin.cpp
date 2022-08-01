@@ -4,7 +4,7 @@
 
 // Function finds the solution of Riemann problem for ideal gas with binary EOS
 RPSolutionPrimitive CSolver::solveRPEOSBin(double roL, double vL, double pL, double roR, double vR, double pR) {
-	// Решаем нелинейное уравнение относительно давления методом касательных Ньютона
+	// Р РµС€Р°РµРј РЅРµР»РёРЅРµР№РЅРѕРµ СѓСЂР°РІРЅРµРЅРёРµ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РґР°РІР»РµРЅРёСЏ РјРµС‚РѕРґРѕРј РєР°СЃР°С‚РµР»СЊРЅС‹С… РќСЊСЋС‚РѕРЅР°
 	RPSolutionPrimitive res; 
 	EOSBin &eos = task.eosBin;
 	const double TOL = 1.e-6, gamma = eos.gamma, ro0 = eos.ro0, c0 = eos.c0, p0 = 1./gamma*ro0*c0*c0;
@@ -12,9 +12,9 @@ RPSolutionPrimitive CSolver::solveRPEOSBin(double roL, double vL, double pL, dou
 	double p = 0., pPrev = 0., cL = 0., cR = 0.;
 	if(roL!=0.) cL = sqrt(gamma*(pL+p0)/roL);
 	if(roR!=0.) cR = sqrt(gamma*(pR+p0)/roR);
-	// Определяем возможную конфигурацию решения, чтобы вернее выставить начальное приближение
-	// Похоже, итерации нужны только в случаях "УВ+УВ" и "УВ+ВР", т.к. в случае ВР+ВР и ВР+вакуум есть 
-	// аналитические решения
+	// РћРїСЂРµРґРµР»СЏРµРј РІРѕР·РјРѕР¶РЅСѓСЋ РєРѕРЅС„РёРіСѓСЂР°С†РёСЋ СЂРµС€РµРЅРёСЏ, С‡С‚РѕР±С‹ РІРµСЂРЅРµРµ РІС‹СЃС‚Р°РІРёС‚СЊ РЅР°С‡Р°Р»СЊРЅРѕРµ РїСЂРёР±Р»РёР¶РµРЅРёРµ
+	// РџРѕС…РѕР¶Рµ, РёС‚РµСЂР°С†РёРё РЅСѓР¶РЅС‹ С‚РѕР»СЊРєРѕ РІ СЃР»СѓС‡Р°СЏС… "РЈР’+РЈР’" Рё "РЈР’+Р’Р ", С‚.Рє. РІ СЃР»СѓС‡Р°Рµ Р’Р +Р’Р  Рё Р’Р +РІР°РєСѓСѓРј РµСЃС‚СЊ 
+	// Р°РЅР°Р»РёС‚РёС‡РµСЃРєРёРµ СЂРµС€РµРЅРёСЏ
 	if(roL==roR && vL==vR && pL==pR) {
 		res.type = RWRW;
 		res.roL  = roL;
@@ -51,17 +51,17 @@ RPSolutionPrimitive CSolver::solveRPEOSBin(double roL, double vL, double pL, dou
 
 	double fLmin = fLEOSBin(pL, roL, vL, pL) + fREOSBin(pL, roR, vR, pR) + vR-vL;
 	double fRMax = fLEOSBin(pR, roL, vL, pL) + fREOSBin(pR, roR, vR, pR) + vR-vL;
-	// Начальное приближение
+	// РќР°С‡Р°Р»СЊРЅРѕРµ РїСЂРёР±Р»РёР¶РµРЅРёРµ
 	//p = 0.5*(pL+pR);
 	p=pL/2.;
 	do {
 		pPrev = p;
 		p = pPrev - (fLEOSBin(pPrev, roL, vL, pL) + fREOSBin(pPrev, roR, vR, pR) + vR - vL )/
 			        (dfLdpEOSBin(pPrev, roL, vL, pL) + dfRdpEOSBin(pPrev, roR, vR, pR)); 
-		// Отрицательные давления все же допускаются в случае с двучленным УРС!
+		// РћС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Рµ РґР°РІР»РµРЅРёСЏ РІСЃРµ Р¶Рµ РґРѕРїСѓСЃРєР°СЋС‚СЃСЏ РІ СЃР»СѓС‡Р°Рµ СЃ РґРІСѓС‡Р»РµРЅРЅС‹Рј РЈР РЎ!
 		/*if (p<=0.)
 			p = TOL;*/
-		// Но если p+p0 < 0., это уже что-то неверное
+		// РќРѕ РµСЃР»Рё p+p0 < 0., СЌС‚Рѕ СѓР¶Рµ С‡С‚Рѕ-С‚Рѕ РЅРµРІРµСЂРЅРѕРµ
 		if (p+p0 <= 0.) {
 			cout << "CSolver::SolveRPEOSBin error: sufficiently negative pressure occured!" << endl;
 			exit(1);
@@ -88,7 +88,7 @@ RPSolutionPrimitive CSolver::solveRPEOSBin(double roL, double vL, double pL, dou
 		res.roL  = roL*((res.p+p0)/(pL+p0) + (gamma-1.)/(gamma+1.))/((gamma-1.)/(gamma+1.)*(res.p+p0)/(pL+p0) + 1.);
 		res.roR  = roR*((res.p+p0)/(pR+p0) + (gamma-1.)/(gamma+1.))/((gamma-1.)/(gamma+1.)*(res.p+p0)/(pR+p0) + 1.);
 	}
-	//Тестирование (только без вакуума)
+	//РўРµСЃС‚РёСЂРѕРІР°РЅРёРµ (С‚РѕР»СЊРєРѕ Р±РµР· РІР°РєСѓСѓРјР°)
 	//double L =  - fL(p, roL, vL, pL);
 	//double R = fR(p, roR, vR, pR) + vR - vL;
 	//double delta = fabs((L-R)/0.5/(L+R));
@@ -195,7 +195,7 @@ CVectorPrimitive CSolver::calcRPAnalyticalSolutionEOSBin(double roL, double vL, 
 	if(roL!=0.) cL = sqrt(gamma*(pL+p0)/roL);
 	if(roR!=0.) cR = sqrt(gamma*(pR+p0)/roR);
 	double xiFront=0., xiHead=0., xiTail=0., xiHeadL=0., xiTailL=0., xiHeadR=0., xiTailR=0.;
-	// Если вакуум
+	// Р•СЃР»Рё РІР°РєСѓСѓРј
 	if(res.type == VacRW) {
 		xiHead = vR + cR;
 		xiTail = vR - 2.*cR/(gamma-1.);
@@ -261,7 +261,7 @@ CVectorPrimitive CSolver::calcRPAnalyticalSolutionEOSBin(double roL, double vL, 
 		return V;
 	}
 	double cLLocal = sqrt(gamma*(res.p+p0)/res.roL), cRLocal = sqrt(gamma*(res.p+p0)/res.roR);
-	// Если не вакуум. Пусть точка слева от контактного разрыва (xiContact = res.v)
+	// Р•СЃР»Рё РЅРµ РІР°РєСѓСѓРј. РџСѓСЃС‚СЊ С‚РѕС‡РєР° СЃР»РµРІР° РѕС‚ РєРѕРЅС‚Р°РєС‚РЅРѕРіРѕ СЂР°Р·СЂС‹РІР° (xiContact = res.v)
 	if(xi<res.v) {
 		if(res.type == SWSW || res.type == SWRW) { 
 			xiFront = vL - cL*sqrt((gamma+1.)/2./gamma*(res.p+p0)/(pL+p0) + (gamma-1.)/2./gamma);
@@ -300,7 +300,7 @@ CVectorPrimitive CSolver::calcRPAnalyticalSolutionEOSBin(double roL, double vL, 
 				V.p  = (pL+p0)*pow(2./(gamma+1.)+(gamma-1.)/(gamma+1.)/cL*(vL-xi), 2.*gamma/(gamma-1.)) - p0;
 			}
 		} 
-	//Пусть точка справа от контактного разрыва (xiContact = res.v)
+	//РџСѓСЃС‚СЊ С‚РѕС‡РєР° СЃРїСЂР°РІР° РѕС‚ РєРѕРЅС‚Р°РєС‚РЅРѕРіРѕ СЂР°Р·СЂС‹РІР° (xiContact = res.v)
 	} else {
 		if(res.type == RWSW || res.type == SWSW) {
 			xiFront = vR + cR*sqrt((gamma+1.)/2./gamma*(res.p+p0)/(pR+p0) + (gamma-1.)/2./gamma);

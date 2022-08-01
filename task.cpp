@@ -264,7 +264,7 @@ CTask::~CTask() {
 				zones[j].te = 0.;
 				zones[j].e = _e;
 			}   else if(type == TaskType::MieGruneisenProblem) {
-				// Совершенно адская зОплатка, никогда так больше не делай!!!
+				// РЎРѕРІРµСЂС€РµРЅРЅРѕ Р°РґСЃРєР°СЏ Р·РћРїР»Р°С‚РєР°, РЅРёРєРѕРіРґР° С‚Р°Рє Р±РѕР»СЊС€Рµ РЅРµ РґРµР»Р°Р№!!!
 				FEOSMieGruneisen eos;
 				zones[j].ti = 0.;
 				zones[j].te = 0.;
@@ -284,7 +284,7 @@ CTask::~CTask() {
 	if(!strcmp(EOSDirName.c_str(), "au") && (nZones == 2)) 
 		type = TaskType::auWater;
 	else if(type == TaskType::MieGruneisenProblem)
-		// Еще одна заплатка, порожденная невероятно кривой архитектурой, от которой надо избавляться
+		// Р•С‰Рµ РѕРґРЅР° Р·Р°РїР»Р°С‚РєР°, РїРѕСЂРѕР¶РґРµРЅРЅР°СЏ РЅРµРІРµСЂРѕСЏС‚РЅРѕ РєСЂРёРІРѕР№ Р°СЂС…РёС‚РµРєС‚СѓСЂРѕР№, РѕС‚ РєРѕС‚РѕСЂРѕР№ РЅР°РґРѕ РёР·Р±Р°РІР»СЏС‚СЊСЃСЏ
 		type = TaskType::MieGruneisenProblem;
 	else
 		type = TaskType::undef;
@@ -365,7 +365,7 @@ void CTask::buildFileNames(string inputName) {
 	outputFileName += string(TIME_SUFFIX);
 	outputFileName += inputName;
 	outputFileName += string(".dat");
-	// Следующие две строки портят значение переменной task.taskName, удаляю их
+	// РЎР»РµРґСѓСЋС‰РёРµ РґРІРµ СЃС‚СЂРѕРєРё РїРѕСЂС‚СЏС‚ Р·РЅР°С‡РµРЅРёРµ РїРµСЂРµРјРµРЅРЅРѕР№ task.taskName, СѓРґР°Р»СЏСЋ РёС…
 //	strcpy(outputFileName, OUTPUT_FOLDER);
 //	strcat(flowFileName, "flow.dat");
 }

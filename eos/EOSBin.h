@@ -4,7 +4,7 @@
 #include "../eosold.h"
 
 class EOSBin {
-	// p = (gamma-1)*ro*e + Ò0^2*(ro-ro0)
+	// p = (gamma-1)*ro*e + —Å0^2*(ro-ro0)
 	// e = ...(ro,T)
 	//
 public:

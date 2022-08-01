@@ -26,7 +26,7 @@ using namespace std;
 			}
 			cout << "done!" << endl;
 		}		
-		subDir += "\\" + pr.name;
+		subDir += "/" + pr.name;
 		boost::filesystem::path p(subDir);
 	if(exists(p)) {
 		cout << "'" << p.string() << "'" << "...already exists!" << endl;
@@ -65,7 +65,7 @@ int COutput::manageScreenOutput(C1DProblem& _prm, int iteration, double t, doubl
 	assert(!dtt.empty());		
 	if (fld.t>=dtt[0]) {
 		ostringstream oss1;
-		oss1 << subDir << "\\" << pr.name << "-" << nDump++ << ".dat"; string fName1 = oss1.str();
+		oss1 << subDir << "/" << pr.name << "-" << nDump++ << ".dat"; string fName1 = oss1.str();
 		cout << "Writing to file '" << fName1 << "'...";		
 		dump(pr, fld, eos, fName1);
 		cout << "done!" << endl;		
@@ -78,7 +78,7 @@ int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, FEOS& eos) {
 	assert(!dtt.empty());	
 	if (fld.t>=dtt[0]) {
 		ostringstream oss1;
-		oss1 << subDir << "\\" << pr.name << "-" << nDump++ << ".dat"; string fName1 = oss1.str();
+		oss1 << subDir << "/" << pr.name << "-" << nDump++ << ".dat"; string fName1 = oss1.str();
 		cout << "Writing to file '" << fName1 << "'...";		
 		dump(pr, fld, eos, fName1);
 		cout << "done!" << endl;		
@@ -91,7 +91,7 @@ int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, FEOS& eos) {
 	
 	
 /*	ostringstream oss2;
-	oss2 << subDir << "\\" << pr.name << "-" << 100 << ".dat"; string fName1 = oss2.str();
+	oss2 << subDir << "/" << pr.name << "-" << 100 << ".dat"; string fName1 = oss2.str();
 	cout << "Writing to file '" << fName1 << "'...";		
 	dump(pr, fld, eos, fName1);
 	cout << "done!" << endl;		*/

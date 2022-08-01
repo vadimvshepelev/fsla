@@ -356,7 +356,7 @@ void EOSFigures::writePiEi(char* outputFileName)
 }
 
 void EOSFigures::testPiT(double roMin, double roMax, double T, double nIntervals) {
-	string fName = string(OUTPUT_FOLDER) + "\\" + "test-pi-ro.dat";
+	string fName = string(OUTPUT_FOLDER) + "/" + "test-pi-ro.dat";
 	ofstream ofs; 
 	ofs.open(fName);
 	ofs << "TITLE=\"EOS test curves: pi(ro) at T = " << T << "\"" << endl;
@@ -371,7 +371,7 @@ void EOSFigures::testPiT(double roMin, double roMax, double T, double nIntervals
 }
 
 void EOSFigures::testEiT(double roMin, double roMax, double T, double nIntervals) {
-	string fName = string(OUTPUT_FOLDER) + "\\" + "test-ei-ro.dat";
+	string fName = string(OUTPUT_FOLDER) + "/" + "test-ei-ro.dat";
 	ofstream ofs; 
 	ofs.open(fName);
 	ofs << "TITLE=\"EOS test curves: ei(ro) at T = " << T << "\"" << endl;
@@ -386,7 +386,7 @@ void EOSFigures::testEiT(double roMin, double roMax, double T, double nIntervals
 }
 
 void EOSFigures::testeEOSTe(double ro, double T, double TeMin, double TeMax, double nIntervals) {
-	string fName = string(OUTPUT_FOLDER) + "\\" + "test-pe-ee-ce-alpha-kappa-Te.dat";
+	string fName = string(OUTPUT_FOLDER) + "/" + "test-pe-ee-ce-alpha-kappa-Te.dat";
 	ofstream ofs; 
 	ofs.open(fName);
 	ofs << "TITLE=\"EOS test curves: pe(Te), ee(Te), ce(Te), alpha(Te), kappa(Te)\"" << endl;

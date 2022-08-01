@@ -840,9 +840,7 @@ void CSolver::dumpToFile(double t) {
 
 
 void CSolver::dumpToFileTestRP(double t, int num) {
-	char strNum[10];
-	_itoa(num, strNum, 10);
-	string fName = OUTPUT_FOLDER + string("out-RP-") + strNum + ".dat";
+	string fName = OUTPUT_FOLDER + string("out-RP-") + std::to_string(num) + ".dat";
 	printf("Dump matter to file: %s\n", fName.c_str());
 	EOSType EType = EOSType::none;
 	if(task.type == TaskType::RP1D)

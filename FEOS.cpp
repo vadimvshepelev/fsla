@@ -5,7 +5,7 @@
 
 using namespace std;
 
-#include "feos.h"
+#include "FEOS.h"
 
 
 double FEOSMieGruneisen::getG(double ro) {
@@ -15,7 +15,7 @@ double FEOSMieGruneisen::getG(double ro) {
 	const double CVLiq = 4150.;   // [J/kg/K] 
 	const double CVGas = 1430.;	  // [J/kg/K]
 	const double R = 8.31;        // [J/mole/K]
-	// Здесь используем только жидкую фазу! Можно будет дифференцировать при усложнении
+	// Р—РґРµСЃСЊ РёСЃРїРѕР»СЊР·СѓРµРј С‚РѕР»СЊРєРѕ Р¶РёРґРєСѓСЋ С„Р°Р·Сѓ! РњРѕР¶РЅРѕ Р±СѓРґРµС‚ РґРёС„С„РµСЂРµРЅС†РёСЂРѕРІР°С‚СЊ РїСЂРё СѓСЃР»РѕР¶РЅРµРЅРёРё
 	const double CV = CVLiq;
 	double G = R/CV/M*(a0 + (1.-a0)*exp(-pow(x/.5273, 1.7)) + a1*exp(-pow(x/1.0904, -3.5)) + a2*exp(-pow(x/1.3927, -5.)));
  	return G;
@@ -81,7 +81,7 @@ double FEOSMieGruneisen::getGPrime(double ro) {
 	const double CVLiq = 4150.;   // [J/kg/K] 
 	const double CVGas = 1430.;	  // [J/kg/K]
 	const double R = 8.31;        // [J/mole/K]
-	// Здесь используем только жидкую фазу! Можно будет дифференцировать при усложнении
+	// Р—РґРµСЃСЊ РёСЃРїРѕР»СЊР·СѓРµРј С‚РѕР»СЊРєРѕ Р¶РёРґРєСѓСЋ С„Р°Р·Сѓ! РњРѕР¶РЅРѕ Р±СѓРґРµС‚ РґРёС„С„РµСЂРµРЅС†РёСЂРѕРІР°С‚СЊ РїСЂРё СѓСЃР»РѕР¶РЅРµРЅРёРё
 	const double CV = CVLiq;
 	/* double GPrime = R/CV/M*((1.-a0)*exp(-pow(x/.5273, 1.7))*pow(x/.5273, -2.7)*(-1.7/.5273) + 
 		                        a1 *exp(-pow(x/1.0904, -3.5))*pow(x/1.0904, -4.5)*(3.5/1.0904) +
@@ -151,7 +151,7 @@ double FEOSMieGruneisenAl::getp(double ro, double e) {
 		         B = 76.e9; // Bulk modulus of Al, [Pa];
 	double x = ro/ro0;
 	// p = (pc - G*ec) + G*E
-	// e c = (B/ (gamma (gamma -1 ) )) x^ gamma – (B /( gamma -1 )) x + B/ gamma
+	// e c = (B/ (gamma (gamma -1 ) )) x^ gamma вЂ“ (B /( gamma -1 )) x + B/ gamma
 	double p_c = B/gamma * (pow(x, gamma)-1.);
 	double e_c = (B/gamma/(gamma-1.)*pow(x, gamma) - B*x/(gamma-1.) + B/gamma)/ro;
 	double p  = (p_c-G*ro*e_c) + G*ro*e;
@@ -340,7 +340,7 @@ double FEOSMGAlPrecise6::getc(double rho, double p) {
 }
 
 double FEOSMGAlPrecise6::gets(double rho, double p) {
-	// cv = 1. (хотя не важно), x1 = 1., p1 = 0. -- референсное значение для энтропии s1
+	// cv = 1. (С…РѕС‚СЏ РЅРµ РІР°Р¶РЅРѕ), x1 = 1., p1 = 0. -- СЂРµС„РµСЂРµРЅСЃРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РґР»СЏ СЌРЅС‚СЂРѕРїРёРё s1
 	const double x1 = 1., p1 = 0., cv = 1.;
 	double x = rho/rho0;
 	return cv*log( (p-pCold(x))/(p1-pCold(1.))*pow(x1/x,G(x)+1.) );
@@ -392,7 +392,7 @@ double FEOSMGAlPrecise6::getdpde(double rho, double e) {
 
 
 
-// Значения констант для широкодиапазонных (по-видимому) УРС Ломоносова
+// Р—РЅР°С‡РµРЅРёСЏ РєРѕРЅСЃС‚Р°РЅС‚ РґР»СЏ С€РёСЂРѕРєРѕРґРёР°РїР°Р·РѕРЅРЅС‹С… (РїРѕ-РІРёРґРёРјРѕРјСѓ) РЈР РЎ Р›РѕРјРѕРЅРѕСЃРѕРІР°
 double __V0[] = { 0.12700000E+00, 0.88200003E-01, 
 	            0.54200000E+00, 0.57700002E+00, 0.36899999E+00, 0.12000000E+00,
 			    0.13900000E+00, 0.11300000E+00, 0.11200000E+00, 0.11200000E+00,

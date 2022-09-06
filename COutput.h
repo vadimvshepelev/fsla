@@ -1,8 +1,8 @@
 #ifndef _COUTPUT_H_
 #define _COUTPUT_H_
 
-#include "c1dproblem.h"
-#include "c1dfield.h"
+#include "C1DProblem.h"
+#include "C1DField.h"
 #include "solver.h"
 
 class COutput {

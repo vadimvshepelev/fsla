@@ -20,7 +20,7 @@ public:
 	bool	isMonotone(int i, int j);
 	void    monotonize(int i, int j);
 
-	void	correctTable(int nVScale, int nVTscale); // Только для EOSFlag 1, исправляет следствия немонотонного файла объемов.
+	void	correctTable(int nVScale, int nVTscale); // РўРѕР»СЊРєРѕ РґР»СЏ EOSFlag 1, РёСЃРїСЂР°РІР»СЏРµС‚ СЃР»РµРґСЃС‚РІРёСЏ РЅРµРјРѕРЅРѕС‚РѕРЅРЅРѕРіРѕ С„Р°Р№Р»Р° РѕР±СЉРµРјРѕРІ.
 	//////////DEBUG/////////////
 	double	calct(double ro, double tabVal);
 	////////////////////////////

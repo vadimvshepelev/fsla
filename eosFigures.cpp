@@ -20,11 +20,11 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 {
 
 
-/* С кодом, приведенным ниже, разобраться -- чтобы было достаточное 
-   количество зон, сетка изотерм, ограничения по давлению/энергии 
-   (прямоугольник допустимых давлений/энергий), видны все эффекты 
-   на изотермах (реальный газ, фазовые переходы, отрицательные 
-   давления). А там посмотрим. ;)
+/* РЎ РєРѕРґРѕРј, РїСЂРёРІРµРґРµРЅРЅС‹Рј РЅРёР¶Рµ, СЂР°Р·РѕР±СЂР°С‚СЊСЃСЏ -- С‡С‚РѕР±С‹ Р±С‹Р»Рѕ РґРѕСЃС‚Р°С‚РѕС‡РЅРѕРµ 
+   РєРѕР»РёС‡РµСЃС‚РІРѕ Р·РѕРЅ, СЃРµС‚РєР° РёР·РѕС‚РµСЂРј, РѕРіСЂР°РЅРёС‡РµРЅРёСЏ РїРѕ РґР°РІР»РµРЅРёСЋ/СЌРЅРµСЂРіРёРё 
+   (РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє РґРѕРїСѓСЃС‚РёРјС‹С… РґР°РІР»РµРЅРёР№/СЌРЅРµСЂРіРёР№), РІРёРґРЅС‹ РІСЃРµ СЌС„С„РµРєС‚С‹ 
+   РЅР° РёР·РѕС‚РµСЂРјР°С… (СЂРµР°Р»СЊРЅС‹Р№ РіР°Р·, С„Р°Р·РѕРІС‹Рµ РїРµСЂРµС…РѕРґС‹, РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Рµ 
+   РґР°РІР»РµРЅРёСЏ). Рђ С‚Р°Рј РїРѕСЃРјРѕС‚СЂРёРј. ;)
 */
 
 	int i=0;
@@ -356,7 +356,7 @@ void EOSFigures::writePiEi(char* outputFileName)
 }
 
 void EOSFigures::testPiT(double roMin, double roMax, double T, double nIntervals) {
-	string fName = string(OUTPUT_FOLDER) + "\\" + "test-pi-ro.dat";
+	string fName = string(OUTPUT_FOLDER) + "/" + "test-pi-ro.dat";
 	ofstream ofs; 
 	ofs.open(fName);
 	ofs << "TITLE=\"EOS test curves: pi(ro) at T = " << T << "\"" << endl;
@@ -371,7 +371,7 @@ void EOSFigures::testPiT(double roMin, double roMax, double T, double nIntervals
 }
 
 void EOSFigures::testEiT(double roMin, double roMax, double T, double nIntervals) {
-	string fName = string(OUTPUT_FOLDER) + "\\" + "test-ei-ro.dat";
+	string fName = string(OUTPUT_FOLDER) + "/" + "test-ei-ro.dat";
 	ofstream ofs; 
 	ofs.open(fName);
 	ofs << "TITLE=\"EOS test curves: ei(ro) at T = " << T << "\"" << endl;
@@ -386,7 +386,7 @@ void EOSFigures::testEiT(double roMin, double roMax, double T, double nIntervals
 }
 
 void EOSFigures::testeEOSTe(double ro, double T, double TeMin, double TeMax, double nIntervals) {
-	string fName = string(OUTPUT_FOLDER) + "\\" + "test-pe-ee-ce-alpha-kappa-Te.dat";
+	string fName = string(OUTPUT_FOLDER) + "/" + "test-pe-ee-ce-alpha-kappa-Te.dat";
 	ofstream ofs; 
 	ofs.open(fName);
 	ofs << "TITLE=\"EOS test curves: pe(Te), ee(Te), ce(Te), alpha(Te), kappa(Te)\"" << endl;

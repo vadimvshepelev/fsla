@@ -5,8 +5,8 @@
 #include <iomanip>
 #include <sstream>
 
-#include"coutput.h"
-#include<boost\\filesystem.hpp>
+#include"COutput.h"
+#include <boost/filesystem.hpp>
 
 #define BOOST_LIB_DIAGNOSTIC
 #define BOOST_SYSTEM_NO_DEPRECATED
@@ -15,7 +15,7 @@ using namespace std;
 
  COutput::COutput(C1DProblem& pr, string _subdir, vector<double> _dtt) : 
 	              subDir(_subdir), dtt(_dtt), tUnit("ps"), tMul(1.e9), nDump(0), tPrecision(4), dtPrecision(2) {
-    // Разбираемся с каталогом и создаем новый, если его нет	
+    // Р Р°Р·Р±РёСЂР°РµРјСЃСЏ СЃ РєР°С‚Р°Р»РѕРіРѕРј Рё СЃРѕР·РґР°РµРј РЅРѕРІС‹Р№, РµСЃР»Рё РµРіРѕ РЅРµС‚	
 	cout << "Creating subdirectory ";
 	boost::filesystem::path outputPath(subDir);
 		if(!exists(outputPath)) {
@@ -26,7 +26,7 @@ using namespace std;
 			}
 			cout << "done!" << endl;
 		}		
-		subDir += "\\" + pr.name;
+		subDir += "/" + pr.name;
 		boost::filesystem::path p(subDir);
 	if(exists(p)) {
 		cout << "'" << p.string() << "'" << "...already exists!" << endl;
@@ -65,7 +65,7 @@ int COutput::manageScreenOutput(C1DProblem& _prm, int iteration, double t, doubl
 	assert(!dtt.empty());		
 	if (fld.t>=dtt[0]) {
 		ostringstream oss1;
-		oss1 << subDir << "\\" << pr.name << "-" << nDump++ << ".dat"; string fName1 = oss1.str();
+		oss1 << subDir << "/" << pr.name << "-" << nDump++ << ".dat"; string fName1 = oss1.str();
 		cout << "Writing to file '" << fName1 << "'...";		
 		dump(pr, fld, eos, fName1);
 		cout << "done!" << endl;		
@@ -78,7 +78,7 @@ int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, FEOS& eos) {
 	assert(!dtt.empty());	
 	if (fld.t>=dtt[0]) {
 		ostringstream oss1;
-		oss1 << subDir << "\\" << pr.name << "-" << nDump++ << ".dat"; string fName1 = oss1.str();
+		oss1 << subDir << "/" << pr.name << "-" << nDump++ << ".dat"; string fName1 = oss1.str();
 		cout << "Writing to file '" << fName1 << "'...";		
 		dump(pr, fld, eos, fName1);
 		cout << "done!" << endl;		
@@ -91,7 +91,7 @@ int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, FEOS& eos) {
 	
 	
 /*	ostringstream oss2;
-	oss2 << subDir << "\\" << pr.name << "-" << 100 << ".dat"; string fName1 = oss2.str();
+	oss2 << subDir << "/" << pr.name << "-" << 100 << ".dat"; string fName1 = oss2.str();
 	cout << "Writing to file '" << fName1 << "'...";		
 	dump(pr, fld, eos, fName1);
 	cout << "done!" << endl;		*/
@@ -201,7 +201,7 @@ CVectorPrimitive COutput::calcRPAnalyticalSolution(FEOS& eos, double roL, double
 	double cL = eos.getc(roL, pL), cR = eos.getc(roR, pR);
 	const double gamma = eos.getc(1., 1.)*eos.getc(1., 1.);
 	double xiFront=0., xiHead=0., xiTail=0., xiHeadL=0., xiTailL=0., xiHeadR=0., xiTailR=0.;
-	// Если вакуум
+	// Р•СЃР»Рё РІР°РєСѓСѓРј
 	if(res.type == VacRW) { 
 		xiHead = vR + cR;
 		xiTail = vR - 2.*cR/(gamma-1.);
@@ -267,7 +267,7 @@ CVectorPrimitive COutput::calcRPAnalyticalSolution(FEOS& eos, double roL, double
 		return V;
 	}
 	double cLLocal = sqrt(gamma*res.p/res.roL), cRLocal = sqrt(gamma*res.p/res.roR);
-	// Если не вакуум. Пусть точка слева от контактного разрыва (xiContact = res.v)
+	// Р•СЃР»Рё РЅРµ РІР°РєСѓСѓРј. РџСѓСЃС‚СЊ С‚РѕС‡РєР° СЃР»РµРІР° РѕС‚ РєРѕРЅС‚Р°РєС‚РЅРѕРіРѕ СЂР°Р·СЂС‹РІР° (xiContact = res.v)
 	if(xi<res.v) {
 		if(res.type == SWSW || res.type == SWRW) { 
 			xiFront = vL - cL*sqrt((gamma+1.)/2./gamma*res.p/pL + (gamma-1.)/2./gamma);
@@ -297,7 +297,7 @@ CVectorPrimitive COutput::calcRPAnalyticalSolution(FEOS& eos, double roL, double
 				V.p  = pL*pow(2./(gamma+1.)+(gamma-1.)/(gamma+1.)/cL*(vL-xi), 2.*gamma/(gamma-1.));
 			}
 		} 
-	//Пусть точка справа от контактного разрыва (xiContact = res.v)
+	//РџСѓСЃС‚СЊ С‚РѕС‡РєР° СЃРїСЂР°РІР° РѕС‚ РєРѕРЅС‚Р°РєС‚РЅРѕРіРѕ СЂР°Р·СЂС‹РІР° (xiContact = res.v)
 	} else {
 		if(res.type == RWSW || res.type == SWSW) {
 			xiFront = vR + cR*sqrt((gamma+1.)/2./gamma*res.p/pR + (gamma-1.)/2./gamma);
@@ -332,19 +332,19 @@ CVectorPrimitive COutput::calcRPAnalyticalSolution(FEOS& eos, double roL, double
 }
 
 RPSolutionPrimitive COutput::solveRP(FEOS& eos, double roL, double vL, double pL, double roR, double vR, double pR) {
-	// Решаем нелинейное уравнение относительно давления методом касательных Ньютона
+	// Р РµС€Р°РµРј РЅРµР»РёРЅРµР№РЅРѕРµ СѓСЂР°РІРЅРµРЅРёРµ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РґР°РІР»РµРЅРёСЏ РјРµС‚РѕРґРѕРј РєР°СЃР°С‚РµР»СЊРЅС‹С… РќСЊСЋС‚РѕРЅР°
 	RPSolutionPrimitive res; res.roL = 0.; res.roR=0.; res.v = 0.; res.p = 0.;
 	double p = 0., pPrev = 0.;
 	double TOL = 1.e-6;
     double cL = eos.getc(roL, pL), cR = eos.getc(roR, pR);
 	const double gamma = eos.getc(1., 1.)*eos.getc(1., 1.);
 	int itCounter = 0;	
-	// Пытаюсь определить возможную конфигурацию решения, чтобы вернее выставить начальное приближение
-	// Похоже, итерации нужны только в случаях "УВ+УВ" и "УВ + ВР", т.к. в случае ВР+ВР и ВР+вакуум есть 
-	// аналитические решения для идеального газа
+	// РџС‹С‚Р°СЋСЃСЊ РѕРїСЂРµРґРµР»РёС‚СЊ РІРѕР·РјРѕР¶РЅСѓСЋ РєРѕРЅС„РёРіСѓСЂР°С†РёСЋ СЂРµС€РµРЅРёСЏ, С‡С‚РѕР±С‹ РІРµСЂРЅРµРµ РІС‹СЃС‚Р°РІРёС‚СЊ РЅР°С‡Р°Р»СЊРЅРѕРµ РїСЂРёР±Р»РёР¶РµРЅРёРµ
+	// РџРѕС…РѕР¶Рµ, РёС‚РµСЂР°С†РёРё РЅСѓР¶РЅС‹ С‚РѕР»СЊРєРѕ РІ СЃР»СѓС‡Р°СЏС… "РЈР’+РЈР’" Рё "РЈР’ + Р’Р ", С‚.Рє. РІ СЃР»СѓС‡Р°Рµ Р’Р +Р’Р  Рё Р’Р +РІР°РєСѓСѓРј РµСЃС‚СЊ 
+	// Р°РЅР°Р»РёС‚РёС‡РµСЃРєРёРµ СЂРµС€РµРЅРёСЏ РґР»СЏ РёРґРµР°Р»СЊРЅРѕРіРѕ РіР°Р·Р°
 	//
-	// Также вызывает вопрос последний тест Торо, где полученное решение отличается от его решения 
-	// во втором знаке после запятой
+	// РўР°РєР¶Рµ РІС‹Р·С‹РІР°РµС‚ РІРѕРїСЂРѕСЃ РїРѕСЃР»РµРґРЅРёР№ С‚РµСЃС‚ РўРѕСЂРѕ, РіРґРµ РїРѕР»СѓС‡РµРЅРЅРѕРµ СЂРµС€РµРЅРёРµ РѕС‚Р»РёС‡Р°РµС‚СЃСЏ РѕС‚ РµРіРѕ СЂРµС€РµРЅРёСЏ 
+	// РІРѕ РІС‚РѕСЂРѕРј Р·РЅР°РєРµ РїРѕСЃР»Рµ Р·Р°РїСЏС‚РѕР№
 	if(roL==roR && vL==vR && pL==pR) {
 		res.type = RWRW;
 		res.roL  = roL;
@@ -380,7 +380,7 @@ RPSolutionPrimitive COutput::solveRP(FEOS& eos, double roL, double vL, double pL
 
 	double fLmin = fL(eos, pL, roL, vL, pL) + fR(eos, pL, roR, vR, pR) + vR-vL;
 	double fRMax = fL(eos, pR, roL, vL, pL) + fR(eos, pR, roR, vR, pR) + vR-vL;
-	// Начальное приближение
+	// РќР°С‡Р°Р»СЊРЅРѕРµ РїСЂРёР±Р»РёР¶РµРЅРёРµ
 	//p = 0.5*(pL+pR);
 	p=pL/2.;
 	do {

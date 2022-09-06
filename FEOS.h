@@ -1,7 +1,8 @@
 #ifndef _CEOS_H_
 #define _CEOS_H_
 
-#include<string>
+#include <string>
+#include <cmath>
 
 using namespace std;
 

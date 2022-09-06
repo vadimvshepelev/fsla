@@ -6,8 +6,8 @@ public:
 	double gamma; 
 	double roL, vL, pL, eL, EL, 
 		   roR, vR, pR, eR, ER;
-	double q0;   // Начальное значение координаты разрыва 
-	double tMax; // Время, до которого ведется счет
+	double q0;   // РќР°С‡Р°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚С‹ СЂР°Р·СЂС‹РІР° 
+	double tMax; // Р’СЂРµРјСЏ, РґРѕ РєРѕС‚РѕСЂРѕРіРѕ РІРµРґРµС‚СЃСЏ СЃС‡РµС‚
 	CTestToro(double _gamma, 
 		      double _roL, double _uL, double _vL, double _wL, double _pL, 
 			  double _roR, double _uR, double _vR, double _wR, double _pR, double _q0, double _tMax) :

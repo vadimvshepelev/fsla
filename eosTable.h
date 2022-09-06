@@ -7,7 +7,7 @@
 #include "eosTable_table.h"
 
 
-// Папка, где хранятся файлы таблиц
+// РџР°РїРєР°, РіРґРµ С…СЂР°РЅСЏС‚СЃСЏ С„Р°Р№Р»С‹ С‚Р°Р±Р»РёС†
 
 //0.184E+00  [cc/g]   initial volume
 //0.184E+04  [cc/g]   final volume
@@ -72,7 +72,7 @@ private:
 	int tableErrorCellNum;
 
 //////////////////DEBUG ///////////////
-// Пока только для идеального газа
+// РџРѕРєР° С‚РѕР»СЊРєРѕ РґР»СЏ РёРґРµР°Р»СЊРЅРѕРіРѕ РіР°Р·Р°
 	
 	EOSTTable dpdti_table;
 	EOSTTable dpdro_table;

@@ -3,7 +3,7 @@
 
 #include<vector>
 #include"C1DProblem.h"
-#include"feos.h"
+#include"FEOS.h"
 
 using namespace std;
 
@@ -14,7 +14,7 @@ public:
 	vector<double> x;
 	const double dx;
 	double t, dt;
-	vector<vector<double>> U, newU, F; 	// TODO: попробовать вариант с double ** или vector<CVector4> и сравнить по производительности
+	vector<vector<double>> U, newU, F; 	// TODO: РїРѕРїСЂРѕР±РѕРІР°С‚СЊ РІР°СЂРёР°РЅС‚ СЃ double ** РёР»Рё vector<CVector4> Рё СЃСЂР°РІРЅРёС‚СЊ РїРѕ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЊРЅРѕСЃС‚Рё
 	C1DField(C1DProblem& pr);
 	~C1DField();	
 };

@@ -7,15 +7,16 @@ void C1DProblem::setics(FEOS& eos, vector<double>& x, vector<vector<double>>& U)
 	// Начальные условия -- инкапсулируют постановку начальных условий, тоже через C1DField. У каждого типа задачи своя функиця set, чтобы избежать ветвлений. 
 	// (Сейчас не так.) (Пока легко, пока делаем просто под задачу Римана.) (А еще кстати каждая задача может и сама себя печатать по своему своей функцией dump().)
 	// Вопрос, зачем тогда нужен класс "задача"? Зачем он нужен в HyperSolver?
-	int i = 0;
-	int imin = 2, imax = imin + nx;
-	double dx = (xmax - xmin)/nx;
+	std::size_t i = 0;
+	const std::size_t imin = get_order();
+	const std::size_t imax = get_order() + nx;
+	double dx = (xmax - xmin) / nx;
 	double E = 0.;
-	for(i=0; i<imax+2+1; i++) {
-		x[i] = (xmin - 2.*dx) + (double)i*dx;
+	for (i = 0; i < x.size(); ++ i) {
+		x[i] = (xmin - get_order() * dx) + static_cast<double>(i) * dx;
 	}
-	for(i=imin; i<imax; i++) {
-		if(x[i] < x0 && fabs(x[i] - x0) > 1.e-5*dx ) {
+	for (i = imin; i < imax; ++ i) {
+		if (x[i] < x0 && fabs(x[i] - x0) > 1.e-5*dx ) {
 			U[i][0] = rol;
 			U[i][1] = rol*ul;
 			E = eos.gete(rol, pl) + .5*ul*ul;
@@ -32,38 +33,43 @@ void C1DProblem::setics(FEOS& eos, vector<double>& x, vector<vector<double>>& U)
 }
 
 void C1DProblem::setbcs(vector<vector<double>>& U) {
-	int imin = 2, imax = imin + nx;
-	assert(bcs[0]=='t');
+	const std::size_t imin = get_order();
+	const std::size_t imax = imin + nx;
+	assert(bcs[0] == 't');
 	switch(bcs[0]) {
 	case 't': 
-		for(int counter=0; counter<3; counter++) {
-			U[imin-1][counter] = U[imin][counter];
-			U[imin-2][counter] = U[imin][counter];
+		for (int counter = 0; counter < 3; ++ counter) {
+			U[imin - 1][counter] = U[imin][counter];
+			U[imin - 2][counter] = U[imin][counter];
 		}
 		break;
 	}
-	assert(bcs[1]=='t');
+	assert(bcs[1] == 't');
 	switch(bcs[1]) {
 	case 't': 
-		for(int counter=0; counter<3; counter++) {
-			U[imax][counter] = U[imax-1][counter];
-			U[imax+1][counter] = U[imax-1][counter];
+		for (int counter = 0; counter < 3; ++ counter) {
+			U[imax][counter] = U[imax - 1][counter];
+			U[imax + 1][counter] = U[imax - 1][counter];
 		}
 		break;
 	}
 }
 
 
-void C1DLaserProblem::setics(FEOS& eos, vector<double>& x, vector<vector<double>>& U) {
-	int i = 0;
-	int imin = 2, imax = imin + nx;
-	double dx = (xmax - xmin)/nx;
+void C1DLaserProblem::setics(
+		FEOS& eos,
+		vector<double>& x,
+		vector<vector<double>>& U) {
+	std::size_t i = 0;
+	const std::size_t imin = get_order();
+	const std::size_t imax = imin + nx;
+	double dx = (xmax - xmin) / nx;
 	double E = 0.;
-	for(i=0; i<imax+2+1; i++) {
-		x[i] = (xmin - 2.*dx) + (double)i*dx;
+	for (i = 0; i < x.size(); ++ i) {
+		x[i] = (xmin - get_order() * dx) + static_cast<double>(i) * dx;
 	}
-	for(i=imin; i<imax; i++) {
-		if(x[i] < x0 && fabs(x[i] - x0) > 1.e-5*dx ) {
+	for (i = imin; i < imax; ++ i) {
+		if (x[i] < x0 && fabs(x[i] - x0) > 1.e-5*dx ) {
 			U[i][0] = rol;
 			U[i][1] = rol*ul;
 			E = eos.gete(rol, pl) + .5*ul*ul;

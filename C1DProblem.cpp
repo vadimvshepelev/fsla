@@ -1,12 +1,20 @@
 #include "C1DProblem.h"
 
-void C1DProblem::setics(FEOS& eos, vector<double>& x, vector<vector<double>>& U) {
+void C1DProblem::setics(FEOS& eos, vector<double>& x,
+						vector<vector<double>>& U) {
 	// TODO
-	// Идея сделать "задача" = "начальные условия" + "граничные условия". 
-	// Граничные условия реалзиовать тем крутым способом, что уже здесь сделан, но убран из-за пересечений с C1DField, там где они задаются функицей bcs.set(C1DField& fld).
-	// Начальные условия -- инкапсулируют постановку начальных условий, тоже через C1DField. У каждого типа задачи своя функиця set, чтобы избежать ветвлений. 
-	// (Сейчас не так.) (Пока легко, пока делаем просто под задачу Римана.) (А еще кстати каждая задача может и сама себя печатать по своему своей функцией dump().)
-	// Вопрос, зачем тогда нужен класс "задача"? Зачем он нужен в HyperSolver?
+	// Идея сделать "задача" = "начальные условия" + "граничные условия".
+	// Граничные условия реалзиовать тем крутым способом, что уже здесь сделан,
+	// но убран из-за пересечений с C1DField, там где они задаются функицей
+	// bcs.set(C1DField& fld).
+	// Начальные условия -- инкапсулируют постановку начальных условий,
+	// тоже через C1DField. У каждого типа задачи своя функиця set,
+	// чтобы избежать ветвлений.
+	// (Сейчас не так.) (Пока легко, пока делаем просто под задачу Римана.)
+	// (А еще кстати каждая задача может и сама себя печатать по-своему
+	// своей функцией dump().)
+	// Вопрос, зачем тогда нужен класс "задача"?
+	// Зачем он нужен в HyperSolver?
 	std::size_t i = 0;
 	const std::size_t imin = get_order();
 	const std::size_t imax = get_order() + nx;
@@ -36,7 +44,7 @@ void C1DProblem::setbcs(vector<vector<double>>& U) {
 	const std::size_t imin = get_order();
 	const std::size_t imax = imin + nx;
 	assert(bcs[0] == 't');
-	switch(bcs[0]) {
+	switch (bcs[0]) {
 	case 't': 
 		for (int counter = 0; counter < 3; ++ counter) {
 			U[imin - 1][counter] = U[imin][counter];
@@ -45,7 +53,7 @@ void C1DProblem::setbcs(vector<vector<double>>& U) {
 		break;
 	}
 	assert(bcs[1] == 't');
-	switch(bcs[1]) {
+	switch (bcs[1]) {
 	case 't': 
 		for (int counter = 0; counter < 3; ++ counter) {
 			U[imax][counter] = U[imax - 1][counter];

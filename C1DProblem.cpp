@@ -1,7 +1,9 @@
 #include "C1DProblem.h"
 
+#include "_vector4.h"
+
 void C1DProblem::setics(FEOS& eos, vector<double>& x,
-						vector<vector<double>>& U) {
+						vector<Vector4>& U) {
 	// TODO
 	// Идея сделать "задача" = "начальные условия" + "граничные условия".
 	// Граничные условия реалзиовать тем крутым способом, что уже здесь сделан,
@@ -40,7 +42,7 @@ void C1DProblem::setics(FEOS& eos, vector<double>& x,
 	return;
 }
 
-void C1DProblem::setbcs(vector<vector<double>>& U) {
+void C1DProblem::setbcs(vector<Vector4>& U) {
 	const std::size_t imin = get_order();
 	const std::size_t imax = imin + nx;
 	assert(bcs[0] == 't');
@@ -67,7 +69,7 @@ void C1DProblem::setbcs(vector<vector<double>>& U) {
 void C1DLaserProblem::setics(
 		FEOS& eos,
 		vector<double>& x,
-		vector<vector<double>>& U) {
+		vector<Vector4>& U) {
 	std::size_t i = 0;
 	const std::size_t imin = get_order();
 	const std::size_t imax = imin + nx;

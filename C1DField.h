@@ -14,9 +14,10 @@ public:
 	vector<double> x;
 	const double dx;
 	double t, dt;
-	vector<vector<double>> U, newU, F; 	// TODO: попробовать вариант с double ** или vector<CVector4> и сравнить по производительности
+	// vector<vector<double>> U, newU, F; 	// TODO: попробовать вариант с double ** или vector<CVector4> и сравнить по производительности
+	vector<Vector4> U, newU, F;
 	C1DField(C1DProblem& pr);
-	~C1DField();	
+	~C1DField();
 };
 
 

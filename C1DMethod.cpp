@@ -10,7 +10,7 @@ void C1DGodunovMethodMillerPuckett::calc(C1DProblem& pr, FEOSMieGruneisen& eos, 
 		   E = 0.;
 	double dx = fld.dx, t = fld.t, dt = fld.dt;
 	int imin = fld.imin, imax = fld.imax;
-	vector<vector<double>> U = fld.U, newU = fld.newU, F = fld.F;
+	auto U = fld.U, newU = fld.newU, F = fld.F;
 	// TODO: проверить на скорость выполнения операций, сравнить с реализацией через тип Vector4 -- если не медленнее, то в дальнейшем избавиться от Vector4 везде
 	int i=0;
 	C1DVectorPrimitive res;
@@ -35,7 +35,7 @@ void C1DGodunovMethodMillerPuckett::calc(C1DProblem& pr, FEOSMieGruneisen& eos, 
 }
 
 double C1DGodunovMethodMillerPuckett::calcdt(C1DProblem& pr, FEOSMieGruneisen& eos, C1DField& fld) {
-	vector<vector<double>> U = fld.U; 
+	auto U = fld.U;
 	int imin = fld.imin, imax = fld.imax;
 	double ro = U[imin][0], u = U[imin][1]/ro, e = U[imin][2]/ro-.5*u*u, p=eos.getp(ro,e), c = eos.getc(ro, p);
 	vector<double> x = fld.x;	
@@ -430,7 +430,7 @@ C1DVectorPrimitive calcSolution(FEOS& eos, double roL, double uL, double pL, dou
 
 
 double C1DGodunovTypeMethod::calcdt(C1DProblem& pr, FEOS& eos, C1DField& fld) {
-	vector<vector<double>> U = fld.U; 
+	auto U = fld.U;
 	int imin = fld.imin, imax = fld.imax;
 	double ro = U[imin][0], u = U[imin][1]/ro, e = U[imin][2]/ro-.5*u*u, p=eos.getp(ro,e), c = eos.getc(ro, p);
 	vector<double> x = fld.x;	
@@ -452,7 +452,9 @@ void C1DGodunovTypeMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 		   E = 0.;
 	double dx = fld.dx, t = fld.t, dt = fld.dt;
 	int imin = fld.imin, imax = fld.imax;
-	vector<vector<double>> &U = fld.U, &newU = fld.newU, &F = fld.F;
+	auto& U = fld.U;
+	auto& newU = fld.newU;
+	auto& F = fld.F;
 	// TODO: проверить на скорость выполнения операций, сравнить с реализацией через тип Vector4 -- если не медленнее, то в дальнейшем избавиться от Vector4 везде
 	int i=0;	
 	// Потоки считаем по алгоритму решения задаче о распаде разрыва для УРС Ми-Грюнайзена из работы [Miller, Puckett]
@@ -492,7 +494,7 @@ void C1DGodunovTypeMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 
 
 double C1DGodunovTypeMethodVacuum::calcdt(C1DProblem& pr, FEOS& eos, C1DField& fld) {
-	vector<vector<double>> U = fld.U; 
+	auto U = fld.U;
 	int imin = fld.imin, imax = fld.imax;
 	double ro = U[imax-1][0], u = U[imax-1][1]/ro, e = U[imax-1][2]/ro-.5*u*u, p=eos.getp(ro,e), c = eos.getc(ro, p);
 	vector<double> x = fld.x;	
@@ -517,8 +519,10 @@ void C1DGodunovTypeMethodVacuum::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) 
 		   E = 0.;
 	double dx = fld.dx, t = fld.t, dt = fld.dt;
 	int imin = fld.imin, imax = fld.imax;
-	vector<vector<double>> &U = fld.U, &newU = fld.newU, &F = fld.F;
-	vector<double> &x = fld.x;
+	auto& U = fld.U;
+	auto& newU = fld.newU;
+	auto& F = fld.F;
+	vector<double>& x = fld.x;
 	int i=0;
 	// Considering only "gas-vacuum" configuration, i.e. gas fills the left side of the simulation segment
 	const double eps = .01;
@@ -838,8 +842,11 @@ void C1D2ndOrderMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 	double roL = 0., uL = 0., eL = 0., pL = 0., roR = 0., uR = 0., eR = 0., pR = 0., E = 0.;
 	double dx = fld.dx, t = fld.t, dt = fld.dt;
 	int i=0, imin = fld.imin, imax = fld.imax;
-	vector<vector<double>> &U = fld.U, &newU = fld.newU, &F = fld.F;
-	vector<vector<double>> &ULx = rec.ULx, &URx = rec.URx;
+	auto& U = fld.U;
+	auto& newU = fld.newU;
+	auto& F = fld.F;
+	auto& ULx = rec.ULx;
+	auto& URx = rec.URx;
 	// TODO: проверить на скорость выполнения операций, сравнить с реализацией через тип Vector4 -- если не медленнее, то в дальнейшем избавиться от Vector4 везде
 	rec.calc(fld);
 	for(i=imin; i<=imax; i++) {								
@@ -861,8 +868,10 @@ void C1DBGKMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 	double roL = 0., uL = 0., eL = 0., pL = 0., roR = 0., uR = 0., eR = 0., pR = 0., E = 0.;
 	double dx = fld.dx, t = fld.t, dt = fld.dt;
 	int i=0, imin = fld.imin, imax = fld.imax;
-	vector<vector<double>> &U = fld.U, &newU = fld.newU, &F = fld.F;
-	for(i=imin-1; i<imax; i++) {		
+	auto& U = fld.U;
+	auto& newU = fld.newU;
+	auto& F = fld.F;
+	for (i = imin - 1; i < imax; ++ i) {
 
 
 
@@ -870,7 +879,7 @@ void C1DBGKMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 
 
 
-		if( i == 31 )
+		if (i == 31)
 		{ 
 			
 			
@@ -905,7 +914,9 @@ void C1DLFMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 		   E = 0.;
 	double dx = fld.dx, t = fld.t, dt = fld.dt;
 	int imin = fld.imin, imax = fld.imax;
-	vector<vector<double>> &U = fld.U, &newU = fld.newU, &F = fld.F;
+	auto& U = fld.U;
+	auto& newU = fld.newU;
+	auto& F = fld.F;
 	// TODO: проверить на скорость выполнения операций, сравнить с реализацией через тип Vector4 -- если не медленнее, то в дальнейшем избавиться от Vector4 везде
 	int i=0;	
 	// Потоки считаем по алгоритму решения задаче о распаде разрыва для УРС Ми-Грюнайзена из работы [Miller, Puckett]

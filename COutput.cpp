@@ -103,7 +103,7 @@ int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, FEOS& eos) {
 
 int COutput::dump(C1DProblem& prb, C1DField& fld, FEOS& eos, string fName) {
 	int i = 0, imin = fld.imin, imax = fld.imax;
-	vector<vector<double>> U = fld.U;
+	auto U = fld.U;
 	vector<double> x = fld.x;
 	double t = fld.t, dx = fld.dx; 
 	double rol = prb.rol, ul = prb.ul, pl = prb.pl, ror = prb.ror, ur = prb.ur, pr = prb.pr, x0 = prb.x0;

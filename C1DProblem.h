@@ -50,8 +50,8 @@ public:
 	const int order;
 	// maybe make order const std::size_t after all?
 	// or even just short, for that matter...
-	virtual void setics(FEOS& eos, vector<double>& x, vector<vector<double>>& U);
-	void setbcs(vector<vector<double>>& U);
+	virtual void setics(FEOS& eos, vector<double>& x, vector<Vector4>& U);
+	void setbcs(vector<Vector4>& U);
 	constexpr int get_order() { return order; }
 };
 
@@ -89,7 +89,7 @@ public:
 
 	const double rom, um, pm;
 	const double x1;
-	void setics(FEOS& eos, vector<double>& x, vector<vector<double>>& U);
+	void setics(FEOS& eos, vector<double>& x, vector<Vector4>& U);
 };
 
 

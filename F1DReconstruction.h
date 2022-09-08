@@ -1,15 +1,18 @@
 #ifndef _F1DRECONSTRUCTION_H_
 #define _F1DRECONSTRUCTION_H_
 
-#include"C1DProblem.h"
-#include"C1DField.h"
-#include<vector>
+#include "_vector4.h"
+#include "C1DProblem.h"
+#include "C1DField.h"
+
+#include <vector>
 
 using namespace std;
 
 class F1DReconstruction {
 public:
-	vector<vector<double>> ULx, URx;
+	// vector<vector<double>> ULx, URx;
+	vector<Vector4> ULx, URx;
 	F1DReconstruction(C1DField& fld);
 	virtual void calc(C1DField& fld)=0;
 };
@@ -22,6 +25,17 @@ public:
 	void calc(C1DField& fld);
 };
 
+
+class F1DENO3Reconstruction : public F1DENO2Reconstruction {
+public:
+	F1DENO3Reconstruction(C1DField& fld);
+	void calc(C1DField& fld);
+private:
+	void calcComponent_(const std::ranges::common_range auto&& u,
+						std::ranges::common_range auto&& u_plus_rec,
+						std::ranges::common_range auto&& u_minus_rec,
+						std::size_t n_size);
+};
 
 
 #endif

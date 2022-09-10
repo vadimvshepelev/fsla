@@ -111,10 +111,10 @@ short chooseENO3Stencil(const std::ranges::sized_range auto&& u_stencil) {
 	 * 	2 <-> [          j+0, j+1, j+2].
 	 */
 
-	if (std::abs(u_stencil[2] - u_stencil[1])
-			<= std::abs(u_stencil[3] - u_stencil[2])) {
-		if (std::abs(u_stencil[2] - 2. * u_stencil[1] + u_stencil[0])
-				<= std::abs(u_stencil[3] - 2. * u_stencil[2] + u_stencil[1])
+	if (std::fabs(u_stencil[2] - u_stencil[1])
+			<= std::fabs(u_stencil[3] - u_stencil[2])) {
+		if (std::fabs(u_stencil[2] - 2. * u_stencil[1] + u_stencil[0])
+				<= std::fabs(u_stencil[3] - 2. * u_stencil[2] + u_stencil[1])
 				) {
 			return 0;
 		} else {
@@ -122,8 +122,8 @@ short chooseENO3Stencil(const std::ranges::sized_range auto&& u_stencil) {
 		}
 	}
 
-	if (std::abs(u_stencil[3] - 2. * u_stencil[2] + u_stencil[1])
-			<= std::abs(u_stencil[4] - 2. * u_stencil[3] + u_stencil[2]))
+	if (std::fabs(u_stencil[3] - 2. * u_stencil[2] + u_stencil[1])
+			<= std::fabs(u_stencil[4] - 2. * u_stencil[3] + u_stencil[2]))
 		return 1;
 
 	return 2;
@@ -226,8 +226,8 @@ void F1DENO3Reconstruction::calcComponent_(
 		maxi + 1
 	};
 
-	double uhatminus = 0.;
 	double uhatplus = 0.;
+	double uhatminus = 0.;
 
 	auto&& j_it_p = std::ranges::begin(u);  // f_plus
 	// auto j_it_m = std::ranges::begin(u);  // f_minus

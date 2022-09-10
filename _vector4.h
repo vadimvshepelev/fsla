@@ -8,6 +8,7 @@ Adapted from Ogre3D
 #define __Vector4_H__
 
 #include <iostream>
+#include <valarray>
 #include <vector>
 #include <assert.h>
 
@@ -19,54 +20,81 @@ class Vector4
 {
 public:
 
+	// TODO: try `array<double, 4>` or `vector<double>`
+	// to store values, as that seems a more reasonable
+	// choice from any perspective, i. e. code style,
+	// usability etc.
+	// Naturally, performance is the crux of the
+	// implementation issue in this instance,
+	// but this particular change should not noticeably
+	// affect performance, IMHO.
 	double x, y, z, w;
 
-    static const Vector4 ZERO;
+	static const Vector4 ZERO;
 
-    inline Vector4()
-    {
-    }
+	inline Vector4()
+	{
+	}
 
-    inline Vector4( const double fX, const double fY, const double fZ, const double fW )
-        : x( fX ), y( fY ), z( fZ ), w( fW)
-    {
-    }
+	inline Vector4(
+			const double fX,
+			const double fY,
+			const double fZ,
+			const double fW)
+		: x(fX), y(fY), z(fZ), w(fW)
+	{
+	}
 
-    inline explicit Vector4( const double scalar )
-        : x( scalar )
-        , y( scalar )
-        , z( scalar )
-        , w( scalar )
-    {
-    }
+	inline explicit Vector4(const double scalar)
+		: x(scalar)
+		, y(scalar)
+		, z(scalar)
+		, w(scalar)
+	{
+	}
 
-	inline Vector4(vector<double> V) : x(V[0]), y(V[1]), z(V[2]), w(V[3]) {}
+	inline Vector4(const std::valarray<double>& V)
+		: x(V[0]), y(V[1]), z(V[2]), w(V[3]) {}
 
-	inline double operator [] ( const size_t i ) const
-    {
-        assert( i < 4 );
+	inline Vector4(vector<double>& V)
+		: x(V[0]), y(V[1]), z(V[2]), w(V[3]) {}
 
-        return *(&x+i);
-    }
+	inline Vector4(vector<double>&& V)
+		: x(V[0]), y(V[1]), z(V[2]), w(V[3]) {}
 
-	inline double& operator [] ( const size_t i )
-    {
-        assert( i < 4 );
+	inline Vector4(const Vector4& V)
+		: x(V[0]), y(V[1]), z(V[2]), w(V[3]) {}  // copy ctor
 
-        return *(&x+i);
-    }
 
-    inline Vector4& operator = ( const Vector4& rkVector )
-    {
-        x = rkVector.x;
-        y = rkVector.y;
-        z = rkVector.z;
-        w = rkVector.w;
+	inline Vector4(Vector4&& V)
+		: x(V[0]), y(V[1]), z(V[2]), w(V[3]) {}  // move ctor
+	Vector4& operator=(Vector4&&) = default;  // move assignment
 
-        return *this;
-    }
+	inline double operator [] (const size_t i) const
+	{
+		assert(i < 4);
 
-	inline Vector4& operator = ( const double fScalar)
+		return *(&x+i);
+	}
+
+	inline double& operator [] (const size_t i)
+	{
+		assert(i < 4);
+
+		return *(&x+i);
+	}
+
+	inline Vector4& operator = (const Vector4& rkVector)
+	{
+		x = rkVector.x;
+		y = rkVector.y;
+		z = rkVector.z;
+		w = rkVector.w;
+
+		return *this;
+	}  // copy assignment operator
+
+	inline Vector4& operator = (const double fScalar)
 	{
 		x = fScalar;
 		y = fScalar;
@@ -75,242 +103,248 @@ public:
 		return *this;
 	}
 
-    inline bool operator == ( const Vector4& rkVector ) const
-    {
-        return ( x == rkVector.x &&
-            y == rkVector.y &&
-            z == rkVector.z &&
-            w == rkVector.w );
-    }
-
-    inline bool operator != ( const Vector4& rkVector ) const
-    {
-        return ( x != rkVector.x ||
-            y != rkVector.y ||
-            z != rkVector.z ||
-            w != rkVector.w );
-    }
-
-    // arithmetic operations
-    inline Vector4 operator + ( const Vector4& rkVector ) const
-    {
-        return Vector4(
-            x + rkVector.x,
-            y + rkVector.y,
-            z + rkVector.z,
-            w + rkVector.w);
-    }
-
-    inline Vector4 operator - ( const Vector4& rkVector ) const
-    {
-        return Vector4(
-            x - rkVector.x,
-            y - rkVector.y,
-            z - rkVector.z,
-            w - rkVector.w);
-    }
-
-    inline Vector4 operator * ( const double fScalar ) const
-    {
-        return Vector4(
-            x * fScalar,
-            y * fScalar,
-            z * fScalar,
-            w * fScalar);
-    }
-
-    inline Vector4 operator * ( const Vector4& rhs) const
-    {
-        return Vector4(
-            rhs.x * x,
-            rhs.y * y,
-            rhs.z * z,
-            rhs.w * w);
-    }
-
-    inline Vector4 operator / ( const double fScalar ) const
-    {
-        assert( fScalar != 0.0 );
-
-        double fInv = 1.0 / fScalar;
-
-        return Vector4(
-            x * fInv,
-            y * fInv,
-            z * fInv,
-            w * fInv);
-    }
-
-    inline Vector4 operator / ( const Vector4& rhs) const
-    {
-        return Vector4(
-            x / rhs.x,
-            y / rhs.y,
-            z / rhs.z,
-            w / rhs.w);
-    }
-
-    inline const Vector4& operator + () const
-    {
-        return *this;
-    }
-
-    inline Vector4 operator - () const
-    {
-        return Vector4(-x, -y, -z, -w);
-    }
-
-    inline friend Vector4 operator * ( const double fScalar, const Vector4& rkVector )
-    {
-        return Vector4(
-            fScalar * rkVector.x,
-            fScalar * rkVector.y,
-            fScalar * rkVector.z,
-            fScalar * rkVector.w);
-    }
-
-    inline friend Vector4 operator / ( const double fScalar, const Vector4& rkVector )
-    {
-        return Vector4(
-            fScalar / rkVector.x,
-            fScalar / rkVector.y,
-            fScalar / rkVector.z,
-            fScalar / rkVector.w);
-    }
-
-    inline friend Vector4 operator + (const Vector4& lhs, const double rhs)
-    {
-        return Vector4(
-            lhs.x + rhs,
-            lhs.y + rhs,
-            lhs.z + rhs,
-            lhs.w + rhs);
-    }
-
-    inline friend Vector4 operator + (const double lhs, const Vector4& rhs)
-    {
-        return Vector4(
-            lhs + rhs.x,
-            lhs + rhs.y,
-            lhs + rhs.z,
-            lhs + rhs.w);
-    }
-
-    inline friend Vector4 operator - (const Vector4& lhs, double rhs)
-    {
-        return Vector4(
-            lhs.x - rhs,
-            lhs.y - rhs,
-            lhs.z - rhs,
-            lhs.w - rhs);
-    }
-
-    inline friend Vector4 operator - (const double lhs, const Vector4& rhs)
-    {
-        return Vector4(
-            lhs - rhs.x,
-            lhs - rhs.y,
-            lhs - rhs.z,
-            lhs - rhs.w);
-    }
-
-    // arithmetic updates
-    inline Vector4& operator += ( const Vector4& rkVector )
-    {
-        x += rkVector.x;
-        y += rkVector.y;
-        z += rkVector.z;
-        w += rkVector.w;
-
-        return *this;
-    }
-
-    inline Vector4& operator -= ( const Vector4& rkVector )
-    {
-        x -= rkVector.x;
-        y -= rkVector.y;
-        z -= rkVector.z;
-        w -= rkVector.w;
-
-        return *this;
-    }
-
-    inline Vector4& operator *= ( const double fScalar )
-    {
-        x *= fScalar;
-        y *= fScalar;
-        z *= fScalar;
-        w *= fScalar;
-        return *this;
-    }
-
-    inline Vector4& operator += ( const double fScalar )
-    {
-        x += fScalar;
-        y += fScalar;
-        z += fScalar;
-        w += fScalar;
-        return *this;
-    }
-
-    inline Vector4& operator -= ( const double fScalar )
-    {
-        x -= fScalar;
-        y -= fScalar;
-        z -= fScalar;
-        w -= fScalar;
-        return *this;
-    }
-
-    inline Vector4& operator *= ( const Vector4& rkVector )
-    {
-        x *= rkVector.x;
-        y *= rkVector.y;
-        z *= rkVector.z;
-        w *= rkVector.w;
-
-        return *this;
-    }
-
-    inline Vector4& operator /= ( const double fScalar )
-    {
-        assert( fScalar != 0.0 );
-
-        double fInv = 1.0 / fScalar;
-
-        x *= fInv;
-        y *= fInv;
-        z *= fInv;
-        w *= fInv;
-
-        return *this;
-    }
-
-    inline Vector4& operator /= ( const Vector4& rkVector )
-    {
-        x /= rkVector.x;
-        y /= rkVector.y;
-        z /= rkVector.z;
-        w /= rkVector.w;
-
-        return *this;
-    }
-
-    /** Calculates the dot (scalar) product of this vector with another.
-    */
-    inline double dotProduct(const Vector4& vec) const
-    {
-        return x * vec.x + y * vec.y + z * vec.z + w * vec.w;
+	inline bool operator == (const Vector4& rkVector) const
+	{
+		return (x == rkVector.x &&
+			y == rkVector.y &&
+			z == rkVector.z &&
+			w == rkVector.w);
 	}
 
-    /** Function for writing to a stream.
-    */
+	inline bool operator != (const Vector4& rkVector) const
+	{
+		return (x != rkVector.x ||
+			y != rkVector.y ||
+			z != rkVector.z ||
+			w != rkVector.w);
+	}
+
+	// arithmetic operations
+	inline Vector4 operator + (const Vector4& rkVector) const
+	{
+		return Vector4(
+			x + rkVector.x,
+			y + rkVector.y,
+			z + rkVector.z,
+			w + rkVector.w);
+	}
+
+	inline Vector4 operator - (const Vector4& rkVector) const
+	{
+		return Vector4(
+			x - rkVector.x,
+			y - rkVector.y,
+			z - rkVector.z,
+			w - rkVector.w);
+	}
+
+	inline Vector4 operator * (const double fScalar) const
+	{
+		return Vector4(
+			x * fScalar,
+			y * fScalar,
+			z * fScalar,
+			w * fScalar);
+	}
+
+	inline Vector4 operator * (const Vector4& rhs) const
+	{
+		return Vector4(
+			rhs.x * x,
+			rhs.y * y,
+			rhs.z * z,
+			rhs.w * w);
+	}
+
+	inline Vector4 operator / (const double fScalar) const
+	{
+		assert(fScalar != 0.0);
+
+		double fInv = 1.0 / fScalar;
+
+		return Vector4(
+			x * fInv,
+			y * fInv,
+			z * fInv,
+			w * fInv);
+	}
+
+	inline Vector4 operator / (const Vector4& rhs) const
+	{
+		return Vector4(
+			x / rhs.x,
+			y / rhs.y,
+			z / rhs.z,
+			w / rhs.w);
+	}
+
+	inline const Vector4& operator + () const
+	{
+		return *this;
+	}
+
+	inline Vector4 operator - () const
+	{
+		return Vector4(-x, -y, -z, -w);
+	}
+
+	inline friend Vector4 operator * (
+			const double fScalar,
+			const Vector4& rkVector)
+	{
+		return Vector4(
+			fScalar * rkVector.x,
+			fScalar * rkVector.y,
+			fScalar * rkVector.z,
+			fScalar * rkVector.w);
+	}
+
+	inline friend Vector4 operator / (
+			const double fScalar,
+			const Vector4& rkVector)
+	{
+		return Vector4(
+			fScalar / rkVector.x,
+			fScalar / rkVector.y,
+			fScalar / rkVector.z,
+			fScalar / rkVector.w);
+	}
+
+	inline friend Vector4 operator + (const Vector4& lhs, const double rhs)
+	{
+		return Vector4(
+			lhs.x + rhs,
+			lhs.y + rhs,
+			lhs.z + rhs,
+			lhs.w + rhs);
+	}
+
+	inline friend Vector4 operator + (const double lhs, const Vector4& rhs)
+	{
+		return Vector4(
+			lhs + rhs.x,
+			lhs + rhs.y,
+			lhs + rhs.z,
+			lhs + rhs.w);
+	}
+
+	inline friend Vector4 operator - (const Vector4& lhs, double rhs)
+	{
+		return Vector4(
+			lhs.x - rhs,
+			lhs.y - rhs,
+			lhs.z - rhs,
+			lhs.w - rhs);
+	}
+
+	inline friend Vector4 operator - (const double lhs, const Vector4& rhs)
+	{
+		return Vector4(
+			lhs - rhs.x,
+			lhs - rhs.y,
+			lhs - rhs.z,
+			lhs - rhs.w);
+	}
+
+	// arithmetic updates
+	inline Vector4& operator += (const Vector4& rkVector)
+	{
+		x += rkVector.x;
+		y += rkVector.y;
+		z += rkVector.z;
+		w += rkVector.w;
+
+		return *this;
+	}
+
+	inline Vector4& operator -= (const Vector4& rkVector)
+	{
+		x -= rkVector.x;
+		y -= rkVector.y;
+		z -= rkVector.z;
+		w -= rkVector.w;
+
+		return *this;
+	}
+
+	inline Vector4& operator *= (const double fScalar)
+	{
+		x *= fScalar;
+		y *= fScalar;
+		z *= fScalar;
+		w *= fScalar;
+		return *this;
+	}
+
+	inline Vector4& operator += (const double fScalar)
+	{
+		x += fScalar;
+		y += fScalar;
+		z += fScalar;
+		w += fScalar;
+		return *this;
+	}
+
+	inline Vector4& operator -= (const double fScalar)
+	{
+		x -= fScalar;
+		y -= fScalar;
+		z -= fScalar;
+		w -= fScalar;
+		return *this;
+	}
+
+	inline Vector4& operator *= (const Vector4& rkVector)
+	{
+		x *= rkVector.x;
+		y *= rkVector.y;
+		z *= rkVector.z;
+		w *= rkVector.w;
+
+		return *this;
+	}
+
+	inline Vector4& operator /= (const double fScalar)
+	{
+		assert(fScalar != 0.0);
+
+		double fInv = 1.0 / fScalar;
+
+		x *= fInv;
+		y *= fInv;
+		z *= fInv;
+		w *= fInv;
+
+		return *this;
+	}
+
+	inline Vector4& operator /= (const Vector4& rkVector)
+	{
+		x /= rkVector.x;
+		y /= rkVector.y;
+		z /= rkVector.z;
+		w /= rkVector.w;
+
+		return *this;
+	}
+
+	/** Calculates the dot (scalar) product of this vector with another.
+	*/
+	inline double dotProduct(const Vector4& vec) const
+	{
+		return x * vec.x + y * vec.y + z * vec.z + w * vec.w;
+	}
+
+	/** Function for writing to a stream.
+	*/
 	inline friend std::ostream& operator <<
-		( std::ostream& o, const Vector4& v )
-    {
-        o << "Vector4(" << v.x << ", " << v.y << ", " << v.z << ", " << v.w << ")";
-        return o;
-    }
+		(std::ostream& o, const Vector4& v)
+	{
+		o << "Vector4("
+		  << v.x << ", " << v.y << ", " << v.z << ", " << v.w
+		  << ")";
+		return o;
+	}
 };
 
 #endif

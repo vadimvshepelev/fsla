@@ -34,7 +34,7 @@ private:
 	void calcComponent_(const std::ranges::common_range auto&& u,
 						std::ranges::common_range auto&& u_plus_rec,
 						std::ranges::common_range auto&& u_minus_rec,
-						std::size_t n_size);
+						std::size_t n_ghost_cells = 3);
 };
 
 

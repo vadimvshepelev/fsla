@@ -49,7 +49,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	fprintf(f1, "VARIABLES=\"Ro\",\"Pi\",\"Ei\"\n");
 
 	ti= 300.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -59,7 +59,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti= 400.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -69,7 +69,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti= 500.0;	
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -79,7 +79,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti= 600.0;	
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -89,7 +89,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti= 700.0;	
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -99,7 +99,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti= 800.0;	
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -110,7 +110,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 
 
 	ti= 900.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -120,7 +120,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti= 950.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -130,7 +130,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti= 928.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -140,7 +140,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti= 1000.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -150,7 +150,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti= 1100.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -160,7 +160,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti= 1200.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -170,7 +170,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti= 1300.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -180,7 +180,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti= 1400.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -190,7 +190,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti=1500.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -200,7 +200,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti= 1600.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -210,7 +210,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 	
 	ti= 1700.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -220,7 +220,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti= 1800.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -230,7 +230,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti= 1900.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -240,7 +240,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti= 2000.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -250,7 +250,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 	
 	ti= 3000.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -260,7 +260,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti= 4000.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -271,7 +271,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 
 	
 	ti= 5000.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -281,7 +281,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti= 6000.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -291,7 +291,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti= 7000.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -301,7 +301,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti= 8000.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -311,7 +311,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti= 9000.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -321,7 +321,7 @@ void EOSFigures::writeIsoterms(char *outputFileName)
 	}
 
 	ti=10000.0;
-	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", (int)ti, iMax);
+	fprintf(f1, "ZONE T=\"%dK\" I=%d F=POINT\n", static_cast<int>(ti), iMax);
 	for(i=0; i<iMax; i++)
 	{
 		ro=ro_0+i*ro_step;
@@ -362,9 +362,9 @@ void EOSFigures::testPiT(double roMin, double roMax, double T, double nIntervals
 	ofs << "TITLE=\"EOS test curves: pi(ro) at T = " << T << "\"" << endl;
 	ofs << "VARIABLES=\"ro [kg/m3]\",\"pi [Pa]\"" << endl;
 	double ro = 0.;
-	double delta = (roMax-roMin)/((double)(nIntervals+1));
+	double delta = (roMax-roMin)/(static_cast<double>(nIntervals+1));
 	for(int i=0; i<=nIntervals; i++)	{
-		ro = roMin + (double)i*delta;		
+		ro = roMin + static_cast<double>(i)*delta;
 		ofs << ro << " " << eos->getpi(ro, T) << endl;
 	}
 	ofs.close();
@@ -377,9 +377,9 @@ void EOSFigures::testEiT(double roMin, double roMax, double T, double nIntervals
 	ofs << "TITLE=\"EOS test curves: ei(ro) at T = " << T << "\"" << endl;
 	ofs << "VARIABLES=\"ro [kg/m3]\",\"ei [J/kg]\"" << endl;
 	double ro = 0.;
-	double delta = (roMax-roMin)/((double)(nIntervals+1));
+	double delta = (roMax-roMin)/(static_cast<double>(nIntervals+1));
 	for(int i=0; i<=nIntervals; i++)	{
-		ro = roMin + (double)i*delta;		
+		ro = roMin + static_cast<double>(i)*delta;
 		ofs << ro << " " << eos->getei(ro, T) << endl;
 	}
 	ofs.close();
@@ -392,9 +392,9 @@ void EOSFigures::testeEOSTe(double ro, double T, double TeMin, double TeMax, dou
 	ofs << "TITLE=\"EOS test curves: pe(Te), ee(Te), ce(Te), alpha(Te), kappa(Te)\"" << endl;
 	ofs << "VARIABLES=\"Te [K]\",\"pe [Pa]\",\"ee [Pa]\",\"ce [J/m3/K]\",\"alpha [W/m3/K]\",\"kappa [W/m/K]\"" << endl;
 	double _te = 0.;
-	double delta = (TeMax-TeMin)/((double)(nIntervals+1));
+	double delta = (TeMax-TeMin)/(static_cast<double>(nIntervals+1));
 	for(int i=0; i<=nIntervals; i++) {
-		_te = TeMin + (double)i*delta;		
+		_te = TeMin + static_cast<double>(i)*delta;
 		ofs << _te << " " << eos->getpe(ro, T, _te) << " " << eos->getee(ro, T, _te) << 
 			          " " << eos->getce(ro, _te) << " " << eos->getAlpha(ro, T, _te) << 
 					  " " << eos->getkappa(ro, T, _te) << endl;

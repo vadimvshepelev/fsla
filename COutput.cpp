@@ -43,11 +43,11 @@ using namespace std;
 	 oss << "[";
 	 double progressRate = (t - _pr.tmin)/(_pr.tmax - _pr.tmin);        
 	 for(i = 0; i <= 10; i++) 
-		 if ((int)progressRate >= i) 
+		 if (static_cast<int>(progressRate) >= i)
 			 oss << "."; 
 		 else 
 			 oss << " ";
-	 oss << "] " << (int)progressRate*100 << "% ";
+	 oss << "] " << static_cast<int>(progressRate) * 100 << "% ";
 	 return oss.str();
  }
 
@@ -103,7 +103,7 @@ int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, FEOS& eos) {
 
 int COutput::dump(C1DProblem& prb, C1DField& fld, FEOS& eos, string fName) {
 	int i = 0, imin = fld.imin, imax = fld.imax;
-	auto U = fld.U;
+	auto&& U = fld.U;
 	vector<double> x = fld.x;
 	double t = fld.t, dx = fld.dx; 
 	double rol = prb.rol, ul = prb.ul, pl = prb.pl, ror = prb.ror, ur = prb.ur, pr = prb.pr, x0 = prb.x0;

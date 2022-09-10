@@ -1,7 +1,7 @@
 #include"C1DBCs.h"
 
 void CLeftTransmissiveBoundary::set(C1DField& fld) {
-	auto U = fld.U;
+	// auto&& U = fld.U;
 	int imin = fld.imin;
 	for(int counter = 0; counter < 3; ++ counter) {
 		fld.U[imin-1][counter] = fld.U[imin][counter];
@@ -10,7 +10,7 @@ void CLeftTransmissiveBoundary::set(C1DField& fld) {
 }
 
 void CRightTransmissiveBoundary::set(C1DField& fld) {
-	auto U = fld.U;
+	// auto&& U = fld.U;
 	int imax = fld.imax;
 	for(int counter = 0; counter < 3; ++ counter) {
 		fld.U[imax][counter] = fld.U[imax][counter];

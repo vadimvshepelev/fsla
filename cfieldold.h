@@ -27,8 +27,8 @@ public:
 
 	inline Node &operator [] (const int i)
     {
-        if(i < 0)		return bEdgeMode ? nodes[0]		  : left_edge;
-		if(i > (int)nSize)   return bEdgeMode ? nodes[nSize-1] : right_edge;
+		if (i < 0)		return bEdgeMode ? nodes[0]		  : left_edge;
+		if (i > static_cast<int>(nSize))   return bEdgeMode ? nodes[nSize-1] : right_edge;
         return nodes[i];
     }
 

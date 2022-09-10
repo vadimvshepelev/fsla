@@ -34,8 +34,8 @@ F1DReconstruction::F1DReconstruction(C1DField& _fld) {
 	double _v[] = {0., 0., 0., 0.};
 	// vector<double> tempVect = vector<double>(_v, _v+3);
 	for (std::size_t i = 0; i < _fld.U.size(); ++ i) {
-		// ULx.push_back(tempVect);
-		ULx.push_back(Vector4::ZERO);
+		// ULx.push_back(tempVect);  // vector<vector<double>>
+		ULx.push_back(Vector4::ZERO);  // vector<Vector4>
 		// URx.push_back(tempVect);
 		URx.push_back(Vector4::ZERO);
 	}
@@ -59,7 +59,7 @@ F1DENO3Reconstruction::F1DENO3Reconstruction(C1DField& _fld)
 	: F1DENO2Reconstruction(_fld) {}
 
 
-void F1DENO2Reconstruction::calc(C1DField& fld) {
+void F1DENO2Reconstruction::calc(C1DField& fld) /*override*/ {
 	int i = 0, n = 0;
 	const int nComp = 4;
 	int imin = fld.imin, imax = fld.imax;
@@ -281,7 +281,7 @@ void F1DENO3Reconstruction::calcComponent_(
 }
 
 
-void F1DENO3Reconstruction::calc(C1DField& fld) {
+void F1DENO3Reconstruction::calc(C1DField& fld) /*override*/ {
 	/* Perform finite-volume component-wise essentially non-oscillatory
 	 * 3-rd order (FV c'mp't-wise ENO-3) reconstruction for a 1-D Euler
 	 * equation field, i. e. for any field 3-component field `C1DField`.
@@ -297,7 +297,7 @@ void F1DENO3Reconstruction::calc(C1DField& fld) {
 		// , &Vector4::w
 	};
 	std::for_each(
-			// std::execution::par_unseq,
+			std::execution::par_unseq,
 			std::ranges::begin(components),
 			std::ranges::end(components),
 			[&](auto&& kth_vector_component) {

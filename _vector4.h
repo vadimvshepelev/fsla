@@ -7,27 +7,27 @@ Adapted from Ogre3D
 #ifndef __Vector4_H__
 #define __Vector4_H__
 
+#include <cassert>
+// #include <functional>
 #include <iostream>
 #include <valarray>
 #include <vector>
-#include <assert.h>
 
-using namespace std;
+// using namespace std;
 
 /** 4-dimensional homogeneous vector.
 */
 class Vector4
 {
 public:
-
-	// TODO: try `array<double, 4>` or `vector<double>`
+	// TODO: try using `array<double, 4>` or `double[]`
 	// to store values, as that seems a more reasonable
 	// choice from any perspective, i. e. code style,
 	// usability etc.
 	// Naturally, performance is the crux of the
 	// implementation issue in this instance,
-	// but this particular change should not noticeably
-	// affect performance, IMHO.
+	// but this particular change should not affect
+	// performance too noticeably, IMHO.
 	double x, y, z, w;
 
 	static const Vector4 ZERO;
@@ -53,13 +53,13 @@ public:
 	{
 	}
 
-	inline Vector4(const std::valarray<double>& V)
+	inline Vector4(std::valarray<double>& V)
 		: x(V[0]), y(V[1]), z(V[2]), w(V[3]) {}
 
-	inline Vector4(vector<double>& V)
+	inline Vector4(std::vector<double>& V)
 		: x(V[0]), y(V[1]), z(V[2]), w(V[3]) {}
 
-	inline Vector4(vector<double>&& V)
+	inline Vector4(std::vector<double>&& V)
 		: x(V[0]), y(V[1]), z(V[2]), w(V[3]) {}
 
 	inline Vector4(const Vector4& V)

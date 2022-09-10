@@ -14,7 +14,7 @@ public:
 	// vector<vector<double>> ULx, URx;
 	vector<Vector4> ULx, URx;
 	F1DReconstruction(C1DField& fld);
-	virtual void calc(C1DField& fld)=0;
+	virtual void calc(C1DField& fld) = 0;
 };
 
 
@@ -22,14 +22,14 @@ class F1DENO2Reconstruction : public F1DReconstruction {
 	vector<double> rm1r, r0r, rm1l, r0l;
 public:
 	F1DENO2Reconstruction(C1DField& fld);
-	void calc(C1DField& fld);
+	void calc(C1DField& fld) override;
 };
 
 
 class F1DENO3Reconstruction : public F1DENO2Reconstruction {
 public:
 	F1DENO3Reconstruction(C1DField& fld);
-	void calc(C1DField& fld);
+	void calc(C1DField& fld) override;
 private:
 	void calcComponent_(const std::ranges::common_range auto&& u,
 						std::ranges::common_range auto&& u_plus_rec,

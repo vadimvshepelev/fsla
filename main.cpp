@@ -1,3 +1,7 @@
+//#pragma GCC optimize("Ofast")
+//#pragma GCC target("avx,avx2,fma")
+//#pragma GCC optimization("unroll-loops")
+
 #define _CRT_SECURE_NO_WARNINGS
 
 #include<string.h>
@@ -106,29 +110,29 @@ int main(int argc, char *argv[]) {
 	delete fldptr; */
 
 	// Uncomment for SW-induced mechanism of holes formation
-	C1DProblem pr = prFedorAl;  
-	FEOSIdeal eos = FEOSIdeal(1.4);
-	C1DField *fldptr = new C1DField(pr);
-	CHLLRiemannSolver hll;
-	CHLLCRiemannSolver hllc;
-	CLFRiemannSolver lf;
-	CGPSRiemannSolver gps;
-	CRoeRiemannSolver roe;
-	CRoeGeneralRiemannSolver roegen;
-	CBGKRiemannSolver bgk;
-	CExactRiemannSolver ex;
-	//F1DENO2Reconstruction eno2rec=F1DENO2Reconstruction(*fldptr);
-	//C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hll, eno2rec);	
-	//C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(roegen);
-	//C1DBGKMethod mtd = C1DBGKMethod(bgk);
-	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(ex);
-	// C1DLFMethod mtd = C1DLFMethod(lf);
-	double _dtt[] = {pr.tmin, pr.tmax};
-	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
-	COutput outp = COutput(pr, outputDir, dtt);
-	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp);
-	sim.run();
-	delete fldptr;
+//	C1DProblem pr = prToro1Idealtest;  // prFedorAl;
+//	FEOSIdeal eos = FEOSIdeal(1.4);
+//	C1DField *fldptr = new C1DField(pr);
+//	CHLLRiemannSolver hll;
+//	CHLLCRiemannSolver hllc;
+//	CLFRiemannSolver lf;
+//	CGPSRiemannSolver gps;
+//	CRoeRiemannSolver roe;
+//	CRoeGeneralRiemannSolver roegen;
+//	CBGKRiemannSolver bgk;
+//	CExactRiemannSolver ex;
+//	//F1DENO2Reconstruction eno2rec=F1DENO2Reconstruction(*fldptr);
+//	//C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hll, eno2rec);
+//	//C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(roegen);
+//	//C1DBGKMethod mtd = C1DBGKMethod(bgk);
+//	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(ex);
+//	// C1DLFMethod mtd = C1DLFMethod(lf);
+//	double _dtt[] = {pr.tmin, pr.tmax};
+//	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
+//	COutput outp = COutput(pr, outputDir, dtt);
+//	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp);
+//	sim.run();
+//	delete fldptr;
 
 	// Uncomment for ideal gas vs vacuum test
 	/* //CEOSIdeal eos = CEOSIdeal(3.9);
@@ -146,18 +150,20 @@ int main(int argc, char *argv[]) {
 	delete fldptr;	*/
 
 	// Uncomment for Toro #1 test problem with ideal EOS
-/*	CEOSIdeal eos = CEOSIdeal(1.4);
+	FEOSIdeal eos = FEOSIdeal(1.4);
 	C1DProblem pr = prToro1Idealtest;
 	C1DField *fldptr = new C1DField(pr);
 	CHLLCRiemannSolver hllc;
-	F1DENO2Reconstruction eno2rec=F1DENO2Reconstruction(*fldptr);
-	C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hllc, eno2rec);
+	CExactRiemannSolver ex;
+	F1DENO3Reconstruction eno3rec = F1DENO3Reconstruction(*fldptr);
+	// F1DENO2Reconstruction eno2rec = F1DENO2Reconstruction(*fldptr);
+	C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hllc, eno3rec/*eno2rec*/);
 	double _dtt[] = {pr.tmin, pr.tmax};
 	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
 	COutput outp = COutput(pr, outputDir, dtt);
 	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp);
 	sim.run();
-	delete fldptr;*/	
+	delete fldptr;
 
 
 	// Uncomment for metal problems
@@ -281,8 +287,8 @@ int main(int argc, char *argv[]) {
 
 */
 
-	delete INPUT_FOLDER;
-	delete OUTPUT_FOLDER;
+	delete[] INPUT_FOLDER;
+	delete[] OUTPUT_FOLDER;
 	return 0;
 }
 

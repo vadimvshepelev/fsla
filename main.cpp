@@ -1,10 +1,16 @@
-//#pragma GCC optimize("Ofast")
-//#pragma GCC target("avx,avx2,fma")
-//#pragma GCC optimization("unroll-loops")
+#pragma GCC optimize("Ofast")
+#pragma GCC target("avx,avx2,fma")
+#pragma GCC optimization("unroll-loops")
 
 #define _CRT_SECURE_NO_WARNINGS
 
-#include<string.h>
+//#include <vld.h>
+
+#include <cmath>
+#include <cstring>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
 
 #include "defines.h"
 #include "solver.h"
@@ -14,16 +20,9 @@
 #include "F1DReconstruction.h"
 
 
-
 char* INPUT_FOLDER = new char[_MAX_PATH];  //"calc/";
 char* OUTPUT_FOLDER = new char[_MAX_PATH]; //"calc/output/";
 
-//#include <vld.h>
-
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <cmath>
 
 int main(int argc, char *argv[]) {
 	if(argc > 1) {
@@ -154,10 +153,10 @@ int main(int argc, char *argv[]) {
 	C1DProblem pr = prToro1Idealtest;
 	C1DField *fldptr = new C1DField(pr);
 	CHLLCRiemannSolver hllc;
-	CExactRiemannSolver ex;
-	F1DENO3Reconstruction eno3rec = F1DENO3Reconstruction(*fldptr);
-	// F1DENO2Reconstruction eno2rec = F1DENO2Reconstruction(*fldptr);
-	C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hllc, eno3rec/*eno2rec*/);
+	// CExactRiemannSolver ex;
+	// F1DENO3Reconstruction eno3rec = F1DENO3Reconstruction(*fldptr);
+	F1DENO2Reconstruction eno2rec = F1DENO2Reconstruction(*fldptr);
+	C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hllc, eno2rec/*eno3rec*/);
 	double _dtt[] = {pr.tmin, pr.tmax};
 	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
 	COutput outp = COutput(pr, outputDir, dtt);

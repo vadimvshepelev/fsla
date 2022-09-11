@@ -47,7 +47,7 @@ void C1DProblem::setbcs(vector<Vector4>&/*vector<vector<double>>&*/ U) {
 	const std::size_t imax = imin + nx;
 	assert(bcs[0] == 't');
 	switch (bcs[0]) {
-	case 't': 
+	case 't':
 		for (int counter = 0; counter < 3; ++ counter) {
 			U[imin - 1][counter] = U[imin][counter];
 			U[imin - 2][counter] = U[imin][counter];
@@ -56,7 +56,7 @@ void C1DProblem::setbcs(vector<Vector4>&/*vector<vector<double>>&*/ U) {
 	}
 	assert(bcs[1] == 't');
 	switch (bcs[1]) {
-	case 't': 
+	case 't':
 		for (int counter = 0; counter < 3; ++ counter) {
 			U[imax][counter] = U[imax - 1][counter];
 			U[imax + 1][counter] = U[imax - 1][counter];
@@ -134,9 +134,9 @@ C1DProblem prVTAlMGTest2 = C1DProblem("vtAl2MG-1nm-hllc", 2700., 0., 300.e9, 2.,
 C1DProblem prVTAlMGTest2_2 = C1DProblem("vtAl2MG-1nm-roegen", 2413., 0., 20.e9, 2., 0., 20.e9, -50.e-9, 50.e-9, 0., 1.e-12, 0., 100, .9, "tt");
 
 // 30.05.2022 problem for synchronizing with Baer-Nunziato model and Petr Chuprov
-C1DLaserProblem prHoles = C1DLaserProblem("holes",  
-										  2230., 0., 100.e9, 19300., 0., 1000.e9, 2., 0., 100.e9, 
-										  -1250.e-9, 1000.e-9, 0., 10.e-12, -50.e-9, 0., 
+C1DLaserProblem prHoles = C1DLaserProblem("holes",
+										  2230., 0., 100.e9, 19300., 0., 1000.e9, 2., 0., 100.e9,
+										  -1250.e-9, 1000.e-9, 0., 10.e-12, -50.e-9, 0.,
 										  2250, .9, "tt");
 
 // 30.06.2021 Vova shockwave

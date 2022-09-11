@@ -26,8 +26,12 @@ void C1DGodunovMethodMillerPuckett::calc(C1DProblem& pr, FEOSMieGruneisen& eos, 
 		res = calcRPExactMillerPuckett(eos, roL, uL, pL, roR, uR, pR);
 		assert(res.ro!=0.);
 		E = eos.gete(res.ro, res.p) + .5*res.u*res.u;
-		double _F[] = {res.ro*res.u, res.ro*res.u*res.u + res.p, res.u*(res.ro*E+res.p)};
-		F[i] = vector<double>(_F, _F+sizeof(_F)/sizeof(_F[0]));		
+		F[i] = {
+			res.ro * res.u,
+			res.ro * res.u * res.u + res.p,
+			res.u * (res.ro * E + res.p),
+			0.
+		};
 		//n.W_temp = n.W - dt/h*(Fp-Fm);
 	}
 	for(i=imin; i<imax; i++) {
@@ -483,9 +487,7 @@ void C1DGodunovTypeMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 		
 		
 		
-		Vector4 flux = rslv.calcFlux(eos, U[i-1][0], U[i-1][1], U[i-1][2], U[i][0], U[i][1], U[i][2]); 
-		double _F[] = {flux[0], flux[1], flux[2]};
-		F[i] = vector<double>(_F, _F+sizeof(_F)/sizeof(_F[0]));		
+		F[i] = rslv.calcFlux(eos, U[i-1][0], U[i-1][1], U[i-1][2], U[i][0], U[i][1], U[i][2]);
 		//n.W_temp = n.W - dt/h*(Fp-Fm);
 	}
 	for(i=imin; i<imax; i++) {
@@ -647,8 +649,7 @@ void C1DGodunovTypeMethodVacuum::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) 
 		} else {
 			flux = rslv.calcFlux(eos, U[i-1][0], U[i-1][1], U[i-1][2], U[i][0], U[i][1], U[i][2]); 
 		}
-		double _F[] = {flux[0], flux[1], flux[2]};
-		F[i] = vector<double>(_F, _F+sizeof(_F)/sizeof(_F[0]));				
+		F[i] = flux;
 	}
 	for(i=imin; i<imax; i++) {
 		for(int counter=0; counter<3; counter++) newU[i][counter] = U[i][counter] - dt/dx*(F[i+1][counter] - F[i][counter]);
@@ -855,9 +856,7 @@ void C1D2ndOrderMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 	// TODO: проверить на скорость выполнения операций, сравнить с реализацией через тип Vector4 -- если не медленнее, то в дальнейшем избавиться от Vector4 везде
 	rec.calc(fld);
 	for(i=imin; i<=imax; i++) {								
-		Vector4 flux = rslv.calcFlux(eos, URx[i-1][0], URx[i-1][1], URx[i-1][2], ULx[i][0], ULx[i][1], ULx[i][2]); 
-		double _F[] = {flux[0], flux[1], flux[2]};
-		F[i] = vector<double>(_F, _F+sizeof(_F)/sizeof(_F[0]));		
+		F[i] = rslv.calcFlux(eos, URx[i-1][0], URx[i-1][1], URx[i-1][2], ULx[i][0], ULx[i][1], ULx[i][2]);
 	}
 	for(i=imin; i<imax; i++) {
 		for(int counter=0; counter<3; counter++) newU[i][counter] = U[i][counter] - dt/dx*(F[i+1][counter] - F[i][counter]);
@@ -900,9 +899,7 @@ void C1DBGKMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 		Vector4 _U = Vector4(U[i][0],U[i][1],U[i][2],0.);
 		Vector4 _Up = Vector4(U[i+1][0],U[i+1][1],U[i+1][2],0.);
 		Vector4 _Upp = Vector4(U[i+2][0],U[i+2][1],U[i+2][2],0.);
-		Vector4 flux = bgk.calcFlux(eos, _Um, _U, _Up, _Upp, dx, dt);
-		double _F[] = {flux[0], flux[1], flux[2]};
-		F[i] = vector<double>(_F, _F+sizeof(_F)/sizeof(_F[0]));		
+		F[i] = bgk.calcFlux(eos, _Um, _U, _Up, _Upp, dx, dt);
 	}
 	for(i=imin; i<imax; i++) {
 		for(int counter=0; counter<3; counter++) newU[i][counter] = U[i][counter] - dt/dx*(F[i][counter] - F[i-1][counter]);
@@ -926,9 +923,7 @@ void C1DLFMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 	int i=0;	
 	// Потоки считаем по алгоритму решения задаче о распаде разрыва для УРС Ми-Грюнайзена из работы [Miller, Puckett]
 	for(i=imin; i<=imax; i++) {
-		Vector4 flux = lfrslv.calcFlux(eos, U[i-1][0], U[i-1][1], U[i-1][2], U[i][0], U[i][1], U[i][2], dx, dt); 
-		double _F[] = {flux[0], flux[1], flux[2]};
-		F[i] = vector<double>(_F, _F+sizeof(_F)/sizeof(_F[0]));		
+		F[i] = lfrslv.calcFlux(eos, U[i-1][0], U[i-1][1], U[i-1][2], U[i][0], U[i][1], U[i][2], dx, dt);
 		//n.W_temp = n.W - dt/h*(Fp-Fm);
 	}
 	for(i=imin; i<imax; i++) {

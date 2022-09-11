@@ -152,11 +152,12 @@ int main(int argc, char *argv[]) {
 	FEOSIdeal eos = FEOSIdeal(1.4);
 	C1DProblem pr = prToro1Idealtest;
 	C1DField *fldptr = new C1DField(pr);
-	CHLLCRiemannSolver hllc;
+	// CHLLCRiemannSolver hllc;
+	CLFGlobalRiemannSolver lfgl;
 	// CExactRiemannSolver ex;
-	// F1DENO3Reconstruction eno3rec = F1DENO3Reconstruction(*fldptr);
-	F1DENO2Reconstruction eno2rec = F1DENO2Reconstruction(*fldptr);
-	C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hllc, eno2rec/*eno3rec*/);
+	F1DENO3Reconstruction eno3rec = F1DENO3Reconstruction(*fldptr);
+	// F1DENO2Reconstruction eno2rec = F1DENO2Reconstruction(*fldptr);
+	C1D2ndOrderLFGlobalMethod mtd = C1D2ndOrderLFGlobalMethod(lfgl, eno3rec/*eno2rec*/);
 	double _dtt[] = {pr.tmin, pr.tmax};
 	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
 	COutput outp = COutput(pr, outputDir, dtt);

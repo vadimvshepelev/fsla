@@ -38,4 +38,19 @@ private:
 };
 
 
+class F1DWENO5Reconstruction : public F1DENO3Reconstruction {
+public:
+	F1DWENO5Reconstruction(C1DField& fld);
+	void calc(C1DField& fld) override;
+	std::string type = "JS";
+	const double eps = 1e-40;
+	const double p = 2;
+private:
+	void calcComponent_(const std::ranges::common_range auto&& u,
+						std::ranges::common_range auto&& u_plus_rec,
+						std::ranges::common_range auto&& u_minus_rec,
+						std::size_t n_ghost_cells = 3);
+};
+
+
 #endif

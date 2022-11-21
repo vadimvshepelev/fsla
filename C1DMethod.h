@@ -153,7 +153,8 @@ public:
 class C1DMethod {
 public:
 	virtual void calc(C1DProblem& pr, FEOS& eos, C1DField& fld)=0;
-	virtual double calcdt(C1DProblem& pr, FEOS& eos, C1DField& fld)=0;	
+	virtual double calcdt(C1DProblem& pr, FEOS& eos, C1DField& fld)=0;
+	virtual void calcFluxField(C1DProblem& pr, FEOS& eos, C1DField& fld)=0;
 };
 
 
@@ -168,10 +169,11 @@ public:
 class C1DGodunovTypeMethod : public C1DMethod {
 public:
 	CRiemannSolver& rslv;
-	C1DGodunovTypeMethod() : rslv(exrslv) {}  
+	C1DGodunovTypeMethod() : rslv(exrslv) {}
 	C1DGodunovTypeMethod(CRiemannSolver& _rslv) : rslv(_rslv) {}
-	void calc(C1DProblem& pr, FEOS& eos, C1DField& fld);
-	double calcdt(C1DProblem& pr, FEOS& eos, C1DField& fld);	
+	virtual void calc(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
+	double calcdt(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
+	virtual void calcFluxField(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
 };
 
 
@@ -189,7 +191,7 @@ class C1DLFGlobalMethod : public C1DGodunovTypeMethod {
 public:
 	C1DLFGlobalMethod();
 	C1DLFGlobalMethod(CLFGlobalRiemannSolver& _lfrslv) : lfrslv(_lfrslv) {}
-	void calc(C1DProblem& pr, FEOSIdeal& eos, C1DField& fld);
+	void calc(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
 };
 
 
@@ -210,20 +212,22 @@ public:
 		: C1DGodunovTypeMethod(_rslv), rec(_rec) {}
 
 	F1DReconstruction& rec;
-	void calc(C1DProblem& pr, FEOS& eos, C1DField& fld);
+	virtual void calc(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
+	virtual void calcFluxField(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
 };
 
 
 class C1D2ndOrderLFGlobalMethod : public C1D2ndOrderMethod {
 public:
-	CLFGlobalRiemannSolver& rslv;
+	CLFGlobalRiemannSolver& lfrslv;
 	// F1DReconstruction& rec;
 
 	C1D2ndOrderLFGlobalMethod(CLFGlobalRiemannSolver& _rslv,
 							  F1DReconstruction& _rec)
-		: C1D2ndOrderMethod(_rslv, _rec), rslv(_rslv) {}
+		: C1D2ndOrderMethod(_rslv, _rec), lfrslv(_rslv) {}
 
-	void calc(C1DProblem& pr, FEOSIdeal& eos, C1DField& fld);
+//	void calc(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
+	void calcFluxField(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
 };
 
 

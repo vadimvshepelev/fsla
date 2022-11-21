@@ -38,6 +38,7 @@ SOURCES += \
         main.cpp \
         methodEuler.cpp \
         methodold.cpp \
+    odesolver.cpp \
         solver.cpp \
         solvers/ENO.cpp \
         solvers/HLL.cpp \
@@ -92,6 +93,7 @@ HEADERS += \
     methodEuler.h \
     methodold.h \
     node.h \
+    odesolver.h \
     solver.h \
     task.h
 

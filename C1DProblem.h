@@ -132,4 +132,6 @@ extern C1DLaserProblem prHoles;
 
 extern C1DProblem prFedorAl;
 
+extern C1DProblem prVTAlBel;
+
 #endif

@@ -1,10 +1,12 @@
-#include"F1DReconstruction.h"
+#include "F1DReconstruction.h"
 
 #include <algorithm>
 #include <array>
 #include <execution>
 #include <ranges>
 // #include <span>
+
+#include "Eigen/Eigen/Dense"
 
 #include "_vector4.h"
 
@@ -61,7 +63,15 @@ F1DENO3Reconstruction::F1DENO3Reconstruction(C1DField& _fld)
 
 
 F1DWENO5Reconstruction::F1DWENO5Reconstruction(C1DField& _fld)
-	: F1DENO3Reconstruction(_fld) {}
+	: F1DENO3Reconstruction(_fld) {
+	DISCRETE_LAMBDA5 = prediscretizeWENO5LambdaMapping(
+				1000000/*00*/, 1./3.);
+}
+
+
+F1DCharWiseWENO5Reconstruction::F1DCharWiseWENO5Reconstruction(
+		C1DField& _fld, FEOS& _eos)
+	: F1DWENO5Reconstruction(_fld), eos(_eos) {}
 
 
 void F1DENO2Reconstruction::calc(C1DField& fld) /*override*/ {
@@ -372,6 +382,47 @@ std::valarray<double> betaSmoothnessIndicators(
 }
 
 
+std::valarray<double> betaSmoothnessIndicatorsZQ(
+		const std::ranges::sized_range auto& f_stencil) {
+	/* Return the WENO5-ZQ smoothness indicators of  and Shu (1996)
+	 * for each of the 3 substencils.
+	 * That is the sum of the normalized squares of the scaled
+	 * L2-norms of all the derivatives of 3 local interpolating
+	 * polynomials in the sub-stencils of 5-node `f_stencil`.
+	 *
+	 * This allows for (2*3-1)=5th order accuracy.
+	 */
+
+	// std::array<double, 3> res;
+	double beta1;
+	double beta2;
+	double beta3;
+
+	beta1 = std::pow(-82. * f_stencil[1] + 11. * f_stencil[0]
+			 + 82. * f_stencil[3] - 11. * f_stencil[4]
+			 + 2. * f_stencil[1] - f_stencil[0]
+			 - 2. * f_stencil[3] + f_stencil[4], 2) * (1./14400.)
+			+ std::pow((40. * f_stencil[1] - 3. * f_stencil[0]
+			  - 74. * f_stencil[2]
+			  + 40. * f_stencil[3] - 3. * f_stencil[4], 2) * (1./56.)
+			 + (123./455.) * (-4. * f_stencil[1] + f_stencil[2]
+			  + 6. * f_stencil[2] - f_stencil[3] + f_stencil[4]) * (1./24.),
+			2) * (3./13.)
+			+ std::pow((2. * f_stencil[1] - f_stencil[0]
+			 - 2. * f_stencil[1] + f_stencil[0]) * (1./12.), 2) * (781./20.)
+			+ std::pow((-4. * f_stencil[1] + f_stencil[0]
+			 + 6. * f_stencil[2]
+			 - 4. * f_stencil[3] + f_stencil[4]) * (1./24.),
+			2) * (1421461./2275.);
+
+	beta2 = std::pow(f_stencil[1] - f_stencil[2], 2);
+
+	beta3 = std::pow(f_stencil[2] - f_stencil[3], 2);
+
+	return {beta1, beta2, beta3};
+}
+
+
 //template <ArithmeticWith<numeric_val> T>
 //std::valarray<double> betaSmoothnessIndicatorsMat(
 //		const std::ranges::common_range auto& f_stencil,
@@ -428,6 +479,42 @@ std::valarray<double> f3OrdReconstructionFromStencil(
 }
 
 
+std::valarray<double> f4OrdZQReconstructionFromStencil(
+		const std::ranges::sized_range auto& f_stencil) {
+	/* 4th order reconstruction of f(j) from
+	 * substencils of `f_stencil` (f_plus or reversed f_minus:
+	 * receives 5 values [j-2, j-1, j+0, j+1, j+2, ...] for '+'
+	 *               (or [j+3, j+2, j+1, j+0, j-1, ...] for '-').
+	 *                     ^    ^    ^    ^    ^    ^
+	 *                     0    1    2    3    4    |
+	 */
+
+	std::valarray<double> q_res(3);
+
+	q_res[0] = f_stencil[2] + (
+				-82. * f_stencil[1] + 11. * f_stencil[0]
+				+ 82. * f_stencil[3] - 11. * f_stencil[4]
+			) * (1./120.) * 0.5
+			+ (40. * f_stencil[1] - 3. * f_stencil[0]
+				- 74. * f_stencil[2]
+				+ 40. * f_stencil[3] - 3. * f_stencil[4]
+			) * (1./56.) * (0.25 - (1./12.))
+			+ (2. * f_stencil[1] - f_stencil[0]
+				- 2. * f_stencil[3] + f_stencil[4]
+			) * (1./12.) * (0.125 - (3./20.) * 0.5)
+			+ (-4. * f_stencil[1] + f_stencil[0]
+				+ 6. * f_stencil[2]
+				-4. * f_stencil[3] + f_stencil[4]
+			) * (1./24.) * (0.0625 - (3./14.) * 0.25 + (3./560.));
+
+	q_res[1] = f_stencil[2] + (f_stencil[2] - f_stencil[1]) * 0.5;
+
+	q_res[2] = f_stencil[2] + (f_stencil[3] - f_stencil[2]) * 0.5;
+
+	return q_res;
+}
+
+
 double henrickGMappingForLambda(double lambda_weno_weight,
 						   double lambda_ideal = 1./3.) {
 	/* The mapping function g by Henrick modified for symmetric
@@ -443,7 +530,7 @@ double henrickGMappingForLambda(double lambda_weno_weight,
 			   + lambda_weno_weight * lambda_weno_weight)
 			/ (square_ideal
 			   + lambda_weno_weight
-			   * (1. - 2.*square_ideal));
+			   * (1. - 2. * lambda_ideal));
 }
 
 
@@ -482,6 +569,25 @@ double alphaWENO5FMWeight(
 }
 
 
+double alphaWENO5ZMWeight(
+		double beta_IS_coefficient,
+		double tau_5,
+		double epsilon = 1e-40,
+		double p = 2.) {
+	/* Compute appropriate alpha(α)-weights for the WENO5-ZM scheme,
+	 * by which the inverses of smoothness indicators are meant,
+	 * so inverse beta(β) with the caveat of aritificially finite
+	 * answers using the added epsilon-parameter to the beta-weights.
+	 *
+	 * `p` controls (increases) the amount of numerical dissipation
+	 * (it's recommended to take it = r-1 for 2r-1 order schemes,
+	 * so 2 for WENO5).
+	 */
+
+	return 1. + std::pow(tau_5 / (beta_IS_coefficient + epsilon), p);
+}
+
+
 void lambdaWENO5FMWeights(
 		const std::ranges::common_range auto&& alpha_weights,
 		std::ranges::common_range auto&& res) {
@@ -509,8 +615,97 @@ void lambdaWENO5FMWeights(
 }
 
 
-std::ranges::common_range auto omegaWENO5FMWeights(
-		const std::ranges::common_range auto&& lambda_weights) {
+std::vector<
+	double> F1DWENO5Reconstruction::prediscretizeWENO5LambdaMapping(
+		std::size_t N,
+		double lambda_ideal = 1./3.) {
+	/* Pre-discrete mapping method for WENO5-FM
+	 * (idea due to Hong et al.) to increase performace.
+	 * Construct the lambda mapping `valarray` of size `N + 1`
+	 * for lambdas in the range [0..1].
+	 */
+
+	std::vector<double> res_lookup_table(N + 1);
+
+//	auto ns = std::ranges::common_view(
+//			std::ranges::views::iota(std::size_t(0))
+//				| std::views::take(N + 1)
+//	);
+
+//	std::transform(
+//				std::execution::par_unseq,
+//				std::ranges::begin(ns),
+//				std::ranges::end(ns),
+//				std::ranges::begin(res_lookup_table),
+//				[N](std::size_t n) {
+//		return henrickGMappingForLambda<T>(
+//					static_cast<T>(n) / static_cast<T>(N));
+//	});
+
+	for (std::size_t n = 0; n <= N; ++ n)
+		res_lookup_table[n] = henrickGMappingForLambda(
+					static_cast<double>(n) / static_cast<double>(N),
+					lambda_ideal);
+
+	return res_lookup_table;
+}
+
+
+//std::ranges::common_range auto omegaWENO5FMWeights(
+//		const std::ranges::common_range auto&& lambda_weights) {
+//	/* From Henrick et al.'s mappings of g(λ_k) for the improved
+//	 * symmetric normalized lambda-weights of Hong, Ye & Ye
+//	 * and linear weights d_k we get the new corrected resultant
+//	 * normalized WENO5-FM (WENO5-ZM) omega (ω_k-)weights for WENO5-FM
+//	 * (again due to Zheng Hong, Zhengyin Ye and Kun Ye).
+//	 */
+
+//	// The ideal weights (they generate the central upstream fifth-order
+//	// scheme for the 5-point stencil), which are in WENO usu. called
+//	// linear weights:
+//	std::valarray<double> d_lin_weights = {0.1, 0.6, 0.3};
+//	// From them WENO5-Z and WENO-M will calculate the non-linear
+//	// alpha and omega weights.
+
+//	// In WENO5-FM, further, we have one ideal value for λ
+//	// \overbar{lambda} = 1/3
+//	// T lambda_ideal = 1/3;
+//	// In the smooth region the smoothness indicators β_k ought to
+//	// be equal for all sub-stencils, and thus the weight's ideal
+//	// value must be unique.
+
+//	// normalized WENO5-FM (WENO5-ZM) (ω_k-)weights:
+//	// omega_weights = d_lin_weights * alpha_weights;
+//	// lambda_weights
+
+//	// And only to the λ-weights a mapping in the spirit of
+//	// Henrick et al. is applied:
+//	auto gMap = [](double x) -> double {
+//		return henrickGMappingForLambda(x);
+//	};
+
+//	std::valarray<double> alpha_weights(3);
+//	std::ranges::transform(
+//				lambda_weights,
+//				std::ranges::begin(alpha_weights),
+//				gMap);
+//	// α*-weights
+
+//	// From α*=g(λ_k) and d_k we get the new corrected resultant
+//	// normalized WENO5-FM (WENO5-ZM) (ω_k-)weights:
+//	// omega_weights = d_lin_weights * alpha_weights;
+//	std::valarray<double> omega_weights = d_lin_weights * alpha_weights;
+//	omega_weights /= omega_weights.sum();
+
+//	return omega_weights;
+//}
+
+
+std::ranges::common_range auto omegaWENOFMWeights(
+		const std::ranges::common_range auto&& lambda_weights,
+		const std::valarray<double>& d_ideal_lin_weights,
+		const std::vector<double>& discrete_lambda
+					/*= DISCRETE_LAMBDA5*/) {
 	/* From Henrick et al.'s mappings of g(λ_k) for the improved
 	 * symmetric normalized lambda-weights of Hong, Ye & Ye
 	 * and linear weights d_k we get the new corrected resultant
@@ -518,10 +713,6 @@ std::ranges::common_range auto omegaWENO5FMWeights(
 	 * (again due to Zheng Hong, Zhengyin Ye and Kun Ye).
 	 */
 
-	// The ideal weights (they generate the central upstream fifth-order
-	// scheme for the 5-point stencil), which are in WENO usu. called
-	// linear weights:
-	std::valarray<double> d_lin_weights = {0.1, 0.6, 0.3};
 	// From them WENO5-Z and WENO-M will calculate the non-linear
 	// alpha and omega weights.
 
@@ -538,25 +729,77 @@ std::ranges::common_range auto omegaWENO5FMWeights(
 
 	// And only to the λ-weights a mapping in the spirit of
 	// Henrick et al. is applied:
-	auto gMap = [](double x) -> double {
-		return henrickGMappingForLambda(x);
-	};
+//	auto gMap = [](T x) -> T {
+//		return henrickGMappingForLambda(x);
+//	};
 
-	std::valarray<double> alpha_weights(3);
+//	std::valarray<T> alpha_weights(3);
+//	std::ranges::transform(
+//				lambda_weights,
+//				std::ranges::begin(alpha_weights),
+//				gMap);
+	const std::size_t n = std::ranges::size(discrete_lambda) - 1;
+	std::valarray<double> alpha_weights(
+				std::ranges::size(d_ideal_lin_weights));
 	std::ranges::transform(
 				lambda_weights,
 				std::ranges::begin(alpha_weights),
-				gMap);
+				[n, &discrete_lambda](double lambda) -> double {
+		return discrete_lambda[
+				static_cast<std::size_t>(
+					static_cast<double>(n) * lambda)];
+	});
 	// α*-weights
 
 	// From α*=g(λ_k) and d_k we get the new corrected resultant
 	// normalized WENO5-FM (WENO5-ZM) (ω_k-)weights:
 	// omega_weights = d_lin_weights * alpha_weights;
-	std::valarray<double> omega_weights = d_lin_weights * alpha_weights;
+	std::valarray<double> omega_weights = d_ideal_lin_weights
+			* alpha_weights;
 	omega_weights /= omega_weights.sum();
 
 	return omega_weights;
 }
+
+
+std::ranges::common_range auto F1DWENO5Reconstruction::omegaWENO5FMWeights(
+		const std::ranges::common_range auto&& lambda_weights) {
+	// The ideal weights (they generate the central upstream fifth-order
+	// scheme for the 5-point stencil), which are in WENO usu. called
+	// (optimal) linear weights:
+	std::valarray<double> d_lin_weights = {0.1, 0.6, 0.3};
+
+	return omegaWENOFMWeights(
+				std::move(lambda_weights), d_lin_weights,
+				DISCRETE_LAMBDA5);
+}
+
+
+std::ranges::common_range auto F1DWENO5Reconstruction::omegaWENO5ZQMWeights(
+		const std::ranges::common_range auto&& lambda_weights) {
+	// The ideal weights (they generate the central upstream fifth-order
+	// scheme for the 5-point stencil), which are in WENO usu. called
+	// (optimal) linear weights:
+	std::valarray<double> d_lin_weights = {0.98, 0.01, 0.01};
+
+	return omegaWENOFMWeights(
+				std::move(lambda_weights), d_lin_weights,
+				DISCRETE_LAMBDA5);
+}
+
+
+//std::ranges::common_range auto omegaWENO7FMWeights(
+//		const std::ranges::common_range auto&& lambda_weights) {
+//	// The ideal weights (they generate the central upstream seventh-order
+//	// scheme for the 7-point stencil), which are in WENO usu. called
+//	// (optimal) linear weights:
+//	// std::valarray<T> d_lin_weights = {4./35., 18./35., 12./35., 1./35.};
+//	std::valarray<double> d_lin_weights = {1./35., 12./35., 18./35., 4./35.};
+
+//	return omegaWENOFMWeights(
+//				std::move(lambda_weights), d_lin_weights,
+//				DISCRETE_LAMBDA7);
+//}
 
 
 double computeFHatWENO5JSReconstructionKernel(
@@ -844,7 +1087,8 @@ double computeFHatWENO5MReconstructionKernel(
 		return henrickGMappingForLambda(w, d);
 	});  // we obtain a new non-normalized weight alpha*
 
-	omega_weights = omega_weights / omega_weights.sum(); // normalize it
+	omega_weights = omega_weights
+			/ omega_weights.sum(); // normalize it
 
 	std::valarray<double> eno_reconstructed_f
 			= f3OrdReconstructionFromStencil(f_stencil);
@@ -857,9 +1101,9 @@ double computeFHatWENO5MReconstructionKernel(
 }
 
 
-double computeFHatWENO5FMReconstructionKernel(
+double F1DWENO5Reconstruction::computeFHatWENO5FMReconstructionKernel(
 		const std::ranges::sized_range auto&& f_stencil,
-		double eps = 1e-40, double p = 2.) {
+		double eps/* = 1e-40*/, double p/* = 2.*/) {
 	/* Calculate (reconstruct) one of the two split monotone numerical
 	 * fluxes `fhatplus`/`fhatminus` at a point j+0 for a given stencil
 	 * (receives 5 values [j-2, j-1, j+0, j+1, j+2, ...] for '+'
@@ -907,7 +1151,7 @@ double computeFHatWENO5FMReconstructionKernel(
 //	 beta_IS_coefs = betaSmoothnessIndicatorsMat(f_stencil);
 
 	// The non-matrix variant seems to be faster(?)
-	beta_IS_coefs = betaSmoothnessIndicators<double>(f_stencil);
+	beta_IS_coefs = betaSmoothnessIndicators(f_stencil);
 
 	std::array<double, 3> alpha_weights;
 	std::ranges::transform(
@@ -937,6 +1181,180 @@ double computeFHatWENO5FMReconstructionKernel(
 			= f3OrdReconstructionFromStencil(f_stencil);
 
 	f_hat = omega_weights[0] * eno_reconstructed_f[0]
+			+ omega_weights[1] * eno_reconstructed_f[1]
+			+ omega_weights[2] * eno_reconstructed_f[2];
+
+	return f_hat;
+}
+
+
+double F1DWENO5Reconstruction::computeFHatWENO5ZMReconstructionKernel(
+		const std::ranges::sized_range auto&& f_stencil,
+		double eps/* = 1e-40*/, double p/* = 2.*/) {
+	/* Calculate (reconstruct) one of the two split monotone numerical
+	 * fluxes `fhatplus`/`fhatminus` at a point j+0 for a given stencil
+	 * (receives 5 values [j-2, j-1, j+0, j+1, j+2, ...] for '+'
+	 *                (or [j+3, j+2, j+1, j+0, j-1, ...] for '-')
+	 *                      ^    ^    ^    ^    ^    ^
+	 *                      0    1    2    3    4    |
+	 * in either case for convenience).
+	 *
+	 * I.e. this function implements the upwind reconstruction which
+	 * should be used for positive fluxes (with information propagated
+	 * from left to right) if the nodes are passed in order. However,
+	 * the downwind reconstruction should obviously look the same
+	 * modulo flipping the values with respect to j+0, so that it
+	 * becomes downwind biased and takes one extra point to the right
+	 * instead of taking one extra to the left. In other words, to get
+	 * this to behave as a downwind reconstrution we need to pass
+	 * the points symmetric to those of upwind reconstruction with
+	 * respect to j+0:
+	 * [j+3, j+2, j+1, j+0, j-1, ...]. (We reverse the points in
+	 *      [j-2, j-1, j+0, j+1, j+2] j+3 and get
+	 *                  |
+	 * [j+3, j+2, j+1, j+0, j-1] j-2.)
+	 *
+	 * Borges et al.'s WENO5-Z. Then in improves this by the symmetric
+	 * mapping of Hong et al.
+	 */
+
+	// `p` controls (increases) the amount of numerical dissipation
+	// and in WENO-Z(M) changing the value of p alters convergence
+	// rates at critical points (it's recommended to take it = r-1
+	// for 2r-1 order schemes, so 2 for WENO5-Z(M)). For WENO7-Z(M)
+	// p = 4.
+	//
+	// `eps` is a small positive parameter to avoid the denominator
+	// of weights being zero
+	// (though it, too, can be significant for convergence properties
+	// and should ideally be tailored to the specific comp. problem,
+	// as first noted and more or less fully outlined by Henrick et al.)
+
+	// f_stencil = f_plus (or a reversed stencil for f_minus)
+
+	std::valarray<double> beta_IS_coefs(3);
+
+	double f_hat = 0.;
+
+	// smoothness indicators of the stencil
+	// (measure how smooth u is in the stencil)
+//	 beta_IS_coefs = betaSmoothnessIndicatorsMat(f_stencil);
+
+	// The non-matrix variant seems to be faster(?)
+	beta_IS_coefs = betaSmoothnessIndicators(f_stencil);
+	double tau_5 = std::abs(beta_IS_coefs[2] - beta_IS_coefs[0]);
+
+	std::array<double, 3> alpha_weights;
+	std::ranges::transform(
+				beta_IS_coefs,
+				std::ranges::begin(alpha_weights),
+				[tau_5, eps, p](auto beta) {
+		return alphaWENO5ZMWeight(beta, tau_5, eps, p);
+	});
+
+	std::array<double, 3> lambda_weights;
+	lambdaWENO5FMWeights(std::move(alpha_weights), lambda_weights);
+
+	std::valarray<double> omega_weights = omegaWENO5FMWeights(
+				std::move(lambda_weights));
+
+	std::valarray<double> eno_reconstructed_f
+			= f3OrdReconstructionFromStencil(f_stencil);
+
+	f_hat = omega_weights[0] * eno_reconstructed_f[0]
+			+ omega_weights[1] * eno_reconstructed_f[1]
+			+ omega_weights[2] * eno_reconstructed_f[2];
+
+	return f_hat;
+}
+
+
+double F1DWENO5Reconstruction::computeFHatWENO5ZQMReconstructionKernel(
+		const std::ranges::sized_range auto&& f_stencil,
+		double eps/* = 1e-40*/, double p/* = 2.*/) {
+	/* Calculate (reconstruct) one of the two split monotone numerical
+	 * fluxes `fhatplus`/`fhatminus` at a point j+0 for a given stencil
+	 * (receives 5 values [j-2, j-1, j+0, j+1, j+2, ...] for '+'
+	 *                (or [j+3, j+2, j+1, j+0, j-1, ...] for '-')
+	 *                      ^    ^    ^    ^    ^    ^
+	 *                      0    1    2    3    4    |
+	 * in either case for convenience).
+	 *
+	 * I.e. this function implements the upwind reconstruction which
+	 * should be used for positive fluxes (with information propagated
+	 * from left to right) if the nodes are passed in order. However,
+	 * the downwind reconstruction should obviously look the same
+	 * modulo flipping the values with respect to j+0, so that it
+	 * becomes downwind biased and takes one extra point to the right
+	 * instead of taking one extra to the left. In other words, to get
+	 * this to behave as a downwind reconstrution we need to pass
+	 * the points symmetric to those of upwind reconstruction with
+	 * respect to j+0:
+	 * [j+3, j+2, j+1, j+0, j-1, ...]. (We reverse the points in
+	 *      [j-2, j-1, j+0, j+1, j+2] j+3 and get
+	 *                  |
+	 * [j+3, j+2, j+1, j+0, j-1] j-2.)
+	 *
+	 * Borges et al.'s WENO5-Z. Then in improves this by the symmetric
+	 * mapping of Hong et al.
+	 */
+
+	// `p` controls (increases) the amount of numerical dissipation
+	// and in WENO-Z(M) changing the value of p alters convergence
+	// rates at critical points (it's recommended to take it = r-1
+	// for 2r-1 order schemes, so 2 for WENO5-Z(M)). For WENO7-Z(M)
+	// p = 4.
+	//
+	// `eps` is a small positive parameter to avoid the denominator
+	// of weights being zero
+	// (though it, too, can be significant for convergence properties
+	// and should ideally be tailored to the specific comp. problem,
+	// as first noted and more or less fully outlined by Henrick et al.)
+
+	// f_stencil = f_plus (or a reversed stencil for f_minus)
+
+	std::valarray<double> beta_IS_coefs(3);
+
+	double f_hat = 0.;
+
+	// smoothness indicators of the stencil
+	// (measure how smooth u is in the stencil)
+//	 beta_IS_coefs = betaSmoothnessIndicatorsMat(f_stencil);
+
+	// The non-matrix variant seems to be faster(?)
+	beta_IS_coefs = betaSmoothnessIndicatorsZQ(f_stencil);
+	double tau_5 = std::pow(std::abs(beta_IS_coefs[0] - beta_IS_coefs[1])
+			+ std::abs(beta_IS_coefs[0] - beta_IS_coefs[2]), 2) * 0.25;
+
+	std::valarray<double> d_lin_weights = {0.98, 0.01, 0.01};
+	std::array<double, 3> alpha_weights; p = 1.;
+	std::transform(
+				std::ranges::begin(beta_IS_coefs),
+				std::ranges::end(beta_IS_coefs),
+				std::ranges::begin(alpha_weights),
+				std::ranges::begin(d_lin_weights),
+				[tau_5, eps, p](auto beta, auto gamma) {
+		return gamma * alphaWENO5ZMWeight(beta, tau_5, eps, p);
+	});
+
+	std::array<double, 3> lambda_weights;
+	lambdaWENO5FMWeights(std::move(alpha_weights), lambda_weights);
+
+
+	std::valarray<double> omega_weights = {
+				lambda_weights[0], lambda_weights[1], lambda_weights[2]};
+//	std::valarray<double> omega_weights = omegaWENO5ZQMWeights(
+//				std::move(lambda_weights));
+
+
+	std::valarray<double> eno_reconstructed_f
+			= f4OrdZQReconstructionFromStencil(f_stencil);
+
+	f_hat = omega_weights[0] * (eno_reconstructed_f[0] * (1./d_lin_weights[0])
+				- eno_reconstructed_f[1] * (
+					d_lin_weights[1] / d_lin_weights[0])
+				- eno_reconstructed_f[2] * (
+					d_lin_weights[2] / d_lin_weights[0]))
 			+ omega_weights[1] * eno_reconstructed_f[1]
 			+ omega_weights[2] * eno_reconstructed_f[2];
 
@@ -1058,12 +1476,202 @@ double computeFHatWENO5FMReconstructionKernel(
 //}
 
 
-void F1DWENO5Reconstruction::calcComponent_(
+//void F1DWENO5Reconstruction::calcComponent_(
+//		const std::ranges::common_range auto&& u,
+//		std::ranges::common_range auto&& u_plus_rec,
+//		std::ranges::common_range auto&& u_minus_rec,
+//		std::size_t n_ghost_cells /* = 3*/) {
+//	/* Component-wise finite-volume WENO5FM (WENO5-FM) - space
+//	 * reconstruction method with the global Lax-Friedrichs (LF) flux
+//	 * splitting.
+//	 *
+//	 * Usually, componentwise reconstruction produces satisfactory
+//	 * results for schemes up to third-order accuracy, while characteristic
+//	 * reconstruction produces better nonoscillatory results for
+//	 * higher-order accuracy, albeit with an increased computational cost.
+//	 */
+
+//	const unsigned order = 5;
+//	const std::size_t stencil_size = order;
+//	// const std::size_t _actual_stencil_size = stencil_size + 1;  // 6
+//	const std::size_t half_size = order / 2;  // 2
+
+//	// r = (order + 1) / 2 = 3
+//	assert(n_ghost_cells >= 3);
+//	// const std::size_t n_ghost_cells = (stencil_size + 1) / 2;  // 3
+//	const std::size_t mini = n_ghost_cells;  // at least 3
+//	// const std::size_t maxi = n_ghost_cells + n_size - 1;
+//	const std::size_t maxi = std::ranges::size(u) - n_ghost_cells - 1;
+//	auto shifted_index_range = std::ranges::iota_view{mini - 1, maxi + 1};
+//	// [g      g      g      i      i      i      i      i      i      ...]
+//	// {0      1      2      3      4      5}     6      7      8      ...
+//	//  |             |      |      |
+//	// itr            j nGhostCells end()
+
+//	// WENO5 stencils
+
+//	// Coefficients WmN(+/-) before fluxes at the stencil nodes
+//	// to find component stencils
+//	// [q_k] = WmN(+/-) * [ f[j-2] ... f[j+2] ]
+//	// of the WENO interpolator.
+//	// So 3rd order approximation coefficients associated with
+//	// the substencils.
+
+//	// Calculation of f_hat, the numerical flux of u (whichever
+//	// is chosen), requires the approximation of u that uses at
+//	// the j-th cell of u-discretization a group of cell average
+//	// values on the left (`u_minus`) and on the right (`u_plus`).
+//	// So left- and right-biased approximations respectively.
+//	// `u_plus` represents the cells [j-2, j-1, j, j+1, j+2],
+//	// and `u_minus` represents the cells [j-1, j, j+1, j+2, j+3];
+//	// for convenience and uniformity we represent both using the
+//	// same combined structure of    [j-2, j-1, j, j+1, j+2, j+3].
+//	// std::valarray<double> u_plus(_actual_stencil_size);   // f_plus
+//	// std::valarray<double> u_minus(_actual_stencil_size);  // f_minus
+
+//	// For the purpose of linear stability (upwinding),
+//	// a flux splitting, f = fplus + fminus (dfplus/du >= 0 and
+//	// dfminus/du <= 0), is performed.
+//	// Lax-Friedrichs (LF) flux splitting (because it is the simplest
+//	// and smooth - we need the positive and negative fluxes to have
+//	// as many derivatives as the order of our finite-difference WENO)
+//	// is chosen here. `f_plus` uses a biased stencil with 1 point to
+//	// the left, while `f_minus` uses a biased stencil with 1 point to
+//	// the right.
+
+//	// So an LF flux	`numerical_flux`, f_hat(u_minus, u_plus),
+//	// a monotone numerical flux consistent with the physical one
+//	// (f_hat(u, u) = f(u)), will be construced at the end of
+//	// the loop below from `fhatminus` and `fhatplus` using
+//	// `f_minus` and `f_plus`.
+//	// N.B.! This can be replaced by an exact or approximate
+//	// Riemann solver (see Toro, 2009). Somehow...
+//	// Not every monotone flux can be writtenin the flux split form.
+//	// For example, the Godunov flux cannot.
+//	// std::valarray<double> numerical_flux(0., u.size());
+//	// f = std::valarray<double>(u.size());
+
+//	auto j_it_p = std::ranges::begin(u);  // f_plus
+
+////	std::ranges::transform(
+////			monotone_flux_components[0],
+////			monotone_flux_components[1],
+////			std::ranges::begin(f), [](const auto fp, const auto fm) {
+
+////	})
+//	std::advance(j_it_p, mini - 1 + half_size + 1 - stencil_size);
+//	auto u_plus = std::ranges::views::counted(j_it_p, 6);
+//	auto u_minus = u_plus | std::ranges::views::reverse;
+
+//	for (std::size_t j : shifted_index_range) {
+//		j_it_p = std::ranges::begin(u);  // f_plus
+//		std::advance(j_it_p, j + half_size + 1 - stencil_size);
+//		u_plus = std::ranges::views::counted(j_it_p, 6);
+
+//		u_plus_rec[j] = computeFHatWENO5FMReconstructionKernel(
+//			std::ranges::views::counted(
+//						std::ranges::begin(u_plus), 5), eps, p
+//		);
+
+
+//		u_minus = u_plus | std::ranges::views::reverse;
+//		u_minus_rec[j] = computeFHatWENO5FMReconstructionKernel(
+//			std::ranges::subrange(
+//				std::ranges::begin(u_minus),
+//						std::ranges::end(u_minus) - 1), eps, p
+//		);
+////		u_minus_rec[j] = computeFHatWENO5JSReconstructionKernelRev(
+////			std::ranges::views::counted(
+////						std::ranges::begin(u_minus)+1, 5), eps, p
+////		);
+//	}
+
+//	// std::cout << " done!" << "\n";
+//}
+
+
+//double computeFHatWENO7FMReconstructionKernel(
+//		const std::ranges::sized_range auto&& f_stencil,
+//		double eps = 1e-40, double p = 2.) {
+//	/* Calculate (reconstruct) one of the two split monotone numerical
+//	 * fluxes `fhatplus`/`fhatminus` at a point j+0 for a given stencil
+//	 * (receives the following 7 values
+//	 *     [j-3, j-2, j-1, j+0, j+1, j+2, j+3, ...] for '+'
+//	 * (or [j+4, j+3, j+2, j+1, j+0, j-1, j-2, ...] for '-')
+//	 *       ^    ^    ^    ^    ^    ^    ^    ^
+//	 *       0    1    2    3    4    5    6    |
+//	 * in either case for convenience).
+//	 *
+//	 * I.e. this function implements the upwind reconstruction which
+//	 * should be used for positive fluxes (with information propagated
+//	 * from left to right) if the nodes are passed in order. However,
+//	 * the downwind reconstruction should obviously look the same
+//	 * modulo flipping the values with respect to j+0, so that it
+//	 * becomes downwind biased and takes one extra point to the right
+//	 * instead of taking one extra to the left. In other words, to get
+//	 * this to behave as a downwind reconstrution we need to pass
+//	 * the points symmetric to those of upwind reconstruction with
+//	 * respect to j+0:
+//	 * [j+4, j+3, j+2, j+1, j+0, j-1, j-2, ...]. (We reverse the points in
+//	 *      [j-3, j-2, j-1, j+0, j+1, j+2, j+3] j+4 and get
+//	 *                       |
+//	 * [j+4, j+3, j+2, j+1, j+0, j-1, j-2] j-3.)
+//	 */
+
+//	// `p` controls (increases) the amount of numerical dissipation
+//	// (and nothing more in WENO and WENO-(F)M);
+//	// but in WENO-Z(M) changing the value of p alters convergence
+//	// rates at critical points (it's recommended to take it = r-1
+//	// for 2r-1 order schemes, so 2 for WENO5-Z(M)).
+//	//
+//	// `eps` is a small positive parameter to avoid the denominator
+//	// of weights being zero
+//	// (though it, too, can be significant for convergence properties
+//	// and should ideally be tailored to the specific comp. problem,
+//	// as first noted and more or less fully outlined by Henrick et al.)
+
+//	// f_stencil = f_plus (or a reversed stencil for f_minus)
+
+//	std::valarray<double> beta_IS_coefs(4);
+
+//	double f_hat = 0.;
+//	beta_IS_coefs = betaSmoothnessIndicatorsWENO7BS<T>(f_stencil);
+
+//	std::array<double, 4> alpha_weights;
+//	std::ranges::transform(
+//				beta_IS_coefs,
+//				std::ranges::begin(alpha_weights),
+//				[eps, p](auto beta) {
+//		return alphaWENO5FMWeight(beta, eps, p);
+//	});
+
+//	std::array<double, 4> lambda_weights;
+//	lambdaWENO5FMWeights(std::move(alpha_weights), lambda_weights);
+
+//	std::valarray<double> omega_weights = omegaWENO7FMWeights(
+//				std::move(lambda_weights));
+
+//	std::valarray<double> eno_reconstructed_f
+//			= f4OrdReconstructionFromStencil(f_stencil);
+
+//	f_hat = omega_weights[0] * eno_reconstructed_f[0]
+//			+ omega_weights[1] * eno_reconstructed_f[1]
+//			+ omega_weights[2] * eno_reconstructed_f[2]
+//			+ omega_weights[3] * eno_reconstructed_f[3];
+
+//	return f_hat;
+//}
+
+
+void calcHydroStageFVWENO5(
 		const std::ranges::common_range auto&& u,
 		std::ranges::common_range auto&& u_plus_rec,
 		std::ranges::common_range auto&& u_minus_rec,
-		std::size_t n_ghost_cells /* = 3*/) {
-	/* Component-wise finite-volume WENO5FM (WENO5-FM) - space
+		auto&& computeWENOReconstructionKernel,
+		std::size_t n_ghost_cells = 3,
+		double eps = 1e-40,
+		double p = 2.) {
+	/* Component-wise finite-volume WENO5FM (FV WENO5-FM) - space
 	 * reconstruction method with the global Lax-Friedrichs (LF) flux
 	 * splitting.
 	 *
@@ -1150,14 +1758,14 @@ void F1DWENO5Reconstruction::calcComponent_(
 		std::advance(j_it_p, j + half_size + 1 - stencil_size);
 		u_plus = std::ranges::views::counted(j_it_p, 6);
 
-		u_plus_rec[j] = computeFHatWENO5JSReconstructionKernel(
+		u_plus_rec[j] = computeWENOReconstructionKernel(
 			std::ranges::views::counted(
 						std::ranges::begin(u_plus), 5), eps, p
 		);
 
 
 		u_minus = u_plus | std::ranges::views::reverse;
-		u_minus_rec[j] = computeFHatWENO5JSReconstructionKernel(
+		u_minus_rec[j] = computeWENOReconstructionKernel(
 			std::ranges::subrange(
 				std::ranges::begin(u_minus),
 						std::ranges::end(u_minus) - 1), eps, p
@@ -1169,6 +1777,102 @@ void F1DWENO5Reconstruction::calcComponent_(
 	}
 
 	// std::cout << " done!" << "\n";
+}
+
+
+//void calcHydroStageFVWENO5JS(
+//		const std::ranges::common_range auto&& u,
+//		std::ranges::common_range auto&& u_plus_rec,
+//		std::ranges::common_range auto&& u_minus_rec,
+//		std::size_t n_ghost_cells = 3,
+//		double eps = 1e-40,
+//		double p = 2.) {
+//	calcHydroStageFVWENO5(
+//				std::ranges::views::all(u),
+//				std::ranges::views::all(u_plus_rec),
+//				std::ranges::views::all(u_minus_rec),
+//				[](const std::ranges::sized_range auto&& stencil,
+//							double eps, double p) -> double {
+//					return computeFHatWENO5JSReconstructionKernel(
+//								std::ranges::views::all(stencil), eps, p);
+//				},
+//				n_ghost_cells,
+//				eps,
+//				p);
+//}
+
+
+//void calcHydroStageFVWENO5M(
+//		const std::ranges::common_range auto&& u,
+//		std::ranges::common_range auto&& u_plus_rec,
+//		std::ranges::common_range auto&& u_minus_rec,
+//		std::size_t n_ghost_cells = 3,
+//		double eps = 1e-40,
+//		double p = 2.) {
+//	calcHydroStageFVWENO5(
+//				std::ranges::views::all(u),
+//				std::ranges::views::all(u_plus_rec),
+//				std::ranges::views::all(u_minus_rec),
+//				[](const std::ranges::sized_range auto&& stencil,
+//							double eps, double p) -> double {
+//					return computeFHatWENO5MReconstructionKernel(
+//								std::ranges::views::all(stencil), eps, p);
+//				},
+//				n_ghost_cells,
+//				eps,
+//				p);
+//}
+
+
+//void calcHydroStageFVWENO5ZM(
+//		const std::ranges::common_range auto&& u,
+//		double t,
+//		std::ranges::common_range auto&& u_plus_rec,
+//		std::ranges::common_range auto&& u_minus_rec,
+//		std::size_t n_ghost_cells = 3,
+//		double eps = 1e-40,
+//		double p = 2.) {
+//	calcHydroStageFVWENO5(
+//				std::ranges::views::all(u), t,
+//				std::ranges::views::all(u_plus_rec),
+//				std::ranges::views::all(u_minus_rec),
+//				[](const std::ranges::sized_range auto&& stencil,
+//							double eps, double p) -> double {
+//					return computeFHatWENO5ZMReconstructionKernel(
+//								std::ranges::views::all(stencil), eps, p);
+//				},
+//				n_ghost_cells,
+//				eps,
+//				p);
+//}
+
+
+void F1DWENO5Reconstruction::calcComponent_(
+		const std::ranges::common_range auto&& u,
+		std::ranges::common_range auto&& u_plus_rec,
+		std::ranges::common_range auto&& u_minus_rec,
+		std::size_t n_ghost_cells /* = 3*/) {
+	calcHydroStageFVWENO5(
+				std::ranges::views::all(u),
+				std::ranges::views::all(u_plus_rec),
+				std::ranges::views::all(u_minus_rec),
+				[&](const std::ranges::sized_range auto&& stencil,
+							double eps, double p) -> double {
+//					return computeFHatWENO5JSReconstructionKernel(
+//								std::ranges::views::all(stencil), eps, p);
+//					return computeFHatWENO5MReconstructionKernel(
+//								std::ranges::views::all(stencil), eps, p);
+					return computeFHatWENO5ZMReconstructionKernel(
+								std::ranges::views::all(stencil), eps, p);
+//					return computeFHatWENO5FMReconstructionKernel(
+//								std::ranges::views::all(stencil), eps, p);
+
+//					return computeFHatWENO5ZQMReconstructionKernel(
+//								std::ranges::views::all(stencil), eps, p);
+				},
+				n_ghost_cells,
+				eps,
+				p);
 }
 
 
@@ -1193,13 +1897,269 @@ void F1DWENO5Reconstruction::calc(C1DField& fld) /*override*/ {
 			std::ranges::begin(components),
 			std::ranges::end(components),
 			[&](auto&& kth_vector_component) {
-		F1DWENO5Reconstruction::calcComponent_(
+		calcComponent_(
 			U       | std::ranges::views::transform(kth_vector_component),
 			u_plus  | std::ranges::views::transform(kth_vector_component),
 			u_minus | std::ranges::views::transform(kth_vector_component),
-			3
+			fld.imin
 			// n_size = fld.imax - fld.imin + 1
 			);
 	});
 }
 
+
+void F1DCharWiseWENO5Reconstruction::calc_(
+		const std::ranges::common_range auto&& u,
+		const std::ranges::common_range auto&& q_avg,
+		std::ranges::common_range auto&& u_plus_rec,
+		std::ranges::common_range auto&& u_minus_rec,
+		auto& project,
+		std::size_t n_ghost_cells /* = 3*/) {
+
+	const unsigned order = 5;
+	const std::size_t stencil_size = order;
+	const std::size_t _actual_stencil_size = stencil_size + 1;  // 6
+	const std::size_t half_size = order / 2;  // 2
+
+	// r = (order + 1) / 2 = 3
+	assert(n_ghost_cells >= 3);
+	// const std::size_t n_ghost_cells = (stencil_size + 1) / 2;  // 3
+	const std::size_t mini = n_ghost_cells;  // at least 3
+	// const std::size_t maxi = n_ghost_cells + n_size - 1;
+	const std::size_t maxi = std::ranges::size(u) - n_ghost_cells - 1;
+	auto shifted_index_range = std::ranges::common_view(
+				std::views::iota(mini - 1)
+					| std::views::take(maxi + 1 - (mini - 1) + 1));
+
+	auto j_it_p = std::ranges::begin(u);  // f_plus
+
+	std::advance(j_it_p, mini - 1 + half_size + 1 - stencil_size);
+	auto u_plus = std::ranges::views::counted(j_it_p, 6);
+	auto u_minus = u_plus | std::ranges::views::reverse;
+
+	auto components = {
+		std::make_pair(0, &Vector4::x),
+		std::make_pair(1, &Vector4::y),
+		std::make_pair(2, &Vector4::z)
+//		&Vector4<T>::w
+	};
+
+	std::for_each(
+				std::execution::par_unseq,
+				std::ranges::begin(shifted_index_range),
+				std::ranges::end(shifted_index_range),
+				[&](std::size_t j) {
+		j_it_p = std::ranges::begin(u);  // f_plus
+		std::advance(j_it_p, j + half_size + 1 - stencil_size);
+		// if ()  // maybe try a discontinuity detector/indicator
+		auto proj_u_j = [&](auto u) -> decltype(u) {
+			const auto q = q_avg[j];
+			return project(q, u);
+		};
+
+		for (auto& comp : components) {
+			u_plus = std::ranges::views::counted(j_it_p, 6);
+			u_plus_rec[j][comp.first] = computeFHatWENO5FMReconstructionKernel(
+				std::ranges::views::counted(
+							std::ranges::begin(u_plus), 5)
+						| std::ranges::views::transform(proj_u_j)
+						| std::ranges::views::transform(
+							comp.second), eps, p
+			);
+
+			u_minus = u_plus | std::ranges::views::reverse;
+			u_minus_rec[j][comp.first] = computeFHatWENO5FMReconstructionKernel(
+				std::ranges::views::counted(
+							std::ranges::begin(u_minus), 5)
+						| std::ranges::views::transform(proj_u_j)
+						| std::ranges::views::transform(
+							comp.second), eps, p
+			);
+		}
+	});
+}
+
+
+Eigen::Matrix<double, 3, 3> EigenLeft1DEulerEigenMatrix(
+		Vector4 vec, FEOS& eos) {
+	double u = vec[1];
+	if (vec[0] != 0.)
+		u /= vec[0];
+
+//	double phi_square = 0.5 * gamma_m * u * u;
+	double e = vec[2]/vec[0] - .5*u*u;
+	double p = eos.getp(vec[0],e);
+	double c = eos.getc(vec[0], p);
+
+	double c_s_square = c * c;
+	double c_s = std::abs(std::sqrt(c_s_square));
+
+	double uc = u * c_s;
+	double h = (vec[3] + p) / vec[0];
+//	if (vec[0] != 0.)
+//		h = (vec[3] + p) / vec[0];
+
+//	Eigen::Matrix<T, 3, 3> l_mat {
+//		{1. - phi_square / c_s_square,
+//					gamma_m * u / c_s_square, -gamma_m / c_s_square},
+//		{phi_square - uc, +c_s - gamma_m * u, gamma_m              },
+//		{phi_square + uc, -c_s - gamma_m * u, gamma_m              }
+//	};
+//	Eigen::Matrix<double, 3, 3> l_mat {
+//		{1.,      1.,          1.     },
+//		{u - c_s, u + 0.,      u + c_s},
+//		{H - uc,  0.5 * u * u, H + uc }
+//	};
+
+	double b = 0.;
+	if (vec[0] != 0.)
+		b = eos.getdpde(vec[0], e) / vec[0];
+
+	Eigen::Matrix<double, 3, 3> l_mat {
+		{1.,                           1.,        1.},
+		{u - c_s,                  u + 0.,   u + c_s},
+		{h -  uc,      h - c_s_square / b,   h +  uc},
+	};
+
+	return l_mat;
+}
+
+
+Eigen::Matrix<double, 3, 3> EigenRight1DEulerEigenMatrix(
+		Vector4 vec, FEOS& eos) {
+	double u = vec[1];
+	if (vec[0] != 0.)
+		u /= vec[0];
+
+//	double phi_square = 0.5 * gamma_m * u * u;
+	double e = vec[2]/vec[0] - .5*u*u;
+	double p = eos.getp(vec[0],e);
+	double c = eos.getc(vec[0], p);
+
+	double c_s_square = c * c;
+	double beta = 1.;
+	if (c_s_square != 0.)
+		beta /= (2. * c_s_square);
+//	else
+//		beta = 0.;
+	double c_s = std::sqrt(c_s_square);
+
+	double uc = u * c_s;
+	double h = (vec[3] + p) / vec[0];
+//	if (vec[0] != 0.)
+//		h = (vec[3] + p) / vec[0];
+
+//	Eigen::Matrix<T, 3, 3> r_mat {
+//		{1.,                   beta,             beta            },
+//		{u,                    beta * (u + c_s), beta * (u - c_s)},
+//		{phi_square / gamma_m, beta * (H + uc),  beta * (H - uc) },
+//	};
+//	Eigen::Matrix<double, 3, 3> r_mat {
+//		{H + c_s * (u - c_s) / gamma_m,       -(u + c_s / gamma_m), 1.},
+//		{-2. * H + 4. * c_s_square / gamma_m, 2. * u,              -2.},
+//		{H - c_s * (u + c_s) / gamma_m,       -u + c_s / gamma_m,   1.},
+//	};
+//	r_mat *= gamma_m * beta;
+
+	double dpde = eos.getdpde(vec[0], e);
+	double b = 0.;
+	if (vec[0] != 0.)
+		b = dpde / vec[0];
+
+	// harder to compute for MG
+	// double dpdrho = eos.getdpdrho(vec[0], e);
+	double dpdrho = c_s_square - p * b / vec[0];
+
+	double theta = u * u
+			- vec[3] / vec[0]
+			+ vec[0] * dpdrho / dpde;
+
+	Eigen::Matrix<double, 3, 3> r_mat {
+		{theta  +  uc / b, -(u + c_s / b),    1.},
+		{2. * (h - u * u),         2. * u,   -2.},
+		{theta  -  uc / b,   -u + c_s / b,    1.},
+	};
+	r_mat *= b * beta;
+
+	return r_mat;
+}
+
+
+Vector4 projectOntoCharacteristics(
+		Vector4 conservative_variables, Vector4 vec, FEOS& eos) {
+	return Vector4(EigenRight1DEulerEigenMatrix(
+				conservative_variables, eos)
+			* Eigen::Matrix<double, 3, 1>{vec[0], vec[1], vec[2]});
+}
+
+
+Vector4 projectCharacteristicVariablesBackOntoConserved(
+		Vector4 conservative_variables, Vector4 vec, FEOS& eos) {
+	return Vector4(EigenLeft1DEulerEigenMatrix(
+				conservative_variables, eos)
+			* Eigen::Matrix<double, 3, 1>{vec[0], vec[1], vec[2]});
+}
+
+
+template <typename T>
+T average(T left, T right) {
+	/* A simple arithmetic mean average of 2 values. */
+	return (left + right) * 0.5;
+}
+
+
+void F1DCharWiseWENO5Reconstruction::calc(C1DField& fld) /*override*/ {
+
+	std::vector<Vector4> avg(std::ranges::size(fld.U));
+
+	auto&& U = std::ranges::views::all(fld.U);
+
+	std::transform(
+				std::execution::par_unseq,
+				std::ranges::begin(U) + 1,
+				std::ranges::end(U),
+				std::ranges::begin(U),
+				std::ranges::begin(avg) + 1,
+				[](auto q_l, auto q_r) {
+		return average<Vector4>(q_l, q_r);
+	});
+
+	auto project = [&](
+			Vector4 q_ast, Vector4 vec) -> Vector4 {
+		return projectOntoCharacteristics(q_ast, vec, eos);
+	};
+
+	auto project_back = [&](auto q_ast, auto f) {
+		return projectCharacteristicVariablesBackOntoConserved(
+					q_ast, f, eos);
+	};
+
+	auto&& u_plus = std::ranges::views::all(URx);
+	auto&& u_minus = std::ranges::views::all(ULx)
+			| std::ranges::views::drop(1);
+
+
+	calc_(
+				std::move(U),
+				std::ranges::views::all(avg),
+				u_plus,
+				u_minus,
+				project,
+				fld.imin);
+
+	std::transform(
+				std::execution::par_unseq,
+				std::ranges::begin(avg),
+				std::ranges::end(avg),
+				std::ranges::begin(u_plus),
+				std::ranges::begin(u_plus),
+				project_back);
+
+	std::transform(
+				std::execution::par_unseq,
+				std::ranges::begin(avg),
+				std::ranges::end(avg),
+				std::ranges::begin(u_minus),
+				std::ranges::begin(u_minus),
+				project_back);
+}

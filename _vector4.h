@@ -13,7 +13,7 @@ Adapted from Ogre3D
 #include <valarray>
 #include <vector>
 
-//#include "Eigen/Dense"
+#include "Eigen/Eigen/Dense"
 
 // using namespace std;
 
@@ -67,8 +67,8 @@ public:
 	inline Vector4(const Vector4& V)
 		: x(V[0]), y(V[1]), z(V[2]), w(V[3]) {}  // copy ctor
 
-//	inline explicit Vector4(const Eigen::Matrix<double, 3, 1>& V)
-//		: x(V[0]), y(V[1]), z(V[2]), w(0.) {}
+	inline explicit Vector4(const Eigen::Matrix<double, 3, 1>& V)
+		: x(V[0]), y(V[1]), z(V[2]), w(0.) {}
 
 
 	inline Vector4(Vector4&& V)

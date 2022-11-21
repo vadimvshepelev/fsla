@@ -123,8 +123,8 @@ public:
 			steps[k] = std::make_unique<C1DField>(_pr);
 	}
 
-//	virtual void solve() override = 0;
-//	virtual constexpr std::size_t get_order() override = 0;
+	virtual void solve() override = 0;
+	virtual constexpr std::size_t get_order() override = 0;
 };
 
 

@@ -1,6 +1,7 @@
 #include <assert.h>
 
 #include <string>
+#include <fstream>
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -107,7 +108,7 @@ int COutput::dump(C1DProblem& prb, C1DField& fld, FEOS& eos, string fName) {
 	vector<double> x = fld.x;
 	double t = fld.t, dx = fld.dx; 
 	double rol = prb.rol, ul = prb.ul, pl = prb.pl, ror = prb.ror, ur = prb.ur, pr = prb.pr, x0 = prb.x0;
-	ofstream ofs(fName);
+	std::ofstream ofs(fName);
 	CVectorPrimitive res = CVectorPrimitive();	
 	double ro_ex = 0., p_ex = 0., e_ex = 0., q=0.;
 	if (!ofs) {

@@ -133,7 +133,6 @@ int main(int argc, char *argv[]) {
 //	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp);
 //	sim.run();
 //	delete fldptr;
-
 	// Uncomment for ideal gas vs vacuum test
 	/* //CEOSIdeal eos = CEOSIdeal(3.9);
 	CEOSIdeal eos = CEOSIdeal(2.5);

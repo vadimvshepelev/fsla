@@ -7,6 +7,8 @@
 
 
 void F1DSimulation::run() {
+	clock_t tStart = 0, tEnd = 0;
+	tStart = clock(); 
 	pr.setics(eos, fld.x, fld.U);
 	int counter = 0;
 

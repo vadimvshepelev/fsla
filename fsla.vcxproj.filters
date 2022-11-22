@@ -141,6 +141,9 @@
     <ClCompile Include="FEOS.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="odesolver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="_matrix4.h">

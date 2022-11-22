@@ -2,7 +2,7 @@
 #include "eosTable_scale.h"
 #include "eosTable.h"
 
-#include <math.h>
+#include <cmath>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -39,7 +39,7 @@ void EOSTScale::create(int _nSize, double _minV, double _maxV, double scaler)
 		scale[i] = exp(log(minV) + log_step*i) * scaler;
 }
 
-void EOSTScale::getFromFile(char* fName, string dirName, int _nSize, double _minV, double _maxV, double scaler) {
+void EOSTScale::getFromFile(const char* fName, string dirName, int _nSize, double _minV, double _maxV, double scaler) {
 	clear();
 
 	nSize = _nSize;

@@ -1,12 +1,12 @@
 #include "defines.h"
 #include "eosTable.h"
 
-#include<math.h>
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
+#include <cmath>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include<iostream>
+#include <iostream>
 
 using namespace std;
 

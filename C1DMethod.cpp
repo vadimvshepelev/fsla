@@ -734,11 +734,8 @@ Vector4 CHLLCRiemannSolver::calcFlux(FEOS& eos, double roL, double rouL, double 
 	//double pStar = max(0., pPVRS);
 	double pStar = max(-15.e9, pPVRS);
 	
-	
-	
-	
-	
 	// Step 2 -- wave speed estimates	
+	
 	// Uncomment for Roe averaging. Works quite well for Mie-Gruneisen EOS but fails on Toro test 1 at rarefaction wave (imposes the discontinuity)
 	double _roAv = sqrt(roL*roR);
 	double _uAv = (uL*sqrt(roL) + uR*sqrt(roR))/(sqrt(roL)+sqrt(roR));
@@ -747,7 +744,15 @@ Vector4 CHLLCRiemannSolver::calcFlux(FEOS& eos, double roL, double rouL, double 
 	double _pAv = (_HAv - _EAv) * _roAv;
 	double _cAv = eos.getc(_roAv, _pAv);
 
-	double SL = _uAv-_cAv, SR = _uAv+_cAv;
+	double SL = min(uL - cL, _uAv - _cAv), SR = max(uR + cR, _uAv + _cAv);
+
+	// Uncomment for Einfeldt estimates (is it possibly just HLLE solver?)
+	/*
+	double uAv = (uL*sqrt(roL) + uR*sqrt(roR))/(sqrt(roL)+sqrt(roR));
+	double eta2 = .5*sqrt(roL*roR)/(sqrt(roL) + sqrt(roR))/(sqrt(roL) + sqrt(roR));
+	double dSqAv = (cL*cL*sqrt(roL) + cR*cR*sqrt(roR))/(sqrt(roL)+sqrt(roR)) + eta2*(uR-uL)*(uR-uL);
+	double SL = min(uL - cL, uAv - sqrt(dSqAv)), SR = max(uR + cR, uAv + sqrt(dSqAv));
+	*/
 
 	// Uncomment for naive estimate from Toro. Works pretty on Toro tests but thigs go not so well with Mie-Gruneien EOS
 	// double SL = min(min(uL - cL, uR - cR), 0.), SR = max(max(uL + cL, uR + cR), 0.);

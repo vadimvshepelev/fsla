@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
 	delete fldptr; */
 
 	// Uncomment for SW-induced mechanism of holes formation
-	C1DProblem pr = prFedorAl;  
+	C1DProblem pr = prToro1Idealtest;  
 	FEOSIdeal eos = FEOSIdeal(1.4);
 	C1DField *fldptr = new C1DField(pr);
 	CHLLRiemannSolver hll;
@@ -118,11 +118,13 @@ int main(int argc, char *argv[]) {
 	CBGKRiemannSolver bgk;
 	CExactRiemannSolver ex;
 	//F1DENO2Reconstruction eno2rec=F1DENO2Reconstruction(*fldptr);
-	//C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hll, eno2rec);	
-	//C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(roegen);
-	//C1DBGKMethod mtd = C1DBGKMethod(bgk);
-	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(ex);
+	// C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hllc, eno2rec);	
+	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hllc);
+	// C1DBGKMethod mtd = C1DBGKMethod(bgk);
+	//C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(ex);
 	// C1DLFMethod mtd = C1DLFMethod(lf);
+
+
 	double _dtt[] = {pr.tmin, pr.tmax};
 	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
 	COutput outp = COutput(pr, outputDir, dtt);

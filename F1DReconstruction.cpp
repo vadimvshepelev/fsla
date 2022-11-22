@@ -2,7 +2,9 @@
 
 #include <algorithm>
 #include <array>
-#include <execution>
+// #include <execution>
+// #include <functional>
+#include <numeric>
 #include <ranges>
 // #include <span>
 
@@ -311,7 +313,7 @@ void F1DENO3Reconstruction::calc(C1DField& fld) /*override*/ {
 		// , &Vector4::w
 	};
 	std::for_each(
-			std::execution::par_unseq,
+//			std::execution::par_unseq,
 			std::ranges::begin(components),
 			std::ranges::end(components),
 			[&](auto&& kth_vector_component) {
@@ -1893,7 +1895,7 @@ void F1DWENO5Reconstruction::calc(C1DField& fld) /*override*/ {
 		// , &Vector4::w
 	};
 	std::for_each(
-			std::execution::par_unseq,
+//			std::execution::par_unseq,
 			std::ranges::begin(components),
 			std::ranges::end(components),
 			[&](auto&& kth_vector_component) {
@@ -1945,7 +1947,7 @@ void F1DCharWiseWENO5Reconstruction::calc_(
 	};
 
 	std::for_each(
-				std::execution::par_unseq,
+				//std::execution::par_unseq,
 				std::ranges::begin(shifted_index_range),
 				std::ranges::end(shifted_index_range),
 				[&](std::size_t j) {
@@ -2115,7 +2117,7 @@ void F1DCharWiseWENO5Reconstruction::calc(C1DField& fld) /*override*/ {
 	auto&& U = std::ranges::views::all(fld.U);
 
 	std::transform(
-				std::execution::par_unseq,
+				//std::execution::par_unseq,
 				std::ranges::begin(U) + 1,
 				std::ranges::end(U),
 				std::ranges::begin(U),
@@ -2148,7 +2150,7 @@ void F1DCharWiseWENO5Reconstruction::calc(C1DField& fld) /*override*/ {
 				fld.imin);
 
 	std::transform(
-				std::execution::par_unseq,
+//				std::execution::par_unseq,
 				std::ranges::begin(avg),
 				std::ranges::end(avg),
 				std::ranges::begin(u_plus),
@@ -2156,7 +2158,7 @@ void F1DCharWiseWENO5Reconstruction::calc(C1DField& fld) /*override*/ {
 				project_back);
 
 	std::transform(
-				std::execution::par_unseq,
+				//std::execution::par_unseq,
 				std::ranges::begin(avg),
 				std::ranges::end(avg),
 				std::ranges::begin(u_minus),

@@ -128,7 +128,7 @@ public:
 class C1DMethod {
 public:
 	virtual void calc(C1DProblem& pr, FEOS& eos, C1DField& fld)=0;
-	virtual double calcdt(C1DProblem& pr, FEOS& eos, C1DField& fld)=0;	
+	virtual double calcdt(C1DProblem& pr, FEOS& eos, C1DField& fld)=0;
 };
 
 

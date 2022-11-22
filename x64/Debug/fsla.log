@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-﻿Build started 30.05.2022 17:36:59.
+﻿Build started 13.10.2022 22:03:20.
      1>Project "D:\icad\fsla\fsla.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /Od /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt COutput.cpp main.cpp
-         main.cpp
-         COutput.cpp
-=======
-﻿Build started 01.07.2021 11:54:09.
-     1>Project "D:\icad\fsla\fsla.vcxproj" on node 2 (Build target(s)).
-     1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /Od /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt C1DProblem.cpp main.cpp
-         main.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /Od /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt C1DProblem.cpp
          C1DProblem.cpp
->>>>>>> fd608748a9456c8d53d14d87b287afce35a43a29
-         Generating Code...
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"D:\icad\fsla\x64\Debug\fsla.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\local\boost_1_69_0\lib64-msvc-11.0" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\icad\fsla\x64\Debug\fsla.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\icad\fsla\x64\Debug\fsla.lib" /MACHINE:X64 x64\Debug\C1DBCs.obj
          x64\Debug\C1DField.obj
@@ -61,8 +50,4 @@
 
 Build succeeded.
 
-<<<<<<< HEAD
-Time Elapsed 00:00:04.94
-=======
-Time Elapsed 00:00:03.08
->>>>>>> fd608748a9456c8d53d14d87b287afce35a43a29
+Time Elapsed 00:00:02.53

@@ -2,8 +2,7 @@
 #include"C1DField.h"
 
 C1DField::C1DField(C1DProblem& pr): imin(2), imax(2+pr.nx), x(vector<double>(2+pr.nx+2+1)), dx((pr.xmax-pr.xmin)/pr.nx), t(0.), dt(0.),
-	                                      U(vector<vector<double>>()), newU(vector<vector<double>>()), F(vector<vector<double>>()) {
-	
+	                                      U(vector<vector<double>>()), newU(vector<vector<double>>()), F(vector<vector<double>>()) {	
 	U.resize(2+pr.nx+2);
 	newU.resize(2+pr.nx+2);
 	F.resize(2+pr.nx+2);

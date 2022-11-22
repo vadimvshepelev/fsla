@@ -1,11 +1,11 @@
 #ifndef _F1DSIMULATION_H_
 #define _F1DSIMULATION_H_
 
-#include"c1dproblem.h"
-#include"Feos.h"
-#include"c1dfield.h"
-#include"c1dmethod.h"
-#include"coutput.h"
+#include"C1DProblem.h"
+#include"FEOS.h"
+#include"C1DField.h"
+#include"C1DMethod.h"
+#include"COutput.h"
 
 
 class F1DSimulation {

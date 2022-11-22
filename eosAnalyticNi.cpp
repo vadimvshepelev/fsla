@@ -155,7 +155,7 @@ double EOSAnalyticNi::getce(double ro, double te) {
 	double S_prime = 1.6575e5*pow(te, 0.3);
 	double ce = pow(ro/ro0, 0.6)*(K_prime*S*S + S_prime*K*K)/(K+S)/(K+S); // [J/K/m^3]
 	return ce; // [J/K/m^3]
-	// (если поделить на /ro, то будет [J/K/kg])
+	// (РµСЃР»Рё РїРѕРґРµР»РёС‚СЊ РЅР° /ro, С‚Рѕ Р±СѓРґРµС‚ [J/K/kg])
 }
 
 double EOSAnalyticNi::getkappa(double ro, double ti, double te) {

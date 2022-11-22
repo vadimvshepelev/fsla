@@ -2,7 +2,7 @@
 #include "solver.h"
 using namespace std;
 
-// Третий вычислительный этап: электронно-ионный обмен
+// РўСЂРµС‚РёР№ РІС‹С‡РёСЃР»РёС‚РµР»СЊРЅС‹Р№ СЌС‚Р°Рї: СЌР»РµРєС‚СЂРѕРЅРЅРѕ-РёРѕРЅРЅС‹Р№ РѕР±РјРµРЅ
 int CSolver::calcExchangeStage(double tau) {
 	int i=0, itNum = 0, iMin=0;
 	double eps = .01;	

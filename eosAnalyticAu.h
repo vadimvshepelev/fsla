@@ -3,7 +3,7 @@
 
 #include "eosold.h"
 
-// Золото
+// Р—РѕР»РѕС‚Рѕ
 
 class EOSAnalyticAu : public EOSOld {
 public:

@@ -5,7 +5,7 @@
 #include<stdlib.h>
 #include<string.h>
 
-// Заглушки
+// Р—Р°РіР»СѓС€РєРё
 
 double EOSAnalyticAu::getpi(double ro, double ti)    { return 1.0; }
 double EOSAnalyticAu::getei(double ro, double ti)    { return 1.0;	}
@@ -18,7 +18,7 @@ double EOSAnalyticAu::getkappa(double ro, double ti, double te) { return 1.0; }
 double EOSAnalyticAu::getEntropy(double ro, double ti, double te) { return 0.0; }
 double EOSAnalyticAu::getGamma(void) {return 0.0;}
 
-// Основные функции
+// РћСЃРЅРѕРІРЅС‹Рµ С„СѓРЅРєС†РёРё
 
 double EOSAnalyticAu::getee(double ro, double ti, double te) {
 	double PI = 3.14159;
@@ -44,7 +44,7 @@ double EOSAnalyticAu::getce(double ro, double te) {
 
 	double ce = 1.e-10/19.3*338. * (A + B); // [kJ/g/K]
 	// [kJ/g/K] = [10^3 J/10^-3 kg/K] = [10^6 J/kg/K]
-	// Для [J/m3/K] умножаем на плотность ro
+	// Р”Р»СЏ [J/m3/K] СѓРјРЅРѕР¶Р°РµРј РЅР° РїР»РѕС‚РЅРѕСЃС‚СЊ ro
 	return ce*1.e6*ro; // [J/m3/K]
 }
 
@@ -54,11 +54,11 @@ double EOSAnalyticAu::getAlpha(double ro, double ti, double te) {
 	double k_alpha = 4.;       
 	double alphaei = (0.2 + 4.3*pow(teeV, 3.6)/(1.+pow(teeV, 3.5)+0.9*pow(teeV, 4.1))/k_alpha)*1.e8/(ro0/1000.);
 	// [kW/g/K] = SI [10^3 J/s/10^-3 kg/K] = SI [10^6 J/s/kg/K] 
-	// Для [W/K/m^3] нужно умножить на плотность ro
+	// Р”Р»СЏ [W/K/m^3] РЅСѓР¶РЅРѕ СѓРјРЅРѕР¶РёС‚СЊ РЅР° РїР»РѕС‚РЅРѕСЃС‚СЊ ro
 	return -ro*alphaei*1.e6;   // [W/K/m^3]
 }
 
-// Обратные функции
+// РћР±СЂР°С‚РЅС‹Рµ С„СѓРЅРєС†РёРё
 
 double EOSAnalyticAu::getti(double ro, double ei) {
 	double ti = solve_ti(ro, ei, 0.00001, 60000.0);
@@ -118,7 +118,7 @@ double EOSAnalyticAu::solve_ti(double ro, double ei, double low_border, double h
 	}
 }
 
-// Производные
+// РџСЂРѕРёР·РІРѕРґРЅС‹Рµ
 /*
 double EOSAnalyticAu::getdpdro(double ro, double ti, double te) {
 	return ( getpi(ro + EOS_EPS, ti) + getpe(ro + EOS_EPS, ti, te) 

@@ -11,10 +11,10 @@ void C1DGodunovMethodMillerPuckett::calc(C1DProblem& pr, FEOSMieGruneisen& eos, 
 	double dx = fld.dx, t = fld.t, dt = fld.dt;
 	int imin = fld.imin, imax = fld.imax;
 	vector<vector<double>> U = fld.U, newU = fld.newU, F = fld.F;
-	// TODO: проверить на скорость выполнения операций, сравнить с реализацией через тип Vector4 -- если не медленнее, то в дальнейшем избавиться от Vector4 везде
+	// TODO: РїСЂРѕРІРµСЂРёС‚СЊ РЅР° СЃРєРѕСЂРѕСЃС‚СЊ РІС‹РїРѕР»РЅРµРЅРёСЏ РѕРїРµСЂР°С†РёР№, СЃСЂР°РІРЅРёС‚СЊ СЃ СЂРµР°Р»РёР·Р°С†РёРµР№ С‡РµСЂРµР· С‚РёРї Vector4 -- РµСЃР»Рё РЅРµ РјРµРґР»РµРЅРЅРµРµ, С‚Рѕ РІ РґР°Р»СЊРЅРµР№С€РµРј РёР·Р±Р°РІРёС‚СЊСЃСЏ РѕС‚ Vector4 РІРµР·РґРµ
 	int i=0;
 	C1DVectorPrimitive res;
-	// Потоки считаем по алгоритму решения задаче о распаде разрыва для УРС Ми-Грюнайзена из работы [Miller, Puckett]
+	// РџРѕС‚РѕРєРё СЃС‡РёС‚Р°РµРј РїРѕ Р°Р»РіРѕСЂРёС‚РјСѓ СЂРµС€РµРЅРёСЏ Р·Р°РґР°С‡Рµ Рѕ СЂР°СЃРїР°РґРµ СЂР°Р·СЂС‹РІР° РґР»СЏ РЈР РЎ РњРё-Р“СЂСЋРЅР°Р№Р·РµРЅР° РёР· СЂР°Р±РѕС‚С‹ [Miller, Puckett]
 	for(i=imin; i<=imax; i++) {
 		roL = U[i-1][0]; uL = U[i-1][1]/roL; eL = U[i-1][2]/roL - .5*uL*uL; pL = eos.getp(roL, eL);
 		roR = U[i][0];   uR = U[i][1]/roR;   eR = U[i][2]/roR - .5*uR*uR;   pR = eos.getp(roR, eR);								
@@ -54,14 +54,14 @@ double C1DGodunovMethodMillerPuckett::calcdt(C1DProblem& pr, FEOSMieGruneisen& e
 C1DVectorPrimitive C1DGodunovMethodMillerPuckett::calcRPExactMillerPuckett(FEOSMieGruneisen& eos, double roL, double uL, double pL, double roR, double uR, double pR) {
 	C1DVectorPrimitive V;
 	const double gammaL = eos.getG(roL), gammaR = eos.getG(roR);
-	// Первое замечание по физике: почему нет "нормального" нулевого давления? То давление, которое "должно" быть нулевым по логике вещей, существенно отрицательно.
+	// РџРµСЂРІРѕРµ Р·Р°РјРµС‡Р°РЅРёРµ РїРѕ С„РёР·РёРєРµ: РїРѕС‡РµРјСѓ РЅРµС‚ "РЅРѕСЂРјР°Р»СЊРЅРѕРіРѕ" РЅСѓР»РµРІРѕРіРѕ РґР°РІР»РµРЅРёСЏ? РўРѕ РґР°РІР»РµРЅРёРµ, РєРѕС‚РѕСЂРѕРµ "РґРѕР»Р¶РЅРѕ" Р±С‹С‚СЊ РЅСѓР»РµРІС‹Рј РїРѕ Р»РѕРіРёРєРµ РІРµС‰РµР№, СЃСѓС‰РµСЃС‚РІРµРЅРЅРѕ РѕС‚СЂРёС†Р°С‚РµР»СЊРЅРѕ.
 	// const double K0S = eos.ro0*eos.getc(eos.ro0, eos.getp0(eos.ro0));
-	// Исправляем:
+	// РСЃРїСЂР°РІР»СЏРµРј:
 	const double K0S = eos.ro0*eos.getc(eos.ro0, eos.getp(eos.ro0, 2.e7));
 	const double eL = eos.gete(roL, pL), eR = eos.gete(roR, pR), cL = eos.getc(roL, pL), cR = eos.getc(roR, pR); 
 	double _e = 0.;
 	const double KSL = roL*cL*cL, KSR = roL*cR*cR;
-	const double KSPrimeL = eos.getKSPrime(roL, eL), KSPrimeR= eos.getKSPrime(roR, eR); // Аккуратно посчитать через первые и вторые производные, просто это надо чуть времени
+	const double KSPrimeL = eos.getKSPrime(roL, eL), KSPrimeR= eos.getKSPrime(roR, eR); // РђРєРєСѓСЂР°С‚РЅРѕ РїРѕСЃС‡РёС‚Р°С‚СЊ С‡РµСЂРµР· РїРµСЂРІС‹Рµ Рё РІС‚РѕСЂС‹Рµ РїСЂРѕРёР·РІРѕРґРЅС‹Рµ, РїСЂРѕСЃС‚Рѕ СЌС‚Рѕ РЅР°РґРѕ С‡СѓС‚СЊ РІСЂРµРјРµРЅРё
 	double a0L = cL, a1L = (KSPrimeL + 1.)/4., a0R = cR, a1R = (KSPrimeR + 1.)/4.; 
 	double b0 = pL-pR + roL*uL*(a0L+a1L*uL) + roR*uR*(a0L-a1R*uR),
 		   b1 = -roL*(a0L+2.*a1L*uL) - roR*(a0R-2.*a1R*uR),
@@ -106,7 +106,7 @@ C1DVectorPrimitive C1DGodunovMethodMillerPuckett::calcRPExactMillerPuckett(FEOSM
 			V.p = (1.-sigmaL)*pL + sigmaL*pCD;
 
 
-			// И тут вопрос, а какой будет энергия? Если мы получим V.e (энергию в нуле х) интерполяцией и сравним с V.p, что мы получим? Это повод для теста.
+			// Р С‚СѓС‚ РІРѕРїСЂРѕСЃ, Р° РєР°РєРѕР№ Р±СѓРґРµС‚ СЌРЅРµСЂРіРёСЏ? Р•СЃР»Рё РјС‹ РїРѕР»СѓС‡РёРј V.e (СЌРЅРµСЂРіРёСЋ РІ РЅСѓР»Рµ С…) РёРЅС‚РµСЂРїРѕР»СЏС†РёРµР№ Рё СЃСЂР°РІРЅРёРј СЃ V.p, С‡С‚Рѕ РјС‹ РїРѕР»СѓС‡РёРј? Р­С‚Рѕ РїРѕРІРѕРґ РґР»СЏ С‚РµСЃС‚Р°.
 
 
 		}
@@ -144,7 +144,7 @@ C1DVectorPrimitive C1DGodunovMethodMillerPuckett::calcRPExactMillerPuckett(FEOSM
 
 // Function finds resulting ro, u, p and wave structure of Riemann problem
 RPValues calcValues(FEOS& eos, double roL, double uL, double pL, double roR, double uR, double pR) {
-	// Решаем нелинейное уравнение относительно давления методом касательных Ньютона
+	// Р РµС€Р°РµРј РЅРµР»РёРЅРµР№РЅРѕРµ СѓСЂР°РІРЅРµРЅРёРµ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РґР°РІР»РµРЅРёСЏ РјРµС‚РѕРґРѕРј РєР°СЃР°С‚РµР»СЊРЅС‹С… РќСЊСЋС‚РѕРЅР°
 	RPValues res; 
 	double p = 0., pPrev = 0.;
 	const double TOL = 1.e-6;
@@ -153,12 +153,12 @@ RPValues calcValues(FEOS& eos, double roL, double uL, double pL, double roR, dou
 	double cL = 0., cR = 0.;
 	if(roL!=0.) cL = eos.getc(roL, pL);
 	if(roR!=0.) cR = eos.getc(roR, pR);;
-	// Пытаюсь определить возможную конфигурацию решения, чтобы вернее выставить начальное приближение
-	// Похоже, итерации нужны только в случаях "УВ+УВ" и "УВ + ВР", т.к. в случае ВР+ВР и ВР+вакуум есть 
-	// аналитические решения для идеального газа
+	// РџС‹С‚Р°СЋСЃСЊ РѕРїСЂРµРґРµР»РёС‚СЊ РІРѕР·РјРѕР¶РЅСѓСЋ РєРѕРЅС„РёРіСѓСЂР°С†РёСЋ СЂРµС€РµРЅРёСЏ, С‡С‚РѕР±С‹ РІРµСЂРЅРµРµ РІС‹СЃС‚Р°РІРёС‚СЊ РЅР°С‡Р°Р»СЊРЅРѕРµ РїСЂРёР±Р»РёР¶РµРЅРёРµ
+	// РџРѕС…РѕР¶Рµ, РёС‚РµСЂР°С†РёРё РЅСѓР¶РЅС‹ С‚РѕР»СЊРєРѕ РІ СЃР»СѓС‡Р°СЏС… "РЈР’+РЈР’" Рё "РЈР’ + Р’Р ", С‚.Рє. РІ СЃР»СѓС‡Р°Рµ Р’Р +Р’Р  Рё Р’Р +РІР°РєСѓСѓРј РµСЃС‚СЊ 
+	// Р°РЅР°Р»РёС‚РёС‡РµСЃРєРёРµ СЂРµС€РµРЅРёСЏ РґР»СЏ РёРґРµР°Р»СЊРЅРѕРіРѕ РіР°Р·Р°
 	//
-	// Также вызывает вопрос последний тест Торо, где полученное решение отличается от его решения 
-	// во втором знаке после запятой
+	// РўР°РєР¶Рµ РІС‹Р·С‹РІР°РµС‚ РІРѕРїСЂРѕСЃ РїРѕСЃР»РµРґРЅРёР№ С‚РµСЃС‚ РўРѕСЂРѕ, РіРґРµ РїРѕР»СѓС‡РµРЅРЅРѕРµ СЂРµС€РµРЅРёРµ РѕС‚Р»РёС‡Р°РµС‚СЃСЏ РѕС‚ РµРіРѕ СЂРµС€РµРЅРёСЏ 
+	// РІРѕ РІС‚РѕСЂРѕРј Р·РЅР°РєРµ РїРѕСЃР»Рµ Р·Р°РїСЏС‚РѕР№
 	if(roL==roR && uL==uR && pL==pR) {
 		res.type = RPWaveConfig::rwrw;
 		res.roL  = roL;
@@ -194,7 +194,7 @@ RPValues calcValues(FEOS& eos, double roL, double uL, double pL, double roR, dou
 
 	double fLmin = fL(eos, pL, roL, uL, pL) + fR(eos, pL, roR, uR, pR) + uR-uL;
 	double fRMax = fL(eos, pR, roL, uL, pL) + fR(eos, pR, roR, uR, pR) + uR-uL;
-	// Начальное приближение
+	// РќР°С‡Р°Р»СЊРЅРѕРµ РїСЂРёР±Р»РёР¶РµРЅРёРµ
 	//p = 0.5*(pL+pR);
 	p=pL/2.;
 	do {
@@ -298,7 +298,7 @@ C1DVectorPrimitive calcSolution(FEOS& eos, double roL, double uL, double pL, dou
 	if(roL!=0.) cL = eos.getc(roL, pL);
 	if(roR!=0.) cR = eos.getc(roR, pR);;
 	double xiFront=0., xiHead=0., xiTail=0., xiHeadL=0., xiTailL=0., xiHeadR=0., xiTailR=0.;
-	// Если вакуум
+	// Р•СЃР»Рё РІР°РєСѓСѓРј
 	if(res.type == RPWaveConfig::vacrw) { 
 		xiHead = uR + cR;
 		xiTail = uR - 2.*cR/(gamma-1.);
@@ -364,7 +364,7 @@ C1DVectorPrimitive calcSolution(FEOS& eos, double roL, double uL, double pL, dou
 		return V;
 	}
 	double cLLocal = eos.getc(res.roL, res.p), cRLocal = eos.getc(res.roR, res.p);
-	// Если не вакуум. Пусть точка слева от контактного разрыва (xiContact = res.u)
+	// Р•СЃР»Рё РЅРµ РІР°РєСѓСѓРј. РџСѓСЃС‚СЊ С‚РѕС‡РєР° СЃР»РµРІР° РѕС‚ РєРѕРЅС‚Р°РєС‚РЅРѕРіРѕ СЂР°Р·СЂС‹РІР° (xiContact = res.u)
 	if(xi<res.u) {
 		if(res.type ==  RPWaveConfig::swsw || res.type ==  RPWaveConfig::swrw) { 
 			xiFront = uL - cL*sqrt((gamma+1.)/2./gamma*res.p/pL + (gamma-1.)/2./gamma);
@@ -394,7 +394,7 @@ C1DVectorPrimitive calcSolution(FEOS& eos, double roL, double uL, double pL, dou
 				V.p  = pL*pow(2./(gamma+1.)+(gamma-1.)/(gamma+1.)/cL*(uL-xi), 2.*gamma/(gamma-1.));
 			}
 		} 
-	//Пусть точка справа от контактного разрыва (xiContact = res.v)
+	//РџСѓСЃС‚СЊ С‚РѕС‡РєР° СЃРїСЂР°РІР° РѕС‚ РєРѕРЅС‚Р°РєС‚РЅРѕРіРѕ СЂР°Р·СЂС‹РІР° (xiContact = res.v)
 	} else {
 		if(res.type ==  RPWaveConfig::rwsw || res.type ==  RPWaveConfig::swsw) {
 			xiFront = uR + cR*sqrt((gamma+1.)/2./gamma*res.p/pR + (gamma-1.)/2./gamma);
@@ -453,9 +453,9 @@ void C1DGodunovTypeMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 	double dx = fld.dx, t = fld.t, dt = fld.dt;
 	int imin = fld.imin, imax = fld.imax;
 	vector<vector<double>> &U = fld.U, &newU = fld.newU, &F = fld.F;
-	// TODO: проверить на скорость выполнения операций, сравнить с реализацией через тип Vector4 -- если не медленнее, то в дальнейшем избавиться от Vector4 везде
+	// TODO: РїСЂРѕРІРµСЂРёС‚СЊ РЅР° СЃРєРѕСЂРѕСЃС‚СЊ РІС‹РїРѕР»РЅРµРЅРёСЏ РѕРїРµСЂР°С†РёР№, СЃСЂР°РІРЅРёС‚СЊ СЃ СЂРµР°Р»РёР·Р°С†РёРµР№ С‡РµСЂРµР· С‚РёРї Vector4 -- РµСЃР»Рё РЅРµ РјРµРґР»РµРЅРЅРµРµ, С‚Рѕ РІ РґР°Р»СЊРЅРµР№С€РµРј РёР·Р±Р°РІРёС‚СЊСЃСЏ РѕС‚ Vector4 РІРµР·РґРµ
 	int i=0;	
-	// Потоки считаем по алгоритму решения задаче о распаде разрыва для УРС Ми-Грюнайзена из работы [Miller, Puckett]
+	// РџРѕС‚РѕРєРё СЃС‡РёС‚Р°РµРј РїРѕ Р°Р»РіРѕСЂРёС‚РјСѓ СЂРµС€РµРЅРёСЏ Р·Р°РґР°С‡Рµ Рѕ СЂР°СЃРїР°РґРµ СЂР°Р·СЂС‹РІР° РґР»СЏ РЈР РЎ РњРё-Р“СЂСЋРЅР°Р№Р·РµРЅР° РёР· СЂР°Р±РѕС‚С‹ [Miller, Puckett]
 	for(i=imin; i<=imax; i++) {
 		
 		
@@ -573,7 +573,7 @@ void C1DGodunovTypeMethodVacuum::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) 
 						_c = eos.getc(_ro, _p);
 				if(x[i]-xbnd > eps*dx) {
 					if (fabs(_u) > _c) {
-						/*// поток от начального условия F(U[0](t))
+						/*// РїРѕС‚РѕРє РѕС‚ РЅР°С‡Р°Р»СЊРЅРѕРіРѕ СѓСЃР»РѕРІРёСЏ F(U[0](t))
 						double gamma = eos.getc(1., 1)*eos.getc(1., 1);
 						double _ro = U[i][0];
 						double _u = U[i][1]/_ro;
@@ -610,7 +610,7 @@ void C1DGodunovTypeMethodVacuum::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) 
 
 
 					} else {
-					    // поток F(U[i])
+					    // РїРѕС‚РѕРє F(U[i])
 						//double _ro = U[i][0], 
 						//	    _u = U[i][1]/_ro,
 						//		_e = U[i][2]/_ro - .5*_u*_u,
@@ -845,7 +845,7 @@ void C1D2ndOrderMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 	int i=0, imin = fld.imin, imax = fld.imax;
 	vector<vector<double>> &U = fld.U, &newU = fld.newU, &F = fld.F;
 	vector<vector<double>> &ULx = rec.ULx, &URx = rec.URx;
-	// TODO: проверить на скорость выполнения операций, сравнить с реализацией через тип Vector4 -- если не медленнее, то в дальнейшем избавиться от Vector4 везде
+	// TODO: РїСЂРѕРІРµСЂРёС‚СЊ РЅР° СЃРєРѕСЂРѕСЃС‚СЊ РІС‹РїРѕР»РЅРµРЅРёСЏ РѕРїРµСЂР°С†РёР№, СЃСЂР°РІРЅРёС‚СЊ СЃ СЂРµР°Р»РёР·Р°С†РёРµР№ С‡РµСЂРµР· С‚РёРї Vector4 -- РµСЃР»Рё РЅРµ РјРµРґР»РµРЅРЅРµРµ, С‚Рѕ РІ РґР°Р»СЊРЅРµР№С€РµРј РёР·Р±Р°РІРёС‚СЊСЃСЏ РѕС‚ Vector4 РІРµР·РґРµ
 	rec.calc(fld);
 	for(i=imin; i<=imax; i++) {								
 		Vector4 flux = rslv.calcFlux(eos, URx[i-1][0], URx[i-1][1], URx[i-1][2], ULx[i][0], ULx[i][1], ULx[i][2]); 
@@ -911,9 +911,9 @@ void C1DLFMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 	double dx = fld.dx, t = fld.t, dt = fld.dt;
 	int imin = fld.imin, imax = fld.imax;
 	vector<vector<double>> &U = fld.U, &newU = fld.newU, &F = fld.F;
-	// TODO: проверить на скорость выполнения операций, сравнить с реализацией через тип Vector4 -- если не медленнее, то в дальнейшем избавиться от Vector4 везде
+	// TODO: РїСЂРѕРІРµСЂРёС‚СЊ РЅР° СЃРєРѕСЂРѕСЃС‚СЊ РІС‹РїРѕР»РЅРµРЅРёСЏ РѕРїРµСЂР°С†РёР№, СЃСЂР°РІРЅРёС‚СЊ СЃ СЂРµР°Р»РёР·Р°С†РёРµР№ С‡РµСЂРµР· С‚РёРї Vector4 -- РµСЃР»Рё РЅРµ РјРµРґР»РµРЅРЅРµРµ, С‚Рѕ РІ РґР°Р»СЊРЅРµР№С€РµРј РёР·Р±Р°РІРёС‚СЊСЃСЏ РѕС‚ Vector4 РІРµР·РґРµ
 	int i=0;	
-	// Потоки считаем по алгоритму решения задаче о распаде разрыва для УРС Ми-Грюнайзена из работы [Miller, Puckett]
+	// РџРѕС‚РѕРєРё СЃС‡РёС‚Р°РµРј РїРѕ Р°Р»РіРѕСЂРёС‚РјСѓ СЂРµС€РµРЅРёСЏ Р·Р°РґР°С‡Рµ Рѕ СЂР°СЃРїР°РґРµ СЂР°Р·СЂС‹РІР° РґР»СЏ РЈР РЎ РњРё-Р“СЂСЋРЅР°Р№Р·РµРЅР° РёР· СЂР°Р±РѕС‚С‹ [Miller, Puckett]
 	for(i=imin; i<=imax; i++) {
 		Vector4 flux = lfrslv.calcFlux(eos, U[i-1][0], U[i-1][1], U[i-1][2], U[i][0], U[i][1], U[i][2], dx, dt); 
 		double _F[] = {flux[0], flux[1], flux[2]};

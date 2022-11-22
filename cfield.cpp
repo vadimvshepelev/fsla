@@ -24,7 +24,7 @@ CFieldOld::~CFieldOld() {
 
 void CFieldOld::initData(CTask *task) {
 	clearData();	
-	// Установка начальных условий
+	// РЈСЃС‚Р°РЅРѕРІРєР° РЅР°С‡Р°Р»СЊРЅС‹С… СѓСЃР»РѕРІРёР№
 	double dx = 0.;
 	double nextX   = 0.0;
 	int i=0, counter=0;	
@@ -101,7 +101,7 @@ void CFieldOld::initData(CTask *task) {
 						n.kappa = eosGlass.getkappa(n.ro, n.ti, n.te);
 					} 
 				if(task->getSourceFlag()==4) {} 
-				if(task->type == TaskType::ruGlass) {  // Пока не навел порядок в инфраструктуре, проставляю этот флаг руками в CSolver::goGlass()			        
+				if(task->type == TaskType::ruGlass) {  // РџРѕРєР° РЅРµ РЅР°РІРµР» РїРѕСЂСЏРґРѕРє РІ РёРЅС„СЂР°СЃС‚СЂСѓРєС‚СѓСЂРµ, РїСЂРѕСЃС‚Р°РІР»СЏСЋ СЌС‚РѕС‚ С„Р»Р°Рі СЂСѓРєР°РјРё РІ CSolver::goGlass()			        
 						if(i==0) {
 							n.pe = eos.getpe(n.ro, n.ti, n.te);
 							n.pi = eos.getpi(n.ro, n.ti);
@@ -123,7 +123,7 @@ void CFieldOld::initData(CTask *task) {
 							n.e  = eosGlass.gete (n.ro, n.ti, n.te);
 							n.ce = eosGlass.getce(n.ro, n.te);
 							n.ci = eosGlass.getci(n.ro, n.ti);
-							n.C  = eos.getC(n.ro, n.ti, n.te); // сознательно eos, а не EOSGlass, xчтобы не завысить шаг по времени
+							n.C  = eos.getC(n.ro, n.ti, n.te); // СЃРѕР·РЅР°С‚РµР»СЊРЅРѕ eos, Р° РЅРµ EOSGlass, xС‡С‚РѕР±С‹ РЅРµ Р·Р°РІС‹СЃРёС‚СЊ С€Р°Рі РїРѕ РІСЂРµРјРµРЅРё
 							n.Alphaei     = eosGlass.getAlpha(n.ro, n.ti, n.te);
 							n.kappa = eosGlass.getkappa(n.ro, n.ti, n.te);
 						}	
@@ -199,14 +199,14 @@ double CFieldOld::loadData(string fName, int nCut) {
 			fInput >> nodes[i-nCut].kappa;
 		}
 	}
-	// Меняем nSize
+	// РњРµРЅСЏРµРј nSize
 	setSize(nSize-nCut);
 	i = nSize;
 	fInput >> nodes[i].x; 
 	fInput >> nodes[i].v;
 	fInput >> nodes[i].dm;
 	fInput >> _t;
-	//Тесты
+	//РўРµСЃС‚С‹
 	cout << "Solution successfully read!" << endl;
 	fInput.close();
 	/*
@@ -223,7 +223,7 @@ double CFieldOld::loadData(string fName, int nCut) {
 				ms[0].kappa;
 	fLog << "First checksum: S1 = ms[0].x + ms[0].v + ... + ms[0].Alphaei + ms[0].kappa" << endl << "S1 = " << S1 << endl;
 	i=ms.getSize();
-	// Писать все сплошняком, как в цикле выше. В строчке с номером энСайз+1 давать во всех лишних переменных нули.
+	// РџРёСЃР°С‚СЊ РІСЃРµ СЃРїР»РѕС€РЅСЏРєРѕРј, РєР°Рє РІ С†РёРєР»Рµ РІС‹С€Рµ. Р’ СЃС‚СЂРѕС‡РєРµ СЃ РЅРѕРјРµСЂРѕРј СЌРЅРЎР°Р№Р·+1 РґР°РІР°С‚СЊ РІРѕ РІСЃРµС… Р»РёС€РЅРёС… РїРµСЂРµРјРµРЅРЅС‹С… РЅСѓР»Рё.
 	//double x, v, ro, dm;
 	//double te, ti, pe, pi, p, ee, ei, e;
 	//double ce, ci, C, Alphaei, kappa, ne, Z, ti_temp, te_temp;

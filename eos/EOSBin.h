@@ -1,10 +1,10 @@
 #ifndef _EOSBIN_H_
 #define _EOSBIN_H_
 
-#include "..\\eosold.h"
+#include "../eosold.h"
 
 class EOSBin {
-	// p = (gamma-1)*ro*e + Ò0^2*(ro-ro0)
+	// p = (gamma-1)*ro*e + —Å0^2*(ro-ro0)
 	// e = ...(ro,T)
 	//
 public:

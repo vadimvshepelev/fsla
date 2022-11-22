@@ -4,7 +4,7 @@
 #include<vector>
 
 #include "task.h"
-#include "feos.h"
+#include "FEOS.h"
 
 
 using namespace std;
@@ -30,20 +30,20 @@ class CSolver {
 public:
 	CSolver();
 	CSolver(CTask& _pr) : task(_pr) {}
-   	// Функции, отвечающие за весь расчет:
+   	// Р¤СѓРЅРєС†РёРё, РѕС‚РІРµС‡Р°СЋС‰РёРµ Р·Р° РІРµСЃСЊ СЂР°СЃС‡РµС‚:
 	void go(char* fName);
 	void goAuSpall(char *fName);
 	void goEuler(char* fName=0);
 	void goGlass(char* fName);
 	void goEulerMovingMesh(char* fName);
-	// Функция, выполняющая тест для линейного уравнения теплопроводности
+	// Р¤СѓРЅРєС†РёСЏ, РІС‹РїРѕР»РЅСЏСЋС‰Р°СЏ С‚РµСЃС‚ РґР»СЏ Р»РёРЅРµР№РЅРѕРіРѕ СѓСЂР°РІРЅРµРЅРёСЏ С‚РµРїР»РѕРїСЂРѕРІРѕРґРЅРѕСЃС‚Рё
 	void testHeatStage(char* inputFileName, char* outputFileName);
-	// Функция, выполняющая тест для линейной системы уравнений обмена
+	// Р¤СѓРЅРєС†РёСЏ, РІС‹РїРѕР»РЅСЏСЋС‰Р°СЏ С‚РµСЃС‚ РґР»СЏ Р»РёРЅРµР№РЅРѕР№ СЃРёСЃС‚РµРјС‹ СѓСЂР°РІРЅРµРЅРёР№ РѕР±РјРµРЅР°
 	void testExchangeStage(char* inputFileName, char* outputFileName);
 	int getSpallFlag(void) {return spallFlag; }
 	void setSpallCellNum(int i) { spallFlag = 1; spallCellNum = i; }
-	// Функция для тестирования табличных уравнений состояния по контрольным точкам c выводом на экран
-	// Можно использовать многократно, надо только параметры подставить
+	// Р¤СѓРЅРєС†РёСЏ РґР»СЏ С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ С‚Р°Р±Р»РёС‡РЅС‹С… СѓСЂР°РІРЅРµРЅРёР№ СЃРѕСЃС‚РѕСЏРЅРёСЏ РїРѕ РєРѕРЅС‚СЂРѕР»СЊРЅС‹Рј С‚РѕС‡РєР°Рј c РІС‹РІРѕРґРѕРј РЅР° СЌРєСЂР°РЅ
+	// РњРѕР¶РЅРѕ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РјРЅРѕРіРѕРєСЂР°С‚РЅРѕ, РЅР°РґРѕ С‚РѕР»СЊРєРѕ РїР°СЂР°РјРµС‚СЂС‹ РїРѕРґСЃС‚Р°РІРёС‚СЊ
 	void testEOSControlNumbers(double _ro, double _ti, double _te);
 	CVectorPrimitive calcRPAnalyticalSolution(double roL, double vL, double pL, double roR, double vR, double pR, double x, double t);
 	RPSolutionPrimitive solveRP(double roL, double vL, double pL, double roR, double vR, double pR);
@@ -57,7 +57,7 @@ public:
 	double dfLdpEOSBin(double p, double roL, double vL, double pL);
 	double fREOSBin(double p, double roR, double vR, double pR);
 	double dfRdpEOSBin(double p, double roR, double vR, double pR);
-	// Аппарат для точного решения задачи о распаде разрыва с УРС Ми-Грюнайзена 
+	// РђРїРїР°СЂР°С‚ РґР»СЏ С‚РѕС‡РЅРѕРіРѕ СЂРµС€РµРЅРёСЏ Р·Р°РґР°С‡Рё Рѕ СЂР°СЃРїР°РґРµ СЂР°Р·СЂС‹РІР° СЃ РЈР РЎ РњРё-Р“СЂСЋРЅР°Р№Р·РµРЅР° 
 	CVectorPrimitive calcRPExactMillerPuckett(FEOSMieGruneisen& eos, double roL, double vL, double pL, double roR, double vR, double pR, double x, double t);	
 	double getdx(); 	
 
@@ -103,8 +103,8 @@ private:
 	Vector4 calcSuperBEESlope(double omega, Vector4 deltaMinus, Vector4 deltaPlus);
 	Vector4 calcVanAlbadaSlope(double omega, Vector4 deltaMinus, Vector4 deltaPlus);
 	Vector4 calcVanLeerSlope(double omega, Vector4 deltaMinus, Vector4 deltaPlus);
-	// Потоки
-	// Расчет точного значения потока F = ( ro*v, p+ro*v*v, v*(p+ro*E) )T
+	// РџРѕС‚РѕРєРё
+	// Р Р°СЃС‡РµС‚ С‚РѕС‡РЅРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ РїРѕС‚РѕРєР° F = ( ro*v, p+ro*v*v, v*(p+ro*E) )T
 	Vector4	calcF(double ro, double v, double p, double e);
 	Vector4 calcPhysicalFlux(double ro, double rou, double roE);
 	Vector4 calcPhysicalFluxEOSBin(double ro, double rou, double roE);	
@@ -113,11 +113,11 @@ private:
 	Vector4 calcGPSFlux(double roL, double rouL, double roEL, double roR, double rouR, double roER);
 	Vector4 calcHLLCFluxEOSBin(double roL, double rouL, double roEL, double roR, double rouR, double roER);
 	Vector4 calcHLLFluxEOSBin(double roL, double rouL, double roEL, double roR, double rouR, double roER);
-	// Для двучленного УРС
+	// Р”Р»СЏ РґРІСѓС‡Р»РµРЅРЅРѕРіРѕ РЈР РЎ
 	Vector4 calcGodunovFluxEOSBin(double roL, double rouL, double roEL, double roR, double rouR, double roER);	
 	void	sweep(double *u, double *A, double *B, double *C, double *F, int size);
-	// Функции, решающие нелинейные уравнения (pi, ei) и (pe, ee) 
-	// для схемы Самарского
+	// Р¤СѓРЅРєС†РёРё, СЂРµС€Р°СЋС‰РёРµ РЅРµР»РёРЅРµР№РЅС‹Рµ СѓСЂР°РІРЅРµРЅРёСЏ (pi, ei) Рё (pe, ee) 
+	// РґР»СЏ СЃС…РµРјС‹ РЎР°РјР°СЂСЃРєРѕРіРѕ
 	double	solveti(double tau, int i, double ro_temp, double dv_temp);
 	double  solvete(double t, double tau, int i, double ro_temp, double dv_temp, double ti_temp);
 	double  solveteSource(double t, double tau, int i, double ro_temp, double dv_temp, double ti_temp);
@@ -141,15 +141,15 @@ private:
 	void	dumpToFileEuler(double t);
 	void	setCFL(double _CFL);
 	double  getCFL(void);
-	// Функции для сохранения и загрузки всех массивов
+	// Р¤СѓРЅРєС†РёРё РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ Рё Р·Р°РіСЂСѓР·РєРё РІСЃРµС… РјР°СЃСЃРёРІРѕРІ
 	void	saveSolution(const char* fName, double t);
 	double  loadSolution(char* fName);
 	void	getEulerAnalyticApproximation(int i, double t, double *p_an, double *v_an, double *ro_an);
 	void	getEulerAnalyticApproximationGrid(int i, double x, double t, double *p_an, double *v_an, double *ro_an);
 	void	getLagrangeAnalyticApproximation(int i, double t, double *p_an, double *v_an, double *ro_an);
 	int getSpallCellNum(void) {return spallCellNum;}
-	// Служебная функция для инициализации двух переменных 
-	// солвера уже после загрузки задачи.
+	// РЎР»СѓР¶РµР±РЅР°СЏ С„СѓРЅРєС†РёСЏ РґР»СЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РґРІСѓС… РїРµСЂРµРјРµРЅРЅС‹С… 
+	// СЃРѕР»РІРµСЂР° СѓР¶Рµ РїРѕСЃР»Рµ Р·Р°РіСЂСѓР·РєРё Р·Р°РґР°С‡Рё.
 	void initVars(void);
 	CFieldOld ms, ms_temp, ms_temp_temp, ms_prev;
 	double	CFL, epsE;
@@ -158,7 +158,7 @@ private:
 	int i_pulse_min;
 	double tInit;
 	int iWeak, spallFlag, spallCellNum;
-	// Переменная для отслеживания границы
+	// РџРµСЂРµРјРµРЅРЅР°СЏ РґР»СЏ РѕС‚СЃР»РµР¶РёРІР°РЅРёСЏ РіСЂР°РЅРёС†С‹
 	double xVacBound;
 };
 

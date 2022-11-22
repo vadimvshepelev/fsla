@@ -9,11 +9,11 @@
 
 using namespace std;
 
-// Таблицы
+// РўР°Р±Р»РёС†С‹
 
 double EOSTableAu::getpi(double ro, double ti) {
  	double pi = pi_table.interpolate(ro, ti);
-	// Критерий откола	
+	// РљСЂРёС‚РµСЂРёР№ РѕС‚РєРѕР»Р°	
 	if(pi*1.e-9 < -5.04 + 0.0017*ti - 1.49e-7*ti*ti)
 		pi = 0.;
 	return pi; // [Pa]
@@ -26,14 +26,14 @@ double EOSTableAu::getmix(double ro, double ti) { return mix_table.interpolate(r
 double EOSTableAu::getC(double ro, double ti, double te) { return C_table.interpolate(ro, ti); }   // [m/s]
 double EOSTableAu::getEntropy(double ro, double ti) { return entropy_table.interpolate(ro, ti); }
 
-// Обратная функция (температура)
+// РћР±СЂР°С‚РЅР°СЏ С„СѓРЅРєС†РёСЏ (С‚РµРјРїРµСЂР°С‚СѓСЂР°)
 
 double EOSTableAu::getti(double ro, double ei) {
 	double ti = solve_ti(ro, ei, t_scale.getMin()*(1.+.01), t_scale.getMax()-1.0);
 	return ti; // [K]
 }
 
-// Теплопроводность 
+// РўРµРїР»РѕРїСЂРѕРІРѕРґРЅРѕСЃС‚СЊ 
 
 double EOSTableAu::getkappa(double ro, double ti, double te) {
 	double eF=8.849e-22*pow(ro/ro0, 2./3.); // [kJ]
@@ -60,14 +60,14 @@ double EOSTableAu::getkappa(double ro, double ti, double te) {
 	/////////
 	double _ce = getce(ro, te);
 	/////////
-	double kappa = getce(ro, te)*v2/nu*1.e-9; // 1. Теплоемкость ce здесь в [J/m3/K] = [10^-9 kJ/sm3/K] 
-	// 2. Квадрат скорости v2 в [sm2/s2] 3. Итог -- kappa в [kJ/s/sm/K] = [10^5 J/m/s/K]
+	double kappa = getce(ro, te)*v2/nu*1.e-9; // 1. РўРµРїР»РѕРµРјРєРѕСЃС‚СЊ ce Р·РґРµСЃСЊ РІ [J/m3/K] = [10^-9 kJ/sm3/K] 
+	// 2. РљРІР°РґСЂР°С‚ СЃРєРѕСЂРѕСЃС‚Рё v2 РІ [sm2/s2] 3. РС‚РѕРі -- kappa РІ [kJ/s/sm/K] = [10^5 J/m/s/K]
     return kappa*1.e5;		//[W/m/K]
 }
 
 double getnuWR(double ro, double ti, double te, double b, double Z) {return 1.;}
 
-// Служебное
+// РЎР»СѓР¶РµР±РЅРѕРµ
 
 EOSTableAu::EOSTableAu(string dirName, int EOSFlag, double _ro0) {
 	char buf[256];

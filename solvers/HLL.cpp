@@ -1,5 +1,5 @@
-#include "..\\solver.h"
-#include "..\\EOS\\EOSBin.h"
+#include "../solver.h"
+#include "../eos/EOSBin.h"
 
 Vector4 CSolver::calcHLLFluxEOSBin(double roL, double rouL, double roEL, double roR, double rouR, double roER) {
 	EOSBin &eos = (task.eosBin);	

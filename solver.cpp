@@ -86,7 +86,7 @@ void CSolver::goEuler(char* fName) {
 		//if(task.methodFlag == MethodType::hll) calcHydroStageGodunovEOSBin(t, tau);
 		//if(task.getHydroStage()) calcHydroStageENO2G(t, tau);
 		clock_t end = clock();
-		double seconds = (double)(end - start) / CLOCKS_PER_SEC;
+		double seconds = static_cast<double>(end - start) / CLOCKS_PER_SEC;
 		cout << "iter=" << counter << " t=" << t+tau <<  " tau=" << tau << " CFL=" << getCFL() << " time=" << seconds << "s" << endl;
 
 		if(handleKeys(t)) break;
@@ -725,7 +725,7 @@ void CSolver::dumpToFile(double t) {
 	char buf[40];
 	char frac_buf[40];
 	char fName[256];
-	int tConv = (int)(fabs(t*1.0e12));
+	int tConv = static_cast<int>(fabs(t*1.0e12));
 	sprintf(buf, "%d", tConv);
 	buf[7]='\0';
 	if(tConv < 10) {
@@ -782,7 +782,7 @@ void CSolver::dumpToFile(double t) {
 		buf[1]=buf[0];
 		buf[0]='0';
 	}
-	int tFrac = abs((int)(t*1.0e13) % 10);
+	int tFrac = abs(static_cast<int>(t*1.0e13) % 10);
 	sprintf(frac_buf, "%d", tFrac);
 	strcpy(fName, OUTPUT_FOLDER);
 	if(t<0) {
@@ -935,7 +935,7 @@ void CSolver::dumpToFileEuler(double t)
 	char fName[256];
 	double p_an=0., ro_an=0., v_an=0.;
 	double orderMul = 1.;
-	int tConv = (int)(fabs(t*orderMul));
+	int tConv = static_cast<int>(fabs(t*orderMul));
 	sprintf(buf, "%d", tConv);
 	buf[6]='\0';
 
@@ -985,7 +985,7 @@ void CSolver::dumpToFileEuler(double t)
 		buf[0]='0';
 	}
 
-	int tFrac = abs((int)(t*orderMul*10.) % 10);
+	int tFrac = abs(static_cast<int>(t*orderMul*10.) % 10);
 	sprintf(frac_buf, "%d", tFrac);
 	strcpy(fName, OUTPUT_FOLDER);
 	if(t<0)

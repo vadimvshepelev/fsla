@@ -90,7 +90,7 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 	/*ofstream fcentres("test-ENO3-centres.dat", ios::out);
 	ofstream fborders("test-ENO3-borders.dat", ios::out);
 	for(i=0; i<maxi+nGhostCells; i++) {
-		double xm = (double)(i-nGhostCells)*h;
+		double xm = static_cast<double>(i-nGhostCells)*h;
 		double xp = xm + h;
 		double x = .5*(xm + xp);
 		U[i][0] = 500.* 1./h * (xp*xp*xp/3. - 3.*xp*xp/4. - xm*xm*xm/3. + 3.*xm*xm/4.);		
@@ -194,7 +194,7 @@ void CSolver::calcHydroStageENO3G(double t, double tau) {
 	// Boundary nodes U+[0] and U-[nSize]
 	Up[mini-1] = Up[mini]; Um[maxi] = Um[maxi-1];
 	/*	for(i=1; i<maxi+nGhostCells; i++) {
-		double xm = (double)(i-nGhostCells)*h;
+		double xm = static_cast<double>(i-nGhostCells)*h;
 		double xp = xm + h;
 		double x = .5*(xm + xp);
 		U[i][0] = 500.*1./h * (xp*xp*xp/3. - 3.*xp*xp/4. - xm*xm*xm/3. + 3.*xm*xm/4.);
@@ -279,7 +279,7 @@ void CSolver::calcHydroStageENO2G(double t, double tau) {
 	for(i=mini; i<maxi; i++) {		
 		Vector4 diffPlus = U[i+1]-U[i], diffMinus = U[i]-U[i-1];
 		stencil0 = i; stencil1 = i; stencil2 = i;
-		double x0 = (double)(i-nGhostCells)*h;
+		double x0 = static_cast<double>(i-nGhostCells)*h;
 		// Choose stencil
 		if( fabs(diffMinus[0])<=fabs(diffPlus[0]) ) stencil0 = i-1; else stencil0 = i;
 		if( fabs(diffMinus[1])<=fabs(diffPlus[1]) ) stencil1 = i-1; else stencil1 = i;

@@ -1,6 +1,17 @@
+#pragma GCC optimize("Ofast")
+#pragma GCC target("avx,avx2,fma")
+#pragma GCC optimize("unroll-loops")
+
 #define _CRT_SECURE_NO_WARNINGS
 
-#include<string.h>
+//#include <vld.h>
+
+#include <cmath>
+#include <cstring>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <memory>
 
 #include "defines.h"
 #include "solver.h"
@@ -10,16 +21,9 @@
 #include "F1DReconstruction.h"
 
 
-
 char* INPUT_FOLDER = new char[_MAX_PATH];  //"calc/";
 char* OUTPUT_FOLDER = new char[_MAX_PATH]; //"calc/output/";
 
-//#include <vld.h>
-
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <cmath>
 
 int main(int argc, char *argv[]) {
 	if(argc > 1) {
@@ -33,13 +37,13 @@ int main(int argc, char *argv[]) {
 	cout << "FSLA1D: hydrocode for numerical simulations in 1D-geometry v.0.1." << endl;
 	cout << "Author: Vadim V. Shepelev, ICAD RAS, e-mail: vadim.v.shepelev@gmail.com" << endl;
 	cout << "=======================================================================" << endl;
-	string outputDir = string("output");		
+	string outputDir = string("output");
 	// Uncomment for NB EOS test problem
 	// CEOSMieGruneisenAl eos = CEOSMieGruneisenAl();
 	//C1DProblem pr = prNBtest;
 	// Uncomment for Toro #1 test problem with ideal EOS
 	//CEOSIdeal eos = CEOSIdeal(3.9);
-	//CEOSIdeal eosAl = CEOSIdeal(3.9); 
+	//CEOSIdeal eosAl = CEOSIdeal(3.9);
 	//C1DProblem pr = prLaserVTAlIdealTest1;
 	//C1DField *fldptr = new C1DField(pr);
 	// Uncomment for exact solver based Godunov-type method
@@ -60,10 +64,10 @@ int main(int argc, char *argv[]) {
 /*
 	CSolver *s = new CSolver;
 	s->goEuler("task-toro-5.txt"); // для Эйлеровых задач
-	delete s; 
+	delete s;
 	*/
 
-	
+
 
 
 
@@ -76,7 +80,7 @@ int main(int argc, char *argv[]) {
     /*FEOSMGAlPrecise6 eos;
 	FEOSMieGruneisenAl eos;
 	FEOSIdeal eos = FEOSIdeal(3.9);
-	C1DProblem pr = prVTAlMGTest2_2;  
+	C1DProblem pr = prVTAlMGTest2_2;
 	FEOSIdeal eos = FEOSIdeal(1.4);
 
 	double _rho = 2413.,_p = 1.e9;
@@ -93,7 +97,7 @@ int main(int argc, char *argv[]) {
 	CHLLRiemannSolver hll;
 
 	F1DENO2Reconstruction eno2rec=F1DENO2Reconstruction(*fldptr);
-	C1D2ndOrderMethod mtd = C1D2ndOrderMethod(roe, eno2rec);	
+	C1D2ndOrderMethod mtd = C1D2ndOrderMethod(roe, eno2rec);
 	//C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(ex);
 	//C1DBGKMethod mtd = C1DBGKMethod(bgk);
 	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hll);
@@ -106,32 +110,29 @@ int main(int argc, char *argv[]) {
 	delete fldptr; */
 
 	// Uncomment for SW-induced mechanism of holes formation
-	C1DProblem pr = prToro1Idealtest;  
-	FEOSIdeal eos = FEOSIdeal(1.4);
-	C1DField *fldptr = new C1DField(pr);
-	CHLLRiemannSolver hll;
-	CHLLCRiemannSolver hllc;
-	CLFRiemannSolver lf;
-	CGPSRiemannSolver gps;
-	CRoeRiemannSolver roe;
-	CRoeGeneralRiemannSolver roegen;
-	CBGKRiemannSolver bgk;
-	CExactRiemannSolver ex;
-	//F1DENO2Reconstruction eno2rec=F1DENO2Reconstruction(*fldptr);
-	// C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hllc, eno2rec);	
-	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hllc);
-	// C1DBGKMethod mtd = C1DBGKMethod(bgk);
-	//C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(ex);
-	// C1DLFMethod mtd = C1DLFMethod(lf);
-
-
-	double _dtt[] = {pr.tmin, pr.tmax};
-	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
-	COutput outp = COutput(pr, outputDir, dtt);
-	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp);
-	sim.run();
-	delete fldptr;
-
+//	C1DProblem pr = prToro1Idealtest;  // prFedorAl;
+//	FEOSIdeal eos = FEOSIdeal(1.4);
+//	C1DField *fldptr = new C1DField(pr);
+//	CHLLRiemannSolver hll;
+//	CHLLCRiemannSolver hllc;
+//	CLFRiemannSolver lf;
+//	CGPSRiemannSolver gps;
+//	CRoeRiemannSolver roe;
+//	CRoeGeneralRiemannSolver roegen;
+//	CBGKRiemannSolver bgk;
+//	CExactRiemannSolver ex;
+//	//F1DENO2Reconstruction eno2rec=F1DENO2Reconstruction(*fldptr);
+//	//C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hll, eno2rec);
+//	//C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(roegen);
+//	//C1DBGKMethod mtd = C1DBGKMethod(bgk);
+//	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(ex);
+//	// C1DLFMethod mtd = C1DLFMethod(lf);
+//	double _dtt[] = {pr.tmin, pr.tmax};
+//	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
+//	COutput outp = COutput(pr, outputDir, dtt);
+//	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp);
+//	sim.run();
+//	delete fldptr;
 	// Uncomment for ideal gas vs vacuum test
 	/* //CEOSIdeal eos = CEOSIdeal(3.9);
 	CEOSIdeal eos = CEOSIdeal(2.5);
@@ -148,18 +149,44 @@ int main(int argc, char *argv[]) {
 	delete fldptr;	*/
 
 	// Uncomment for Toro #1 test problem with ideal EOS
-/*	CEOSIdeal eos = CEOSIdeal(1.4);
-	C1DProblem pr = prToro1Idealtest;
-	C1DField *fldptr = new C1DField(pr);
+	// FEOSIdeal eos = FEOSIdeal(1.4);
+	FEOSMGAlPrecise6 eos = FEOSMGAlPrecise6();
+	// C1DProblem pr = prLaserVTAlMGTest1;
+	C1DProblem pr = prVTAlMGTest1;
+	// C1DProblem pr = prToro1Idealtest;
+	// C1DProblem pr = prVTAlBel;
+	// C1DProblem pr = prHoles;
+	std::unique_ptr<C1DField> fldptr = std::make_unique<C1DField>(pr);
+	CHLLRiemannSolver hll;
 	CHLLCRiemannSolver hllc;
-	F1DENO2Reconstruction eno2rec=F1DENO2Reconstruction(*fldptr);
-	C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hllc, eno2rec);
+	CLFGlobalRiemannSolver lfgl;
+	CLFRiemannSolver lf_old;
+	CExactRiemannSolver ex;
+	CRoeRiemannSolver roe;
+	CRoeGeneralRiemannSolver roegen;
+	F1DWENO5Reconstruction eno5rec = F1DWENO5Reconstruction(*fldptr);
+	F1DCharWiseWENO5Reconstruction eno5rec_charwise
+			= F1DCharWiseWENO5Reconstruction(*fldptr, eos);
+	F1DENO2Reconstruction eno2rec = F1DENO2Reconstruction(*fldptr);
+	F1DENO3Reconstruction eno3rec = F1DENO3Reconstruction(*fldptr);
+	C1D2ndOrderLFGlobalMethod mtd = C1D2ndOrderLFGlobalMethod(
+				lfgl, eno5rec_charwise/*eno5rec*//*eno3rec*//*eno2rec*/);
+	// C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hllc, eno5rec/*eno3rec*//*eno2rec*/);
+	// C1DLFGlobalMethod mtd = C1DLFGlobalMethod(lfgl);
+	// C1DGodunovTypeMethodVacuum mtd = C1DGodunovTypeMethodVacuum(hllc);
+	// CExactRiemannSolver exrslv;
+	// C1DGodunovTypeMethodVacuum mtd = C1DGodunovTypeMethodVacuum(hllc, pr.x0);
+	// C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hllc);
+	// C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(ex);
 	double _dtt[] = {pr.tmin, pr.tmax};
 	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
 	COutput outp = COutput(pr, outputDir, dtt);
-	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp);
+//	ForwardEuler default_ode_solver = ForwardEuler(pr, eos, *fldptr, mtd);
+	SSPERK3_3 ssprk = SSPERK3_3(pr, eos, *fldptr, mtd);
+//	eBDF5 e_bdf5 = eBDF5(pr, eos, *fldptr, mtd, ssprk);
+//	ERK6_5 erk = ERK6_5(pr, eos, *fldptr, mtd);
+	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp, ssprk);
 	sim.run();
-	delete fldptr;*/	
 
 
 	// Uncomment for metal problems
@@ -173,7 +200,7 @@ int main(int argc, char *argv[]) {
 	//s->goGlass("task-Au-water-simple.txt");
 	//s->goGlass("task-Au-water.txt");
 	//s->goGlass("task-Au-water-vacuum.txt");
-	
+
 	//s->goGlass("task - Ni.txt");
 	//s->goGlass("task.txt"); // для железа и вообще
 	//s->go("task-5Si.txt");
@@ -182,21 +209,21 @@ int main(int argc, char *argv[]) {
 	//s->goEulerMovingMesh("task.txt"); // для Эйлеровых задач c движущейся сеткой
 	//s->goEuler("task-LH1D.txt");          // Задача LH (стекло-золото-вакуум), одномерное приближение
     //s->goEuler("task-LH1D-p=123GPA.txt"); // Задача LH (стекло-золото-вакуум), одномерное приближение, с более мелкой ступенькой
-	
+
 	// s->goEuler("task-eosbin-test-2.txt"); // Тест на двучленное УРС от Паши -- он же тест на лазерное облучение объемной мишеги с идеальным УРС
 	//CSolver *s = new CSolver;
-	//s->goEuler("task-laservt-ideal-test.txt"); // Тест на лазерное облучение идеальной мишени с УРС от Н.А. 
+	//s->goEuler("task-laservt-ideal-test.txt"); // Тест на лазерное облучение идеальной мишени с УРС от Н.А.
 	//s->goEuler("task-eosbin-toro-test-5.txt"); // Тест на двучленное УРС (при нулевых параметрах должно работать как идеальное)
 
 	//s->goEuler("task-LH1D-aux-1.txt"); // Задача LH (стекло-золото-вакуум), левый разрыв стекло-золото
 	//s->goEuler("task-eosbin-test-1.txt"); // Первый тест Глайстера по двучленному уравнению состояния
 	// Uncomment for Euler problems
-	//s->goEuler("task-eosbin-toro-test-1.txt"); 
+	//s->goEuler("task-eosbin-toro-test-1.txt");
 	//s->goEuler("task-test-NB.txt");
-	// Uncomment for HLL flux Toro test 
-	/*EOSBin eos = EOSBin(1.4, 0., 0.);	
+	// Uncomment for HLL flux Toro test
+	/*EOSBin eos = EOSBin(1.4, 0., 0.);
 	CTask prHLLTest = CTask(TaskType::RP1D, eos, 1., .75, 1., .125, 0., 1., 0., 1., 0., .2, .3, 100, .9, MethodType::hll);
-    CSolver* s = new CSolver(prHLLTest);	
+    CSolver* s = new CSolver(prHLLTest);
 	s->goEuler();
 	//
 	delete s;*/
@@ -212,8 +239,8 @@ int main(int argc, char *argv[]) {
 	ofs1 << "TITLE = Runge set of convergence rates for different schemes" << endl;
 	ofs1 << "VARIABLES = \"h\",\"P\"" << endl;
 	ofs1 << "ZONE T=\"BGK\" I=4 F=POINT" << endl;
-	double f[] = {0., 0., 0., 0., 0., 0.}; 
-	double h[] = {.01, .01/2., .01/4., .01/8., .01/16., .01/32.}; 
+	double f[] = {0., 0., 0., 0., 0., 0.};
+	double h[] = {.01, .01/2., .01/4., .01/8., .01/16., .01/32.};
 	unsigned counter = 0;
 	CSolver *s = new CSolver;
 	s->goEuler("task-toro-1.txt"); // для Эйлеровых задач
@@ -245,7 +272,7 @@ int main(int argc, char *argv[]) {
 	ofs << s->getdx() << " " << s->calcProblemL1NormRo() << " " << s->calcProblemL2NormRo() << " " << s->convIntegral << endl;
 	f[counter++] = s->convIntegral;
 	delete s;
-	
+
 	ofs1 << h[1] << " " << log10((f[0]-f[1])/(f[1]-f[2]))/log10(2.) << endl;
 	ofs1 << h[2] << " " << log10((f[1]-f[2])/(f[2]-f[3]))/log10(2.) << endl;
 	ofs1 << h[3] << " " << log10((f[2]-f[3])/(f[3]-f[4]))/log10(2.) << endl;
@@ -283,10 +310,7 @@ int main(int argc, char *argv[]) {
 
 */
 
-	delete INPUT_FOLDER;
-	delete OUTPUT_FOLDER;
+	delete[] INPUT_FOLDER;
+	delete[] OUTPUT_FOLDER;
 	return 0;
 }
-
-
-

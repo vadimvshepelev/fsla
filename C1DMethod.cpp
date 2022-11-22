@@ -1,5 +1,11 @@
-#include"C1DMethod.h"
-#include"solver.h"
+#include "C1DMethod.h"
+
+#include <algorithm>
+#include <ranges>
+#include <utility>
+
+#include "_vector4.h"
+#include "solver.h"
 
 
 CExactRiemannSolver exrslv;
@@ -10,7 +16,12 @@ void C1DGodunovMethodMillerPuckett::calc(C1DProblem& pr, FEOSMieGruneisen& eos, 
 		   E = 0.;
 	double dx = fld.dx, t = fld.t, dt = fld.dt;
 	int imin = fld.imin, imax = fld.imax;
-	vector<vector<double>> U = fld.U, newU = fld.newU, F = fld.F;
+//	auto U = fld.U;
+//	auto newU = fld.newU;
+//	auto F = fld.F;
+	auto&& U = fld.U;
+	auto&& newU = fld.newU;
+	auto&& F = fld.F;
 	// TODO: проверить на скорость выполнения операций, сравнить с реализацией через тип Vector4 -- если не медленнее, то в дальнейшем избавиться от Vector4 везде
 	int i=0;
 	C1DVectorPrimitive res;
@@ -21,8 +32,12 @@ void C1DGodunovMethodMillerPuckett::calc(C1DProblem& pr, FEOSMieGruneisen& eos, 
 		res = calcRPExactMillerPuckett(eos, roL, uL, pL, roR, uR, pR);
 		assert(res.ro!=0.);
 		E = eos.gete(res.ro, res.p) + .5*res.u*res.u;
-		double _F[] = {res.ro*res.u, res.ro*res.u*res.u + res.p, res.u*(res.ro*E+res.p)};
-		F[i] = vector<double>(_F, _F+sizeof(_F)/sizeof(_F[0]));		
+		F[i] = {
+			res.ro * res.u,
+			res.ro * res.u * res.u + res.p,
+			res.u * (res.ro * E + res.p),
+			0.
+		};
 		//n.W_temp = n.W - dt/h*(Fp-Fm);
 	}
 	for(i=imin; i<imax; i++) {
@@ -35,7 +50,7 @@ void C1DGodunovMethodMillerPuckett::calc(C1DProblem& pr, FEOSMieGruneisen& eos, 
 }
 
 double C1DGodunovMethodMillerPuckett::calcdt(C1DProblem& pr, FEOSMieGruneisen& eos, C1DField& fld) {
-	vector<vector<double>> U = fld.U; 
+	auto&& U = fld.U;
 	int imin = fld.imin, imax = fld.imax;
 	double ro = U[imin][0], u = U[imin][1]/ro, e = U[imin][2]/ro-.5*u*u, p=eos.getp(ro,e), c = eos.getc(ro, p);
 	vector<double> x = fld.x;	
@@ -430,69 +445,75 @@ C1DVectorPrimitive calcSolution(FEOS& eos, double roL, double uL, double pL, dou
 
 
 double C1DGodunovTypeMethod::calcdt(C1DProblem& pr, FEOS& eos, C1DField& fld) {
-	vector<vector<double>> U = fld.U; 
+	auto&& U = fld.U;
 	int imin = fld.imin, imax = fld.imax;
 	double ro = U[imin][0], u = U[imin][1]/ro, e = U[imin][2]/ro-.5*u*u, p=eos.getp(ro,e), c = eos.getc(ro, p);
 	vector<double> x = fld.x;	
 	double umax = max(fabs(u), max(fabs(u-c), fabs(u+c))); 	
 	double dt1 = (x[imin+1]-x[imin])/umax;
 	double dt2 = 0.;
-	for(int i=imin; i<imax; i++) {		
+	for (int i = imin; i < imax; ++ i) {
 		ro = U[i][0]; u = U[i][1]/ro; e = U[i][2]/ro-.5*u*u, p=eos.getp(ro,e), c = eos.getc(ro, p); 
 		umax = fabs(u) + c; 
 		dt2 = (x[i+1]-x[i])/umax;
-		if(dt1 > dt2) dt1 = dt2;
+		if (dt1 > dt2) dt1 = dt2;
 	}
-	return pr.cfl*dt1;
+	return pr.cfl * dt1;
 }
 
+
+void C1DGodunovTypeMethod::calcFluxField(
+		C1DProblem& pr, FEOS& eos, C1DField& fld) {
+//	double roL = 0., uL = 0., eL = 0., pL = 0.,
+//		   roR = 0., uR = 0., eR = 0., pR = 0.,
+//		   E = 0.;
+	int imin = fld.imin, imax = fld.imax;
+	auto&& U = fld.U;
+	auto&& F = fld.F;
+	// TODO: проверить на скорость выполнения операций, сравнить
+	// с реализацией через тип Vector4 -- если не медленнее,
+	// то в дальнейшем избавиться от Vector4 везде
+	int i = 0;
+	// Потоки считаем по алгоритму решения задаче о распаде разрыва
+	// для УРС Ми-Грюнайзена из работы [Miller, Puckett]
+	for (i = imin; i <= imax; ++ i) {
+		if (i == 53) {
+			double q = 1.;
+		}
+
+		F[i] = rslv.calcFlux(
+					eos, U[i-1][0], U[i-1][1], U[i-1][2],
+					U[i][0], U[i][1], U[i][2]);
+		// n.W_temp = n.W - dt/h*(Fp-Fm);
+	}
+}
+
+
 void C1DGodunovTypeMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
-	double roL = 0., uL = 0., eL = 0., pL = 0.,
-		   roR = 0., uR = 0., eR = 0., pR = 0., 
-		   E = 0.;
 	double dx = fld.dx, t = fld.t, dt = fld.dt;
 	int imin = fld.imin, imax = fld.imax;
-	vector<vector<double>> &U = fld.U, &newU = fld.newU, &F = fld.F;
-	// TODO: проверить на скорость выполнения операций, сравнить с реализацией через тип Vector4 -- если не медленнее, то в дальнейшем избавиться от Vector4 везде
-	int i=0;	
-	// Потоки считаем по алгоритму решения задаче о распаде разрыва для УРС Ми-Грюнайзена из работы [Miller, Puckett]
-	for(i=imin; i<=imax; i++) {
-		
-		
-		
-		
-		
-		if( i == 53 )
-		{ 
-			
-			
-			double q = 1.;
-		
-		
-		}
-		
-		
-		
-		
-		
-		
-		Vector4 flux = rslv.calcFlux(eos, U[i-1][0], U[i-1][1], U[i-1][2], U[i][0], U[i][1], U[i][2]); 
-		double _F[] = {flux[0], flux[1], flux[2]};
-		F[i] = vector<double>(_F, _F+sizeof(_F)/sizeof(_F[0]));		
-		//n.W_temp = n.W - dt/h*(Fp-Fm);
+	auto&& U = fld.U;
+	auto&& newU = fld.newU;
+	auto&& F = fld.F;
+	int i = 0;
+
+	calcFluxField(pr, eos, fld);
+
+	for (i = imin; i < imax; ++ i) {
+		for(int counter=0; counter<3; counter++)
+			newU[i][counter] = U[i][counter]
+					- dt/dx*(F[i+1][counter] - F[i][counter]);
 	}
-	for(i=imin; i<imax; i++) {
-		for(int counter=0; counter<3; counter++) newU[i][counter] = U[i][counter] - dt/dx*(F[i+1][counter] - F[i][counter]);
-	}
-	for(i=imin; i<imax; i++) {
-		for(int counter=0; counter<3; counter++) U[i][counter] = newU[i][counter];
+	for (i = imin; i < imax; ++ i) {
+		for(int counter=0; counter<3; counter++)
+			U[i][counter] = newU[i][counter];
 	}	
 	pr.setbcs(fld.U);
 }
 
 
 double C1DGodunovTypeMethodVacuum::calcdt(C1DProblem& pr, FEOS& eos, C1DField& fld) {
-	vector<vector<double>> U = fld.U; 
+	auto&& U = fld.U;
 	int imin = fld.imin, imax = fld.imax;
 	double ro = U[imax-1][0], u = U[imax-1][1]/ro, e = U[imax-1][2]/ro-.5*u*u, p=eos.getp(ro,e), c = eos.getc(ro, p);
 	vector<double> x = fld.x;	
@@ -517,8 +538,10 @@ void C1DGodunovTypeMethodVacuum::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) 
 		   E = 0.;
 	double dx = fld.dx, t = fld.t, dt = fld.dt;
 	int imin = fld.imin, imax = fld.imax;
-	vector<vector<double>> &U = fld.U, &newU = fld.newU, &F = fld.F;
-	vector<double> &x = fld.x;
+	auto&& U = fld.U;
+	auto&& newU = fld.newU;
+	auto&& F = fld.F;
+	vector<double>& x = fld.x;
 	int i=0;
 	// Considering only "gas-vacuum" configuration, i.e. gas fills the left side of the simulation segment
 	const double eps = .01;
@@ -638,8 +661,7 @@ void C1DGodunovTypeMethodVacuum::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) 
 		} else {
 			flux = rslv.calcFlux(eos, U[i-1][0], U[i-1][1], U[i-1][2], U[i][0], U[i][1], U[i][2]); 
 		}
-		double _F[] = {flux[0], flux[1], flux[2]};
-		F[i] = vector<double>(_F, _F+sizeof(_F)/sizeof(_F[0]));				
+		F[i] = flux;
 	}
 	for(i=imin; i<imax; i++) {
 		for(int counter=0; counter<3; counter++) newU[i][counter] = U[i][counter] - dt/dx*(F[i+1][counter] - F[i][counter]);
@@ -651,10 +673,10 @@ void C1DGodunovTypeMethodVacuum::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) 
 }
 
 
-Vector4 calcPhysicalFlux(FEOS& eos, double ro, double u, double p) {
-	if (ro==0) return Vector4::ZERO; 
-	double e = eos.gete(ro, p);
-	return Vector4(ro*u, p + ro*u*u, u*(p + ro*(e + .5*u*u)), 0.);
+Vector4 calcPhysicalFlux(FEOS& eos, double rho, double u, double p) {
+	if (rho == 0.) return Vector4::ZERO;
+	double e = eos.gete(rho, p);
+	return Vector4(rho*u, p + rho*u*u, u*(p + rho*(e + .5*u*u)), 0.);
 }
 
 // Godunov-exact solver flux
@@ -830,35 +852,181 @@ Vector4 CGPSRiemannSolver::calcFlux(FEOS& eos, double roL, double rouL, double r
 }
 
 
-Vector4 CLFRiemannSolver::calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER, double dx, double dt) {
-	Vector4 UL = Vector4(roL, rouL, roEL, 0.), UR = Vector4(roR, rouR, roER, 0.); 
-	Vector4 FL = calcPhysicalFlux(eos, roL, rouL, roEL), FR = calcPhysicalFlux(eos, roR, rouR, roER); 
-	Vector4 F = .5*(FL + FR) - 0.5*dx/dt*(UR - UL);
+Vector4 CLFRiemannSolver::calcFlux(
+		FEOS& eos,
+		double roL, double rouL, double roEL,
+		double roR, double rouR, double roER,
+		double dx, double dt) {
+	Vector4 UL = Vector4(roL, rouL, roEL, 0.);
+	Vector4 UR = Vector4(roR, rouR, roER, 0.);
+
+	double uL = rouL / roL;
+	double eL = roEL/roL - .5*uL*uL;
+	double uR = rouR / roR;
+	double eR = roER/roR - .5*uR*uR;
+	Vector4 FL = calcPhysicalFlux(eos, roL, rouL / roL, eos.getp(roL, eL));
+	Vector4 FR = calcPhysicalFlux(eos, roR, rouR / roR, eos.getp(roR, eR));
+
+	Vector4 F = 0.5 * (FL + FR) - 0.5 * dx / dt * (UR - UL);
+
 	return F;
 }
 
 
+//double calcSquareSoundSpeed(
+//		double rho, double rho_v, double rho_E, double gamma = 1.4) {
+//	/* Compute the square of sound speed. */
 
-void C1D2ndOrderMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
-	double roL = 0., uL = 0., eL = 0., pL = 0., roR = 0., uR = 0., eR = 0., pR = 0., E = 0.;
-	double dx = fld.dx, t = fld.t, dt = fld.dt;
+//	return std::abs(gamma * (gamma - 1.)
+//					* (rho_E - rho_v * rho_v * 0.5 / rho) / rho);
+//}
+
+
+double calcMaxWaveSpeedD(
+		const std::ranges::common_range auto& u_arr,
+		FEOS& eos) {
+	/* Calculate max (sound speed + abs(v)) ~ |df/du|
+	 * for 1D Euler eq'ns. */
+
+//	return std::ranges::max(std::ranges::transform_view(
+//		std::as_const(u_arr),
+//		[gamma](const auto& u_arr_vec_pt) -> double {
+//			return (std::sqrt(std::abs(calcSquareSoundSpeed(
+//								u_arr_vec_pt[0],
+//								u_arr_vec_pt[1],
+//								u_arr_vec_pt[2], gamma)))
+//					+ std::abs(u_arr_vec_pt[1] / u_arr_vec_pt[0]));
+//		}
+//	));
+	auto&& U = u_arr;
+	double rho = U[0][0];
+	double u = U[0][1]/rho;
+	double e = U[0][2]/rho - .5*u*u;
+	double p = eos.getp(rho, e);
+	double c = eos.getc(rho, p);
+	double max_lambda = std::max(
+				std::abs(u), std::max(std::abs(u-c), std::abs(u+c)));
+	double umax = max_lambda;
+	for (std::size_t i = 0; i < std::ranges::size(U); ++ i) {
+		rho = U[i][0];
+		u = U[i][1]/rho;
+		e = U[i][2]/rho - .5*u*u;
+		p = eos.getp(rho, e);
+		c = eos.getc(rho, p);
+		umax = std::abs(u) + std::abs(c);
+		if (max_lambda < umax) max_lambda = umax;
+	}
+
+	return max_lambda;
+}
+
+
+Vector4 CLFGlobalRiemannSolver::calcFlux(
+		FEOS& eos,
+		double roL, double rouL, double roEL,
+		double roR, double rouR, double roER,
+		double lambda) {
+	Vector4 UL = Vector4(roL, rouL, roEL, 0.);
+	Vector4 UR = Vector4(roR, rouR, roER, 0.);
+
+	double uL = rouL / roL;
+	double eL = roEL/roL - .5*uL*uL;
+	double uR = rouR / roR;
+	double eR = roER/roR - .5*uR*uR;
+	Vector4 FL = calcPhysicalFlux(eos, roL, rouL / roL, eos.getp(roL, eL));
+	Vector4 FR = calcPhysicalFlux(eos, roR, rouR / roR, eos.getp(roR, eR));
+
+	double alpha = /* 1.1 * */ lambda;
+
+//	Vector4 F(0., 0., 0., 0.);
+
+//	for (std::size_t cmpnt = 0; cmpnt < 3; ++ cmpnt)
+//		 F[cmpnt] = 0.5 * (FL[cmpnt] + FR[cmpnt])
+//				 - 0.5 * alpha * (UR[cmpnt] - UL[cmpnt]);
+
+	Vector4 F = 0.5 * (FL + FR) - 0.5 * alpha * (UR - UL);
+
+	return F;
+}
+
+
+void C1D2ndOrderMethod::calcFluxField(
+		C1DProblem& pr, FEOS& eos, C1DField& fld) {
+//	double roL = 0., uL = 0., eL = 0., pL = 0.,
+//			roR = 0., uR = 0., eR = 0., pR = 0., E = 0.;
 	int i=0, imin = fld.imin, imax = fld.imax;
-	vector<vector<double>> &U = fld.U, &newU = fld.newU, &F = fld.F;
-	vector<vector<double>> &ULx = rec.ULx, &URx = rec.URx;
-	// TODO: проверить на скорость выполнения операций, сравнить с реализацией через тип Vector4 -- если не медленнее, то в дальнейшем избавиться от Vector4 везде
+	auto&& F = fld.F;
+	auto&& ULx = rec.ULx;
+	auto&& URx = rec.URx;
+	// TODO: проверить на скорость выполнения операций,
+	// сравнить с реализацией через тип Vector4 --
+	// если не медленнее, то в дальнейшем избавиться от Vector4 везде
 	rec.calc(fld);
-	for(i=imin; i<=imax; i++) {								
-		Vector4 flux = rslv.calcFlux(eos, URx[i-1][0], URx[i-1][1], URx[i-1][2], ULx[i][0], ULx[i][1], ULx[i][2]); 
-		double _F[] = {flux[0], flux[1], flux[2]};
-		F[i] = vector<double>(_F, _F+sizeof(_F)/sizeof(_F[0]));		
+	for (i = imin; i <= imax; ++ i) {
+		F[i] = rslv.calcFlux(
+					eos,
+					URx[i-1][0], URx[i-1][1], URx[i-1][2],
+					ULx[i][0], ULx[i][1], ULx[i][2]);
 	}
-	for(i=imin; i<imax; i++) {
-		for(int counter=0; counter<3; counter++) newU[i][counter] = U[i][counter] - dt/dx*(F[i+1][counter] - F[i][counter]);
+}
+
+
+void C1D2ndOrderMethod::calc(
+		C1DProblem& pr, FEOS& eos, C1DField& fld) {
+	double dx = fld.dx;
+	double t = fld.t;
+	double dt = fld.dt;
+
+	int i = 0;
+	int imin = fld.imin;
+	int imax = fld.imax;
+
+	auto&& ULx = rec.ULx;
+	auto&& URx = rec.URx;
+	pr.setbcs(ULx);
+	pr.setbcs(URx);
+
+	auto&& F = fld.F;
+	auto&& U = fld.U;
+	auto&& newU = fld.newU;
+
+	calcFluxField(pr, eos, fld);
+
+	for (i = imin; i < imax; ++ i) {
+//		for (int counter = 0; counter < 3; ++ counter)
+//			newU[i][counter] = U[i][counter] - dt / dx * (
+//						F[i+1][counter] - F[i][counter]);
+		newU[i] = U[i] - dt / dx * (F[i+1] - F[i]);
 	}
-	for(i=imin; i<imax; i++) {
-		for(int counter=0; counter<3; counter++) U[i][counter] = newU[i][counter];
+
+	for (i = imin; i < imax; ++ i) {
+//		for (int counter = 0; counter < 3; ++ counter)
+//			U[i][counter] = newU[i][counter];
+		U[i] = newU[i];
 	}	
 	pr.setbcs(fld.U);
+}
+
+
+void C1D2ndOrderLFGlobalMethod::calcFluxField(
+		C1DProblem& pr, FEOS& eos, C1DField& fld) {
+//	double roL = 0., uL = 0., eL = 0., pL = 0.,
+//			roR = 0., uR = 0., eR = 0., pR = 0., E = 0.;
+	int i=0, imin = fld.imin, imax = fld.imax;
+	auto&& F = fld.F;
+	auto&& ULx = rec.ULx;
+	auto&& URx = rec.URx;
+	// TODO: проверить на скорость выполнения операций,
+	// сравнить с реализацией через тип Vector4 --
+	// если не медленнее, то в дальнейшем избавиться от Vector4 везде
+	rec.calc(fld);
+	double lambda = calcMaxWaveSpeedD(fld.U, eos);
+	for (i = imin - 1; i <= imax; ++ i) {
+		F[i] = lfrslv.calcFlux(
+					eos,
+					URx[i-1][0], URx[i-1][1], URx[i-1][2],
+					ULx[i][0], ULx[i][1], ULx[i][2], lambda);
+	}
 }
 
 
@@ -866,8 +1034,10 @@ void C1DBGKMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 	double roL = 0., uL = 0., eL = 0., pL = 0., roR = 0., uR = 0., eR = 0., pR = 0., E = 0.;
 	double dx = fld.dx, t = fld.t, dt = fld.dt;
 	int i=0, imin = fld.imin, imax = fld.imax;
-	vector<vector<double>> &U = fld.U, &newU = fld.newU, &F = fld.F;
-	for(i=imin-1; i<imax; i++) {		
+	auto&& U = fld.U;
+	auto&& newU = fld.newU;
+	auto&& F = fld.F;
+	for (i = imin - 1; i < imax; ++ i) {
 
 
 
@@ -875,7 +1045,7 @@ void C1DBGKMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 
 
 
-		if( i == 31 )
+		if (i == 31)
 		{ 
 			
 			
@@ -891,9 +1061,7 @@ void C1DBGKMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 		Vector4 _U = Vector4(U[i][0],U[i][1],U[i][2],0.);
 		Vector4 _Up = Vector4(U[i+1][0],U[i+1][1],U[i+1][2],0.);
 		Vector4 _Upp = Vector4(U[i+2][0],U[i+2][1],U[i+2][2],0.);
-		Vector4 flux = bgk.calcFlux(eos, _Um, _U, _Up, _Upp, dx, dt);
-		double _F[] = {flux[0], flux[1], flux[2]};
-		F[i] = vector<double>(_F, _F+sizeof(_F)/sizeof(_F[0]));		
+		F[i] = bgk.calcFlux(eos, _Um, _U, _Up, _Upp, dx, dt);
 	}
 	for(i=imin; i<imax; i++) {
 		for(int counter=0; counter<3; counter++) newU[i][counter] = U[i][counter] - dt/dx*(F[i][counter] - F[i-1][counter]);
@@ -910,24 +1078,74 @@ void C1DLFMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 		   E = 0.;
 	double dx = fld.dx, t = fld.t, dt = fld.dt;
 	int imin = fld.imin, imax = fld.imax;
-	vector<vector<double>> &U = fld.U, &newU = fld.newU, &F = fld.F;
-	// TODO: проверить на скорость выполнения операций, сравнить с реализацией через тип Vector4 -- если не медленнее, то в дальнейшем избавиться от Vector4 везде
+	auto&& U = fld.U;
+	auto&& newU = fld.newU;
+	auto&& F = fld.F;
+	// TODO: проверить на скорость выполнения операций,
+	// сравнить с реализацией через тип Vector4 -- если не медленнее,
+	// то в дальнейшем избавиться от Vector4 везде
 	int i=0;	
-	// Потоки считаем по алгоритму решения задаче о распаде разрыва для УРС Ми-Грюнайзена из работы [Miller, Puckett]
-	for(i=imin; i<=imax; i++) {
-		Vector4 flux = lfrslv.calcFlux(eos, U[i-1][0], U[i-1][1], U[i-1][2], U[i][0], U[i][1], U[i][2], dx, dt); 
-		double _F[] = {flux[0], flux[1], flux[2]};
-		F[i] = vector<double>(_F, _F+sizeof(_F)/sizeof(_F[0]));		
+	// Потоки считаем по алгоритму решения задаче о распаде разрыва для УРС
+	// Ми-Грюнайзена из работы [Miller, Puckett]
+	for (i = imin; i <= imax; i++) {
+		F[i] = lfrslv.calcFlux(
+					eos,
+					U[i-1][0], U[i-1][1], U[i-1][2],
+					U[i][0], U[i][1], U[i][2],
+					dx, dt);
 		//n.W_temp = n.W - dt/h*(Fp-Fm);
 	}
-	for(i=imin; i<imax; i++) {
-		for(int counter=0; counter<3; counter++) newU[i][counter] = U[i][counter] - dt/dx*(F[i+1][counter] - F[i][counter]);
+	for (i = imin; i < imax; ++ i) {
+		for (int counter = 0; counter < 3; ++ counter)
+			newU[i][counter]
+					= U[i][counter] - dt / dx * (
+						F[i+1][counter] - F[i][counter]);
 	}
-	for(i=imin; i<imax; i++) {
-		for(int counter=0; counter<3; counter++) U[i][counter] = newU[i][counter];
-	}	
+	for (i = imin; i < imax; ++ i) {
+		for (int counter = 0; counter < 3; ++ counter)
+			U[i][counter] = newU[i][counter];
+	}
 	pr.setbcs(fld.U);
 }
+
+
+void C1DLFGlobalMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
+	double roL = 0., uL = 0., eL = 0., pL = 0.,
+		   roR = 0., uR = 0., eR = 0., pR = 0.,
+		   E = 0.;
+	double dx = fld.dx, t = fld.t, dt = fld.dt;
+	int imin = fld.imin, imax = fld.imax;
+	auto&& U = fld.U;
+	auto&& newU = fld.newU;
+	auto&& F = fld.F;
+	// TODO: проверить на скорость выполнения операций,
+	// сравнить с реализацией через тип Vector4 -- если не медленнее,
+	// то в дальнейшем избавиться от Vector4 везде
+	int i=0;
+	// Потоки считаем по алгоритму решения задаче о распаде разрыва для УРС
+	// Ми-Грюнайзена из работы [Miller, Puckett]
+	double lambda = calcMaxWaveSpeedD(fld.U, eos);
+	for (i = imin; i <= imax; i++) {
+		F[i] = lfrslv.calcFlux(
+					eos,
+					U[i-1][0], U[i-1][1], U[i-1][2],
+					U[i][0], U[i][1], U[i][2],
+					lambda);
+		//n.W_temp = n.W - dt/h*(Fp-Fm);
+	}
+	for (i = imin; i < imax; ++ i) {
+		for (int counter = 0; counter < 3; ++ counter)
+			newU[i][counter]
+					= U[i][counter] - dt / dx * (
+						F[i+1][counter] - F[i][counter]);
+	}
+	for (i = imin; i < imax; ++ i) {
+		for (int counter = 0; counter < 3; ++ counter)
+			U[i][counter] = newU[i][counter];
+	}
+	pr.setbcs(fld.U);
+}
+
 
 Vector4 CRoeRiemannSolver::calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) {
 	double uL = rouL/roL, eL = roEL/roL - 0.5*uL*uL, uR = rouR/roR, eR = roER/roR - 0.5*uR*uR;

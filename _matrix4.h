@@ -10,8 +10,8 @@ Adapted from Ogre3D
 
 #include "_vector4.h"
 
+#include <cassert>
 #include <iostream>
-#include <assert.h>
 
 
 /*
@@ -77,7 +77,7 @@ public:
         return m[iRow];
     }
 
-    inline const double *const operator [] ( size_t iRow ) const
+	inline const double *const operator [] ( size_t iRow ) const
     {
         assert( iRow < 4 );
         return m[iRow];

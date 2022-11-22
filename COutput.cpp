@@ -1,6 +1,7 @@
 #include <assert.h>
 
 #include <string>
+#include <fstream>
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -43,11 +44,11 @@ using namespace std;
 	 oss << "[";
 	 double progressRate = (t - _pr.tmin)/(_pr.tmax - _pr.tmin);        
 	 for(i = 0; i <= 10; i++) 
-		 if ((int)progressRate >= i) 
+		 if (static_cast<int>(progressRate) >= i)
 			 oss << "."; 
 		 else 
 			 oss << " ";
-	 oss << "] " << (int)progressRate*100 << "% ";
+	 oss << "] " << static_cast<int>(progressRate) * 100 << "% ";
 	 return oss.str();
  }
 
@@ -56,7 +57,7 @@ int COutput::manageScreenOutput(C1DProblem& _prm, int iteration, double t, doubl
 	string buf;
 	oss << /*"\r" << getProgressBar(_problem, t) <<*/ "iter=" << iteration << 
 		   setprecision(tPrecision)  << " t="  << t        << 
-		   setprecision(dtPrecision) << " dt=" << dt       << " CFL=" << CFL << " time=" << tCalc << "s" << endl;
+		   setprecision(dtPrecision) << " dt=" << dt       << " CFL=" << CFL << " time=" << tCalc << "s" << "\n";
 	cout << oss.str();
 	return 1;
 }
@@ -98,21 +99,21 @@ int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, FEOS& eos) {
 
 int COutput::dump(C1DProblem& prb, C1DField& fld, FEOS& eos, string fName) {
 	int i = 0, imin = fld.imin, imax = fld.imax;
-	vector<vector<double>> U = fld.U;
+	auto&& U = fld.U;
 	vector<double> x = fld.x;
 	double t = fld.t, dx = fld.dx; 
 	double rol = prb.rol, ul = prb.ul, pl = prb.pl, ror = prb.ror, ur = prb.ur, pr = prb.pr, x0 = prb.x0;
-	ofstream ofs(fName);
+	std::ofstream ofs(fName);
 	CVectorPrimitive res = CVectorPrimitive();	
 	double ro_ex = 0., p_ex = 0., e_ex = 0., q=0.;
-	if(!ofs) {
-		cout << "COutput::dump1D() reports error: cannot open output file." << endl;		
+	if (!ofs) {
+		cout << "COutput::dump1D() reports error: cannot open output file." <<  "\n";
 		exit(1);
 	}
-	if(eos.gettype() == "ideal" && prb.name != "holes") {
-		ofs << "TITLE=\"Riemann Problem 1D slice t=" << t << "\"" << endl;
-		ofs << "VARIABLES=\"x\",\"rho\",\"u\",\"p\",\"e\",\"rho_ex\",\"u_ex\",\"p_ex\",\"e_ex\"" << endl;	
-		ofs << "ZONE T=\"Numerical\", I=" << imax - imin << ", F=POINT" << endl;
+	if (eos.gettype() == "ideal" && prb.name != "holes") {
+		ofs << "TITLE=\"Riemann Problem 1D slice t=" << t << "\"" <<  "\n";
+		ofs << "VARIABLES=\"x\",\"rho\",\"u\",\"p\",\"e\",\"rho_ex\",\"u_ex\",\"p_ex\",\"e_ex\"" <<  "\n";
+		ofs << "ZONE T=\"Numerical\", I=" << imax - imin << ", F=POINT" <<  "\n";
 		double mul_x=1., mul_u=1., mul_p=1., mul_e=1.;
 		double _ro = 0., _u = 0., _v = 0., _w = 0., _e = 0., _p = 0.;	
 		for(i = imin; i < imax; i++) {						
@@ -129,13 +130,13 @@ int COutput::dump(C1DProblem& prb, C1DField& fld, FEOS& eos, string fName) {
 			ro_ex = res.ro;
 			p_ex = res.p;
 			e_ex = eos.gete(ro_ex, p_ex);
-			ofs << (fld.x[i]+.5*dx)*mul_x << " " << _ro    << " " << _u*mul_u << " " << _p*mul_p << " " << _e*mul_e << " " << 
-				   res.ro << " " << res.v*mul_u << " " << res.p*mul_p << " " << e_ex*mul_e << endl;				
+			ofs << " " << (fld.x[i]+.5*dx)*mul_x << " " << _ro    << " " << _u*mul_u << " " << _p*mul_p << " " << _e*mul_e << " " <<
+				   res.ro << " " << res.v*mul_u << " " << res.p*mul_p << " " << e_ex*mul_e << "\n";
 		}	
 	} else {
-		ofs << "TITLE=\"Laser problem, t=" << t << "\"" << endl;
-		ofs << "VARIABLES=\"x[nm]\",\"ro[kg/m3]\",\"u[m/s]\",\"p[GPa]\",\"e[MJ/kg]\"" << endl;	
-		ofs << "ZONE T=\"Numerical\", I=" << imax - imin << ", F=POINT" << endl;
+		ofs << "TITLE=\"Laser problem, t=" << t << "\"" << "\n";
+		ofs << "VARIABLES=\"x[nm]\",\"ro[kg/m3]\",\"u[m/s]\",\"p[GPa]\",\"e[MJ/kg]\"" << "\n";
+		ofs << "ZONE T=\"Numerical\", I=" << imax - imin << ", F=POINT" << "\n";
 		double mul_x=1.e9, mul_u=1., mul_p=1.e-9, mul_e=1.e-6;
 		double _ro = 0., _u = 0., _v = 0., _w = 0., _e = 0., _p = 0.;	
 		for(i = imin; i < imax; i++) {						
@@ -148,7 +149,14 @@ int COutput::dump(C1DProblem& prb, C1DField& fld, FEOS& eos, string fName) {
 				_e = 0.;
 			}
 			_p  = eos.getp(_ro, _e); 		
-			ofs << (fld.x[i]+.5*dx)*mul_x << " " << _ro    << " " << _u*mul_u << " " << _p*mul_p << " " << _e*mul_e << " " << endl;				
+			ofs << std::setprecision(
+					std::numeric_limits<double>::max_digits10 - 1)
+				<< std::scientific
+				<< (fld.x[i]+.5*dx)*mul_x
+				<< " " << _ro
+				<< " " << _u*mul_u
+				<< " " << _p*mul_p
+				<< " " << _e*mul_e << "\n";
 	    }
 	}
 	ofs.close();	

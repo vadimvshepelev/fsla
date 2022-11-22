@@ -84,8 +84,33 @@ public:
 class CLFRiemannSolver : public CRiemannSolver {
 public: 
 	CLFRiemannSolver() {}
-	Vector4 calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER, double dx, double dt);
-	Vector4 calcFlux(FEOS& eos, double roL, double rouL, double roEL, double roR, double rouR, double roER) { return Vector4::ZERO; }
+	Vector4 calcFlux(
+			FEOS& eos,
+			double roL, double rouL, double roEL,
+			double roR, double rouR, double roER,
+			double dx, double dt);
+	Vector4 calcFlux(
+			FEOS& eos,
+			double roL, double rouL, double roEL,
+			double roR, double rouR, double roER) { return Vector4::ZERO; }
+	int isSupported(FEOSIdeal& eos) { return 1; }
+	int isSupported(FEOSMieGruneisen& eos) {return 1; }
+};
+
+
+// Global Lax-Friedrichs Riemann solver
+class CLFGlobalRiemannSolver : public CRiemannSolver {
+public:
+	CLFGlobalRiemannSolver() {}
+	Vector4 calcFlux(
+			FEOS& eos,
+			double roL, double rouL, double roEL,
+			double roR, double rouR, double roER,
+			double lambda);
+	Vector4 calcFlux(
+			FEOS& eos,
+			double roL, double rouL, double roEL,
+			double roR, double rouR, double roER) { return Vector4::ZERO; }
 	int isSupported(FEOSIdeal& eos) { return 1; }
 	int isSupported(FEOSMieGruneisen& eos) {return 1; }
 };
@@ -129,6 +154,7 @@ class C1DMethod {
 public:
 	virtual void calc(C1DProblem& pr, FEOS& eos, C1DField& fld)=0;
 	virtual double calcdt(C1DProblem& pr, FEOS& eos, C1DField& fld)=0;
+	virtual void calcFluxField(C1DProblem& pr, FEOS& eos, C1DField& fld)=0;
 };
 
 
@@ -143,10 +169,11 @@ public:
 class C1DGodunovTypeMethod : public C1DMethod {
 public:
 	CRiemannSolver& rslv;
-	C1DGodunovTypeMethod() : rslv(exrslv) {}  
+	C1DGodunovTypeMethod() : rslv(exrslv) {}
 	C1DGodunovTypeMethod(CRiemannSolver& _rslv) : rslv(_rslv) {}
-	void calc(C1DProblem& pr, FEOS& eos, C1DField& fld);
-	double calcdt(C1DProblem& pr, FEOS& eos, C1DField& fld);	
+	virtual void calc(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
+	double calcdt(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
+	virtual void calcFluxField(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
 };
 
 
@@ -156,6 +183,15 @@ public:
 	C1DLFMethod();  
 	C1DLFMethod(CLFRiemannSolver& _lfrslv) : lfrslv(_lfrslv) {}
 	void calc(C1DProblem& pr, FEOS& eos, C1DField& fld);
+};
+
+
+class C1DLFGlobalMethod : public C1DGodunovTypeMethod {
+	CLFGlobalRiemannSolver& lfrslv;
+public:
+	C1DLFGlobalMethod();
+	C1DLFGlobalMethod(CLFGlobalRiemannSolver& _lfrslv) : lfrslv(_lfrslv) {}
+	void calc(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
 };
 
 
@@ -172,9 +208,26 @@ public:
 
 class C1D2ndOrderMethod : public C1DGodunovTypeMethod {
 public:
-	C1D2ndOrderMethod(CRiemannSolver& _rslv, F1DReconstruction& _rec) : C1DGodunovTypeMethod(_rslv), rec(_rec) {} 
+	C1D2ndOrderMethod(CRiemannSolver& _rslv, F1DReconstruction& _rec)
+		: C1DGodunovTypeMethod(_rslv), rec(_rec) {}
+
 	F1DReconstruction& rec;
-	void calc(C1DProblem& pr, FEOS& eos, C1DField& fld);
+	virtual void calc(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
+	virtual void calcFluxField(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
+};
+
+
+class C1D2ndOrderLFGlobalMethod : public C1D2ndOrderMethod {
+public:
+	CLFGlobalRiemannSolver& lfrslv;
+	// F1DReconstruction& rec;
+
+	C1D2ndOrderLFGlobalMethod(CLFGlobalRiemannSolver& _rslv,
+							  F1DReconstruction& _rec)
+		: C1D2ndOrderMethod(_rslv, _rec), lfrslv(_rslv) {}
+
+//	void calc(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
+	void calcFluxField(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
 };
 
 

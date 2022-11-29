@@ -1,6 +1,8 @@
 # Created by https://www.toptal.com/developers/gitignore/api/qtcreator,c++,visualstudio,visualstudiocode,vim
 # Edit at https://www.toptal.com/developers/gitignore?templates=qtcreator,c++,visualstudio,visualstudiocode,vim
 
+x64/*
+
 ### C++ ###
 # Prerequisites
 *.d

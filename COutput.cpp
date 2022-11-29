@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <sstream>
 
-#include"COutput.h"
+#include "COutput.h"
 #include <boost/filesystem.hpp>
 
 #define BOOST_LIB_DIAGNOSTIC

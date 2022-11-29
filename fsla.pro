@@ -50,7 +50,7 @@ SOURCES += \
         task.cpp
 
 DISTFILES += \
-    README.MD \
+    README.md \
     fsla.pro.user \
     fsla.sln \
     fsla.vcxproj \

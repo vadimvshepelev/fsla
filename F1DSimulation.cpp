@@ -12,8 +12,6 @@ void F1DSimulation::run() {
 	pr.setics(eos, fld.x, fld.U);
 	int counter = 0;
 
-	clock_t tStart = 0;
-	clock_t tEnd = 0;
 	clock_t tStartGlobal = 0;
 	clock_t tEndGlobal = 0;
 

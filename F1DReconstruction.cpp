@@ -2149,18 +2149,21 @@ void F1DCharWiseWENO5Reconstruction::calc(C1DField& fld) /*override*/ {
 				project,
 				fld.imin);
 
+	/*u_plus = std::ranges::views::all(URx);*/
 	std::transform(
 //				std::execution::par_unseq,
 				std::ranges::begin(avg),
-				std::ranges::end(avg),
+				std::ranges::end(avg) - 1,
 				std::ranges::begin(u_plus),
 				std::ranges::begin(u_plus),
 				project_back);
 
+	//u_minus = std::ranges::views::all(ULx)
+	//	| std::ranges::views::drop(1);
 	std::transform(
 				//std::execution::par_unseq,
 				std::ranges::begin(avg),
-				std::ranges::end(avg),
+				std::ranges::end(avg) - 1,
 				std::ranges::begin(u_minus),
 				std::ranges::begin(u_minus),
 				project_back);

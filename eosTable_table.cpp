@@ -29,7 +29,7 @@ EOSTTable::~EOSTTable()
 }
 
 
-void EOSTTable::create(char fName[], std::string dirName, double scaler, EOSTScale *_v_scale, EOSTScale *_t_scale, int EOSFlag)
+void EOSTTable::create(const char fName[], std::string dirName, double scaler, EOSTScale *_v_scale, EOSTScale *_t_scale, int EOSFlag)
 {
 	clear();
 

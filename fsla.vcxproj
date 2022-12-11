@@ -1,18 +1,17 @@
-<<<<<<< HEAD
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|x64">
-      <Configuration>Debug</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
@@ -20,7 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{E378EF5E-7DB5-4FAE-8A9C-F4EADB9F2FFA}</ProjectGuid>
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{7a5ff06f-bcf2-4ccf-b810-0d51f563bf7d}</ProjectGuid>
     <RootNamespace>fsla</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -29,163 +30,124 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  <ImportGroup Label="Shared">
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\local\boost_1_69_0;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\local\boost_1_69_0\lib32-msvc-11.0;$(LibraryPath)</LibraryPath>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\local\boost_1_70_0;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\local\boost_1_70_0\lib64-msvc-11.0;$(LibraryPath)</LibraryPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\local\boost_1_70_0;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\local\boost_1_70_0\lib64-msvc-11.0;$(LibraryPath)</LibraryPath>
+    <IncludePath>E:\local\boost_1_70_0;C:\local\boost_1_70_0;$(IncludePath)</IncludePath>
+    <LibraryPath>E:\local\boost_1_70_0\lib64-msvc-14.2;C:\local\boost_1_70_0\lib64-msvc-11.0;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
-      <SDLCheck>true</SDLCheck>
-    </ClCompile>
-    <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>C:\local\boost_1_69_0\lib64-msvc-11.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+    </ClCompile>
+    <Link>
       <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <AdditionalLibraryDirectories>C:\local\boost_1_69_0\lib64-msvc-11.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="C1DBCs.cpp" />
-    <ClCompile Include="C1DField.cpp" />
-    <ClCompile Include="C1DMethod.cpp" />
-    <ClCompile Include="FEOS.cpp" />
-    <ClCompile Include="C1DProblem.cpp" />
-    <ClCompile Include="F1DReconstruction.cpp" />
-    <ClCompile Include="F1DSimulation.cpp" />
-    <ClCompile Include="COutput.cpp" />
-    <ClCompile Include="CTestToro.cpp" />
-    <ClCompile Include="eosold.cpp" />
-    <ClCompile Include="eosAnalytic.cpp" />
-    <ClCompile Include="eosAnalyticAu.cpp" />
-    <ClCompile Include="eosAnalyticFe.cpp" />
-    <ClCompile Include="eosAnalyticNi.cpp" />
-    <ClCompile Include="eosAnalyticTa.cpp" />
-    <ClCompile Include="eosFigures.cpp" />
-    <ClCompile Include="eosIdeal.cpp" />
-    <ClCompile Include="eosTable.cpp" />
-    <ClCompile Include="eosTableAu.cpp" />
-    <ClCompile Include="eosTableFe.cpp" />
-    <ClCompile Include="eosTableFeAlpha.cpp" />
-    <ClCompile Include="eosTableNi.cpp" />
-    <ClCompile Include="eosTableTa.cpp" />
-    <ClCompile Include="eosTable_scale.cpp" />
-    <ClCompile Include="eosTable_table.cpp" />
-    <ClCompile Include="eos\EOSBin.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="cfield.cpp" />
-    <ClCompile Include="methodold.cpp" />
-    <ClCompile Include="methodEuler.cpp" />
-    <ClCompile Include="solver.cpp" />
-    <ClCompile Include="solvers\ENO.cpp" />
-    <ClCompile Include="solvers\godunov-EOSBin.cpp" />
-    <ClCompile Include="solvers\HLL.cpp" />
-    <ClCompile Include="solvers\hllc.cpp" />
-    <ClCompile Include="stageExchange.cpp" />
-    <ClCompile Include="stageHeat.cpp" />
-    <ClCompile Include="stageHydro.cpp" />
-    <ClCompile Include="task.cpp" />
-    <ClCompile Include="_matrix4.cpp" />
-    <ClCompile Include="_vector4.cpp" />
-  </ItemGroup>
-  <ItemGroup>
+    <ClInclude Include="C1DBCs.h" />
     <ClInclude Include="C1DField.h" />
     <ClInclude Include="C1DMethod.h" />
-    <ClInclude Include="FEOS.h" />
     <ClInclude Include="C1DProblem.h" />
-    <ClInclude Include="F1DSimulation.h" />
+    <ClInclude Include="cfieldold.h" />
     <ClInclude Include="COutput.h" />
     <ClInclude Include="CTestToro.h" />
     <ClInclude Include="defines.h" />
-    <ClInclude Include="eosold.h" />
     <ClInclude Include="eosAnalytic.h" />
     <ClInclude Include="eosAnalyticAu.h" />
     <ClInclude Include="eosAnalyticFe.h" />
@@ -194,6 +156,7 @@
     <ClInclude Include="eosFigures.h" />
     <ClInclude Include="eosIdeal.h" />
     <ClInclude Include="eosIdealElectron.h" />
+    <ClInclude Include="eosold.h" />
     <ClInclude Include="eosTable.h" />
     <ClInclude Include="eosTableAu.h" />
     <ClInclude Include="eosTableFe.h" />
@@ -204,165 +167,26 @@
     <ClInclude Include="eosTable_table.h" />
     <ClInclude Include="eosTest.h" />
     <ClInclude Include="eos\EOSBin.h" />
-    <ClInclude Include="cfieldold.h" />
-    <ClInclude Include="C1DBCs.h" />
-    <ClInclude Include="methodold.h" />
-    <ClInclude Include="methodEuler.h" />
-    <ClInclude Include="node.h" />
     <ClInclude Include="F1DReconstruction.h" />
+    <ClInclude Include="F1DSimulation.h" />
+    <ClInclude Include="FEOS.h" />
+    <ClInclude Include="methodEuler.h" />
+    <ClInclude Include="methodold.h" />
+    <ClInclude Include="node.h" />
+    <ClInclude Include="odesolver.h" />
     <ClInclude Include="solver.h" />
     <ClInclude Include="task.h" />
     <ClInclude Include="_matrix4.h" />
     <ClInclude Include="_vector4.h" />
   </ItemGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-  </ImportGroup>
-=======
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|x64">
-      <Configuration>Debug</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|x64">
-      <Configuration>Release</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
-  </ItemGroup>
-  <PropertyGroup Label="Globals">
-    <ProjectGuid>{E378EF5E-7DB5-4FAE-8A9C-F4EADB9F2FFA}</ProjectGuid>
-    <RootNamespace>fsla</RootNamespace>
-  </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
-  </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <ImportGroup Label="ExtensionSettings">
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\local\boost_1_69_0;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\local\boost_1_69_0\lib32-msvc-11.0;$(LibraryPath)</LibraryPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>E:\local\boost_1_70_0;C:\local\boost_1_70_0;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\local\boost_1_70_0\lib64-msvc-14.2;C:\local\boost_1_70_0\lib64-msvc-11.0;$(LibraryPath)</LibraryPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\local\boost_1_70_0;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\local\boost_1_70_0\lib64-msvc-11.0;$(LibraryPath)</LibraryPath>
-  </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
-      <SDLCheck>true</SDLCheck>
-    </ClCompile>
-    <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Console</SubSystem>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
-      <SDLCheck>true</SDLCheck>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-    </ClCompile>
-    <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>C:\local\boost_1_69_0\lib64-msvc-11.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-    </ClCompile>
-    <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <SubSystem>Console</SubSystem>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-    </ClCompile>
-    <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <SubSystem>Console</SubSystem>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="C1DBCs.cpp" />
     <ClCompile Include="C1DField.cpp" />
     <ClCompile Include="C1DMethod.cpp" />
-    <ClCompile Include="FEOS.cpp" />
     <ClCompile Include="C1DProblem.cpp" />
-    <ClCompile Include="F1DReconstruction.cpp" />
-    <ClCompile Include="F1DSimulation.cpp" />
+    <ClCompile Include="cfield.cpp" />
     <ClCompile Include="COutput.cpp" />
     <ClCompile Include="CTestToro.cpp" />
-    <ClCompile Include="eosold.cpp" />
     <ClCompile Include="eosAnalytic.cpp" />
     <ClCompile Include="eosAnalyticAu.cpp" />
     <ClCompile Include="eosAnalyticFe.cpp" />
@@ -370,6 +194,7 @@
     <ClCompile Include="eosAnalyticTa.cpp" />
     <ClCompile Include="eosFigures.cpp" />
     <ClCompile Include="eosIdeal.cpp" />
+    <ClCompile Include="eosold.cpp" />
     <ClCompile Include="eosTable.cpp" />
     <ClCompile Include="eosTableAu.cpp" />
     <ClCompile Include="eosTableFe.cpp" />
@@ -379,10 +204,12 @@
     <ClCompile Include="eosTable_scale.cpp" />
     <ClCompile Include="eosTable_table.cpp" />
     <ClCompile Include="eos\EOSBin.cpp" />
+    <ClCompile Include="F1DReconstruction.cpp" />
+    <ClCompile Include="F1DSimulation.cpp" />
+    <ClCompile Include="FEOS.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="cfield.cpp" />
-    <ClCompile Include="methodold.cpp" />
     <ClCompile Include="methodEuler.cpp" />
+    <ClCompile Include="methodold.cpp" />
     <ClCompile Include="odesolver.cpp" />
     <ClCompile Include="solver.cpp" />
     <ClCompile Include="solvers\ENO.cpp" />
@@ -397,46 +224,10 @@
     <ClCompile Include="_vector4.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C1DField.h" />
-    <ClInclude Include="C1DMethod.h" />
-    <ClInclude Include="FEOS.h" />
-    <ClInclude Include="C1DProblem.h" />
-    <ClInclude Include="F1DSimulation.h" />
-    <ClInclude Include="COutput.h" />
-    <ClInclude Include="CTestToro.h" />
-    <ClInclude Include="defines.h" />
-    <ClInclude Include="eosold.h" />
-    <ClInclude Include="eosAnalytic.h" />
-    <ClInclude Include="eosAnalyticAu.h" />
-    <ClInclude Include="eosAnalyticFe.h" />
-    <ClInclude Include="eosAnalyticNi.h" />
-    <ClInclude Include="eosAnalyticTa.h" />
-    <ClInclude Include="eosFigures.h" />
-    <ClInclude Include="eosIdeal.h" />
-    <ClInclude Include="eosIdealElectron.h" />
-    <ClInclude Include="eosTable.h" />
-    <ClInclude Include="eosTableAu.h" />
-    <ClInclude Include="eosTableFe.h" />
-    <ClInclude Include="eosTableFeAlpha.h" />
-    <ClInclude Include="eosTableNi.h" />
-    <ClInclude Include="eosTableTa.h" />
-    <ClInclude Include="eosTable_scale.h" />
-    <ClInclude Include="eosTable_table.h" />
-    <ClInclude Include="eosTest.h" />
-    <ClInclude Include="eos\EOSBin.h" />
-    <ClInclude Include="cfieldold.h" />
-    <ClInclude Include="C1DBCs.h" />
-    <ClInclude Include="methodold.h" />
-    <ClInclude Include="methodEuler.h" />
-    <ClInclude Include="node.h" />
-    <ClInclude Include="F1DReconstruction.h" />
-    <ClInclude Include="solver.h" />
-    <ClInclude Include="task.h" />
-    <ClInclude Include="_matrix4.h" />
-    <ClInclude Include="_vector4.h" />
+    <None Include="fsla.pro" />
+    <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
->>>>>>> e064e00b84ccb2927aff3ddc698edc3e17990e3a
 </Project>

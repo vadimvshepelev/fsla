@@ -12,6 +12,8 @@ void F1DSimulation::run() {
 
 	clock_t tStartGlobal = 0;
 	clock_t tEndGlobal = 0;
+	clock_t tStart = 0;
+	clock_t tEnd = 0;
 
 	double cfl = 0.;
 	double tCalc = 0.;

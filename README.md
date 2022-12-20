@@ -13,5 +13,4 @@ Made with
 
 Depends on
 
-* `Eigen3` (compatible with the latest version, included as a git submodule),
-* `boost` for interacting with the filesystem.
+* `Eigen3` (compatible with the latest version, included as a git submodule).

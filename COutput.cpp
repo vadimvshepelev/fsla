@@ -2,15 +2,12 @@
 
 #include <string>
 #include <fstream>
+#include <filesystem>
 #include <iostream>
 #include <iomanip>
 #include <sstream>
 
 #include "COutput.h"
-#include <boost/filesystem.hpp>
-
-#define BOOST_LIB_DIAGNOSTIC
-#define BOOST_SYSTEM_NO_DEPRECATED
 
 using namespace std;
 
@@ -18,20 +15,20 @@ using namespace std;
 	              subDir(_subdir), dtt(_dtt), tUnit("ps"), tMul(1.e9), nDump(0), tPrecision(4), dtPrecision(2) {
     // Разбираемся с каталогом и создаем новый, если его нет	
 	cout << "Creating subdirectory ";
-	boost::filesystem::path outputPath(subDir);
+	std::filesystem::path outputPath(subDir);
 		if(!exists(outputPath)) {
 			cout << "'" << subDir << "'" << "...";
-			if(!boost::filesystem::create_directory(outputPath)) {
+			if(!std::filesystem::create_directory(outputPath)) {
 				cerr << endl << "Error: cannot create 'output' subdirectory.";
 				exit(1);
 			}
 			cout << "done!" << endl;
 		}		
 		subDir += "/" + pr.name;
-		boost::filesystem::path p(subDir);
+		std::filesystem::path p(subDir);
 	if(exists(p)) {
 		cout << "'" << p.string() << "'" << "...already exists!" << endl;
-	} else if(!boost::filesystem::create_directory(p)) {
+	} else if(!std::filesystem::create_directory(p)) {
 		cerr << "Error: cannot make a subdirectory.";
 		exit(1);
 	} else 
@@ -157,6 +154,14 @@ int COutput::dump(C1DProblem& prb, C1DField& fld, FEOS& eos, string fName) {
 				<< " " << _u*mul_u
 				<< " " << _p*mul_p
 				<< " " << _e*mul_e << "\n";
+//			ofs << std::setprecision(
+//					std::numeric_limits<double>::max_digits10 - 1)
+//				<< std::scientific
+//				<< (fld.x[i]+.5*dx)/**mul_x*/
+//				<< " " << _ro
+//				<< " " << _u/**mul_u*/
+//				<< " " << _p/**mul_p*/
+//				<< " " << _e/**mul_e*/ << "\n";
 	    }
 	}
 	ofs.close();	

@@ -517,3 +517,14 @@ output/*
 # Boost
 boost*
 boost/
+
+
+.vs/*
+
+
+x64/*
+x86/*
+
+
+*.obj
+*.o

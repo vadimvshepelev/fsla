@@ -171,7 +171,7 @@ int main(int argc, char *argv[]) {
 	F1DENO3Reconstruction eno3rec = F1DENO3Reconstruction(*fldptr);
 	C1D2ndOrderLFGlobalMethod mtd = C1D2ndOrderLFGlobalMethod(
 				lfgl, eno5rec_charwise/*eno5rec*//*eno3rec*//*eno2rec*/);
-	// C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hllc, eno5rec/*eno3rec*//*eno2rec*/);
+//	C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hllc, /*eno5rec*//*eno3rec*/eno2rec);
 	// C1DLFGlobalMethod mtd = C1DLFGlobalMethod(lfgl);
 	// C1DGodunovTypeMethodVacuum mtd = C1DGodunovTypeMethodVacuum(hllc);
 	// CExactRiemannSolver exrslv;

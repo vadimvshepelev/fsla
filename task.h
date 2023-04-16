@@ -105,7 +105,7 @@ public:
 		  eos(0), eosGlass(0), sourceFlag(SourceType::SrcUndef), tauPulse(0.), fluence(0.), deltaSkin(0.), 
 		  zones(0), nZones(0), maxTime(0.), mtd(0), viscFlag(0), totalSize(0), EOSFlag(0) {} 
 	~CTask();					
-	void		load(char *fName);		// Считать условие задачи из файла	
+	void		load(const char *fName);		// Считать условие задачи из файла	
 	void		clear();				// Удалить задачу
 	EOSOld			&getEOS() { return *eos; }	
 	EOSOld			&getEOSGlass() { return *eosGlass; }	

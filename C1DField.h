@@ -24,4 +24,16 @@ public:
 };
 
 
+class C1DFieldPrimitive {
+public:
+	const int imin, imax;
+	vector<double> x;
+	const double dm, dx;
+	double t, dt;
+	vector<Vector4> W, newW, prevW;
+	C1DFieldPrimitive(C1DProblem& pr);
+	~C1DFieldPrimitive();
+};
+
+
 #endif

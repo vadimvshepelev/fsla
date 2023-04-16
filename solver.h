@@ -31,8 +31,8 @@ public:
 	CSolver();
 	CSolver(CTask& _pr) : task(_pr) {}
    	// Функции, отвечающие за весь расчет:
-	void go(char* fName);
-	void goAuSpall(char *fName);
+	void go(const char* fName);
+	void goAuSpall(const char *fName);
 	void goEuler(char* fName=0);
 	void goGlass(char* fName);
 	void goEulerMovingMesh(char* fName);

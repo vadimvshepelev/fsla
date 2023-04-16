@@ -71,8 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>E:\local\boost_1_70_0;C:\local\boost_1_70_0;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\local\boost_1_70_0\lib64-msvc-14.2;C:\local\boost_1_70_0\lib64-msvc-11.0;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -168,6 +167,7 @@
     <ClInclude Include="eosTable_table.h" />
     <ClInclude Include="eosTest.h" />
     <ClInclude Include="eos\EOSBin.h" />
+    <ClInclude Include="eos\FEOSMGLiF.h" />
     <ClInclude Include="F1DReconstruction.h" />
     <ClInclude Include="F1DSimulation.h" />
     <ClInclude Include="FEOS.h" />
@@ -205,6 +205,7 @@
     <ClCompile Include="eosTable_scale.cpp" />
     <ClCompile Include="eosTable_table.cpp" />
     <ClCompile Include="eos\EOSBin.cpp" />
+    <ClCompile Include="eos\FEOSMHLiF.cpp" />
     <ClCompile Include="F1DReconstruction.cpp" />
     <ClCompile Include="F1DSimulation.cpp" />
     <ClCompile Include="FEOS.cpp" />

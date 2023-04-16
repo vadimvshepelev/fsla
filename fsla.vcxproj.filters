@@ -132,6 +132,9 @@
     <ClInclude Include="eos\EOSBin.h">
       <Filter>EOSBin</Filter>
     </ClInclude>
+    <ClInclude Include="eos\FEOSMGLiF.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="_matrix4.cpp">
@@ -259,6 +262,9 @@
     </ClCompile>
     <ClCompile Include="eos\EOSBin.cpp">
       <Filter>EOSBin</Filter>
+    </ClCompile>
+    <ClCompile Include="eos\FEOSMHLiF.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

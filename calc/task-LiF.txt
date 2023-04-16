@@ -1,0 +1,27 @@
+EOSType = LiF
+Method = samarskii
+HydroStage = 1
+HeatStage = 0
+ExchangeStage = 0
+source = no
+tauPulse = 1.
+fluence = 0.
+deltaSkin = 1.
+CFL = .5
+viscosity = 1
+maxTime = 50.e-9
+nZones = 2
+
+l = 5.e-6
+nSize = 50
+ro = 2650.
+ti = 25.e9
+te = 0. 
+v = 0.
+
+l = 45.e-6
+nSize = 450
+ro = 2650.
+ti = 0.
+te = 0.
+v = 0.

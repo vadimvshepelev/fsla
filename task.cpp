@@ -14,6 +14,7 @@
 #include "eosTableFeAlpha.h"
 #include "eosTableAu.h"
 #include "eos/EOSBin.h"
+#include "eos/EOSMGLiF.h"
 
 #include "methodEuler.h"
 
@@ -29,7 +30,7 @@ CTask::~CTask() {
 	clear();
 }
 
- void CTask::load(char* fName) {
+ void CTask::load(const char* fName) {
     if(!fName) return;
 	clear();
 	int j = 0;
@@ -83,6 +84,8 @@ CTask::~CTask() {
 		}		
 	} else if(!strcmp(eos_type, "analytic"))	
 		eos = new EOSAnalytic();
+	else if(!strcmp(eos_type, "LiF"))
+		eos = new EOSMGLiF();
 	else if(!strcmp(eos_type, "ideal"))	 {
 		eos = new EOSIdeal(1.4);
 

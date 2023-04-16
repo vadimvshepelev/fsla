@@ -173,7 +173,7 @@ void CSolver::goEulerMovingMesh(char* fName) {
 
 
 
-void CSolver::go(char* fName) {
+void CSolver::go(const char* fName) {
 	// Загрузка входного файла, инициализация объекта task типа CTask
 	task.load(fName);
 	// Наполнение объектов ms, ms_temp данными на по начальным и граничным условиям из task
@@ -314,7 +314,7 @@ void CSolver::go(char* fName) {
 		(task.getMethod()).deleteGrid();
 }
 
-void CSolver::goAuSpall(char *fName) {
+void CSolver::goAuSpall(const char *fName) {
 	// Сначала отсекаем все лишние конфигурации нам нужно только золото, только лагранжева сетка и схема Самарского
 	if(task.getMethodFlag()!= 0) {
 		cout << "goAuSpall() error: only lagrangian coordinates are avilable." << endl;
@@ -1372,7 +1372,7 @@ int CSolver::calcHydroStage(double t, double tau) {
 	ms[nSize].v = ms_temp[nSize].v;
 	delete[] g;
 	return 1;
-}
+}  
 
 int CSolver::calcHydroStageGlass(double t, double tau) {
 	int i=0, counter=0, itNumFull=0, itNumIon=0;

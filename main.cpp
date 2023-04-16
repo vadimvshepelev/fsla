@@ -19,7 +19,7 @@
 #include "F1DSimulation.h"
 #include "C1DBCs.h"
 #include "F1DReconstruction.h"
-
+#include "eos/FEOSMGLiF.h"
 
 char* INPUT_FOLDER = new char[_MAX_PATH];  //"calc/";
 char* OUTPUT_FOLDER = new char[_MAX_PATH]; //"calc/output/";
@@ -50,29 +50,35 @@ int main(int argc, char *argv[]) {
 	//CExactRiemannSolver ex;
 	//C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(ex);
 
-
-
-
-
-
-
-
-
-
-
-
-/*
+	/*
 	CSolver *s = new CSolver;
 	s->goEuler("task-toro-5.txt"); // для Эйлеровых задач
 	delete s;
 	*/
 
+	// Uncomment for Lagrange 1D code in old architecture /*
+	/*
+	EOSMGLiF eos = EOSMGLiF();
+	double e1 = eos.gete(2650., 25.e9);
+	double e2 = eos.gete(2650., 0.);
 
 
+	CSolver *s = new CSolver;
+	s->go("task-LiF.txt"); // для Эйлеровых задач
+	delete s;*/
 
-
-
-
+	// Uncomment for Lagrange 1D code in new architecture
+	FEOSMGLiF eos;
+	C1DProblem pr = prLiF;
+	C1DFieldPrimitive *fldptr = new C1DField(pr);
+	C1DLagrangeMethod samarskii;
+	double _dtt[] = {pr.tmin, pr.tmax};
+	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
+	COutput outp = COutput(pr, outputDir, dtt);
+	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp);
+	sim.run();
+	delete fldptr; 
+	
 
 
 	// Uncomment for LaserVT test problem
@@ -149,6 +155,7 @@ int main(int argc, char *argv[]) {
 	delete fldptr;	*/
 
 	// Uncomment for Toro #1 test problem with ideal EOS
+	/*
 	// FEOSIdeal eos = FEOSIdeal(1.4);
 	FEOSMGAlPrecise6 eos = FEOSMGAlPrecise6();
 	// C1DProblem pr = prLaserVTAlMGTest1;
@@ -170,8 +177,8 @@ int main(int argc, char *argv[]) {
 	F1DENO2Reconstruction eno2rec = F1DENO2Reconstruction(*fldptr);
 	F1DENO3Reconstruction eno3rec = F1DENO3Reconstruction(*fldptr);
 	C1D2ndOrderLFGlobalMethod mtd = C1D2ndOrderLFGlobalMethod(
-				lfgl, eno5rec_charwise/*eno5rec*//*eno3rec*//*eno2rec*/);
-//	C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hllc, /*eno5rec*//*eno3rec*/eno2rec);
+				lfgl, eno5rec_charwise);
+//	C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hllc,eno2rec);
 	// C1DLFGlobalMethod mtd = C1DLFGlobalMethod(lfgl);
 	// C1DGodunovTypeMethodVacuum mtd = C1DGodunovTypeMethodVacuum(hllc);
 	// CExactRiemannSolver exrslv;
@@ -187,7 +194,7 @@ int main(int argc, char *argv[]) {
 //	ERK6_5 erk = ERK6_5(pr, eos, *fldptr, mtd);
 	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp, ssprk);
 	sim.run();
-
+	*/
 
 	// Uncomment for metal problems
 	// CSolver s = CSolver();

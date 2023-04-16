@@ -1,6 +1,7 @@
 #ifndef _C1DPROBLEM_H_
 #define _C1DPROBLEM_H_
 
+
 #include<string>
 #include<vector>
 
@@ -133,5 +134,8 @@ extern C1DLaserProblem prHoles;
 extern C1DProblem prFedorAl;
 
 extern C1DProblem prVTAlBel;
+
+extern C1DProblem prLiF;
+
 
 #endif

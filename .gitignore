@@ -3,6 +3,8 @@
 
 x64/*
 
+*.dat
+
 ### C++ ###
 # Prerequisites
 *.d

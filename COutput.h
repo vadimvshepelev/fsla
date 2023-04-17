@@ -15,6 +15,7 @@ class COutput {
 	int print(void);
 	//int dump(C1DProblem& pr, C1DField& fld, CEOSMieGruneisen& eos, string fName);	
 	int dump(C1DProblem& pr, C1DField& fld, FEOS& eos, string fName);	
+	int dump(C1DProblem& pr, C1DFieldPrimitive& fld, FEOS& eos, string fName);
 	double fL(FEOS& eos, double p, double roL, double vL, double pL);
 	double dfLdp(FEOS& eos, double p, double roL, double vL, double pL);
 	double fR(FEOS& eos, double p, double roR, double vR, double pR);
@@ -26,6 +27,7 @@ public:
 
 	//int manageFileOutput(C1DProblem& pr, C1DField& fld, CEOSMieGruneisen& eos);
 	int manageFileOutput(C1DProblem& pr, C1DField& fld, FEOS& eos);
+	int manageFileOutput(C1DProblem& pr, C1DFieldPrimitive& fld, FEOS& eos);
 	int manageScreenOutput(C1DProblem& pr, int iteration, double t, double dt, double cfl, double tCalc);
 };
 

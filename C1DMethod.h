@@ -150,6 +150,13 @@ public:
 };
 
 
+class C1DMethodSamarskii {
+public:
+	void calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld);
+	double calcdt(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld);
+};
+
+
 class C1DMethod {
 public:
 	virtual void calc(C1DProblem& pr, FEOS& eos, C1DField& fld)=0;

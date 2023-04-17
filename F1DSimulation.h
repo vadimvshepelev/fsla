@@ -25,10 +25,30 @@ public:
 			COutput& _outp,
 			ODESolver& _odemtd)
 		: pr(_pr), eos(_eos), fld(_fld),
-		  mtd(_mtd), outp(_outp), solve(_odemtd) {
-	}
+		  mtd(_mtd), outp(_outp), solve(_odemtd) {}
 
 	void run();
 };
+
+
+class F1DSimulationLagrange {
+	C1DProblem& pr;
+	FEOS& eos;
+	C1DFieldPrimitive& fld;
+	C1DMethodSamarskii& mtd;
+	COutput& outp;
+public:
+	F1DSimulationLagrange(
+		C1DProblem& _pr,
+		FEOS& _eos,
+		C1DFieldPrimitive& _fld,
+		C1DMethodSamarskii& _mtd,
+		COutput& _outp)
+		: pr(_pr), eos(_eos), fld(_fld),
+		mtd(_mtd), outp(_outp) {}
+
+	void run();
+};
+
 
 #endif

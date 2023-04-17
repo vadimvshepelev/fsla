@@ -70,16 +70,14 @@ int main(int argc, char *argv[]) {
 	// Uncomment for Lagrange 1D code in new architecture
 	FEOSMGLiF eos;
 	C1DProblem pr = prLiF;
-	C1DFieldPrimitive *fldptr = new C1DField(pr);
-	C1DLagrangeMethod samarskii;
+	C1DFieldPrimitive *fldptr = new C1DFieldPrimitive(pr);
+	C1DMethodSamarskii mtd;
 	double _dtt[] = {pr.tmin, pr.tmax};
 	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
 	COutput outp = COutput(pr, outputDir, dtt);
-	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp);
+	F1DSimulationLagrange sim = F1DSimulationLagrange(pr, eos, *fldptr, mtd, outp);
 	sim.run();
 	delete fldptr; 
-	
-
 
 	// Uncomment for LaserVT test problem
 

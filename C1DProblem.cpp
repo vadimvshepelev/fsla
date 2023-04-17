@@ -3,7 +3,7 @@
 #include "_vector4.h"
 
 void C1DProblem::setics(FEOS& eos, vector<double>& x,
-						vector<Vector4>&/*vector<vector<double>>&*/ U) {
+						vector<Vector4>& U) {
 	// TODO
 	// Идея сделать "задача" = "начальные условия" + "граничные условия".
 	// Граничные условия реалзиовать тем крутым способом, что уже здесь сделан,
@@ -42,10 +42,52 @@ void C1DProblem::setics(FEOS& eos, vector<double>& x,
 	return;
 }
 
-void C1DProblem::setbcs(vector<Vector4>&/*vector<vector<double>>&*/ U) {
+void C1DProblem::setics(FEOS& eos, vector<double>& x, vector<Vector4>& U) {
+	std::size_t i = 0;
+	const std::size_t imin = get_order();
+	const std::size_t imax = get_order() + nx;
+	double dx = (xmax - xmin) / nx;
+	double E = 0.;
+	for (i = 0; i < x.size(); ++ i) {
+		x[i] = (xmin - get_order() * dx) + static_cast<double>(i) * dx;
+	}
+	for (i = imin; i < imax; ++ i) {
+		if (x[i] < x0 && fabs(x[i] - x0) > 1.e-5*dx ) {
+			if (name != "LiF") {
+				U[i][0] = rol;
+				U[i][1] = rol * ul;
+				E = eos.gete(rol, pl) + .5 * ul * ul;
+				U[i][2] = rol * E;
+			}
+			else {
+				U[i][0] = rol;
+				U[i][1] = ul;
+				U[i][2] = pl;
+			}
+
+		} else {
+			if (name != "LiF") {
+				U[i][0] = ror;
+				U[i][1] = ror * ur;
+				E = eos.gete(ror, pr) + .5 * ur * ur;
+				U[i][2] = ror * E;
+			}
+			else {
+				U[i][0] = ror;
+				U[i][1] = ur;
+				U[i][2] = pr;
+			}
+		}
+	}
+	setbcs(U);
+	return;
+}
+
+
+void C1DProblem::setbcs(vector<Vector4>& U) {
 	const std::size_t imin = get_order();
 	const std::size_t imax = imin + nx;
-	assert(bcs[0] == 't');
+	assert(bcs[0] == 't' || bcs[0] == 'v');
 	switch (bcs[0]) {
 	case 't':
 		for (std::size_t counter = 1; counter <= imin; ++ counter) {
@@ -54,13 +96,27 @@ void C1DProblem::setbcs(vector<Vector4>&/*vector<vector<double>>&*/ U) {
 			}
 		}
 		break;
+	case 'v':
+		for (std::size_t counter = 1; counter <= imin; ++counter) {
+			for (std::size_t component = 0; component < 3; ++component) {
+				U[imin - counter][component] = 0.;
+			}
+		}
+		break;
 	}
-	assert(bcs[1] == 't');
+	assert(bcs[1] == 't' || bcs[0] == 'v');
 	switch (bcs[1]) {
 	case 't':
 		for (std::size_t counter = 0; counter < imin; ++ counter) {
 			for (std::size_t component = 0; component < 3; ++ component) {
 				U[imax + counter][component] = U[imax - 1][component];
+			}
+		}
+		break;
+	case 'v':
+		for (std::size_t counter = 0; counter < imin; ++counter) {
+			for (std::size_t component = 0; component < 3; ++component) {
+				U[imax + counter][component] = 0.;
 			}
 		}
 		break;
@@ -159,4 +215,4 @@ C1DProblem prVTAlBel = C1DLaserProblem("vtAlBel",
 										"tt", 3);
 
 // 16.04.2023 LiF problem
-C1DProblem prLiF = C1DProblem("LiF", 2650., 0., 25.e9, 2650., 0., 0., 0., 50.e-6, 0., 1.e-9, 5.e-6, 500, .5, "vt");
+C1DProblem prLiF = C1DProblem("LiF", 2650., 0., 25.e9, 2650., 0., 0., 0., 50.e-6, 0., 1.e-9, 5.e-6, 500, .5, "vt", 1);

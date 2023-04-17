@@ -55,10 +55,7 @@ public:
 	double cfl;
 	string bcs;
 	const int order;
-//	virtual void setics(FEOS& eos, vector<double>& x,
-//						vector<vector<double>>& U);
 	virtual void setics(FEOS& eos, vector<double>& x, vector<Vector4>& U);
-//	 void setbcs(vector<vector<double>>& U);
 	void setbcs(vector<Vector4>& U);
 	constexpr int get_order() { return order; }
 };

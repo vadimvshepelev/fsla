@@ -37,13 +37,14 @@ C1DField::~C1DField() {
 
 
 C1DFieldPrimitive::C1DFieldPrimitive(C1DProblem& pr)
-	: imin(1), imax(1 + pr.nx), x(vector<double>(1 + pr.nx + 1)), dm((pr.xmax - pr.xmin) / pr.nx * pr.rol),
-	dx((pr.xmax - pr.xmin) / pr.nx), t(0.), dt(0.),
+	: imin(1), imax(1 + pr.nx), x(vector<double>(1 + pr.nx + 1)), newx(vector<double>(1 + pr.nx + 1)),
+	dm((pr.xmax - pr.xmin) / pr.nx * pr.rol), t(0.), dt(0.),
 	W(vector<Vector4>(1 + pr.nx + 1)), newW(vector<Vector4>(1 + pr.nx + 1)), prevW(vector<Vector4>(1 + pr.nx + 1))
 {}
 
 C1DFieldPrimitive::~C1DFieldPrimitive() {
 	x.clear();
+	newx.clear();
 	W.clear();
 	newW.clear();
 	prevW.clear();

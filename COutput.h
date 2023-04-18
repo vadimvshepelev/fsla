@@ -28,7 +28,7 @@ public:
 	//int manageFileOutput(C1DProblem& pr, C1DField& fld, CEOSMieGruneisen& eos);
 	int manageFileOutput(C1DProblem& pr, C1DField& fld, FEOS& eos);
 	int manageFileOutput(C1DProblem& pr, C1DFieldPrimitive& fld, FEOS& eos);
-	int manageScreenOutput(C1DProblem& pr, int iteration, double t, double dt, double cfl, double tCalc);
+	int manageScreenOutput(C1DProblem& pr, int iteration, double t, double dt, double cfl, double tCalc, int itNum=0);
 };
 
 

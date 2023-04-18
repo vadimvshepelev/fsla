@@ -1382,7 +1382,7 @@ Vector4 CBGKRiemannSolver::calcFlux(FEOS& eos, Vector4 Um, Vector4 U, Vector4 Up
 }
 
 
-void C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld) {
+int C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld) {
 	int i = 0, counter = 0, itNumFull = 0, itNumIon = 0;
 	double e_prev = 0., ei_prev = 0., Q = 0., dv = 0.,
 		p_next_plus = 0., p_next_minus = 0., p_plus = 0., p_minus = 0.;
@@ -1400,11 +1400,20 @@ void C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld)
 	double* g = new double[nSize];*/
 
 	vector<double> g(fld.imax + 1);
-	for (i = imin; i < imax+1; i++)  {
+	for (i = imin; i < imax; i++)  {
 		double du = W[i+1][1] - W[i][1];
 		if (du < 0) {
 			g[i] += 6000.0*W[i][0]*du*du; // Al;
 		}		
+
+
+		if (i == 500) {
+			double pp = 0.;
+
+		}
+
+
+
 	}
 	std::copy(W.begin(), W.end(), newW.begin());
 	int itCounter = 0, maxIt = 30;
@@ -1419,7 +1428,7 @@ void C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld)
 			exit(1);
 		}
 		std::copy(newW.begin(), newW.end(), prevW.begin());
-		for (i = imin; i < imax+1; i++) {
+		for (i = imin; i < imax; i++) {
 			p_next_plus = prevW[i][2];
 			p_next_minus = prevW[i-1][2];
 			p_plus = W[i][2];
@@ -1452,8 +1461,9 @@ void C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld)
 			newW[i][1] = W[i][1] - .5 * dt / dm * (p_next_plus - p_next_minus + p_plus - p_minus);
 			newx[i] = x[i] + .5 * dt * (newW[i][1] - W[i][1]);
 		}
+		newx[imax] = x[imax] + .5 * dt * (newW[imax][1] - W[imax][1]);
 
-		for (int i = imin; i < imax+1; i++) {
+		for (int i = imin; i < imax; i++) {
 		/*	ms_temp[i].ro = 1.0 / (1.0 / ms[i].ro + tau / 2.0 / h *
 				(ms_temp[i + 1].v + ms[i + 1].v - ms_temp[i].v - ms[i].v));
 			ms_temp[i].ei = ms[i].ei - tau / 4.0 / h * (ms_prev[i].pi + ms[i].pi + g[i]) *
@@ -1466,7 +1476,7 @@ void C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld)
 			double newe = e - .25 * dt / dm * (prevW[i][2] + W[i][2] + g[i]) * (newW[i+1][1] + W[i+1][1] - newW[i][1] - W[i][1]);
 			W[i][2] = eos.getp(newW[i][0], newe);
 		}
-		for (int i = 0; i < imax + 1; i++) {
+		for (int i = 0; i < imax; i++) {
 			diff[i] = fabs(newW[i][2] - prevW[i][2]);
 		}	
 	} while (*std::max_element(diff.begin(), diff.end()) > eps);
@@ -1474,18 +1484,19 @@ void C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld)
 	std::copy(newx.begin(), newx.end(), x.begin());
 	g.clear();
 	diff.clear();
+	return itCounter;
 }
 
 double C1DMethodSamarskii::calcdt(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld) {
-	auto&& U = fld.W;
+	auto&& W = fld.W;
 	auto&& x = fld.x;
 	int imin = fld.imin, imax = fld.imax;
-	double rho = U[imin][0], u = U[imin][1], p = U[imin][2], c = eos.getc(rho, p);
+	double rho = W[imin][0], u = W[imin][1], p = W[imin][2], c = eos.getc(rho, p);
 	double umax = max(fabs(u), max(fabs(u - c), fabs(u + c)));
 	double dt1 = (x[imin + 1] - x[imin]) / umax;
 	double dt2 = 0.;
 	for (int i = imin; i < imax; ++i) {
-		rho = U[i][0]; u = U[i][1]; p = U[i][1]; c = eos.getc(rho, p);
+		rho = W[i][0]; u = W[i][1]; p = W[i][1]; c = eos.getc(rho, p);
 		umax = fabs(u) + c;
 		dt2 = (x[i+1] - x[i]) / umax;
 		if (dt1 > dt2) dt1 = dt2;

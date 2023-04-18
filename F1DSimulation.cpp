@@ -75,11 +75,11 @@ void F1DSimulationLagrange::run() {
 		}
 		if (fld.t + fld.dt > pr.tmax) fld.dt = pr.tmax - fld.t;
 		tStart = clock();
-		mtd.calc(pr, eos, fld);
+		int itNum = mtd.calc(pr, eos, fld);
 		tEnd = clock();
 		tCalc = static_cast<double>(tEnd - tStart) / CLOCKS_PER_SEC;
 		fld.t += fld.dt;
-		outp.manageScreenOutput(pr, counter, fld.t, fld.dt, cfl, tCalc);
+		outp.manageScreenOutput(pr, counter, fld.t, fld.dt, cfl, tCalc, itNum);
 		outp.manageFileOutput(pr, fld, eos);
 		++counter;
 	}

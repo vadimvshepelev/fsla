@@ -2,7 +2,7 @@
 
 #include "_vector4.h"
 
-void C1DProblem::setics(FEOS& eos, vector<double>& x,
+/*void C1DProblem::setics(FEOS& eos, vector<double>& x,
 						vector<Vector4>& U) {
 	// TODO
 	// Идея сделать "задача" = "начальные условия" + "граничные условия".
@@ -40,7 +40,7 @@ void C1DProblem::setics(FEOS& eos, vector<double>& x,
 	}
 	setbcs(U);
 	return;
-}
+}*/
 
 void C1DProblem::setics(FEOS& eos, vector<double>& x, vector<Vector4>& U) {
 	std::size_t i = 0;
@@ -215,4 +215,4 @@ C1DProblem prVTAlBel = C1DLaserProblem("vtAlBel",
 										"tt", 3);
 
 // 16.04.2023 LiF problem
-C1DProblem prLiF = C1DProblem("LiF", 2650., 0., 25.e9, 2650., 0., 0., 0., 50.e-6, 0., 1.e-9, 5.e-6, 500, .5, "vt", 1);
+C1DProblem prLiF = C1DProblem("LiF", 2650., 0., 25.e9, 2650., 0., 0., 0., 50.e-6, 0., 10.e-9, 5.e-6, 500, .5, "vt", 1);

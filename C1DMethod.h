@@ -152,7 +152,7 @@ public:
 
 class C1DMethodSamarskii {
 public:
-	void calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld);
+	int calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld);
 	double calcdt(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld);
 };
 

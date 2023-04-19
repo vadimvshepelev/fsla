@@ -1383,28 +1383,20 @@ Vector4 CBGKRiemannSolver::calcFlux(FEOS& eos, Vector4 Um, Vector4 U, Vector4 Up
 
 
 int C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld) {
-	int i = 0, counter = 0, itNumFull = 0, itNumIon = 0;
-	double e_prev = 0., ei_prev = 0., Q = 0., dv = 0.,
-		p_next_plus = 0., p_next_minus = 0., p_plus = 0., p_minus = 0.;
+	int i = 0, counter = 0;
+	double p_next_plus = 0., p_next_minus = 0., p_plus = 0., p_minus = 0.;
 	auto&& W = fld.W, && newW = fld.newW, &&prevW = fld.prevW;
 	auto&& x = fld.x, && newx = fld.newx;
 	auto imin = fld.imin, imax = fld.imax;
 	auto dm = fld.dm, dt = fld.dt;
 
-	/*CFieldOld ms_temp, ms_prev;
-	ms_temp.initData(&task);
-	ms_prev.initData(&task);
-	EOSOld& eos = task.getEOS(); 
-	int nSize = ms.getSize();
-	double h = ms[0].dm;	
-	double* g = new double[nSize];*/
-
 	vector<double> g(fld.imax + 1);
 	for (i = imin; i < imax; i++)  {
 		double du = W[i+1][1] - W[i][1];
-		if (du < 0) {
-			g[i] += 6000.0*W[i][0]*du*du; // Al;
-		}		
+		if (du < 0)
+			g[i] = 6000.0 * W[i][0] * du * du; // Al;
+		else
+			g[i] = 0;
 
 
 		if (i == 500) {
@@ -1417,7 +1409,7 @@ int C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld) 
 	}
 	std::copy(W.begin(), W.end(), newW.begin());
 	int itCounter = 0, maxIt = 30;
-	const double eps = .01;
+	const double eps = .1;
 	vector<double> diff(fld.imax + 1);
 	do {
 		itCounter++;
@@ -1458,10 +1450,10 @@ int C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld) 
 			ms_temp[i].x = ms[i].x + 0.5 * tau * (ms_temp[i].v + ms[i].v);
 
 			*/
-			newW[i][1] = W[i][1] - .5 * dt / dm * (p_next_plus - p_next_minus + p_plus - p_minus);
-			newx[i] = x[i] + .5 * dt * (newW[i][1] - W[i][1]);
+			newW[i][1] = W[i][1] - .5*dt/dm*(p_next_plus - p_next_minus + p_plus - p_minus);
+			newx[i] = x[i] + .5*dt*(newW[i][1] + W[i][1]);
 		}
-		newx[imax] = x[imax] + .5 * dt * (newW[imax][1] - W[imax][1]);
+		newx[imax] = x[imax] + .5*dt*(newW[imax][1] + W[imax][1]);
 
 		for (int i = imin; i < imax; i++) {
 		/*	ms_temp[i].ro = 1.0 / (1.0 / ms[i].ro + tau / 2.0 / h *
@@ -1474,7 +1466,7 @@ int C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld) 
 			newW[i][0] = 1. / (1. / W[i][0] + .5 * dt / dm * (newW[i+1][1] + W[i+1][1] - newW[i][1] - W[i][1]));
 			double e = eos.gete(W[i][0], W[i][2]);
 			double newe = e - .25 * dt / dm * (prevW[i][2] + W[i][2] + g[i]) * (newW[i+1][1] + W[i+1][1] - newW[i][1] - W[i][1]);
-			W[i][2] = eos.getp(newW[i][0], newe);
+			newW[i][2] = eos.getp(newW[i][0], newe);
 		}
 		for (int i = 0; i < imax; i++) {
 			diff[i] = fabs(newW[i][2] - prevW[i][2]);

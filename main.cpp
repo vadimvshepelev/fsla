@@ -57,18 +57,25 @@ int main(int argc, char *argv[]) {
 	*/
 
 	// Uncomment for Lagrange 1D code in old architecture /*
+	
+	FEOSMGLiF eos = FEOSMGLiF();
+	double c0 = eos.getc(2640., 0.);
+	double e1 = eos.gete(6000., 1.e9); // -8.35e7 done		 e_cold = 6.81e7 done
+	double c1 = eos.getc(6000., 1.e9); // 4.484e4
+	double c2 = eos.getc(3000., 1.e9);
+	// pCold = 6.46e11 -- done
+	// p_e = 4.26e3 -- done 
+	// pCold_tau = -1.37e17 = rho0*dpc_dx = -8254662065539,5137 * 6000 = -49 527 972 393 237 082,2	
+	// eCold_tau = -5.45e16 = rho0*dec_dx = -991697679,97802985 * 6000 = -5 950 186 079 868,1791
+
+
 	/*
-	EOSMGLiF eos = EOSMGLiF();
-	double e1 = eos.gete(2650., 25.e9);
-	double e2 = eos.gete(2650., 0.);
-
-
 	CSolver *s = new CSolver;
 	s->go("task-LiF.txt"); // для Эйлеровых задач
 	delete s;*/
 
 	// Uncomment for Lagrange 1D code in new architecture
-	FEOSMGLiF eos;
+	// FEOSMGLiF eos;
 	C1DProblem pr = prLiF;
 	C1DFieldPrimitive *fldptr = new C1DFieldPrimitive(pr);
 	C1DMethodSamarskii mtd;

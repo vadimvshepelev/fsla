@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 		strcpy(OUTPUT_FOLDER, "calc/output/");
 	}
 		
-    //	s.go("input6_ideal_lagrange.txt");
+    
 	//	s.go("input6_table_lagrange.txt");
 	//	s.go("input6_table_lagrange_he.txt");
 	//  s.go("input6_table_lagrange_inner.txt");
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 	// Uncomment for metal problems
 	CSolver *s = new CSolver;
 	//s->goGlass("task-Ru-glass-1000.txt");
-	s->goGlass("task-Ru-glass-optic-1000.txt");
+	//s->goGlass("task-Ru-glass-optic-1000.txt");
 	//s->goGlass("task-Ru-glass-optic-2000.txt");
 	//s->goGlass("task-Ru-glass-optic-3000.txt");
 	//s->goGlass("task - Ni.txt");
@@ -53,6 +53,9 @@ int main(int argc, char *argv[])
 	//s->goAuSpall("task.txt"); // дл€ золота
 	//s->goEuler("task-toro-1.txt"); // дл€ Ёйлеровых задач
 	//s->goEulerMovingMesh("task.txt"); // дл€ Ёйлеровых задач c движущейс€ сеткой
+
+
+	s->go("task  - lagr - 1.txt");
 
 	delete s;
 

@@ -216,3 +216,4 @@ C1DProblem prVTAlBel = C1DLaserProblem("vtAlBel",
 
 // 16.04.2023 LiF problem
 C1DProblem prLiF = C1DProblem("LiF", 2650., 0., 25.e9, 2650., 0., 0., 0., 50.e-6, 0., 10.e-9, 5.e-6, 500, .5, "vt", 1);
+C1DProblem prTestLagrange1D = C1DProblem("LiF", 1., 0., 1., 1, 0., 1., 0., 1., 0., 1., .5, 100, .5, "vt", 1);

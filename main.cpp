@@ -58,11 +58,11 @@ int main(int argc, char *argv[]) {
 
 	// Uncomment for Lagrange 1D code in old architecture /*
 	
-	FEOSMGLiF eos = FEOSMGLiF();
+	/*FEOSMGLiF eos = FEOSMGLiF();
 	double c0 = eos.getc(2640., 0.);
 	double e1 = eos.gete(6000., 1.e9); // -8.35e7 done		 e_cold = 6.81e7 done
 	double c1 = eos.getc(6000., 1.e9); // 4.484e4
-	double c2 = eos.getc(3000., 1.e9);
+	double c2 = eos.getc(3000., 1.e9);*/
 	// pCold = 6.46e11 -- done
 	// p_e = 4.26e3 -- done 
 	// pCold_tau = -1.37e17 = rho0*dpc_dx = -8254662065539,5137 * 6000 = -49 527 972 393 237 082,2	
@@ -76,7 +76,8 @@ int main(int argc, char *argv[]) {
 
 	// Uncomment for Lagrange 1D code in new architecture
 	// FEOSMGLiF eos;
-	C1DProblem pr = prLiF;
+	FEOSIdeal eos(1.4);
+	C1DProblem pr = prTestLagrange1D;
 	C1DFieldPrimitive *fldptr = new C1DFieldPrimitive(pr);
 	C1DMethodSamarskii mtd;
 	double _dtt[] = {pr.tmin, pr.tmax};

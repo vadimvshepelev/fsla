@@ -1409,7 +1409,7 @@ int C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld) 
 	}
 	std::copy(W.begin(), W.end(), newW.begin());
 	int itCounter = 0, maxIt = 30;
-	const double eps = .1;
+	const double eps = .15;
 	vector<double> diff(fld.imax + 1);
 	do {
 		itCounter++;
@@ -1454,6 +1454,7 @@ int C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld) 
 			newx[i] = x[i] + .5*dt*(newW[i][1] + W[i][1]);
 		}
 		newx[imax] = x[imax] + .5*dt*(newW[imax][1] + W[imax][1]);
+		newx[0] = newx[1] - (x[1] - x[0]);
 
 		for (int i = imin; i < imax; i++) {
 		/*	ms_temp[i].ro = 1.0 / (1.0 / ms[i].ro + tau / 2.0 / h *
@@ -1474,6 +1475,7 @@ int C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld) 
 	} while (*std::max_element(diff.begin(), diff.end()) > eps);
 	std::copy(newW.begin(), newW.end(), W.begin());
 	std::copy(newx.begin(), newx.end(), x.begin());
+	pr.setbcs(fld.W);
 	g.clear();
 	diff.clear();
 	return itCounter;

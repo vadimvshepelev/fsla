@@ -80,7 +80,7 @@ void F1DSimulationLagrange::run() {
 
 
 
-		fld.dt = 0.0042257712736425632;
+		//fld.dt = 0.0042257712736425632;
 
 
 
@@ -95,6 +95,18 @@ void F1DSimulationLagrange::run() {
 		outp.manageScreenOutput(pr, counter, fld.t, fld.dt, cfl, tCalc, itNum);
 		outp.manageFileOutput(pr, fld, eos);
 		++counter;
+
+
+		
+
+
+		if (counter == 15) {
+			double qq = 0.;
+		}
+
+
+
+
 	}
 	tEndGlobal = clock();
 

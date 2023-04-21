@@ -75,9 +75,9 @@ int main(int argc, char *argv[]) {
 	delete s;*/
 
 	// Uncomment for Lagrange 1D code in new architecture
-	// FEOSMGLiF eos;
-	FEOSIdeal eos(1.4);
-	C1DProblem pr = prTestLagrange1D;
+	FEOSMGLiF eos;
+	// FEOSIdeal eos(1.4);
+	C1DProblem pr = prLiF; // prTestLagrange1D;
 	C1DFieldPrimitive *fldptr = new C1DFieldPrimitive(pr);
 	C1DMethodSamarskii mtd;
 	double _dtt[] = {pr.tmin, pr.tmax};

@@ -1394,7 +1394,8 @@ int C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld) 
 	for (i = imin; i < imax; i++)  {
 		double du = W[i+1][1] - W[i][1];
 		if (du < 0)
-			g[i] = 6000.0 * W[i][0] * du * du; // Al;
+			// g[i] = 6000.0 * W[i][0] * du * du; // Al;
+			g[i] = 0. ;// .001 * W[i][0] * du + .001 * W[i][0] * du * du; // Al;
 		else
 			g[i] = 0;
 
@@ -1409,7 +1410,7 @@ int C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld) 
 	}
 	std::copy(W.begin(), W.end(), newW.begin());
 	int itCounter = 0, maxIt = 30;
-	const double eps = .01;
+	const double eps = .01; // .0001;
 	vector<double> diff(fld.imax + 1);
 	do {
 		itCounter++;
@@ -1469,10 +1470,13 @@ int C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld) 
 			double newe = e - .25 * dt / dm * (prevW[i][2] + W[i][2] + g[i]) * (newW[i+1][1] + W[i+1][1] - newW[i][1] - W[i][1]);
 			newW[i][2] = eos.getp(newW[i][0], newe);
 		}
-		for (int i = 0; i < imax; i++) {
+		for (int i = 1; i < imax; i++) {
 			const double M = 27.e-3, R = 8.31;
-			diff[i] = fabs(newW[i][2]*M/(newW[i][2]*R) - prevW[i][2]*M/(prevW[i][2]*R));
+			double newti = newW[i][2] * M / (newW[i][0] * R);
+			double prevti = prevW[i][2] * M / (prevW[i][0] * R);
+			diff[i] = fabs(newti - prevti);
 		}	
+		diff[0] = 0.; diff[imax] = 0;
 	} while (*std::max_element(diff.begin(), diff.end()) > eps);
 	std::copy(newW.begin(), newW.end(), W.begin());
 	std::copy(newx.begin(), newx.end(), x.begin());

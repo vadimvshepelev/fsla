@@ -208,7 +208,15 @@ int COutput::dump(C1DProblem& prb, C1DFieldPrimitive& fld, FEOS& eos, string fNa
 	ofs << "TITLE=\"LiF problem, t=" << t << "\"" << "\n";
 	ofs << "VARIABLES=\"x, mkm\",\"ro, kg/m3\",\"u, m/s\",\"p, GPa\",\"e, MJ/kg,\"" << "\n";
 	ofs << "ZONE T=\"Numerical\", I=" << imax - imin << ", F=POINT" << "\n";
+	
+	
+	
 	double mul_x = 1.e6, mul_u = 1., mul_p = 1.e-9, mul_e = 1.e-6;
+	
+	
+	
+	
+	//double mul_x = 1., mul_u = 1., mul_p = 1., mul_e = 1.;
 	double rho = 0., u = 0., p = 0., e = 0.;
 	for (i = imin; i < imax; i++) {
 		rho = W[i][0];

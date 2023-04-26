@@ -59,6 +59,7 @@ int main(int argc, char *argv[]) {
 	// Uncomment for Lagrange 1D code in old architecture /*
 	
 	/*FEOSMGLiF eos = FEOSMGLiF();
+	double e0 = eos.gete(2640., 0.);
 	double c0 = eos.getc(2640., 0.);
 	double e1 = eos.gete(6000., 1.e9); // -8.35e7 done		 e_cold = 6.81e7 done
 	double c1 = eos.getc(6000., 1.e9); // 4.484e4

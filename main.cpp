@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
 	C1DProblem pr =  prLiF; //prTestLagrange1D;
 	C1DFieldPrimitive *fldptr = new C1DFieldPrimitive(pr);
 	C1DMethodSamarskii mtd;
-	double _dtt[] = {pr.tmin, pr.tmax};
+	double _dtt[] = {pr.tmin, .1e-9, .2e-9, .3e-9, .4e-9, .5e-9, .6e-9, .7e-9, .8e-9, .9e-9, pr.tmax};
 	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
 	COutput outp = COutput(pr, outputDir, dtt);
 	F1DSimulationLagrange sim = F1DSimulationLagrange(pr, eos, *fldptr, mtd, outp);

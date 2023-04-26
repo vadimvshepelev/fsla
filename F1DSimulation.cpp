@@ -1,4 +1,4 @@
-#include <cassert>
+﻿#include <cassert>
 #include <ctime>
 #include <iomanip>
 
@@ -98,12 +98,26 @@ void F1DSimulationLagrange::run() {
 
 
 		
-
-
-		if (counter == 15) {
-			double qq = 0.;
+		// Определяем, чему равны давление, скорость и плотность в точке x = -.5 нм
+		double x0 = -.5e-6, rho0=0., u0=0., p0=0., alpha = 0.;
+		int i0 = 0;
+		for (auto i = 0; i < fld.imax-1; i++) {
+			double xL = fld.x[i] + .5 * (fld.x[i + 1] - fld.x[i]), xR = fld.x[i+1] + .5*(fld.x[i+2]-fld.x[i+1]);
+			if ( xL < x0 && x0 < xR) {
+				i0 = i;
+				alpha = x0 - xL / (xR - xL);
+				rho0 = alpha * fld.W[i0][0] + (1. - alpha) * fld.W[i0 + 1][0];
+				u0 = alpha * fld.W[i0][1] + (1. - alpha) * fld.W[i0 + 1][1];
+				p0 = alpha * fld.W[i0][1] + (1. - alpha) * fld.W[i0 + 1][2];
+				break;
+			}
+			rho0 = .01;
+			u0 = 0.;
+			p0 = 0.;
 		}
 
+		if (p0 != 0.)
+			cout << endl << fld.t << " " << p0 << endl;
 
 
 

@@ -1392,12 +1392,16 @@ int C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld) 
 
 	vector<double> g(fld.imax + 1);
 	for (i = imin; i < imax; i++)  {
-		double du = W[i+1][1] - W[i][1];
-		if (du < 0)
+		double du_dm = (W[i+1][1] - W[i][1])/dm;
+		g[i] = -.5*.00001*W[i][0]*fabs(du_dm)*(du_dm-fabs(du_dm));
+
+
+
+		/*if (du_dm < 0)
 			// g[i] = 6000.0 * W[i][0] * du * du; // Al;
-			g[i] = -0.01 * W[i][0] * du + .001 * W[i][0] * du * du; // Al;
+			g[i] = .00001 * W[i][0] * du_dm * du_dm;  // -0.01 * W[i][0] * du + .001 * W[i][0] * du * du; // Al;
 		else
-			g[i] = 0;
+			g[i] = 0;*/
 
 
 		if (i == 500) {
@@ -1423,9 +1427,9 @@ int C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld) 
 		std::copy(newW.begin(), newW.end(), prevW.begin());
 		for (i = imin; i < imax; i++) {
 			p_next_plus = prevW[i][2] + g[i];
-			p_next_minus = prevW[i-1][2] + g[i];
-			p_plus = W[i][2];
-			p_minus = W[i-1][2];
+			p_next_minus = prevW[i-1][2] + g[i-1];
+			p_plus = W[i][2] + g[i];
+			p_minus = W[i-1][2] + g[i-1];
 			/*
 			if (i == 0) {
 				p_next_plus = ms_prev[i].p;
@@ -1467,8 +1471,8 @@ int C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld) 
 			ms_temp[i].e = ms_temp[i].ei + ms_temp[i].ee;*/
 			newW[i][0] = 1. / (1. / W[i][0] + .5 * dt / dm * (newW[i+1][1] + W[i+1][1] - newW[i][1] - W[i][1]));
 			double e = eos.gete(W[i][0], W[i][2]);
-			double newe = e - .25 * dt / dm * (prevW[i][2] + W[i][2] + 2. * g[i]) * (newW[i+1][1] + W[i+1][1] - newW[i][1] - W[i][1]);
-			newW[i][2] = eos.getp(newW[i][0], newe) + g[i];
+			double newe = e - .25 * dt / dm * (prevW[i][2] + W[i][2] + g[i]) * (newW[i+1][1] + W[i+1][1] - newW[i][1] - W[i][1]);
+			newW[i][2] = eos.getp(newW[i][0], newe);
 		}
 		for (int i = 1; i < imax; i++) {
 			const double M = 27.e-3, R = 8.31;

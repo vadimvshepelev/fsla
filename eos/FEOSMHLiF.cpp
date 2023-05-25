@@ -25,10 +25,10 @@ double FEOSMGLiF::eColdPrimeX(double rho) {
 
 double FEOSMGLiF::getp(double rho, double e) {
 	double p = pCold(rho) + G * rho * (e - eCold(rho)); 
-	if (p < -.3 * rho * (6.04239 + rho * (.448417 + rho * (.495374 + .138175 * rho))))
-		return 0.;
-	else
+	if (p > -.3 * rho * (6.04239 + rho * (.448417 + rho * (.495374 + .138175 * rho))))
 		return p;
+	else
+		return 0;
 }
 
 double FEOSMGLiF::gete(double rho, double p) {

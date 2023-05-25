@@ -1393,7 +1393,7 @@ int C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld) 
 	vector<double> g(fld.imax + 1);
 	for (i = imin; i < imax; i++)  {
 		double du_dm = (W[i+1][1] - W[i][1])/dm;
-		g[i] = -.5*.00001*W[i][0]*fabs(du_dm)*(du_dm-fabs(du_dm));
+		g[i] = -.5*.000005*W[i][0]*fabs(du_dm)*(du_dm-fabs(du_dm));
 
 
 

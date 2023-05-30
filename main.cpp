@@ -77,6 +77,15 @@ int main(int argc, char *argv[]) {
 
 	// Uncomment for Lagrange 1D code in new architecture
 	FEOSMGLiF eos;
+
+
+	double rho = 886.16, p = -4.18826e9;
+	double c = eos.getc(rho, p);
+	double e = eos.gete(rho, p);
+
+
+
+
 	//FEOSIdeal eos(1.4);
 	C1DProblem pr =  prLiF; //prTestLagrange1D;
 	C1DFieldPrimitive *fldptr = new C1DFieldPrimitive(pr);

@@ -79,10 +79,10 @@ void F1DSimulationLagrange::run() {
 
 
 
+		if (counter == 331) {
 
-		//fld.dt = 0.0042257712736425632;
-
-
+			double pp = 0.;
+		}
 
 
 
@@ -97,7 +97,7 @@ void F1DSimulationLagrange::run() {
 		++counter;
 
 
-		
+		/*
 		// Определяем, чему равны давление, скорость и плотность в точке x = -.5 нм
 		double x0 = -.5e-6, rho0=0., u0=0., p0=0., alpha = 0.;
 		int i0 = 0;
@@ -118,7 +118,7 @@ void F1DSimulationLagrange::run() {
 
 		if (p0 != 0.)
 			cout << endl << fld.t << " " << p0 << endl;
-
+		*/
 
 
 	}

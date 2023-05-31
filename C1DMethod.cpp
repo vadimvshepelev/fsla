@@ -1484,6 +1484,29 @@ int C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld) 
 	} while (*std::max_element(diff.begin(), diff.end()) > eps);
 	std::copy(newW.begin(), newW.end(), W.begin());
 	std::copy(newx.begin(), newx.end(), x.begin());
+
+
+
+
+
+	for(i = imin; i < imax; i++) {
+		double c = eos.getc(W[i][0], W[i][2]);
+		/*if (std::isnan(c)) {
+			std::cout << "Acoustic disaster in the cell " << i << std::endl;	
+			exit(1);
+		}*/
+
+		if (std::isnan(c)) {
+			W[i][2] = 0.;
+			std::cout << "\n\n\n\n\nSpallation in the cell " << i << "!!!\n\n\n\n\n";
+			exit(1);
+		}
+	}
+
+
+
+
+
 	pr.setbcs(fld.W);
 	g.clear();
 	diff.clear();

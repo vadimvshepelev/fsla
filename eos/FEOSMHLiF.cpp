@@ -1,4 +1,6 @@
 ﻿#include<math.h>
+#include<iostream>
+#include<stdexcept>
 
 #include "FEOSMGLiF.h"
 
@@ -38,5 +40,8 @@ double FEOSMGLiF::gete(double rho, double p) {
 double FEOSMGLiF::getc(double rho, double p) {
 	double pRho = -rho0 / (rho * rho) * pColdPrimeX(rho) + G*gete(rho, p) - G*eCold(rho) + G*rho0/rho*eColdPrimeX(rho);
 	double pE = G * rho;
-	return sqrt(pRho + p * pE / (rho * rho)); // [m/s]
+	double c2 = pRho + p * pE / (rho * rho);
+	// if (c2 < 0)
+	//	std::cout << "Acoustic disaster!!!" << std::endl;
+	return sqrt(c2); // [m/s]
 }

@@ -1499,7 +1499,7 @@ int C1DMethodSamarskii::calc(C1DProblem& pr, FEOS& eos, C1DFieldPrimitive& fld) 
 		if (std::isnan(c)) {
 			W[i][2] = 0.;
 			std::cout << "\n\n\n\n\nSpallation in the cell " << i << "!!!\n\n\n\n\n";
-			exit(1);
+			// exit(1);
 		}
 	}
 

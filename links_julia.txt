@@ -1,0 +1,6 @@
+https://github.com/trixi-framework/tutorial-2023-kassel/blob/main/introduction_to_trixi.ipynb 
+-- tutorial for Trixi, simply define my own initial condition and calculate 
+
+
+https://nextjournal.com/sosiris-de/pde-2018
+-- tutorial fot PDE integration with nice unicode features 

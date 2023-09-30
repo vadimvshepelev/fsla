@@ -97,6 +97,9 @@ int COutput::manageFileOutput(C1DProblem& pr, C1DField& fld, FEOS& eos) {
 
 int COutput::manageFileOutput(C1DProblem& pr, C1DFieldPrimitive&fld, FEOS& eos) {
 	assert(!dtt.empty());
+
+	dump(pr, fld, eos, subDir + "/" + pr.name + "-100.dat");
+
 	if (fld.t >= dtt[0]) {
 		ostringstream oss1;
 		oss1 << subDir << "/" << pr.name << "-" << nDump++ << ".dat"; string fName1 = oss1.str();
@@ -205,14 +208,14 @@ int COutput::dump(C1DProblem& prb, C1DFieldPrimitive& fld, FEOS& eos, string fNa
 		cout << "COutput::dump() reports error: cannot open output file." << "\n";
 		exit(1);
 	}
-	ofs << "TITLE=\"LiF problem, t=" << t << "\"" << "\n";
-	ofs << "VARIABLES=\"x, mkm\",\"ro, kg/m3\",\"u, m/s\",\"p, GPa\",\"e, MJ/kg,\"" << "\n";
+	ofs << "TITLE=\"Lagrangian coodrinates, t=" << t << "\"" << "\n";
+	ofs << "VARIABLES=\"x\",\"rho\",\"u\",\"p\",\"e\"" << "\n";
 	ofs << "ZONE T=\"Numerical\", I=" << imax - imin << ", F=POINT" << "\n";
 	
 	
 	
-	double mul_x = 1.e6, mul_u = 1., mul_p = 1.e-9, mul_e = 1.e-6;
-	
+	// double mul_x = 1.e6, mul_u = 1., mul_p = 1.e-9, mul_e = 1.e-6;
+	double mul_x = 1., mul_u = 1., mul_p = 1., mul_e = 1.;
 	
 	
 	

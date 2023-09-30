@@ -51,9 +51,17 @@ void C1DProblem::setics(FEOS& eos, vector<double>& x, vector<Vector4>& U) {
 	for (i = 0; i < x.size(); ++ i) {
 		x[i] = (xmin - get_order() * dx) + static_cast<double>(i) * dx;
 	}
+	// Проектируем генеральную таблицу соответствия разных методов и классов постановкам задач
+	// Здесь используем систему, основанную на флагах
+	// Даем флаг primitiveVariablesUsedFlag специально для заполнения примитивными переменными
+	bool primitiveVariablesUsedFlag = false;
+	if (name == "LiF" || 
+		name.substr(name.size()-8, 8) == "lagrange")
+		primitiveVariablesUsedFlag = true;
+
 	for (i = imin; i < imax; ++ i) {
 		if (x[i] < x0 && fabs(x[i] - x0) > 1.e-5*dx ) {
-			if (name != "LiF") {
+			if (!primitiveVariablesUsedFlag) {
 				U[i][0] = rol;
 				U[i][1] = rol * ul;
 				E = eos.gete(rol, pl) + .5 * ul * ul;
@@ -66,7 +74,7 @@ void C1DProblem::setics(FEOS& eos, vector<double>& x, vector<Vector4>& U) {
 			}
 
 		} else {
-			if (name != "LiF") {
+			if (!primitiveVariablesUsedFlag) {
 				U[i][0] = ror;
 				U[i][1] = ror * ur;
 				E = eos.gete(ror, pr) + .5 * ur * ur;
@@ -163,7 +171,7 @@ void C1DLaserProblem::setics(
 // Test for non-ideal (Mie-Gruneisen) EOS of Bolotova-Nigmatullin
 C1DProblem prNBtest = C1DProblem("NBtestHLL", 100., 0., 1.e9, 1000., 0., 1.e5, 0., 1., 0., 100.e-6, .7, 1000, .9, "tt");
 // 5 Toro tests
-C1DProblem prToro1Idealtest = C1DProblem("Toro-1-hllc", 1.,           .75,      1.,    .125,       0.,      .1,  0., 1., 0.,   .2, .3, 100, .9, "tt");
+C1DProblem prToro1Idealtest = C1DProblem("Toro-1-lagrange", 1.,           .75,      1.,    .125,       0.,      .1,  0., 1., 0.,   .2, .3, 100, .1, "tt", 1);
 C1DProblem prToro2Idealtest = C1DProblem("Toro-2", 1.,           -2.,      .4,      1.,       2.,      .4,  0., 1., 0.,  .15, .5, 100, .9, "tt");
 C1DProblem prToro3Idealtest = C1DProblem("Toro-3", 1.,            0.,   1000.,      1.,       0.,     .01,  0., 1., 0., .012, .5, 100, .9, "tt");
 C1DProblem prToro4Idealtest = C1DProblem("Toro-4", 5.99924,  19.5975, 460.894, 5.99242, -6.19633, 46.0950,  0., 1., 0., .035, .4, 100, .9, "tt");

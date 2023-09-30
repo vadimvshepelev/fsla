@@ -76,17 +76,7 @@ int main(int argc, char *argv[]) {
 	delete s;*/
 
 	// Uncomment for Lagrange 1D code in new architecture
-	FEOSMGLiF eos;
-
-
-	double rho = 886.16, p = -4.18826e9;
-	double c = eos.getc(rho, p);
-	double e = eos.gete(rho, p);
-
-
-
-
-	//FEOSIdeal eos(1.4);
+	/*FEOSMGLiF eos;
 	C1DProblem pr =  prLiF; //prTestLagrange1D;
 	C1DFieldPrimitive *fldptr = new C1DFieldPrimitive(pr);
 	C1DMethodSamarskii mtd;
@@ -99,10 +89,22 @@ int main(int argc, char *argv[]) {
 	COutput outp = COutput(pr, outputDir, dtt);
 	F1DSimulationLagrange sim = F1DSimulationLagrange(pr, eos, *fldptr, mtd, outp);
 	sim.run();
-	delete fldptr; 
+	delete fldptr;*/ 
+
+	// Uncomment for Lagrange 1D code in new architecture
+	FEOSIdeal eos(1.4);
+	C1DProblem pr = prToro1Idealtest;
+	C1DFieldPrimitive *fldptr = new C1DFieldPrimitive(pr);
+	C1DMethodSamarskii mtd;
+	double _dtt[] = {pr.tmin, pr.tmax};
+	vector<double> dtt = vector<double>(_dtt, _dtt + sizeof(_dtt) / sizeof(double));
+	COutput outp = COutput(pr, outputDir, dtt);
+	F1DSimulationLagrange sim = F1DSimulationLagrange(pr, eos, *fldptr, mtd, outp);
+	sim.run();
+	delete fldptr;
+
 
 	// Uncomment for LaserVT test problem
-
     /*FEOSMGAlPrecise6 eos;
 	FEOSMieGruneisenAl eos;
 	FEOSIdeal eos = FEOSIdeal(3.9);

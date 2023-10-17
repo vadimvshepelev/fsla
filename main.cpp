@@ -1,7 +1,3 @@
-#pragma GCC optimize("Ofast")
-#pragma GCC target("avx,avx2,fma")
-#pragma GCC optimize("unroll-loops")
-
 #define _CRT_SECURE_NO_WARNINGS
 
 //#include <vld.h>

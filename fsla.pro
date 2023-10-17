@@ -96,16 +96,3 @@ HEADERS += \
     odesolver.h \
     solver.h \
     task.h
-
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/boost_1_70_0/boost/release/lib/release/ -lboost_filesystem
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/boost_1_70_0/boost/release/lib/debug/ -lboost_filesystem
-else:unix: LIBS += -L$$PWD/boost_1_70_0/boost/release/lib/ -lboost_filesystem
-
-INCLUDEPATH += $$PWD/boost_1_70_0/boost/release/include
-DEPENDPATH += $$PWD/boost_1_70_0/boost/release/include
-
-win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/boost_1_70_0/boost/release/lib/release/libboost_filesystem.a
-else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/boost_1_70_0/boost/release/lib/debug/libboost_filesystem.a
-else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/boost_1_70_0/boost/release/lib/release/boost_filesystem.lib
-else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/boost_1_70_0/boost/release/lib/debug/boost_filesystem.lib
-else:unix: PRE_TARGETDEPS += $$PWD/boost_1_70_0/boost/release/lib/libboost_filesystem.a

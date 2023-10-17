@@ -173,46 +173,47 @@ int main(int argc, char *argv[]) {
 	delete fldptr;	*/
 
 	// Uncomment for Toro #1 test problem with ideal EOS
-	/*
-	// FEOSIdeal eos = FEOSIdeal(1.4);
-	FEOSMGAlPrecise6 eos = FEOSMGAlPrecise6();
-	// C1DProblem pr = prLaserVTAlMGTest1;
-	C1DProblem pr = prVTAlMGTest1;
-	// C1DProblem pr = prToro1Idealtest;
-	// C1DProblem pr = prVTAlBel;
-	// C1DProblem pr = prHoles;
-	std::unique_ptr<C1DField> fldptr = std::make_unique<C1DField>(pr);
-	CHLLRiemannSolver hll;
-	CHLLCRiemannSolver hllc;
-	CLFGlobalRiemannSolver lfgl;
-	CLFRiemannSolver lf_old;
-	CExactRiemannSolver ex;
-	CRoeRiemannSolver roe;
-	CRoeGeneralRiemannSolver roegen;
-	F1DWENO5Reconstruction eno5rec = F1DWENO5Reconstruction(*fldptr);
-	F1DCharWiseWENO5Reconstruction eno5rec_charwise
-			= F1DCharWiseWENO5Reconstruction(*fldptr, eos);
-	F1DENO2Reconstruction eno2rec = F1DENO2Reconstruction(*fldptr);
-	F1DENO3Reconstruction eno3rec = F1DENO3Reconstruction(*fldptr);
-	C1D2ndOrderLFGlobalMethod mtd = C1D2ndOrderLFGlobalMethod(
-				lfgl, eno5rec_charwise);
-//	C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hllc,eno2rec);
-	// C1DLFGlobalMethod mtd = C1DLFGlobalMethod(lfgl);
-	// C1DGodunovTypeMethodVacuum mtd = C1DGodunovTypeMethodVacuum(hllc);
-	// CExactRiemannSolver exrslv;
-	// C1DGodunovTypeMethodVacuum mtd = C1DGodunovTypeMethodVacuum(hllc, pr.x0);
-	// C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hllc);
-	// C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(ex);
-	double _dtt[] = {pr.tmin, pr.tmax};
-	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
-	COutput outp = COutput(pr, outputDir, dtt);
-//	ForwardEuler default_ode_solver = ForwardEuler(pr, eos, *fldptr, mtd);
-	SSPERK3_3 ssprk = SSPERK3_3(pr, eos, *fldptr, mtd);
-//	eBDF5 e_bdf5 = eBDF5(pr, eos, *fldptr, mtd, ssprk);
-//	ERK6_5 erk = ERK6_5(pr, eos, *fldptr, mtd);
-	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp, ssprk);
-	sim.run();
-	*/
+
+//	FEOSIdeal eos = FEOSIdeal(1.4);
+//	// FEOSMGAlPrecise6 eos = FEOSMGAlPrecise6();
+//	// C1DProblem pr = prLaserVTAlMGTest1;
+//	// C1DProblem pr = prVTAlMGTest1;
+//	C1DProblem pr = prToro2Idealtest;
+//	// C1DProblem pr = prVTAlBel;
+//	// C1DProblem pr = prHoles;
+//	std::unique_ptr<C1DField> fldptr = std::make_unique<C1DField>(pr);
+//	CHLLRiemannSolver hll;
+//	CHLLCRiemannSolver hllc;
+//	CLFGlobalRiemannSolver lfgl;
+//	CLFRiemannSolver lf_old;
+//	CExactRiemannSolver ex;
+//	CRoeRiemannSolver roe;
+//	CRoeGeneralRiemannSolver roegen;
+////	F1DWENO5Reconstruction eno5rec = F1DWENO5Reconstruction(*fldptr);
+////	F1DCharWiseWENO5Reconstruction eno5rec_charwise
+////			= F1DCharWiseWENO5Reconstruction(*fldptr, eos);
+////	F1DENO2Reconstruction eno2rec = F1DENO2Reconstruction(*fldptr);
+////	F1DENO3Reconstruction eno3rec = F1DENO3Reconstruction(*fldptr);
+////	C1D2ndOrderLFGlobalMethod mtd = C1D2ndOrderLFGlobalMethod(
+////				lfgl, eno5rec_charwise);
+////	C1D2ndOrderMethod mtd = C1D2ndOrderMethod(hllc,eno2rec);
+//	// C1DLFGlobalMethod mtd = C1DLFGlobalMethod(lfgl);
+//	// C1DGodunovTypeMethodVacuum mtd = C1DGodunovTypeMethodVacuum(hllc);
+//	// CExactRiemannSolver exrslv;
+//	// C1DGodunovTypeMethodVacuum mtd = C1DGodunovTypeMethodVacuum(hllc, pr.x0);
+//	C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(hllc);
+//	// C1DGodunovTypeMethod mtd = C1DGodunovTypeMethod(ex);
+//	double _dtt[] = {pr.tmin, pr.tmax};
+//	vector<double> dtt = vector<double>(_dtt, _dtt+sizeof(_dtt)/sizeof(double));
+//	COutput outp = COutput(pr, outputDir, dtt);
+////	ForwardEuler default_ode_solver = ForwardEuler(pr, eos, *fldptr, mtd);
+////	SSPERK3_3 ssprk = SSPERK3_3(pr, eos, *fldptr, mtd);
+////	eBDF5 e_bdf5 = eBDF5(pr, eos, *fldptr, mtd, ssprk);
+////	ERK6_5 erk = ERK6_5(pr, eos, *fldptr, mtd);
+////	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp, ssprk);
+//	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp);
+//	sim.run();
+
 
 	// Uncomment for metal problems
 	// CSolver s = CSolver();

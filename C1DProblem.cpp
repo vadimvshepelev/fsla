@@ -55,7 +55,7 @@ void C1DProblem::setics(FEOS& eos, vector<double>& x, vector<Vector4>& U) {
 	// Здесь используем систему, основанную на флагах
 	// Даем флаг primitiveVariablesUsedFlag специально для заполнения примитивными переменными
 	bool primitiveVariablesUsedFlag = false;
-	if (name == "LiF" || 
+	if (name == "LiF" ||
 		name.substr(name.size()-8, 8) == "lagrange")
 		primitiveVariablesUsedFlag = true;
 

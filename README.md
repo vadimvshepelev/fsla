@@ -10,7 +10,3 @@ Made with
 
 * Microsoft Visual Studio 2022 and Qt Creator 8.0.1.
 
-
-Depends on
-
-* `Eigen3` (compatible with the latest version, included as a git submodule).

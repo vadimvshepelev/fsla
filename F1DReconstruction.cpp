@@ -8,8 +8,9 @@
 #include <ranges>
 // #include <span>
 
-#include "Eigen/Eigen/Dense"
+// #include "Eigen/Eigen/Dense"
 
+#include "_matrix4.h"
 #include "_vector4.h"
 
 // ENO2 stencils
@@ -1982,7 +1983,7 @@ void F1DCharWiseWENO5Reconstruction::calc_(
 }
 
 
-Eigen::Matrix<double, 3, 3> EigenLeft1DEulerEigenMatrix(
+/*Eigen::Matrix<double, 3, 3>*/Matrix4 EigenLeft1DEulerEigenMatrix(
 		Vector4 vec, FEOS& eos) {
 	double u = vec[1];
 	if (vec[0] != 0.)
@@ -2017,17 +2018,23 @@ Eigen::Matrix<double, 3, 3> EigenLeft1DEulerEigenMatrix(
 	if (vec[0] != 0.)
 		b = eos.getdpde(vec[0], e) / vec[0];
 
-	Eigen::Matrix<double, 3, 3> l_mat {
-		{1.,                           1.,        1.},
-		{u - c_s,                  u + 0.,   u + c_s},
-		{h -  uc,      h - c_s_square / b,   h +  uc},
-	};
+//	Eigen::Matrix<double, 3, 3> l_mat {
+//		{1.,                           1.,        1.},
+//		{u - c_s,                  u + 0.,   u + c_s},
+//		{h -  uc,      h - c_s_square / b,   h +  uc},
+//	};
+	Matrix4 l_mat (
+		1.,                           1.,        1.,	0.,
+		u - c_s,                  u + 0.,   u + c_s,	0.,
+		h -  uc,      h - c_s_square / b,   h +  uc,	0.,
+		0.,	0.,	0.,	0.
+	);
 
 	return l_mat;
 }
 
 
-Eigen::Matrix<double, 3, 3> EigenRight1DEulerEigenMatrix(
+/*Eigen::Matrix<double, 3, 3>*/Matrix4 EigenRight1DEulerEigenMatrix(
 		Vector4 vec, FEOS& eos) {
 	double u = vec[1];
 	if (vec[0] != 0.)
@@ -2076,12 +2083,17 @@ Eigen::Matrix<double, 3, 3> EigenRight1DEulerEigenMatrix(
 			- vec[3] / vec[0]
 			+ vec[0] * dpdrho / dpde;
 
-	Eigen::Matrix<double, 3, 3> r_mat {
-		{theta  +  uc / b, -(u + c_s / b),    1.},
-		{2. * (h - u * u),         2. * u,   -2.},
-		{theta  -  uc / b,   -u + c_s / b,    1.},
-	};
-	r_mat *= b * beta;
+//	Eigen::Matrix<double, 3, 3> r_mat {
+//		{theta  +  uc / b, -(u + c_s / b),    1.},
+//		{2. * (h - u * u),         2. * u,   -2.},
+//		{theta  -  uc / b,   -u + c_s / b,    1.},
+//	};
+	Matrix4 r_mat(
+		b * beta * (theta  +  uc / b), -(u + c_s / b) * b * beta,    b * beta,	0.,
+		b * beta * 2. * (h - u * u),         2. * u * b * beta,   -2. * b * beta,	0.,
+		(theta  -  uc / b) * b * beta,   (-u + c_s / b) * b * beta,    1. * b * beta,	0.,
+		0.,	0.,	0.,	0.
+	);
 
 	return r_mat;
 }
@@ -2091,7 +2103,7 @@ Vector4 projectOntoCharacteristics(
 		Vector4 conservative_variables, Vector4 vec, FEOS& eos) {
 	return Vector4(EigenRight1DEulerEigenMatrix(
 				conservative_variables, eos)
-			* Eigen::Matrix<double, 3, 1>{vec[0], vec[1], vec[2]});
+			* vec/*Eigen::Matrix<double, 3, 1>{vec[0], vec[1], vec[2]}*/);
 }
 
 
@@ -2099,7 +2111,7 @@ Vector4 projectCharacteristicVariablesBackOntoConserved(
 		Vector4 conservative_variables, Vector4 vec, FEOS& eos) {
 	return Vector4(EigenLeft1DEulerEigenMatrix(
 				conservative_variables, eos)
-			* Eigen::Matrix<double, 3, 1>{vec[0], vec[1], vec[2]});
+			* vec/*Eigen::Matrix<double, 3, 1>{vec[0], vec[1], vec[2]}*/);
 }
 
 

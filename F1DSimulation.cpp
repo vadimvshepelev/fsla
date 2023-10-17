@@ -31,8 +31,8 @@ void F1DSimulation::run() {
 		}
 		if (fld.t+fld.dt > pr.tmax) fld.dt = pr.tmax-fld.t;
 		tStart = clock();
-		// mtd.calc(pr, eos, fld);
-		solve.solve();
+		mtd.calc(pr, eos, fld);
+		// solve.solve();
 		tEnd = clock();
 		tCalc = static_cast<double>(tEnd - tStart) / CLOCKS_PER_SEC;
 		fld.t += fld.dt;

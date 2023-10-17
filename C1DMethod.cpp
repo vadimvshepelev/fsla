@@ -462,33 +462,6 @@ double C1DGodunovTypeMethod::calcdt(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 }
 
 
-void C1DGodunovTypeMethod::calcFluxField(
-		C1DProblem& pr, FEOS& eos, C1DField& fld) {
-//	double roL = 0., uL = 0., eL = 0., pL = 0.,
-//		   roR = 0., uR = 0., eR = 0., pR = 0.,
-//		   E = 0.;
-	int imin = fld.imin, imax = fld.imax;
-	auto&& U = fld.U;
-	auto&& F = fld.F;
-	// TODO: проверить на скорость выполнения операций, сравнить
-	// с реализацией через тип Vector4 -- если не медленнее,
-	// то в дальнейшем избавиться от Vector4 везде
-	int i = 0;
-	// Потоки считаем по алгоритму решения задаче о распаде разрыва
-	// для УРС Ми-Грюнайзена из работы [Miller, Puckett]
-	for (i = imin; i <= imax; ++ i) {
-		if (i == 53) {
-			double q = 1.;
-		}
-
-		F[i] = rslv.calcFlux(
-					eos, U[i-1][0], U[i-1][1], U[i-1][2],
-					U[i][0], U[i][1], U[i][2]);
-		// n.W_temp = n.W - dt/h*(Fp-Fm);
-	}
-}
-
-
 void C1DGodunovTypeMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 	double dx = fld.dx, t = fld.t, dt = fld.dt;
 	int imin = fld.imin, imax = fld.imax;
@@ -497,7 +470,26 @@ void C1DGodunovTypeMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {
 	auto&& F = fld.F;
 	int i = 0;
 
-	calcFluxField(pr, eos, fld);
+	//	double roL = 0., uL = 0., eL = 0., pL = 0.,
+	//		   roR = 0., uR = 0., eR = 0., pR = 0.,
+	//		   E = 0.;
+
+	// TODO: проверить на скорость выполнения операций, сравнить
+	// с реализацией через тип Vector4 -- если не медленнее,
+	// то в дальнейшем избавиться от Vector4 везде
+	i = 0;
+	// Потоки считаем по алгоритму решения задаче о распаде разрыва
+	// для УРС Ми-Грюнайзена из работы [Miller, Puckett]
+	for (i = imin; i <= imax; ++ i) {
+	if (i == 53) {
+		double q = 1.;
+		}
+
+	F[i] = rslv.calcFlux(
+		eos, U[i-1][0], U[i-1][1], U[i-1][2],
+		U[i][0], U[i][1], U[i][2]);
+	// n.W_temp = n.W - dt/h*(Fp-Fm);
+	}
 
 	for (i = imin; i < imax; ++ i) {
 		for(int counter=0; counter<3; counter++)
@@ -950,27 +942,6 @@ Vector4 CLFGlobalRiemannSolver::calcFlux(
 }
 
 
-void C1D2ndOrderMethod::calcFluxField(
-		C1DProblem& pr, FEOS& eos, C1DField& fld) {
-//	double roL = 0., uL = 0., eL = 0., pL = 0.,
-//			roR = 0., uR = 0., eR = 0., pR = 0., E = 0.;
-	int i=0, imin = fld.imin, imax = fld.imax;
-	auto&& F = fld.F;
-	auto&& ULx = rec.ULx;
-	auto&& URx = rec.URx;
-	// TODO: проверить на скорость выполнения операций,
-	// сравнить с реализацией через тип Vector4 --
-	// если не медленнее, то в дальнейшем избавиться от Vector4 везде
-	rec.calc(fld);
-	for (i = imin; i <= imax; ++ i) {
-		F[i] = rslv.calcFlux(
-					eos,
-					URx[i-1][0], URx[i-1][1], URx[i-1][2],
-					ULx[i][0], ULx[i][1], ULx[i][2]);
-	}
-}
-
-
 void C1D2ndOrderMethod::calc(
 		C1DProblem& pr, FEOS& eos, C1DField& fld) {
 	double dx = fld.dx;
@@ -990,7 +961,19 @@ void C1D2ndOrderMethod::calc(
 	auto&& U = fld.U;
 	auto&& newU = fld.newU;
 
-	calcFluxField(pr, eos, fld);
+	//	double roL = 0., uL = 0., eL = 0., pL = 0.,
+	//			roR = 0., uR = 0., eR = 0., pR = 0., E = 0.;
+
+	// TODO: проверить на скорость выполнения операций,
+	// сравнить с реализацией через тип Vector4 --
+	// если не медленнее, то в дальнейшем избавиться от Vector4 везде
+	rec.calc(fld);
+	for (i = imin; i <= imax; ++ i) {
+	F[i] = rslv.calcFlux(
+		eos,
+		URx[i-1][0], URx[i-1][1], URx[i-1][2],
+		ULx[i][0], ULx[i][1], ULx[i][2]);
+	}
 
 	for (i = imin; i < imax; ++ i) {
 //		for (int counter = 0; counter < 3; ++ counter)
@@ -1008,26 +991,26 @@ void C1D2ndOrderMethod::calc(
 }
 
 
-void C1D2ndOrderLFGlobalMethod::calcFluxField(
-		C1DProblem& pr, FEOS& eos, C1DField& fld) {
-//	double roL = 0., uL = 0., eL = 0., pL = 0.,
-//			roR = 0., uR = 0., eR = 0., pR = 0., E = 0.;
-	int i=0, imin = fld.imin, imax = fld.imax;
-	auto&& F = fld.F;
-	auto&& ULx = rec.ULx;
-	auto&& URx = rec.URx;
-	// TODO: проверить на скорость выполнения операций,
-	// сравнить с реализацией через тип Vector4 --
-	// если не медленнее, то в дальнейшем избавиться от Vector4 везде
-	rec.calc(fld);
-	double lambda = calcMaxWaveSpeedD(fld.U, eos);
-	for (i = imin - 1; i <= imax; ++ i) {
-		F[i] = lfrslv.calcFlux(
-					eos,
-					URx[i-1][0], URx[i-1][1], URx[i-1][2],
-					ULx[i][0], ULx[i][1], ULx[i][2], lambda);
-	}
-}
+//void C1D2ndOrderLFGlobalMethod::calcFluxField(
+//		C1DProblem& pr, FEOS& eos, C1DField& fld) {
+////	double roL = 0., uL = 0., eL = 0., pL = 0.,
+////			roR = 0., uR = 0., eR = 0., pR = 0., E = 0.;
+//	int i=0, imin = fld.imin, imax = fld.imax;
+//	auto&& F = fld.F;
+//	auto&& ULx = rec.ULx;
+//	auto&& URx = rec.URx;
+//	// TODO: проверить на скорость выполнения операций,
+//	// сравнить с реализацией через тип Vector4 --
+//	// если не медленнее, то в дальнейшем избавиться от Vector4 везде
+//	rec.calc(fld);
+//	double lambda = calcMaxWaveSpeedD(fld.U, eos);
+//	for (i = imin - 1; i <= imax; ++ i) {
+//		F[i] = lfrslv.calcFlux(
+//					eos,
+//					URx[i-1][0], URx[i-1][1], URx[i-1][2],
+//					ULx[i][0], ULx[i][1], ULx[i][2], lambda);
+//	}
+//}
 
 
 void C1DBGKMethod::calc(C1DProblem& pr, FEOS& eos, C1DField& fld) {

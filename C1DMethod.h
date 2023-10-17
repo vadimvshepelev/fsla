@@ -161,7 +161,6 @@ class C1DMethod {
 public:
 	virtual void calc(C1DProblem& pr, FEOS& eos, C1DField& fld)=0;
 	virtual double calcdt(C1DProblem& pr, FEOS& eos, C1DField& fld)=0;
-	virtual void calcFluxField(C1DProblem& pr, FEOS& eos, C1DField& fld)=0;
 };
 
 
@@ -180,7 +179,6 @@ public:
 	C1DGodunovTypeMethod(CRiemannSolver& _rslv) : rslv(_rslv) {}
 	virtual void calc(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
 	double calcdt(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
-	virtual void calcFluxField(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
 };
 
 
@@ -220,7 +218,6 @@ public:
 
 	F1DReconstruction& rec;
 	virtual void calc(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
-	virtual void calcFluxField(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
 };
 
 
@@ -234,7 +231,6 @@ public:
 		: C1D2ndOrderMethod(_rslv, _rec), lfrslv(_rslv) {}
 
 //	void calc(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
-	void calcFluxField(C1DProblem& pr, FEOS& eos, C1DField& fld) override;
 };
 
 

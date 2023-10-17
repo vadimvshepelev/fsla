@@ -85,10 +85,27 @@ int main(int argc, char *argv[]) {
 	COutput outp = COutput(pr, outputDir, dtt);
 	F1DSimulationLagrange sim = F1DSimulationLagrange(pr, eos, *fldptr, mtd, outp);
 	sim.run();
-	delete fldptr;*/ 
+	delete fldptr;*/
+
+	FEOSMGLiF eos;
+	C1DProblem pr = prLiF; //prTestLagrange1D;
+	C1DField* fldptr = new C1DField(pr);
+	CHLLCRiemannSolver hllc;
+	F1DENO2Reconstruction rec(*fldptr);
+	C1D2ndOrderMethod mtd(hllc, rec);
+	double _dtt[] = { pr.tmin,
+					 .05e-9,
+					 .1e-9, .2e-9, .3e-9, .4e-9, .5e-9, .6e-9, .7e-9, .8e-9, .9e-9,
+					 1.e-9, 2.e-9, 3.e-9, 3.128e-9, 4.e-9, 5.e-9, 6.e-9, 7.e-9, 8.e-9, 9.e-9,
+					 pr.tmax };
+	vector<double> dtt = vector<double>(_dtt, _dtt + sizeof(_dtt) / sizeof(double));
+	COutput outp = COutput(pr, outputDir, dtt);
+	F1DSimulation sim = F1DSimulation(pr, eos, *fldptr, mtd, outp);
+	sim.run();
+	delete fldptr;
 
 	// Uncomment for Lagrange 1D code in new architecture
-	FEOSIdeal eos(1.4);
+	/*FEOSIdeal eos(1.4);
 	C1DProblem pr = prToro1Idealtest;
 	C1DFieldPrimitive *fldptr = new C1DFieldPrimitive(pr);
 	C1DMethodSamarskii mtd;
@@ -97,7 +114,7 @@ int main(int argc, char *argv[]) {
 	COutput outp = COutput(pr, outputDir, dtt);
 	F1DSimulationLagrange sim = F1DSimulationLagrange(pr, eos, *fldptr, mtd, outp);
 	sim.run();
-	delete fldptr;
+	delete fldptr; /
 
 
 	// Uncomment for LaserVT test problem

@@ -6,6 +6,7 @@ CONFIG -= qt
 LIBS += -ltbb
 
 SOURCES += \
+		eos/FEOSMHLiF.cpp\
         C1DBCs.cpp \
         C1DField.cpp \
         C1DMethod.cpp \
@@ -58,6 +59,7 @@ DISTFILES += \
     fsla.vcxproj.user
 
 HEADERS += \
+	eos/FEOSMGLiF.h\
     C1DBCs.h \
     C1DField.h \
     C1DMethod.h \

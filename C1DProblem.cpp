@@ -104,7 +104,7 @@ void C1DProblem::setbcs(vector<Vector4>& U) {
 			}
 		}
 		break;
-	case 'v':
+	case 'v':  // Warning! This means density rho = 0!
 		for (std::size_t counter = 1; counter <= imin; ++counter) {
 			for (std::size_t component = 0; component < 3; ++component) {
 				U[imin - counter][component] = 0.;
@@ -223,6 +223,6 @@ C1DProblem prVTAlBel = C1DLaserProblem("vtAlBel",
 										"tt", 3);
 
 // 16.04.2023 LiF problem
-C1DProblem prLiF = C1DProblem("LiF", 2650., 0., 25.e9, 2650., 0., 0., 0., 50.e-6, 0., 10.e-9, 5.e-6, 500, .05, "vt", 1);
+C1DProblem prLiF = C1DProblem("LiF", 2650., 0., 25.e9, 2650., 0., 0., 0., 50.e-6, 0., 10.e-9, 5.e-6, 500, .05, "tt", 2);
 // C1DProblem prLiF = C1DProblem("LiF", 2650., 0., 25.e9, 2650., 0., 25.e9, 0., 50.e-6, 0., .5e-9, 5.e-6, 500, .1, "vt", 1);
 C1DProblem prTestLagrange1D = C1DProblem("LiF", 1., 0., 1., 1, 0., 1., 0., 1., 0., .2, .5, 100, .5, "vt", 1);

@@ -226,3 +226,9 @@ C1DProblem prVTAlBel = C1DLaserProblem("vtAlBel",
 C1DProblem prLiF = C1DProblem("LiF", 2650., 0., 25.e9, 2650., 0., 0., 0., 50.e-6, 0., 10.e-9, 5.e-6, 500, .05, "tt", 2);
 // C1DProblem prLiF = C1DProblem("LiF", 2650., 0., 25.e9, 2650., 0., 25.e9, 0., 50.e-6, 0., .5e-9, 5.e-6, 500, .1, "vt", 1);
 C1DProblem prTestLagrange1D = C1DProblem("LiF", 1., 0., 1., 1, 0., 1., 0., 1., 0., .2, .5, 100, .5, "vt", 1);
+
+// 18.10.2023 LiF slice (LiF 2D problem simulation doesn't work, so we make 1d simulation on the symmetry axis
+// Eulerian version
+C1DProblem prLiFSliceEuler = C1DProblem("LiF", 2650., 0., 10.e9, 2., 0., 0., -10.e-6, 2.e-6, 0., 1.e-9, 0., 100, .1, "tt", 2);
+//Lagrangian version
+// C1DProblem prTestLagrange1D = C1DProblem("LiF", 1., 0., 1., 1, 0., 1., 0., 1., 0., .2, .5, 100, .5, "vt", 1);

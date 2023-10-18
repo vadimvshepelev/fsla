@@ -132,7 +132,8 @@ extern C1DProblem prFedorAl;
 
 extern C1DProblem prVTAlBel;
 
-extern C1DProblem prLiF, prTestLagrange1D;
+extern C1DProblem prLiF, prTestLagrange1D,
+				  prLiFSliceEuler;
 
 
 #endif
